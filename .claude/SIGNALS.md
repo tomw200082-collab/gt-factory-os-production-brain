@@ -10,12 +10,14 @@ Shared signal definitions used by subagents and by hooks. Authoritative source i
 ## `RUNTIME_READY(form)`
 - **Meaning:** W1's execution-authorization signal. The backend / runtime contract for the named form is sufficiently closed and evidenced. W2 may enter Mode B for that one form only.
 - **Does authorize:** W2 canonical authoring for the named form only. A separate `RUNTIME_READY(other_form)` is required for each additional form. Exiting Mode B (after local portal E2E green) returns W2 to Mode A.
-- **Recorded where:** `.claude/state/runtime_ready.json`. The file starts as `{ "signals": [] }`. W1 appends entries with fields: `form` (e.g., "GoodsReceipt"), `emitted_at` (ISO-8601 UTC), `evidence_path` (relative path to backend contract doc or test output proving closure), `emitted_by` (always `"executor-w1"`). Example entry:
+- **Recorded where:** `.claude/state/runtime_ready.json`. The file starts as `{ "signals": [] }`. Authorized emitters append entries with fields: `form` (e.g., "GoodsReceipt"), `emitted_at` (ISO-8601 UTC), `evidence_path` (relative path to backend contract doc or test output proving closure), `emitted_by` (the emitting agent name). Example entry:
   ```json
   { "form": "GoodsReceipt", "emitted_at": "2026-04-17T14:30:00Z", "evidence_path": "Projects/gt-factory-os/docs/goods_receipt_runtime_contract.md", "emitted_by": "executor-w1" }
   ```
-- **Who writes:** `executor-w1` only. Any other agent writing here is an ownership conflict.
-- **Who reads:** `executor-w2` before entering Mode B; `pre_tool_use.sh` before allowing portal canonical writes.
+- **Who writes (authorized emitters):** `backend-db-executor` (Phase 8 preferred) and `executor-w1` (legacy, dispatchable until Wave 6). One at a time — never both in the same dispatch. Any other agent appending here is an ownership conflict, except as noted below.
+- **`factory-os-governor` policy (Phase 8 Run G, locked):** may coordinate, record, and route readiness decisions. Does **not** directly append to `runtime_ready.json` unless the evidence backing that emission was produced by a verifier or executor for that specific form AND the policy for that form explicitly allows governor-level emission. In practice, `factory-os-governor` coordinates; it does not emit.
+- **Historical exceptions (not future policy):** a small number of entries in `.claude/state/runtime_ready.json` carry `emitted_by` values of `executor-w2` (portal-evidence path) or `factory-os-governor` (coordination path), from Phase 1–7 work. These are accepted historical emissions; they do not authorize future direct emissions by those agents.
+- **Who reads:** `portal-production-executor` (or legacy `executor-w2`) before entering Mode B; `pre_tool_use.sh` before allowing portal canonical writes.
 
 ## `TOOL_FAILURE_UNCLEARED`
 - **Meaning:** a W4 rolling-requirements artifact whose same tool failure has repeated after one retry. The artifact is parked.

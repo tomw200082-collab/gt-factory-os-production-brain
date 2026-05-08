@@ -1,17 +1,20 @@
 # PRODUCTION git remote — plan and audit
 
 **Date:** 2026-05-08
-**Status:** PLAN ONLY — no remote created. Tom must provide the repo URL before push.
+**Status:** COMPLETED — remote established and pushed 2026-05-08 (Run F.2b).
+**Remote URL:** `https://github.com/tomw200082-collab/gt-factory-os-production-brain.git` (private)
+**Branch:** `main` · **HEAD:** `875424b` · local = remote, verified 2026-05-08.
 
 ---
 
 ## A. Current `git remote -v` output
 
 ```
-(empty — no remotes configured)
+origin  https://github.com/tomw200082-collab/gt-factory-os-production-brain.git (fetch)
+origin  https://github.com/tomw200082-collab/gt-factory-os-production-brain.git (push)
 ```
 
-`git remote -v` returns no output. PRODUCTION has zero remotes today. Branch state: `main` is the only local branch. Seven local commits exist (Phases 0/7 baseline + Wave 0 reconciliation × 4 + Phase 8 Run A × 3).
+Remote added and main pushed 2026-05-08 (Run F.2b). Branch `main` tracks `origin/main`; HEAD `875424b` confirmed on both local and remote.
 
 ---
 
