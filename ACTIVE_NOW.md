@@ -2,7 +2,7 @@
 
 > **Authority:** ephemeral operator context. **Not authoritative on anything.** `CURRENT_STATE.md` is the sole authority on gate status, completion range, critical path, and open gaps. On any disagreement, defer to `CURRENT_STATE.md`.
 
-**Last refreshed:** 2026-05-08 (Phase 8 Wave 0 reconciliation against `.claude/state/active_mode.json` and CURRENT_STATE.md authority).
+**Last refreshed:** 2026-05-08 (Phase 8 Wave 1 — DR-003 source-truth audit; portal tip advanced to 9605553).
 
 ---
 
@@ -27,8 +27,8 @@ Tranche 4+ (Forecast Workspace) queued; later cycles (cycles 7–8 closure incl.
 | Item | Value |
 |------|-------|
 | RUNTIME_READY signals | 35 (latest: GoodsReceipt-FromPO 2026-05-02T19:30Z) |
-| W2 portal tip | `933052c` (fix: auth PKCE) |
-| Backend tip | `bcb2d0f` (shopify GE-D) |
+| W2 portal tip | `9605553` (fix: idb DB_VERSION + VersionError recovery) |
+| Backend tip | `a6c80ec` (PR #21 structure consolidation; last code commit: `bcb2d0f` GE-D) |
 | Railway | healthy |
 | Vercel (portal) | ready — `gt-factory-os-portal.vercel.app` |
 | LionWheel bridge | `LIONWHEEL_FG_OUT_BRIDGE_ENABLED=false` — do not flip until Sunday post-count |
@@ -57,5 +57,5 @@ Tranche 4+ (Forecast Workspace) queued; later cycles (cycles 7–8 closure incl.
 
 ## Commit tips
 
-- Portal (`window2-portal-sandbox` / `gt-factory-os-portal`): `933052c`
-- Backend (`gt-factory-os/main`): `bcb2d0f`
+- Portal (`window2-portal-sandbox` / `gt-factory-os-portal`): `9605553`
+- Backend (`gt-factory-os/main`): `a6c80ec` (last code commit: `bcb2d0f`)
