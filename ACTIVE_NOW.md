@@ -2,7 +2,7 @@
 
 > **Authority:** ephemeral operator context. **Not authoritative on anything.** `CURRENT_STATE.md` is the sole authority on gate status, completion range, critical path, and open gaps. On any disagreement, defer to `CURRENT_STATE.md`.
 
-**Last refreshed:** 2026-05-08 (project structure consolidation — Phase 1 complete)
+**Last refreshed:** 2026-05-08 (Phase 8 Wave 0 reconciliation against `.claude/state/active_mode.json` and CURRENT_STATE.md authority).
 
 ---
 
@@ -14,10 +14,11 @@ Hard stop: no live GraphQL inventory mutation until Phase 5 readiness + Tom appr
 Bridge state: `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED=false` — do not flip.
 Latest backend commit: `bcb2d0f` (GE-D bridge starvation fix).
 
-**2 — Planning Corridor v1 (Tranche 3 ACTIVE)**
-Tranche 1+2 DONE. Tranche 3 (Unresolved Demand / Blockers) in flight.
-W4 contract PASS. W1 backend dispatched. W2 portal waits for `RUNTIME_READY(Planning-Tranche3-Blockers)`.
-Tranche 4+ (Forecast Workspace) queued.
+**2 — Planning Corridor v1 (Tranche 3 CLOSED 2026-04-27)**
+Tranches 1+2+3 DONE end-to-end. RUNTIME_READY(Planning-Tranche3-Blockers) emitted as signal #17.
+Backend tip for Tranche 3: `1209596` (Railway `ef03b588`); portal closure: `e7dce27` (window2-portal-sandbox/main).
+W2 currently in Mode A (`active_mode.json` last_updated 2026-05-02T22:00Z, no scoped form).
+Tranche 4+ (Forecast Workspace) queued; later cycles (cycles 7–8 closure incl. signal #25 + #26 holidays-archived-filter) shipped.
 
 ---
 
@@ -25,7 +26,7 @@ Tranche 4+ (Forecast Workspace) queued.
 
 | Item | Value |
 |------|-------|
-| RUNTIME_READY signals | 31 |
+| RUNTIME_READY signals | 35 (latest: GoodsReceipt-FromPO 2026-05-02T19:30Z) |
 | W2 portal tip | `933052c` (fix: auth PKCE) |
 | Backend tip | `bcb2d0f` (shopify GE-D) |
 | Railway | healthy |
