@@ -2,7 +2,7 @@
 
 > **Authority:** ephemeral operator context. **Not authoritative on anything.** `CURRENT_STATE.md` is the sole authority on gate status, completion range, critical path, and open gaps. On any disagreement, defer to `CURRENT_STATE.md`.
 
-**Last refreshed:** 2026-05-08 (Phase 8 Run C — FLOW-003 closure landed; portal tip advanced to `9e2212e`; aggregate UX gate HOLD → CONDITIONAL_SHIP).
+**Last refreshed:** 2026-05-08 (Phase 8 Run F — AI Brain kernel rewrite + router scaffolding landed; CLAUDE.md 355 → 133 lines; 6 new scaffolding files in PRODUCTION root; 2 extraction files in docs/; no product runtime change; no push, no merge, no deploy).
 
 ---
 
