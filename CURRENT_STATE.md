@@ -82,6 +82,17 @@ INTER-001 Cancel-PO confirmation polish, A11Y-001 form-label gap on waste-adjust
 
 **Tom decision A enshrined in kernel:** no autonomous push, no merge, no deploy. Memory file contradicting this is now annotated as superseded by EXECUTION_POLICY.md.
 
+## Phase 8 Run F.2 / F.2b status (2026-05-08)
+
+**Run F.2b completed:** PRODUCTION AI Brain pushed to private remote.
+
+- Remote URL: `https://github.com/tomw200082-collab/gt-factory-os-production-brain.git` (private)
+- Branch: `main`, HEAD: `875424b` — local = remote, verified 2026-05-08.
+- No product runtime code in this repo (governance files only).
+- No product code touched in Run F.2 / F.2b.
+
+**Run G (in progress, 2026-05-08):** final AI Brain governance closure — signals policy (CONFLICT-003), state freshness, registry count fix, acceptance record. Branch `run-g-final-brain-closure`.
+
 ## UX release gate (2026-05-08, post-Run-C)
 
 **Aggregate verdict:** **CONDITIONAL_SHIP** (was HOLD pre-Run-C).

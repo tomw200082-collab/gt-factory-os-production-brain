@@ -7,8 +7,8 @@
 > **Update cadence:** every time a command is added, retired, or has its primary verdict vocabulary change. Maintained by `ops-docs-curator` after `factory-os-governor` approval.
 >
 > **Total active commands (2026-05-08, Phase 8 Run F Wave 2):** 15
-> - 6 UX (Run A): button-logic-review, design-system-check, empty-error-state-audit, screen-scorecard, ux-flow-audit, ux-release-gate
-> - 4 governance & audit (Run A): production-go-no-go, release-check, source-truth-audit, operator-task-simulation
+> - 7 UX (Run A): button-logic-review, design-system-check, empty-error-state-audit, operator-task-simulation, screen-scorecard, ux-flow-audit, ux-release-gate
+> - 3 governance & audit (Run A): production-go-no-go, release-check, source-truth-audit
 > - 5 execution (Run B): docs-hygiene-check, gate-close, incident-triage, integration-dry-run, portal-pr-review
 
 ---
@@ -25,7 +25,7 @@
 | `/ux-flow-audit` | `.claude/commands/ux-flow-audit.md` | `ux-flow-architect` | `ux-content-state-designer`, `accessibility-usability-auditor`, `interaction-design-specialist` | UX audit | DECISION_GRADE, FLOW_COMPLETION, POLISH_ACCELERATION, ARCH_REQUIRED | dry-run + handoff packet | Audit end-to-end operational flow on portal route |
 | `/ux-release-gate` | `.claude/commands/ux-release-gate.md` | UX agents (all 5) | `factory-os-governor` (verdict) | UX gate | SHIP, CONDITIONAL_SHIP, HOLD | dry-run; formal record after Tom approval | Full UX gate check before portal release |
 
-## Governance & audit commands (4)
+## Governance & audit commands (3)
 
 | Command | Path | Primary agent | Supporting agents | Type | Verdicts | Writes? | Intended use |
 |---|---|---|---|---|---|---|---|
