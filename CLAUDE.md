@@ -43,6 +43,22 @@ The workbook `GT_Factory_OS.xlsx` is a **current-state source only**. Do not pre
 
 ## Locked decisions
 
+### UX / UI doctrine
+
+UX/UI is a first-class production discipline, not a polish layer. The portal is the
+operator workflow and the operator workflow is half the platform. The following is locked:
+
+- The five UX agents (`ux-flow-architect`, `interaction-design-specialist`,
+  `visual-system-designer`, `ux-content-state-designer`, `accessibility-usability-auditor`)
+  are read-only auditors. They do not write portal source.
+- `portal_ux_standard.md` (in the portal repo) is the locked register; only
+  `ux-content-state-designer` may write it.
+- A surface with an open P0 finding from `/ux-release-gate` may not ship.
+- Hebrew operator copy is per-string Tom-pinned; no surface-wide approval is implied.
+- Every user-visible portal change requires a UX handoff packet before merge.
+
+The UX gate runs in parallel with the technical gate; both must pass.
+
 ### Deployment
 - Cloud primary
 - On-prem Linux replica for read-only dashboard fallback only
@@ -158,6 +174,23 @@ The system is designed as these layers:
 - **Shopify is authoritative for:** nothing operationally critical. Sync target and commercial boundary only. Platform wins on disagreement.
 - **Green Invoice is authoritative for:** supplier invoice evidence. Not active prices by itself without validation rules.
 - **Excel is authoritative for:** nothing long-term. Only transitional seed import and read-only exports.
+
+### Production agent architecture (Phase 8)
+
+Production execution is performed by four conservative agents:
+- `backend-db-executor` — backend API, DB, migrations, jobs (replaces `executor-w1` after Wave 6).
+- `portal-production-executor` — Next.js portal authoring (replaces `executor-w2` after Wave 6).
+- `integration-boundary-executor` — LionWheel / Shopify / Green Invoice / Edge Functions (replaces `executor-w4` after Wave 6).
+- `ops-docs-curator` — docs hygiene + archive (new role; no executor-era predecessor).
+
+Governance is performed by:
+- `factory-os-governor` — go/no-go (replaces `governor.md` after Wave 6).
+- `release-verifier` — pre-merge / pre-deploy verification.
+- `source-of-truth-auditor` — cross-doc drift classification.
+- `verifier.md` — post-executor PASS/FAIL (kept indefinitely).
+
+The five UX agents listed in §UX / UI doctrine round out the operating layer. All agents
+follow the source-of-truth hierarchy already locked in this document.
 
 ## Input-source map
 

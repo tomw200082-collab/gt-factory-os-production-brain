@@ -26,6 +26,44 @@ Autonomous build work on GT Factory OS runs under a standing-order model: once s
 
 A move crossing a window boundary without explicit W5 approval is an **`ownership_conflict`**.
 
+### Phase 8 production agent mapping
+
+| Window | Legacy executor (active until Wave 6) | New production agent (Phase 8 Run B) |
+|--------|----------------------------------------|---------------------------------------|
+| W1 — DB / Schema / Migrations / Tests | `executor-w1` | `backend-db-executor` |
+| W2 — Canonical Portal / Production UI | `executor-w2` | `portal-production-executor` |
+| W4 — Integrations / Jobs / Exports / Dashboard | `executor-w4` | `integration-boundary-executor` |
+| W3 — Sandbox / Mock UI | (no canonical owner; sandbox-only) | (no agent — never canonical) |
+| W5 — Architecture / Governance | `governor.md` (legacy) | `factory-os-governor` (Run A) |
+| Cross-Window — Docs / Archive / Hygiene | (no role) | `ops-docs-curator` (new role) |
+
+Both columns remain dispatchable through Wave 6. After Wave 6 evidence (per
+`PRODUCTION/docs/phase8/deprecation/ACTIVE_SURFACE_REDUCTION_PLAN.md`), legacy executors
+move to `archive/legacy-agents/`. Tom must approve each archive step.
+
+The UX agents (`ux-flow-architect`, `interaction-design-specialist`, `visual-system-designer`,
+`ux-content-state-designer`, `accessibility-usability-auditor`) are read-only and do not
+own a Window. They produce handoff packets that `portal-production-executor` consumes.
+
+### Execution lanes (Phase 8)
+
+| Lane | Owners | Active simultaneously? |
+|------|--------|------------------------|
+| Backend / DB / migrations | `backend-db-executor` OR `executor-w1` (one at a time) | yes — alongside other lanes |
+| Portal | `portal-production-executor` OR `executor-w2` (one at a time) | yes |
+| Integration / jobs | `integration-boundary-executor` OR `executor-w4` (one at a time) | yes |
+| Docs / hygiene / archive | `ops-docs-curator` | yes |
+| UX audit | UX agents (parallel; read-only) | yes |
+| Governance | `factory-os-governor` (read-only) | always-on |
+| Pre-merge gate | `release-verifier` | on demand |
+| Source-of-truth | `source-of-truth-auditor` | on demand |
+
+Maximum 4 simultaneous executor lanes (backend + portal + integration + docs). UX agents
+do not count as a lane (they are read-only). Governance and gates do not count as a lane.
+
+A lane may be carried by either the legacy executor or the new production agent — never
+both at once. The default is the new production agent unless Tom specifies otherwise.
+
 ## Standing-order policy
 
 **Global rule:** at most **three active lanes** at any time. The active set is **W1 + W2 + W4**. **W5 is service-on-demand**, not a continuously active lane.
@@ -258,6 +296,43 @@ The standing-order policy does **not** override the failure taxonomy or human-ch
 - no reopening of locked decisions
 - MCP is not a runtime input channel
 - Claude Code tooling must not become part of the live operational path
+
+---
+
+## Frozen flags log
+
+These environment flags must remain `false` in production until Tom written authorization
+explicitly flips them. Each flip requires a successful dry-run, a ≥24h soak, and a
+RUNTIME_READY signal from the relevant executor.
+
+| Flag | Default | Authorized state | Authorization reference |
+|------|---------|------------------|------------------------|
+| `LIONWHEEL_FG_OUT_BRIDGE_ENABLED` | `false` | `false` (Phase 8 Wave 0; no flip authorized) | CLAUDE.md "LionWheel pickup → ledger decrement" locked decision |
+| `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED` | `false` | `false` (Phase 5 only; not approved) | CLAUDE.md "Shopify v2 phase plan"; current corridor evidence in `gt-factory-os/docs/superpowers/evidence/2026-05-07-shopify-phase0-bleeding-stopped.md` |
+
+A flag flip without all four prerequisites (Tom written approval, dry-run evidence,
+≥24h soak, RUNTIME_READY) emits `frozen_flag_unexpected_state` and halts integration writes.
+
+## Approval thresholds (Phase 8 Run B)
+
+| Action | Approval required |
+|--------|------------------|
+| Production DB migration | Tom written |
+| Adding a new movement_type to stock_ledger | Tom written |
+| Changing BOM head/version/lines columns | Tom written |
+| Hebrew copy change (any surface) | Tom register entry |
+| FLOW-003 resolution (any change to /planning/blockers substrate code) | Tom written per FLOW-003 decision packet |
+| Frozen flag flip | Tom written + dry-run + ≥24h soak + RUNTIME_READY |
+| External integration write (LW/Shopify/GI POST/PUT/DELETE) | Tom written + dry-run |
+| Vercel production deploy | Tom written |
+| Supabase Edge Function deploy | Tom written |
+| Auth flow change (middleware.ts, (auth)/**) | Tom written |
+| `git push` to any remote | Tom (always requires explicit user instruction) |
+| Archiving any legacy agent | Tom written + Wave 6 evidence per ACTIVE_SURFACE_REDUCTION_PLAN.md |
+| Updating any authority doc | Tom (only writer) |
+| RUNTIME_READY emission with full test evidence | none — self-authorizing |
+| Local dev work on dev DB | none |
+| New unit / integration test (no production change) | none |
 
 ---
 

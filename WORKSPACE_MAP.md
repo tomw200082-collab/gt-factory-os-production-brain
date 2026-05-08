@@ -18,6 +18,29 @@
 
 **Never in Box 1:** source code, npm packages, contract specs, runbooks, active logic of any kind.
 
+### Phase 8 agents and commands (locations)
+
+| Path | Owner |
+|------|-------|
+| `PRODUCTION/.claude/agents/factory-os-governor.md` | governance (Run A) |
+| `PRODUCTION/.claude/agents/release-verifier.md` | pre-merge gate (Run A) |
+| `PRODUCTION/.claude/agents/source-of-truth-auditor.md` | drift detection (Run A) |
+| `PRODUCTION/.claude/agents/ux-flow-architect.md` | flow doctrine (Run A) |
+| `PRODUCTION/.claude/agents/interaction-design-specialist.md` | buttons/forms (Run A) |
+| `PRODUCTION/.claude/agents/visual-system-designer.md` | tokens/layout (Run A) |
+| `PRODUCTION/.claude/agents/ux-content-state-designer.md` | copy/register (Run A) |
+| `PRODUCTION/.claude/agents/accessibility-usability-auditor.md` | a11y (Run A) |
+| `PRODUCTION/.claude/agents/backend-db-executor.md` | backend executor (Run B) |
+| `PRODUCTION/.claude/agents/portal-production-executor.md` | portal executor (Run B) |
+| `PRODUCTION/.claude/agents/integration-boundary-executor.md` | integration executor (Run B) |
+| `PRODUCTION/.claude/agents/ops-docs-curator.md` | docs curator (Run B) |
+| `PRODUCTION/.claude/agents/executor-w1.md` | legacy DB executor (active until Wave 6) |
+| `PRODUCTION/.claude/agents/executor-w2.md` | legacy portal executor (active until Wave 6) |
+| `PRODUCTION/.claude/agents/executor-w4.md` | legacy integration executor (active until Wave 6) |
+| `PRODUCTION/.claude/agents/governor.md` | legacy governor (active until Wave 6) |
+| `PRODUCTION/.claude/agents/verifier.md` | post-executor verifier (kept indefinitely) |
+| `PRODUCTION/.claude/commands/` | 15 commands (Run A: 7 UX + 3 core; Run B: 5 execution) |
+
 ---
 
 ## BOX 2 — Canonical Runtime (two repos, one box)
@@ -41,6 +64,31 @@ git branch -vv && git worktree list && git remote -v
 
 **Note:** `gt-factory-os/portal/` is a D1–D4 reference scaffold only — not the production portal.  
 **Note:** `PRODUCTION/portal/` is archived — do not use.
+
+### UX canon (PRODUCTION) and portal locked register (portal)
+
+UX doctrine and locked register are split by purpose:
+
+- **Doctrine** (PRODUCTION; produced by UX agents):
+  - `PRODUCTION/docs/phase8/ux/UX_RELEASE_GATE.md`
+  - `PRODUCTION/docs/phase8/ux/OPERATIONAL_FLOW_MAP.md`
+  - `PRODUCTION/docs/phase8/ux/BUTTON_AND_ACTION_RULES.md`
+  - `PRODUCTION/docs/phase8/ux/CONTENT_AND_MICROCOPY_GUIDE.md`
+  - `PRODUCTION/docs/phase8/ux/STATUS_EMPTY_ERROR_STATES.md`
+  - `PRODUCTION/docs/phase8/ux/ACCESSIBILITY_CHECKLIST.md`
+  - `PRODUCTION/docs/phase8/ux/DESIGN_SYSTEM_RULES.md`
+  - `PRODUCTION/docs/phase8/ux/SCREEN_SCORECARDS.md`
+  - `PRODUCTION/docs/phase8/ux/USER_ROLES_AND_CONTEXTS.md`
+  - `PRODUCTION/docs/phase8/ux/UX_OPERATING_PRINCIPLES.md`
+
+- **Locked register** (portal; only `ux-content-state-designer` writes):
+  - `gt-factory-os-portal/docs/portal_ux_standard.md`
+  - `gt-factory-os-portal/docs/portal_language_direction_audit.md`
+  - `gt-factory-os-portal/docs/ux/**handoff**.md` (per-surface packets)
+
+- **Decisions** (PRODUCTION; Tom-approved decision packets):
+  - `PRODUCTION/docs/phase8/decisions/FLOW-003-planning-blockers-p0-decision-packet.md`
+  - (additional decision packets as authored)
 
 ---
 

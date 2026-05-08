@@ -14,6 +14,69 @@
 
 ---
 
+## Phase 8 Run B + Run C status (2026-05-08)
+
+**Run B landed:** controlled production execution layer + active surface reduction plan.
+
+- 4 production execution agents created additively (alongside legacy executors):
+  - `backend-db-executor`
+  - `portal-production-executor`
+  - `integration-boundary-executor`
+  - `ops-docs-curator`
+- 5 conservative execution commands created:
+  - `/portal-pr-review`
+  - `/integration-dry-run`
+  - `/gate-close`
+  - `/incident-triage`
+  - `/docs-hygiene-check`
+- 5 dry-runs executed (DR-012 through DR-016) — all PASS at design level.
+- FLOW-003 P0 decision packet authored.
+- Active surface reduction plan documented; **no legacy agent archived**.
+- Authority doc patches proposed; hooks/settings/MCP plan written.
+
+**Run C landed (2026-05-08):** FLOW-003 closure + authority canonicalization.
+
+- FLOW-003 P0 — **CLOSED** via portal commit `9e2212e` (window2-portal-sandbox).
+  - `_lib/labelMaps.ts:check_po_substrate` → `"פתח כרטיס טיפול"` (Tom-approved CTA).
+  - `BlockerRow.tsx` Q4 cell now a tab-reachable `<button>` for `check_po_substrate`.
+  - `BlockerCard.tsx` mirrors the same on mobile with Tom-approved interim sub-line
+    `"שלח לצוות הפיתוח את ID החסם"`.
+  - New `DevTicketModal.tsx` (`role="dialog"` aria-modal, ESC closes, focus management,
+    clipboard copy + optional mailto: when `DEV_TEAM_EMAIL` configured).
+  - New `devTicketContent.ts` (payload helper).
+  - **No backend / DB / migration change.** Pure portal change.
+- DR-017 records the closure verdict.
+- 9 authority-doc patches applied (CLAUDE.md ×2, EXECUTION_POLICY.md ×3,
+  WORKSPACE_MAP.md ×2, CURRENT_STATE.md ×1 — this section, ACTIVE_NOW.md ×1).
+
+**Run C did NOT:** archive or modify any legacy agent, edit hooks/settings/MCP,
+push to any remote, deploy, flip any frozen flag, or change any non-FLOW-003 portal
+surface.
+
+**Open follow-ups (P1 polish, not blockers):** Q5 fallback chip on `/planning/blockers`,
+optional `DEV_TEAM_EMAIL` configuration, automated test coverage for the modal flow,
+INTER-001 Cancel-PO confirmation polish, A11Y-001 form-label gap on waste-adjustments.
+
+## UX release gate (2026-05-08, post-Run-C)
+
+**Aggregate verdict:** **CONDITIONAL_SHIP** (was HOLD pre-Run-C).
+
+**Per-surface verdicts:**
+- `/(ops)/stock/waste-adjustments` — CONDITIONAL_SHIP (A11Y-001 form-label gap pending; A11Y-002 cleared)
+- `/(ops)/stock/goods-receipt` — CONDITIONAL_SHIP
+- `/(po)/purchase-orders/[po_id]` — CONDITIONAL_SHIP (INTER-001 confirmed P1)
+- `/planning/blockers` — **CONDITIONAL_SHIP** (FLOW-003 closed in Run C; P1 polish remains)
+- `/(ops)/stock/physical-count` — NOT_AUDITED at source level
+
+Aggregate gate is not yet SHIP because:
+- Physical count surface is still NOT_AUDITED at source level.
+- Multiple surfaces carry P1 polish items.
+- `DEV_TEAM_EMAIL` is not yet configured (clipboard action remains universal).
+
+Evidence: `PRODUCTION/docs/phase8/dry-runs/DR-017-flow-003-closure-and-ux-release-gate-recheck.md`.
+
+---
+
 ## Active corridor — Planning Corridor v1 (baseline 2026-04-30)
 
 **Parallel corridor 2 — Shopify External Boundary v2 (in flight 2026-05-07):** plan authored at `gt-factory-os/docs/superpowers/plans/2026-05-07-shopify-lionwheel-external-boundary-v2.md`. **Phase 0 CLOSED 2026-05-07T11:55Z** — kill switch live (`SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED=false`); v1 blind `inventory_levels/set.json available=N` writes blocked end-to-end (10K+/day mutations stopped); migration `0152_shopify_fg_sync_history_disabled_status.sql` applied to live DB (CHECK expansion); evidence at `gt-factory-os/docs/superpowers/evidence/2026-05-07-shopify-phase0-bleeding-stopped.md` (PRs #6/#7/#8 merged). **Phase 1 CLOSED 2026-05-07T13:00:55Z** — 4 contracts + 3 W1 specs landed (PR #9, commit `e123276`): `shopify_fg_sync_contract_v2.md` (17 sections, 9 readiness gates G-1..G-9, blind-available-set forbidden, `ignoreCompareQuantity` restricted to repair-command-only); `shopify_fulfillment_bridge_contract.md` (15 sections, disjoint trigger from FG sync, idempotency `lw_fulfillment:<lw_task_id>`); `shopify_movement_policy.md` (live-DB enumeration of 18 movement_type values, default UNDECIDED for unknowns); `shopify_v2_phase2_implementation_plan.md` (full 15-scenario test matrix with given/when/then). v1 SUPERSEDED banner. Verifier PASS 10/10. **Phase 2+3+4 in flight** under Tom's 2026-05-07 end-to-end-with-hard-stop directive: W1 schema migrations (≥0153) + W4 pure modules in parallel, then W4 wiring + shadow logging. **Hard stop:** no live GraphQL inventory mutation, no live fulfillment bridge enablement until Phase 5 readiness report and explicit Tom approval. 13 historical `shopify_drift` exceptions remain untouched (REPORT/TRIAGE ONLY).

@@ -2,7 +2,13 @@
 
 > **Authority:** ephemeral operator context. **Not authoritative on anything.** `CURRENT_STATE.md` is the sole authority on gate status, completion range, critical path, and open gaps. On any disagreement, defer to `CURRENT_STATE.md`.
 
-**Last refreshed:** 2026-05-08 (Phase 8 Wave 1 — DR-003 source-truth audit; portal tip advanced to 9605553).
+**Last refreshed:** 2026-05-08 (Phase 8 Run C — FLOW-003 closure landed; portal tip advanced to `9e2212e`; aggregate UX gate HOLD → CONDITIONAL_SHIP).
+
+---
+
+## Phase 8 Run C — landed
+
+FLOW-003 P0 closed via `9e2212e` on `gt-factory-os-portal/main` (in-app ticket CTA on `/planning/blockers`; no backend / DB change). DR-017 records closure verdict. 9 authority-doc patches applied (CLAUDE.md, EXECUTION_POLICY.md, WORKSPACE_MAP.md, CURRENT_STATE.md, ACTIVE_NOW.md). No legacy agents touched. No hooks/settings/MCP changes. No remote push. No deploy. PRODUCTION remote still deferred.
 
 ---
 
@@ -27,7 +33,7 @@ Tranche 4+ (Forecast Workspace) queued; later cycles (cycles 7–8 closure incl.
 | Item | Value |
 |------|-------|
 | RUNTIME_READY signals | 35 (latest: GoodsReceipt-FromPO 2026-05-02T19:30Z) |
-| W2 portal tip | `9605553` (fix: idb DB_VERSION + VersionError recovery) |
+| W2 portal tip | `9e2212e` (FLOW-003 closure — actionable in-app ticket CTA; Run C 2026-05-08) |
 | Backend tip | `a6c80ec` (PR #21 structure consolidation; last code commit: `bcb2d0f` GE-D) |
 | Railway | healthy |
 | Vercel (portal) | ready — `gt-factory-os-portal.vercel.app` |
