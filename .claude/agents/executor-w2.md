@@ -43,7 +43,7 @@ Allowed, scoped to the one named form only:
 
 Forbidden in Mode B:
 - Authoring for any form other than the named form. A new `RUNTIME_READY(other_form)` is required.
-- Copying files from `window2-portal-sandbox/` into canonical paths. Sandbox is for reference only. Re-type concepts into canonical primitives; never file-copy.
+- Copying files from any *other* sandbox surface into `window2-portal-sandbox/`. `window2-portal-sandbox/` IS the canonical portal working tree per WORKSPACE_MAP.md (the folder name is historical — "sandbox" is a misnomer; this is the live production portal). The rule against sandbox-to-canonical promotion still applies to any other experimental sandbox; re-type concepts into canonical primitives, never literal file-copy.
 - Inventing backend contracts. If a read-model hook or write path needs a contract value not in the contract pack, emit `assumption_failure`.
 
 Exit Mode B when local portal E2E is green for the form. Return to Mode A.

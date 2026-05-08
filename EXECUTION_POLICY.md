@@ -407,11 +407,6 @@ A flag flip without all four prerequisites (Tom written approval, dry-run eviden
 
 ---
 
-### Future Phase 8 lane-rename mapping note (informational)
+### Phase 8 lane-rename: completed (Run B, 2026-05-08)
 
-Phase 8 (revision 2) plans to introduce production-named replacements for the build-era executor agents:
-- `executor-w1` → `backend-db-executor`
-- `executor-w2` → `portal-production-executor`
-- `executor-w4` → `integration-boundary-executor`
-
-The rename is **not** applied in Wave 0. It will land in Phase 8 Waves 3 + 5 (add-new-alongside, then refit EXECUTION_POLICY.md). Until then, all references in this file to `executor-w1` / `executor-w2` / `executor-w4` remain authoritative for the existing agent files. After Phase 8 Wave 5, this section will be expanded with a Legacy mapping table.
+The production-named replacement agents were added alongside the legacy executors in Phase 8 Run B (2026-05-08). Both legacy and new agents are active and dispatchable per the §Phase 8 production agent mapping table above. Wave 6 evidence-based deprecation of legacy agents is governed by `PRODUCTION/docs/phase8/deprecation/ACTIVE_SURFACE_REDUCTION_PLAN.md`. The legacy mapping is the table in §Phase 8 production agent mapping; no separate Legacy mapping table is needed.

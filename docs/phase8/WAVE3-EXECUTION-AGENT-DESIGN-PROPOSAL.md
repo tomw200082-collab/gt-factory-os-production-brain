@@ -1,9 +1,9 @@
 # Wave 3 — Execution Agent Design Proposal
 
-**Status:** PROPOSAL ONLY — no agents created; no files written to agent directory.
+**Status:** IMPLEMENTED — agents created in Phase 8 Run B (2026-05-08, same day as proposal). Live agent files: `PRODUCTION/.claude/agents/backend-db-executor.md`, `portal-production-executor.md`, `integration-boundary-executor.md`, `ops-docs-curator.md`. This document is now historical design record only.
 **Date:** 2026-05-08
 **Supersedes:** nothing (new)
-**Authorizes:** nothing — Tom must explicitly approve Wave 3 implementation before any agent file is created.
+**Authorizes:** nothing further — implementation complete in Run B; Wave 6 deprecation of legacy executors is governed by `PRODUCTION/docs/phase8/deprecation/ACTIVE_SURFACE_REDUCTION_PLAN.md`.
 
 ---
 

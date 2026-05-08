@@ -63,5 +63,5 @@ Tranche 4+ (Forecast Workspace) queued; later cycles (cycles 7–8 closure incl.
 
 ## Commit tips
 
-- Portal (`window2-portal-sandbox` / `gt-factory-os-portal`): `9605553`
+- Portal (`window2-portal-sandbox` / `gt-factory-os-portal`): `9e2212e` (FLOW-003 closure — Phase 8 Run C, 2026-05-08; verified via `git log -1 main` on `window2-portal-sandbox` during Run F Wave 1 reconciliation)
 - Backend (`gt-factory-os/main`): `a6c80ec` (last code commit: `bcb2d0f`)
