@@ -1,355 +1,133 @@
-# GT Factory OS — Durable Contract
+# GT Factory OS — Boot Kernel
 
-> **Authority layer:** durable contract. This file is **thin on purpose**.
-> Mission, non-negotiables, locked architecture and source-of-truth boundaries, locked scope rules, high-level gate model, forbidden assumptions. **No current state. No execution policy. No transient context.**
+> **Authority layer:** boot kernel. Thinnest authority document. Loaded first by every agent.
+> Contains only locked decisions, non-negotiables, boot sequence, source-of-truth tiebreakers, stop conditions, forbidden assumptions, and pointers to deeper docs.
+> No execution policy. No schema details. No integration semantics. No transient state. No history.
 >
-> **Sibling docs (in this directory):**
-> - `CURRENT_STATE.md` — volatile runtime status (completion range, gate status, critical path, open gaps, failure modes).
-> - `EXECUTION_POLICY.md` — operational governance. Mirrors the `factory-os-autonomous-builder` skill.
-> - `ACTIVE_NOW.md` — short, fast-moving operator context.
+> **Pre-rewrite full text** (Phase 8 Run F, 2026-05-08): `docs/archive/CLAUDE.md.pre-kernel-rewrite-2026-05-08.md`.
+> **Full locked-decision text:** `docs/decisions/LOCKED_DECISIONS.md`.
+> **Full schema/integration guidance:** `docs/contracts/SCHEMA_GUIDANCE.md`.
 >
-> **Authority rules:**
-> 1. If this file conflicts with any sibling, **this file wins** on locked decisions. Sibling files cannot relax a locked non-negotiable.
-> 2. **`CURRENT_STATE.md` is the only authority for live gate status, completion range, active critical path, and major open gaps.** Every other file (including memory files, ACTIVE_NOW.md, and this file) must **point** to it, never **restate** it.
+> **Authority hierarchy (locked):**
+> 1. `CLAUDE.md` (this file) — wins on every conflict on locked decisions.
+> 2. `EXECUTION_POLICY.md` — operating law (lanes, modes, signals, retry, approvals, frozen flags).
+> 3. `CURRENT_STATE.md` — sole authority on live gate status, completion range, active critical path, open gaps.
+> 4. `.claude/state/runtime_ready.json` + `.claude/state/active_mode.json` — sole authority on signals and W2 mode.
+> 5. `ACTIVE_NOW.md` — ephemeral context only; never overrides above.
+> 6. Memory files — informational only; verify against current files before relying.
+> 7. Agent / command files — operational defaults; may be overridden by policy.
+>
+> **Sibling docs:**
+> `EXECUTION_POLICY.md` · `CURRENT_STATE.md` · `ACTIVE_NOW.md` · `WORKSPACE_MAP.md` · `AI_BRAIN_ROUTER.md` · `AGENT_REGISTRY.md` · `COMMAND_REGISTRY.md` · `VERDICT_GLOSSARY.md` · `AGENT_TEMPLATE.md` · `MODULE_TEMPLATE.md` · `docs/decisions/LOCKED_DECISIONS.md` · `docs/contracts/SCHEMA_GUIDANCE.md`.
 
 ---
 
-## Mission
-Rebuild GT Factory OS from an Excel-centered operational workbook into a production-grade operational platform for GT Everyday — a small beverage factory in Israel producing cocktails, teas, smoothies, and margaritas.
+## Project identity
+GT Factory OS is a narrow, high-trust factory operations platform for GT Everyday — a small beverage factory in Israel (cocktails, teas, smoothies, margaritas). It is not an ERP. It succeeds when stock truth is trusted, operator workflows beat the workbook, planning recommendations are reproducible and auditable, and Excel stops carrying operational risk. The workbook `GT_Factory_OS.xlsx` is a current-state source only — do not preserve its structure.
 
-This project is a system rebuild, not an Excel cleanup.
+**Tiebreakers:** reliability over elegance; trust over scope; simpler path over irreversible complexity.
 
-The rebuilt platform must deliver:
-- trusted stock truth
-- simple operator workflows
-- clean source-of-truth boundaries
-- reliable purchase and production recommendations
-- minimal Excel dependence
-- cloud-first runtime with on-prem read-only fallback
+## Workspace
+- **PRODUCTION/** — AI brain (this folder). Governance, state, policy, agents, commands, decisions, contracts. No runtime code.
+- **gt-factory-os/** (`C:/Users/tomw2/Projects/gt-factory-os/`) — backend (Fastify, Postgres, migrations, jobs, integrations).
+- **gt-factory-os-portal/** (working tree: `window2-portal-sandbox/` — folder name historical, this IS the canonical portal) — Next.js 15 portal.
+- **archive/** — historical only. Never cite as active truth.
+- Full geography: `WORKSPACE_MAP.md`.
 
-The workbook `GT_Factory_OS.xlsx` is a **current-state source only**. Do not preserve its structure.
+## Boot sequence (every session)
+1. Read this file (locked decisions + tiebreakers + stop conditions).
+2. Read `CURRENT_STATE.md` (live gate status + critical path + open gaps).
+3. Read `EXECUTION_POLICY.md` (operating law).
+4. Read `ACTIVE_NOW.md` (active lanes — defer to `CURRENT_STATE.md` on any conflict).
+5. Consult `AI_BRAIN_ROUTER.md` to classify the incoming request and pick lane / agent / command.
+6. Read only the agent / command files relevant to the routed lane.
+
+## Source-of-truth (locked tiebreakers)
+
+| Domain | Authority |
+|---|---|
+| Master data after seed import | Postgres (`gt-factory-os` core schema) |
+| Stock events + history | `stock_ledger` (append-only; corrections via reversal rows; never UPDATE/DELETE) |
+| Stock projections | `balance_anchors` + ledger projection table (rebuild-verified nightly) |
+| Open orders + shipment state | LionWheel mirror |
+| Shopify FG inventory | Sync target only — platform wins on disagreement |
+| Supplier invoice evidence | Green Invoice (not active prices alone — validation rules required) |
+| Workbook | Transitional only — never long-term truth; no round-trip ever |
+| Live gate status / completion / critical path | `CURRENT_STATE.md` (sole) |
+| RUNTIME_READY signals | `.claude/state/runtime_ready.json` (sole) |
+| W2 mode | `.claude/state/active_mode.json` (sole) |
 
 ## Absolute non-negotiables
-1. Stock truth ships before planning cutover.
-2. Excel is transitional only. It is not the long-term system brain.
-3. Forms and integrations create events.
-4. Postgres stores truth.
-5. The ledger stores immutable history.
-6. Projections compute current state.
-7. The planning engine computes recommendations.
-8. Dashboard and Excel consume curated read models only.
-9. No Excel round-trip ever.
-10. Prefer the simplest architecture that will not break under daily factory use.
+1. **Stock truth ships before planning cutover.**
+2. Forms and integrations create events; Postgres stores truth; ledger stores immutable history; projections compute current state; planning engine computes recommendations.
+3. Dashboard and Excel consume curated read models only. **No Excel round-trip ever.**
+4. Excel is transitional only — not the long-term system brain.
+5. Prefer the simplest architecture that survives daily factory use.
 
-## Locked decisions
+Full locked-decision text (UX/UI doctrine, deployment, tech stack, auth/roles, UI language, ledger semantics, stock model, RM batch/expiry, orders/integrations, LionWheel pickup→ledger decrement trigger, Excel rules, forecast, production reporting v1, counting v1, receipts/POs, workflow rules, testing posture, final framing): `docs/decisions/LOCKED_DECISIONS.md`. Schema, BOM modeling, audit semantics, integration guidance, security, observability: `docs/contracts/SCHEMA_GUIDANCE.md`.
 
-### UX / UI doctrine
+## Router / lane model (compact)
 
-UX/UI is a first-class production discipline, not a polish layer. The portal is the
-operator workflow and the operator workflow is half the platform. The following is locked:
+Every dispatch consults `AI_BRAIN_ROUTER.md` to classify input → lane → agent → command → permissions → evidence.
 
-- The five UX agents (`ux-flow-architect`, `interaction-design-specialist`,
-  `visual-system-designer`, `ux-content-state-designer`, `accessibility-usability-auditor`)
-  are read-only auditors. They do not write portal source.
-- `portal_ux_standard.md` (in the portal repo) is the locked register; only
-  `ux-content-state-designer` may write it.
-- A surface with an open P0 finding from `/ux-release-gate` may not ship.
-- Hebrew operator copy is per-string Tom-pinned; no surface-wide approval is implied.
-- Every user-visible portal change requires a UX handoff packet before merge.
+- **Max 4 simultaneous executor lanes:** `backend-db`, `portal`, `integration`, `docs`.
+- **Read-only (do not count as a lane, always-on or on-demand):** `governance`, `release-gate`, `source-of-truth`, `ux-audit`.
+- **Production agents (Phase 8 Run B):** `backend-db-executor`, `portal-production-executor`, `integration-boundary-executor`, `ops-docs-curator`, `factory-os-governor`, `release-verifier`, `source-of-truth-auditor`, plus 5 UX agents. Legacy `executor-w1/w2/w4`, `governor`, `verifier` remain dispatchable until Wave 6 deprecation per `docs/phase8/deprecation/ACTIVE_SURFACE_REDUCTION_PLAN.md`. Full inventory: `AGENT_REGISTRY.md`. Full command set: `COMMAND_REGISTRY.md`. Verdict semantics: `VERDICT_GLOSSARY.md`.
 
-The UX gate runs in parallel with the technical gate; both must pass.
+## Write boundaries
 
-### Deployment
-- Cloud primary
-- On-prem Linux replica for read-only dashboard fallback only
-- No writable on-prem fallback
-- Outage fallback for writes = paper forms + back-entry if outage is prolonged
+- Each agent's allowed-paths declaration is exhaustive — paths not listed cannot be written.
+- `CLAUDE.md` — Tom is sole writer.
+- Other authority docs (EXECUTION_POLICY.md, CURRENT_STATE.md, WORKSPACE_MAP.md, ACTIVE_NOW.md, AI_BRAIN_ROUTER.md) — `ops-docs-curator` writes under `factory-os-governor` approval.
+- `.claude/state/*.json` — only emitting executors append; never overwrite.
+- Frozen flags (`LIONWHEEL_FG_OUT_BRIDGE_ENABLED`, `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED`) — `false` until Tom written approval + dry-run + ≥24h soak + RUNTIME_READY signal.
+- `git push`, merge, deploy — Tom only; no autonomous push under any circumstance (Phase 8 Run F, 2026-05-08, supersedes any contradicting memory).
 
-### Tech stack
-- Database/platform: Supabase managed Postgres
-- API: Node 20 + Fastify + Zod + Kysely
-- Portal: Next.js 15 App Router + Tailwind + shadcn/ui + TanStack Query
-- Language: TypeScript across app code
+## Stop conditions (any agent halts)
 
-### Auth and roles
-- Supabase magic-link email auth
-- No passwords
-- No 2FA in v1
-- Roles: `operator`, `planner`, `admin`, `viewer`
+1. A frozen flag would be flipped without Tom written approval.
+2. A locked decision in this file (or `LOCKED_DECISIONS.md`) would be violated.
+3. An artifact cannot be verified (no path, no paste, only summary).
+4. `contract_failure` or `assumption_failure` detected.
+5. PRODUCTION git baseline at risk (uncommitted authority docs, `.gitignore` bypass, `git add -A` / `git add .`).
+6. A change would touch product code outside an explicitly authorized lane.
 
-### UI language
-- Developer-facing artifacts (code, comments, tests, docs, migration files, API field names, internal contracts): English only.
-- GT operator/planner/admin-facing workflow UI (form labels, buttons, banners, status text, empty-state messages, column headers, and any copy a factory user reads during daily operations): plain operational Hebrew where Tom explicitly requires it. Tom's per-surface Hebrew copy register is the authoritative source; if no register entry exists for a surface, English is acceptable.
-- Hebrew appears in data values (supplier names, contacts, payment terms, addresses) regardless of the above rule.
-- No full RTL layout in v1.
+In any of the above: **HALT, emit signal, route to `factory-os-governor`. Never silently continue.**
 
-### Ledger semantics
-- `event_at` is authoritative for balance math
-- `posted_at` is for idempotency and audit
-- Backdating is allowed
-- Ledger is append-only; corrections by reversal rows, never delete/update in production
+## Evidence standard
 
-### Stock model
-- `balance_anchors` is separate from `stock_ledger`
-- Current stock = anchors + posted ledger deltas since anchor
-- Do **not** implement `v_live_stock` as a Postgres materialized view with assumed incremental refresh
-- Use a transactionally maintained projection table (or equivalent current-balance read model) plus a nightly rebuild-verification job
+- Tests must report N/N counts.
+- Stock projection must equal rebuild-from-ledger within tolerance.
+- RUNTIME_READY emitted only after every check is green.
+- "It should work" is not evidence.
+- Every PASS includes: files changed, tests run, contracts referenced, signals emitted, stop conditions tripped, Tom approvals required, rollback plan, next handoff.
 
-### RM batch and expiry
-- Schema may support RM batch fields for future use
-- v1 operational workflows and projections **ignore RM batch**
-- **No expiry logic in v1.** No FEFO, QA hold, or expiry alerts.
+## Future module rule
 
-### Orders and integrations
-- LionWheel is the operational source for open orders and shipments
-- Planning demand = forecast + open orders
-- System does not own customer orders
-- Shopify is a finished-goods stock sync boundary; if Shopify and the platform disagree, the platform is authoritative
-- Green Invoice supplies supplier invoice evidence and price history
-- Active supplier price auto-updates only when mapping is unambiguous and the price change is within threshold
+A new module — CRM, lead intake, sales workflow, marketing automation, finance, or any operating-system surface beyond factory-os — cannot be built until `MODULE_TEMPLATE.md` is filled in for that module and Tom approves the declaration in writing. Until then, the router returns `verdict: NEW_MODULE_REQUIRED` for any input that requests work on the undeclared module. Per-module lane isolation: each module's agents have allowed-paths scoped to the module; module agents cannot touch factory-os core schema.
 
-### LionWheel pickup → ledger decrement (Tom-locked 2026-05-07, ratifies decision #46 anchor)
-- **Trigger is delivery confirmation, NOT pickup_at.** A `FG_OUT_PICK` ledger row is written ONLY when a LionWheel task transitions to `status IN ('ROUNDTRIP_DELIVERED','COMPLETED')` — i.e. the driver has confirmed delivery to the customer.
-- **Rationale:** Factory OS on-hand represents physical inventory at the factory **before handover**. A task at `ASSIGNED`/`ACTIVE`/`IN_TRANSFER` means goods have left the warehouse but have not been delivered to the customer; per the operational model the on-hand is unchanged until handover. Shopify "available" already accounts for committed open orders; the platform's on-hand IS the physical-at-factory number.
-- **Quantity is `lw_qty_picked` from `/tasks/show/<id>` (enriched on terminal status), never `lw_qty_ordered`.** If `lw_qty_picked` is NULL, no ledger row is written and an exception is emitted; the chain re-tries on next poll.
-- **Idempotency key:** `lw_fg_out_pick:{lw_task_id}:{lw_order_item_id}` (no transition counter). `ON CONFLICT (idempotency_key) DO NOTHING` blocks replays.
-- **Reversal:** if a delivered task is later corrected to non-delivered (cancellation, return, dispute), append a `FG_OUT_PICK_REVERSAL` row; never UPDATE/DELETE the original.
-- **Pre-anchor guard (§5):** if `event_at <= latest_anchor_at` for the item, skip the ledger write and emit `lw_pick_pre_anchor_skipped` exception. The count anchor already reflects pre-anchor outflows; double-decrementing them is forbidden.
-- **Implementation: `api/src/integrations/lionwheel/reconciliation.ts:reconcileAfterPoll` is the canonical implementation.** Any new chain function attempting a different trigger (e.g. `pickup_at <= now()`) is **forbidden** and must be reverted.
-- **Forbidden movement_types for v1 LionWheel chain:** `LIONWHEEL_PICK`, `LIONWHEEL_UNPICK`, `LIONWHEEL_PICK_ADJUSTMENT`. These were briefly added by migration 0149 in support of an alternative trigger that was rejected after live ratification. Migration 0149 retains the values to avoid breaking historical rows from the cleanup window, but **no production code may emit them**. Use `FG_OUT_PICK` and `FG_OUT_PICK_REVERSAL` only.
-- **Bridge gate `LIONWHEEL_FG_OUT_BRIDGE_ENABLED`:** must remain `false` until the cron→Node bridge is built, the chain has soaked clean for ≥24h, and Tom explicitly authorizes the flip in writing.
+## Forbidden assumptions
 
-### Excel
-- Excel is transitional only
-- **Allowed:** one-time seed import for masters; nightly values-only export; temporary sanity review during transition
-- **Forbidden:** workflow execution; stock truth; planning truth; integration logic; operator authoring; round-trip editing
-
-### Forecast
-- Owned by Tom and Alex
-- Monthly first, then weekly, then daily operationally
-- 8-week horizon
-- Versioned; freeze window applies
-
-### Production reporting v1
-- Operator reports output quantity + scrap quantity + notes
-- System computes standard consumption from the **two-head BOM**:
-  - **PACK head** (`items.primary_bom_head_id` → `bom_kind='PACK'` or `'REPACK'`): packaging components consumed proportionally to (output + scrap).
-  - **BASE head** (`items.base_bom_head_id` → `bom_kind='BASE'`, when present): liquid raw-material components consumed proportionally to total base liters required, derived from the PACK BOM's single `BASE_BOM` line (`component_ref_type='BASE_BOM'`, `final_component_id=NULL`, `final_component_qty=`liters per pack output).
-  - REPACK and pure-pack items have no BASE head — single-head explosion applies.
-- Both BOM versions (PACK and BASE-when-applicable) are **pinned at form-open time** and **rejected on stale submission** (409 `STALE_BOM_VERSION` for PACK / `STALE_BASE_BOM_VERSION` for BASE).
-- All consumption rows for a single submission are written to `stock_ledger` inside one transaction with the form's `idempotency_key`. Per-row idempotency keys carry the source (`pack` / `base`) and `component_id` so pack and base never collide: `PA:<idem>:CONSUME:<source>:<component_id>`.
-- `related_bom_version_id` on each `stock_ledger` row is source-correct (PACK lines → pack version; BASE lines → base version).
-- Do **not** collect manual per-component actual consumption in v1.
-
-### Counting v1
-- Full monthly count is the base process
-- Small discrepancies auto-post; large discrepancies require approval
-- Count uses start/submit freeze semantics
-- Do not overbuild cycle counting in v1
-
-### Receipts and POs
-- Partial receipts are supported in v1
-- Purchase flow: system recommends → planner reviews → planner approves → user creates PO via workflow → PO becomes OPEN → receipts may attach
-- Goods Receipt must still allow PO-less receipt when no pre-entered PO exists
-- Supplier returns are **not** in v1
-- Manual PO creation is permitted in v1 as a guarded planner/admin exception path. A planner or admin may author a PO directly without an approved purchase recommendation, but must supply supplier, canonical line items where available, quantities, expected delivery date, and a reason. Source = `manual` is recorded; `source_recommendation_id` / `source_run_id` remain NULL; no stock movement is posted; no Goods Receipt is created automatically. Goods Receipt can later reference the manual PO normally.
-
-## Core architectural model
-The system is designed as these layers:
-
-1. **Canonical master data** — items, components, BOM (head/version/lines), suppliers, supplier_items, planning policy, UOM tables
-2. **Operational event intake** — forms, planning screens, integrations, admin imports
-3. **Validation and policy gate** — required fields, idempotency, duplicate detection, approval thresholds, UOM validation, permission checks
-4. **Canonical ledger** — append-only stock ledger; one source of stock history; reversal rows only
-5. **Projection layer** — current stock projection, open orders mirror views, open supply views, readiness and exception projections
-6. **Planning engine** — SQL-first; writes to `planning_runs` and `planning_run_lines`; never mutates masters or ledger
-7. **Portal** — operator/planner/admin workflows; role-gated routes
-8. **Dashboard** — read-only control tower; no editing
-9. **Jobs and integrations** — LionWheel pull, planning recompute, nightly exports, integrity checks, digest emails
-
-## Source-of-truth map
-
-- **Database is authoritative for:** master data after seed import; stock events; stock projections; forecast versions; planning runs; purchase recommendations; production recommendations; exceptions; audit trails
-- **LionWheel is authoritative for:** open orders; shipment state
-- **Shopify is authoritative for:** nothing operationally critical. Sync target and commercial boundary only. Platform wins on disagreement.
-- **Green Invoice is authoritative for:** supplier invoice evidence. Not active prices by itself without validation rules.
-- **Excel is authoritative for:** nothing long-term. Only transitional seed import and read-only exports.
-
-### Production agent architecture (Phase 8)
-
-Production execution is performed by four conservative agents:
-- `backend-db-executor` — backend API, DB, migrations, jobs (replaces `executor-w1` after Wave 6).
-- `portal-production-executor` — Next.js portal authoring (replaces `executor-w2` after Wave 6).
-- `integration-boundary-executor` — LionWheel / Shopify / Green Invoice / Edge Functions (replaces `executor-w4` after Wave 6).
-- `ops-docs-curator` — docs hygiene + archive (new role; no executor-era predecessor).
-
-Governance is performed by:
-- `factory-os-governor` — go/no-go (replaces `governor.md` after Wave 6).
-- `release-verifier` — pre-merge / pre-deploy verification.
-- `source-of-truth-auditor` — cross-doc drift classification.
-- `verifier.md` — post-executor PASS/FAIL (kept indefinitely).
-
-The five UX agents listed in §UX / UI doctrine round out the operating layer. All agents
-follow the source-of-truth hierarchy already locked in this document.
-
-## Input-source map
-
-- **Forms (human-reported facts):** Goods Receipt; Waste / Adjustment; Physical Count; Production Actual (Phase 3); PO creation workflow
-- **Planning screens (structured judgment):** Forecast planning workspace; Purchase recommendation review; Production recommendation review
-- **Integrations:** LionWheel orders and shipments; Shopify FG stock sync; Green Invoice invoice/price evidence
-- **Admin / bulk import:** item master; component master; BOM maintenance; supplier maintenance; planning policy
-- **CLI / scripts:** initial imports; backfills; repair scripts; migration scripts; one-off reconciliation
-- **Explicitly forbidden as runtime dependency:** MCP is not a runtime input channel. Claude Code tooling must not become part of the live operational path.
-
-## Gate model (high level)
-
-No gate may run partially in production while the previous gate is unverified. Each gate owns its own exit evidence.
-
-1. **Gate 1 — Alignment / Contracts** — architecture map, schema map, portal module map, form definitions, integration contracts, migration phases, validation gates, rollback logic. Exit: artifacts internally consistent; no implementation begins before exit.
-2. **Gate 2 — Foundation / Masters / Admin** — schema foundation, auth + roles, master-data import, admin CRUD, nightly export + jobs monitor baseline. Exit: masters round-trip through API; nightly export runs green; jobs monitor records every scheduled run.
-3. **Gate 3 — Stock Truth** — ledger, anchors, stock projection, Goods Receipt, Waste / Adjustment, Physical Count, parity / rebuild verification. Exit: projection equals rebuild-from-ledger within tolerance; idempotency tests pass; count-freeze race tests pass; minimal Exceptions Inbox in place. **Stock truth must ship before any planning cutover.**
-4. **Gate 4 — Operational Mirrors / Forecasting** — LionWheel mirror, forecast planning screen, shipment / open-order context, freshness checks. Exit: LionWheel mirror reconciles end-to-end including split/merge/cancel; forecast versioning + freeze enforced; freshness exceptions emit on stale integration.
-5. **Gate 5 — Planning / Recommendations** — planning engine, purchase recommendations, production recommendations, Production Actual, cost rollup. Exit: planning runs reproducible from inputs; recommendations require human approval before becoming POs; Production Actual posts BOM-derived consumption against pinned BOM version; cost rollup matches manual reconciliation on a known fixture.
-
-## Recommended v1 scope
-Ship only the narrow platform needed to create trust.
-
-- **Phase 0:** database schema foundation; auth and roles; admin CRUD for masters; one-time master import; nightly Excel export; jobs monitor
-- **Phase 1:** stock ledger; anchors; stock projection; Goods Receipt; Waste / Adjustment; Physical Count; minimal Exceptions Inbox; minimal Dashboard; parity and rebuild verification gates
-- **Phase 2:** LionWheel mirror; Forecast Planning Screen; shipment handling if needed; data freshness checks
-- **Phase 3:** planning engine; recommendations; Production Actual form; cost rollup
-
-Do not expand v1 into full WMS, full procurement, FEFO, location/bin tracking, customer pricing, or finance write-back.
-
-## Rules for key workflows
-
-### Goods Receipt
-- May attach to open PO
-- Must allow PO-less receipt
-- Supports partial receipt
-- Creates stock-affecting event(s)
-- Must be idempotent
-
-### Physical Count
-- Blind count by default
-- Snapshot projected quantity at form open
-- Compute delta against that snapshot at submit
-- Small discrepancies auto-post; large discrepancies go to approval
-- Approved count may create a new anchor
-
-### Waste / Adjustment
-- Negative adjustments allowed per policy
-- Positive "found stock" adjustments require stronger control
-- Use approval rules, not free editing
-
-### Production Actual
-- Simplified v1 model only: output + scrap + notes
-- Compute consumption from pinned BOM version
-- Never resolve BOM version at submit time if already pinned earlier
-
-### PO workflow
-- Purchase recommendations are produced only by the planning engine. The engine never creates purchase orders autonomously.
-- **Recommendation path (preferred):** Planning run → purchase recommendations → planner reviews → planner approves → convert to PO → PO OPEN → receipts attach. This is the standard daily flow.
-- **Manual path (guarded exception):** A planner or admin may create a PO directly from the PO list without an approved recommendation. Required fields: supplier, line items (component or item), quantities, expected delivery date, and a reason. The PO is created in OPEN status. `source_type = 'manual'` is recorded. No stock is posted at creation. GR may reference the PO normally. Operator and viewer roles cannot create POs via either path.
-- **No autonomous ordering** means no engine- or system-created POs without explicit human action. It does not forbid controlled manual PO authoring by planner/admin.
-
-## Schema guidance
-
-### Primary keys
-- Legacy text IDs as PKs for business masters where stable and meaningful
-- UUIDs for system-generated records, forms, runs, approvals, history
-
-### Precision
-- Exact numeric types, never float
-- High-precision numeric standard for quantities, ratios, UOM conversions
-- Separate lower-scale money standard for money
-- Prefer domains to keep quantity/money semantics consistent
-
-### BOM modeling
-- Versioned structure: `bom_head` / `bom_version` / `bom_lines`
-- `items` points to a BOM head / active version model, never to ad hoc version fields
-
-### Purchased finished goods
-- Do not duplicate `BOUGHT_FINISHED` items into components
-- `items.supply_method` enum (exact legacy values, not normalized): `('MANUFACTURED','BOUGHT_FINISHED','REPACK')`
-  - `MANUFACTURED` — produced from a BOM
-  - `BOUGHT_FINISHED` — resold as-is; direct supplier mapping via `supplier_items.item_id`
-  - `REPACK` — produced by repackaging an input component; supplier mapping lives on the input component, not on the repack output
-
-### Audit semantics
-For important human actions, preserve both a user foreign key and a display-name snapshot.
-
-## Integration guidance
-
-### LionWheel
-- Mirror internally
-- Never compute planning directly from live API calls
-- Use polling plus webhooks where available
-- Track snapshot runs and retirement semantics
-- Treat split/merge and cancellation handling as first-class reconciliation concerns
-
-### Shopify
-- Sync FG stock from the rebuilt system to Shopify
-- Reconcile periodically
-- Exception-based review for unexplained drift
-
-### Green Invoice
-- Feed `price_history`
-- Do not auto-create new components from invoice lines
-- Do not auto-update active prices unless mapping quality and threshold rules pass
-- Net-of-VAT cost semantics
-
-## Security and access rules
-- Core tables live in a private schema
-- Browser does not talk directly to core operational tables
-- API is the permission boundary
-- Selective RLS only where it actually helps
-- Protect audit tables and ledger from update/delete
-- Prefer soft-delete / archive for masters
-
-## Observability and operations
-- Keep a jobs run log
-- Track latest successful run for every scheduled job
-- Emit exceptions for stale integrations and failed jobs
-- Global break-glass mode that makes the system read-only and pauses jobs
-- Prefer clear failure over silent drift
-
-## Testing posture
-Before implementation is accepted, require:
-- parity tests for stock projection
-- idempotency tests for forms
-- count-freeze race tests
-- rebuild-from-ledger verification
-- integration smoke tests
-- form E2E tests on critical golden paths
-
-Do not rely on ad hoc manual checking as the primary confidence mechanism.
-
-## What Claude must not do
-- Do not preserve workbook structure by default
-- Do not assume Excel remains editable
-- Do not build a second writable fallback system
-- Do not overbuild offline/PWA features in v1
-- Do not introduce a second planning service in v1
-- Do not model FEFO / expiry / location / bin complexity in v1
-- Do not add customer pricing unless explicitly confirmed
-- Do not build an ERP for everything
-- Do not guess live API field names for LionWheel or Green Invoice without inspection
+- Do not preserve workbook structure.
+- Do not assume Excel remains editable long-term.
+- Do not build a second writable fallback system.
+- Do not introduce a second planning service in v1.
+- Do not model FEFO / expiry / location / bin / customer pricing in v1.
+- Do not duplicate `BOUGHT_FINISHED` items into components.
+- Do not guess live API field names for LionWheel or Green Invoice without inspection.
+- MCP is not a runtime input channel; Claude Code tooling must not become part of the live operational path.
+- Do not add new authority docs without explicit Tom approval. Do not promote dry-runs or proposals to authority.
 
 ## Uncertainty discipline
-When uncertain, do **not** guess. Mark assumptions explicitly and halt until resolved. The live list of current UNRESOLVED items lives in `CURRENT_STATE.md`.
 
-## Final project framing
-This is a **narrow, high-trust factory operations platform.** It is not a generic ERP.
+When uncertain, do **not** guess. Mark assumptions explicitly and halt until resolved. Live UNRESOLVED items list: `CURRENT_STATE.md`. Skill creation threshold: `docs/phase8/decisions/STEP4-SKILLS-DECISION.md` (no skills created unless threshold met).
 
-It succeeds if:
-- stock truth becomes trusted
-- operator workflows become simpler than the workbook
-- planning recommendations become reproducible and auditable
-- Excel stops carrying operational risk
-- the system can be rolled forward and rolled back safely
+## Handoff contract (every agent run)
 
-Tiebreakers:
-- If there is tension between elegance and reliability, choose **reliability**.
-- If there is tension between scope and trust, choose **trust**.
-- If there is tension between speed and irreversible complexity, choose the **simpler path**.
+Every agent run ends with: STATUS (PASS / FAIL / BLOCKED / HOLD_FOR_TOM), files changed, tests run with N/N counts, contracts referenced, signals emitted, stop conditions tripped, Tom approvals required, rollback plan, next handoff agent. Verdict tokens must match `VERDICT_GLOSSARY.md`. Full template: `AGENT_TEMPLATE.md`.
+
+---
+
+**Owner:** Tom (sole writer of this file).
+**Last rewritten:** 2026-05-08 (Phase 8 Run F Wave 4 — kernel extraction + thin-boot rewrite).
+**Pre-rewrite full text preserved at:** `docs/archive/CLAUDE.md.pre-kernel-rewrite-2026-05-08.md`.
