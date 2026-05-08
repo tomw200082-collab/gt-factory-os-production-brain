@@ -1,0 +1,737 @@
+=== GT May 2026 Forecast — V2 Analysis ===
+
+Source: GT_May_2026_batch_forecast_RTL (1).xlsx
+Items in DB: 68
+
+Excel rows: 50
+Total SKUs in Excel: 68
+  Matched: 45
+  Unmatched: 23
+
+Distinct items that will receive forecast: 42
+
+Total qty assigned (sum of all forecast_quantity): 7998.0
+
+Forecast lines per cadence option:
+  MONTHLY (1 bucket = 2026-05-01): 45 lines
+  WEEKLY (4 buckets May 4/11/18/25): 166 lines
+
+====================================================================================================
+PER-ROW DETAIL
+====================================================================================================
+
+Row 6: תה קר / חליטות | DETOX | רגיל / עם סוכר
+  Pack-size totals: 1L=1559.0, 0.5L=310.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 1869.0, Sales units: 1714.0
+  Weekly: [6.0, 547.0, 307.0, 535.0, 474.0] (sum=1869.0)
+  Excel SKUs: GT-LUI-LOW-1L, GT-LUI-LOW-0.5L
+    OK  GT-LUI-LOW-1L                  -> FG-DET-1L                            (sku)  pack-col=4 (1L) qty=1559.0
+    OK  GT-LUI-LOW-0.5L                -> FG-DET-500ML                         (sku)  pack-col=5 (0.5L (500ML)) qty=310.0
+  MONTHLY lines (2):
+    FG-DET-1L                            bucket=2026-05-01  qty=1559.0
+    FG-DET-500ML                         bucket=2026-05-01  qty=310.0
+  WEEKLY lines (8):
+    FG-DET-1L                            bucket=2026-05-04  qty=461.2772
+    FG-DET-1L                            bucket=2026-05-11  qty=256.0797
+    FG-DET-1L                            bucket=2026-05-18  qty=446.2627
+    FG-DET-1L                            bucket=2026-05-25  qty=395.3804
+    FG-DET-500ML                         bucket=2026-05-04  qty=91.7228
+    FG-DET-500ML                         bucket=2026-05-11  qty=50.9203
+    FG-DET-500ML                         bucket=2026-05-18  qty=88.7373
+    FG-DET-500ML                         bucket=2026-05-25  qty=78.6196
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Row 7: תה קר / חליטות | NAMASTEA | רגיל / עם סוכר
+  Pack-size totals: 1L=709.0, 0.5L=390.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 1099.0, Sales units: 904.0
+  Weekly: [9.0, 394.0, 249.0, 246.0, 201.0] (sum=1099.0)
+  Excel SKUs: GT-MAS-CHA-1L, GT-MAS-CHA-0.5L
+    OK  GT-MAS-CHA-1L                  -> FG-NAM-1L                            (sku)  pack-col=4 (1L) qty=709.0
+    OK  GT-MAS-CHA-0.5L                -> FG-NAM-500ML                         (sku)  pack-col=5 (0.5L (500ML)) qty=390.0
+  MONTHLY lines (2):
+    FG-NAM-1L                            bucket=2026-05-01  qty=709.0
+    FG-NAM-500ML                         bucket=2026-05-01  qty=390.0
+  WEEKLY lines (8):
+    FG-NAM-1L                            bucket=2026-05-04  qty=259.9882
+    FG-NAM-1L                            bucket=2026-05-11  qty=160.6379
+    FG-NAM-1L                            bucket=2026-05-18  qty=158.7025
+    FG-NAM-1L                            bucket=2026-05-25  qty=129.6715
+    FG-NAM-500ML                         bucket=2026-05-04  qty=143.0118
+    FG-NAM-500ML                         bucket=2026-05-11  qty=88.3621
+    FG-NAM-500ML                         bucket=2026-05-18  qty=87.2975
+    FG-NAM-500ML                         bucket=2026-05-25  qty=71.3285
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳ | היסטוריה חלשה / מוצר חדש
+
+Row 8: תה קר / חליטות | FRESH | רגיל / עם סוכר
+  Pack-size totals: 1L=727.0, 0.5L=225.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 952.0, Sales units: 839.5
+  Weekly: [6.0, 249.0, 251.0, 246.0, 200.0] (sum=952.0)
+  Excel SKUs: GT-HIB-LOW-1L, GT-HIB-LOW-0.5L
+    OK  GT-HIB-LOW-1L                  -> FG-FRE-1L                            (sku)  pack-col=4 (1L) qty=727.0
+    OK  GT-HIB-LOW-0.5L                -> FG-FRE-500ML                         (sku)  pack-col=5 (0.5L (500ML)) qty=225.0
+  MONTHLY lines (2):
+    FG-FRE-1L                            bucket=2026-05-01  qty=727.0
+    FG-FRE-500ML                         bucket=2026-05-01  qty=225.0
+  WEEKLY lines (8):
+    FG-FRE-1L                            bucket=2026-05-04  qty=194.7321
+    FG-FRE-1L                            bucket=2026-05-11  qty=191.6775
+    FG-FRE-1L                            bucket=2026-05-18  qty=187.8592
+    FG-FRE-1L                            bucket=2026-05-25  qty=152.7311
+    FG-FRE-500ML                         bucket=2026-05-04  qty=60.2679
+    FG-FRE-500ML                         bucket=2026-05-11  qty=59.3225
+    FG-FRE-500ML                         bucket=2026-05-18  qty=58.1408
+    FG-FRE-500ML                         bucket=2026-05-25  qty=47.2689
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Row 9: תה קר / חליטות | REVIVE | רגיל / עם סוכר
+  Pack-size totals: 1L=496.0, 0.5L=350.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 846.0, Sales units: 671.0
+  Weekly: [0.0, 323.0, 211.0, 216.0, 96.0] (sum=846.0)
+  Excel SKUs: GT-SEN-LOW-1L, GT-SEN-LOW-0.5L
+    OK  GT-SEN-LOW-1L                  -> FG-REV-1L                            (sku)  pack-col=4 (1L) qty=496.0
+    OK  GT-SEN-LOW-0.5L                -> FG-REV-500ML                         (sku)  pack-col=5 (0.5L (500ML)) qty=350.0
+  MONTHLY lines (2):
+    FG-REV-1L                            bucket=2026-05-01  qty=496.0
+    FG-REV-500ML                         bucket=2026-05-01  qty=350.0
+  WEEKLY lines (8):
+    FG-REV-1L                            bucket=2026-05-04  qty=189.3712
+    FG-REV-1L                            bucket=2026-05-11  qty=123.7069
+    FG-REV-1L                            bucket=2026-05-18  qty=126.6383
+    FG-REV-1L                            bucket=2026-05-25  qty=56.2837
+    FG-REV-500ML                         bucket=2026-05-04  qty=133.6288
+    FG-REV-500ML                         bucket=2026-05-11  qty=87.2931
+    FG-REV-500ML                         bucket=2026-05-18  qty=89.3617
+    FG-REV-500ML                         bucket=2026-05-25  qty=39.7163
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Row 10: תה קר / חליטות | DETOX Sugar-Free | ללא סוכר
+  Pack-size totals: 1L=353.0, 0.5L=188.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 541.0, Sales units: 447.0
+  Weekly: [8.0, 134.0, 106.0, 202.0, 91.0] (sum=541.0)
+  Excel SKUs: GT-LUI-FRE-1L, GT-LUI-FRE-0.5L
+    OK  GT-LUI-FRE-1L                  -> FG-DET-1L-NS                         (sku)  pack-col=4 (1L) qty=353.0
+    OK  GT-LUI-FRE-0.5L                -> FG-DET-500ML-NS                      (sku)  pack-col=5 (0.5L (500ML)) qty=188.0
+  MONTHLY lines (2):
+    FG-DET-1L-NS                         bucket=2026-05-01  qty=353.0
+    FG-DET-500ML-NS                      bucket=2026-05-01  qty=188.0
+  WEEKLY lines (8):
+    FG-DET-1L-NS                         bucket=2026-05-04  qty=92.6543
+    FG-DET-1L-NS                         bucket=2026-05-11  qty=69.1645
+    FG-DET-1L-NS                         bucket=2026-05-18  qty=131.8041
+    FG-DET-1L-NS                         bucket=2026-05-25  qty=59.3771
+    FG-DET-500ML-NS                      bucket=2026-05-04  qty=49.3457
+    FG-DET-500ML-NS                      bucket=2026-05-11  qty=36.8355
+    FG-DET-500ML-NS                      bucket=2026-05-18  qty=70.1959
+    FG-DET-500ML-NS                      bucket=2026-05-25  qty=31.6229
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Row 11: תה קר / חליטות | ENERGY | רגיל / עם סוכר
+  Pack-size totals: 1L=253.0, 0.5L=236.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 489.0, Sales units: 371.0
+  Weekly: [0.0, 103.0, 140.0, 215.0, 31.0] (sum=489.0)
+  Excel SKUs: GT-LEM-LOW-1L, GT-LEM-LOW-0.5L
+    OK  GT-LEM-LOW-1L                  -> FG-ENE-1L                            (sku)  pack-col=4 (1L) qty=253.0
+    OK  GT-LEM-LOW-0.5L                -> FG-ENE-500ML                         (sku)  pack-col=5 (0.5L (500ML)) qty=236.0
+  MONTHLY lines (2):
+    FG-ENE-1L                            bucket=2026-05-01  qty=253.0
+    FG-ENE-500ML                         bucket=2026-05-01  qty=236.0
+  WEEKLY lines (8):
+    FG-ENE-1L                            bucket=2026-05-04  qty=53.2904
+    FG-ENE-1L                            bucket=2026-05-11  qty=72.4335
+    FG-ENE-1L                            bucket=2026-05-18  qty=111.2372
+    FG-ENE-1L                            bucket=2026-05-25  qty=16.0389
+    FG-ENE-500ML                         bucket=2026-05-04  qty=49.7096
+    FG-ENE-500ML                         bucket=2026-05-11  qty=67.5665
+    FG-ENE-500ML                         bucket=2026-05-18  qty=103.7628
+    FG-ENE-500ML                         bucket=2026-05-25  qty=14.9611
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Row 12: תה קר / חליטות | CALM | רגיל / עם סוכר
+  Pack-size totals: 1L=152.0, 0.5L=282.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 434.0, Sales units: 293.0
+  Weekly: [0.0, 171.0, 101.0, 123.0, 39.0] (sum=434.0)
+  Excel SKUs: GT-CHA-LOW-0.5L, GT-CHA-LOW-1L
+    OK  GT-CHA-LOW-0.5L                -> FG-CAL-500ML                         (sku)  pack-col=5 (0.5L (500ML)) qty=282.0
+    OK  GT-CHA-LOW-1L                  -> FG-CAL-1L                            (sku)  pack-col=4 (1L) qty=152.0
+  MONTHLY lines (2):
+    FG-CAL-500ML                         bucket=2026-05-01  qty=282.0
+    FG-CAL-1L                            bucket=2026-05-01  qty=152.0
+  WEEKLY lines (8):
+    FG-CAL-500ML                         bucket=2026-05-04  qty=111.1106
+    FG-CAL-500ML                         bucket=2026-05-11  qty=65.6267
+    FG-CAL-500ML                         bucket=2026-05-18  qty=79.9217
+    FG-CAL-500ML                         bucket=2026-05-25  qty=25.341
+    FG-CAL-1L                            bucket=2026-05-04  qty=59.8894
+    FG-CAL-1L                            bucket=2026-05-11  qty=35.3733
+    FG-CAL-1L                            bucket=2026-05-18  qty=43.0783
+    FG-CAL-1L                            bucket=2026-05-25  qty=13.659
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Row 13: תה קר / חליטות | CONSCIOUSNESS | רגיל / עם סוכר
+  Pack-size totals: 1L=185.0, 0.5L=145.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 330.0, Sales units: 257.5
+  Weekly: [0.0, 119.0, 76.0, 80.0, 55.0] (sum=330.0)
+  Excel SKUs: GT-JAS-LOW-1L, GT-JAS-LOW-0.5L
+    OK  GT-JAS-LOW-1L                  -> FG-CON-1L                            (sku)  pack-col=4 (1L) qty=185.0
+    OK  GT-JAS-LOW-0.5L                -> FG-CON-500ML                         (sku)  pack-col=5 (0.5L (500ML)) qty=145.0
+  MONTHLY lines (2):
+    FG-CON-1L                            bucket=2026-05-01  qty=185.0
+    FG-CON-500ML                         bucket=2026-05-01  qty=145.0
+  WEEKLY lines (8):
+    FG-CON-1L                            bucket=2026-05-04  qty=66.7121
+    FG-CON-1L                            bucket=2026-05-11  qty=42.6061
+    FG-CON-1L                            bucket=2026-05-18  qty=44.8485
+    FG-CON-1L                            bucket=2026-05-25  qty=30.8333
+    FG-CON-500ML                         bucket=2026-05-04  qty=52.2879
+    FG-CON-500ML                         bucket=2026-05-11  qty=33.3939
+    FG-CON-500ML                         bucket=2026-05-18  qty=35.1515
+    FG-CON-500ML                         bucket=2026-05-25  qty=24.1667
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Row 14: תה קר / חליטות | FRESH Sugar-Free | ללא סוכר
+  Pack-size totals: 1L=133.0, 0.5L=98.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 231.0, Sales units: 182.0
+  Weekly: [0.0, 100.0, 20.0, 90.0, 21.0] (sum=231.0)
+  Excel SKUs: GT-HIB-FRE-1L, GT-HIB-FRE-0.5L
+    OK  GT-HIB-FRE-1L                  -> FG-FRE-1L-NS                         (sku)  pack-col=4 (1L) qty=133.0
+    OK  GT-HIB-FRE-0.5L                -> FG-FRE-500ML-NS                      (sku)  pack-col=5 (0.5L (500ML)) qty=98.0
+  MONTHLY lines (2):
+    FG-FRE-1L-NS                         bucket=2026-05-01  qty=133.0
+    FG-FRE-500ML-NS                      bucket=2026-05-01  qty=98.0
+  WEEKLY lines (8):
+    FG-FRE-1L-NS                         bucket=2026-05-04  qty=57.5758
+    FG-FRE-1L-NS                         bucket=2026-05-11  qty=11.5152
+    FG-FRE-1L-NS                         bucket=2026-05-18  qty=51.8182
+    FG-FRE-1L-NS                         bucket=2026-05-25  qty=12.0909
+    FG-FRE-500ML-NS                      bucket=2026-05-04  qty=42.4242
+    FG-FRE-500ML-NS                      bucket=2026-05-11  qty=8.4848
+    FG-FRE-500ML-NS                      bucket=2026-05-18  qty=38.1818
+    FG-FRE-500ML-NS                      bucket=2026-05-25  qty=8.9091
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Row 15: תה קר / חליטות | Desert Infusion | רגיל / עם סוכר
+  Pack-size totals: 1L=196.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 196.0, Sales units: 196.0
+  Weekly: [0.0, 0.0, 44.0, 43.0, 109.0] (sum=196.0)
+  Excel SKUs: GT-INF-DES-1L
+    OK  GT-INF-DES-1L                  -> FG-DES-1L                            (sku)  pack-col=4 (1L) qty=196.0
+  MONTHLY lines (1):
+    FG-DES-1L                            bucket=2026-05-01  qty=196.0
+  WEEKLY lines (3):
+    FG-DES-1L                            bucket=2026-05-11  qty=44.0
+    FG-DES-1L                            bucket=2026-05-18  qty=43.0
+    FG-DES-1L                            bucket=2026-05-25  qty=109.0
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Row 16: קוקטיילים / סנגריה | GT Elita Red Sangria | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=192.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 192.0, Sales units: 144.0
+  Weekly: [0.0, 0.0, 0.0, 192.0, 0.0] (sum=192.0)
+  Excel SKUs: GTEL-SAN-RED-0.75L
+    OK  GTEL-SAN-RED-0.75L             -> FG-SAN-RED-750ML                     (sku)  pack-col=6 (0.75L (750ML)) qty=192.0
+  MONTHLY lines (1):
+    FG-SAN-RED-750ML                     bucket=2026-05-01  qty=192.0
+  WEEKLY lines (1):
+    FG-SAN-RED-750ML                     bucket=2026-05-18  qty=192.0
+
+Row 17: קוקטיילים / סנגריה | קוקטייל סנגריה לבנה 0.15 ל | None
+  Pack-size totals: 1L=22.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=112.0, 3.85L=0.0
+  Total units: 134.0, Sales units: 38.8
+  Weekly: [0.0, 58.0, 62.0, 10.0, 4.0] (sum=134.0)
+  Excel SKUs: GTCC-WHI-SAN-0.15L, GTCC-WHI-SAN-1L, GTCC-WHI-SAN-0.15Lx20
+    X   GTCC-WHI-SAN-0.15L             -> — UNMATCHED —                        (none)
+    OK  GTCC-WHI-SAN-1L                -> FG-SAN-WHI-1L                        (sku)  pack-col=4 (1L) qty=22.0
+    X   GTCC-WHI-SAN-0.15Lx20          -> — UNMATCHED —                        (none)
+  MONTHLY lines (1):
+    FG-SAN-WHI-1L                        bucket=2026-05-01  qty=22.0
+  WEEKLY lines (4):
+    FG-SAN-WHI-1L                        bucket=2026-05-04  qty=9.5224
+    FG-SAN-WHI-1L                        bucket=2026-05-11  qty=10.1791
+    FG-SAN-WHI-1L                        bucket=2026-05-18  qty=1.6418
+    FG-SAN-WHI-1L                        bucket=2026-05-25  qty=0.6567
+  Notes: לבדוק אם עדיין פעיל
+
+Row 18: קוקטיילים / סנגריה | GT Nonomimi Sangria | None
+  Pack-size totals: 1L=89.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=29.0
+  Total units: 118.0, Sales units: 200.7
+  Weekly: [7.0, 11.0, 27.0, 47.0, 26.0] (sum=118.0)
+  Excel SKUs: GTCC-NON-SAN-1L, GTCC-NON-SAN-3.85L
+    OK  GTCC-NON-SAN-1L                -> FG-NM-1L                             (sku)  pack-col=4 (1L) qty=89.0
+    OK  GTCC-NON-SAN-3.85L             -> FG-NM-3850ML                         (sku)  pack-col=9 (3.85L (3850ML)) qty=29.0
+  MONTHLY lines (2):
+    FG-NM-1L                             bucket=2026-05-01  qty=89.0
+    FG-NM-3850ML                         bucket=2026-05-01  qty=29.0
+  WEEKLY lines (8):
+    FG-NM-1L                             bucket=2026-05-04  qty=13.5763
+    FG-NM-1L                             bucket=2026-05-11  qty=20.3644
+    FG-NM-1L                             bucket=2026-05-18  qty=35.4492
+    FG-NM-1L                             bucket=2026-05-25  qty=19.6102
+    FG-NM-3850ML                         bucket=2026-05-04  qty=4.4237
+    FG-NM-3850ML                         bucket=2026-05-11  qty=6.6356
+    FG-NM-3850ML                         bucket=2026-05-18  qty=11.5508
+    FG-NM-3850ML                         bucket=2026-05-25  qty=6.3898
+
+Row 19: קוקטיילים / סנגריה | GT Elita Arak | None
+  Pack-size totals: 1L=0.0, 0.5L=89.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 89.0, Sales units: 44.5
+  Weekly: [0.0, 24.0, 21.0, 33.0, 11.0] (sum=89.0)
+  Excel SKUs: GTEL-COC-ARA-0.5L
+    X   GTEL-COC-ARA-0.5L              -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 20: קוקטיילים / סנגריה | קוקטייל סנגריה ורודה 0.15 ל | None
+  Pack-size totals: 1L=21.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=57.0, 3.85L=0.0
+  Total units: 78.0, Sales units: 29.5
+  Weekly: [0.0, 15.0, 50.0, 13.0, 0.0] (sum=78.0)
+  Excel SKUs: GTCC-PIN-SAN-0.15L, GTCC-PIN-SAN-1L, GTCC-PIN-SAN-0.15Lx20
+    X   GTCC-PIN-SAN-0.15L             -> — UNMATCHED —                        (none)
+    OK  GTCC-PIN-SAN-1L                -> FG-SAN-PIN-1L                        (sku)  pack-col=4 (1L) qty=21.0
+    X   GTCC-PIN-SAN-0.15Lx20          -> — UNMATCHED —                        (none)
+  MONTHLY lines (1):
+    FG-SAN-PIN-1L                        bucket=2026-05-01  qty=21.0
+  WEEKLY lines (3):
+    FG-SAN-PIN-1L                        bucket=2026-05-04  qty=4.0385
+    FG-SAN-PIN-1L                        bucket=2026-05-11  qty=13.4615
+    FG-SAN-PIN-1L                        bucket=2026-05-18  qty=3.5
+  Notes: לבדוק אם עדיין פעיל
+
+Row 21: קוקטיילים / סנגריה | GT Elita White Sangria | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=68.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 68.0, Sales units: 51.0
+  Weekly: [0.0, 19.0, 16.0, 25.0, 8.0] (sum=68.0)
+  Excel SKUs: GTEL-SAN-WHI-0.75L
+    OK  GTEL-SAN-WHI-0.75L             -> FG-SAN-WHI-750ML                     (sku)  pack-col=6 (0.75L (750ML)) qty=68.0
+  MONTHLY lines (1):
+    FG-SAN-WHI-750ML                     bucket=2026-05-01  qty=68.0
+  WEEKLY lines (4):
+    FG-SAN-WHI-750ML                     bucket=2026-05-04  qty=19.0
+    FG-SAN-WHI-750ML                     bucket=2026-05-11  qty=16.0
+    FG-SAN-WHI-750ML                     bucket=2026-05-18  qty=25.0
+    FG-SAN-WHI-750ML                     bucket=2026-05-25  qty=8.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 22: קוקטיילים / סנגריה | קוקטייל סלסול 0.2 ל | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=67.0, 3.85L=0.0
+  Total units: 67.0, Sales units: 13.4
+  Weekly: [0.0, 67.0, 0.0, 0.0, 0.0] (sum=67.0)
+  Excel SKUs: 12002
+    X   12002                          -> — UNMATCHED —                        (none)
+  Notes: לבדוק אם עדיין פעיל
+
+Row 23: קוקטיילים / סנגריה | GT Elita Cosmo Lychee | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=47.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 47.0, Sales units: 14.1
+  Weekly: [0.0, 13.0, 11.0, 17.0, 6.0] (sum=47.0)
+  Excel SKUs: GTEL-COS-LYC-0.3L
+    OK  GTEL-COS-LYC-0.3L              -> FG-COS-LYC-300ML                     (sku)  pack-col=7 (0.27/0.3L (300ML)) qty=47.0
+  MONTHLY lines (1):
+    FG-COS-LYC-300ML                     bucket=2026-05-01  qty=47.0
+  WEEKLY lines (4):
+    FG-COS-LYC-300ML                     bucket=2026-05-04  qty=13.0
+    FG-COS-LYC-300ML                     bucket=2026-05-11  qty=11.0
+    FG-COS-LYC-300ML                     bucket=2026-05-18  qty=17.0
+    FG-COS-LYC-300ML                     bucket=2026-05-25  qty=6.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 24: קוקטיילים / סנגריה | Muza Jasmine | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=45.0, 3.85L=0.0
+  Total units: 45.0, Sales units: 9.0
+  Weekly: [0.0, 12.0, 10.0, 17.0, 6.0] (sum=45.0)
+  Excel SKUs: GTCC-MUZ-JAS-0.2L
+    OK  GTCC-MUZ-JAS-0.2L              -> FG-MUZ-JAS-200ML                     (sku)  pack-col=8 (0.15/0.2L (150-200ML)) qty=45.0
+  MONTHLY lines (1):
+    FG-MUZ-JAS-200ML                     bucket=2026-05-01  qty=45.0
+  WEEKLY lines (4):
+    FG-MUZ-JAS-200ML                     bucket=2026-05-04  qty=12.0
+    FG-MUZ-JAS-200ML                     bucket=2026-05-11  qty=10.0
+    FG-MUZ-JAS-200ML                     bucket=2026-05-18  qty=17.0
+    FG-MUZ-JAS-200ML                     bucket=2026-05-25  qty=6.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 25: קוקטיילים / סנגריה | קוקטייל תה תפוחים ירושלמי (ערק אמרטו) 0.15 ל | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=33.0, 3.85L=0.0
+  Total units: 33.0, Sales units: 5.0
+  Weekly: [0.0, 6.0, 0.0, 0.0, 27.0] (sum=33.0)
+  Excel SKUs: GTCC-JER-ARA-0.15L
+    X   GTCC-JER-ARA-0.15L             -> — UNMATCHED —                        (none)
+  Notes: לבדוק אם עדיין פעיל
+
+Row 26: קוקטיילים / סנגריה | Muza Herbal Mule Bliss | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=30.0, 3.85L=0.0
+  Total units: 30.0, Sales units: 6.0
+  Weekly: [0.0, 8.0, 7.0, 11.0, 4.0] (sum=30.0)
+  Excel SKUs: GTCC-MUZ-HER-0.2L
+    OK  GTCC-MUZ-HER-0.2L              -> FG-MUZ-HER-200ML                     (sku)  pack-col=8 (0.15/0.2L (150-200ML)) qty=30.0
+  MONTHLY lines (1):
+    FG-MUZ-HER-200ML                     bucket=2026-05-01  qty=30.0
+  WEEKLY lines (4):
+    FG-MUZ-HER-200ML                     bucket=2026-05-04  qty=8.0
+    FG-MUZ-HER-200ML                     bucket=2026-05-11  qty=7.0
+    FG-MUZ-HER-200ML                     bucket=2026-05-18  qty=11.0
+    FG-MUZ-HER-200ML                     bucket=2026-05-25  qty=4.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 27: קוקטיילים / סנגריה | Muza Negroni | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=27.0, 3.85L=0.0
+  Total units: 27.0, Sales units: 5.4
+  Weekly: [0.0, 8.0, 6.0, 10.0, 3.0] (sum=27.0)
+  Excel SKUs: GTCC-MUZ-NEG-0.2L
+    OK  GTCC-MUZ-NEG-0.2L              -> FG-MUZ-NEG-200ML                     (sku)  pack-col=8 (0.15/0.2L (150-200ML)) qty=27.0
+  MONTHLY lines (1):
+    FG-MUZ-NEG-200ML                     bucket=2026-05-01  qty=27.0
+  WEEKLY lines (4):
+    FG-MUZ-NEG-200ML                     bucket=2026-05-04  qty=8.0
+    FG-MUZ-NEG-200ML                     bucket=2026-05-11  qty=6.0
+    FG-MUZ-NEG-200ML                     bucket=2026-05-18  qty=10.0
+    FG-MUZ-NEG-200ML                     bucket=2026-05-25  qty=3.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 28: קוקטיילים / סנגריה | קוקטייל קמפרי טי דאנס (קמפרי) 0.15 ל | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=22.0, 3.85L=0.0
+  Total units: 22.0, Sales units: 3.3
+  Weekly: [0.0, 0.0, 0.0, 0.0, 22.0] (sum=22.0)
+  Excel SKUs: GTCC-CAM-DAN-0.15L
+    X   GTCC-CAM-DAN-0.15L             -> — UNMATCHED —                        (none)
+  Notes: לבדוק אם עדיין פעיל
+
+Row 29: קוקטיילים / סנגריה | Muza Queen Violet | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=18.0, 3.85L=0.0
+  Total units: 18.0, Sales units: 3.6
+  Weekly: [0.0, 5.0, 4.0, 7.0, 2.0] (sum=18.0)
+  Excel SKUs: GTCC-MUZ-QUE-0.2L
+    OK  GTCC-MUZ-QUE-0.2L              -> FG-MUZ-QUE-200ML                     (sku)  pack-col=8 (0.15/0.2L (150-200ML)) qty=18.0
+  MONTHLY lines (1):
+    FG-MUZ-QUE-200ML                     bucket=2026-05-01  qty=18.0
+  WEEKLY lines (4):
+    FG-MUZ-QUE-200ML                     bucket=2026-05-04  qty=5.0
+    FG-MUZ-QUE-200ML                     bucket=2026-05-11  qty=4.0
+    FG-MUZ-QUE-200ML                     bucket=2026-05-18  qty=7.0
+    FG-MUZ-QUE-200ML                     bucket=2026-05-25  qty=2.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 30: קוקטיילים / סנגריה | Muza Pink Mama | None
+  Pack-size totals: 1L=14.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 14.0, Sales units: 14.0
+  Weekly: [0.0, 4.0, 3.0, 5.0, 2.0] (sum=14.0)
+  Excel SKUs: GTCC-MUZ-PNMM-1L
+    X   GTCC-MUZ-PNMM-1L               -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 31: קוקטיילים / סנגריה | קוקטייל טרופיקל אין גאפן (גין) 1 ל | None
+  Pack-size totals: 1L=7.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=6.0, 3.85L=0.0
+  Total units: 13.0, Sales units: 7.9
+  Weekly: [0.0, 4.0, 2.0, 5.0, 2.0] (sum=13.0)
+  Excel SKUs: GTCC-TRO-JAP-1L, GTCC-TRO-JAP-0.15L
+    X   GTCC-TRO-JAP-1L                -> — UNMATCHED —                        (none)
+    X   GTCC-TRO-JAP-0.15L             -> — UNMATCHED —                        (none)
+  Notes: לבדוק אם עדיין פעיל
+
+Row 32: קוקטיילים / סנגריה | קוקטייל ראשן, וארי ראשן (וודקה) 0.15 ל | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=12.0, 3.85L=0.0
+  Total units: 12.0, Sales units: 1.8
+  Weekly: [0.0, 0.0, 12.0, 0.0, 0.0] (sum=12.0)
+  Excel SKUs: GTCC-VAR-RAS-0.15L
+    X   GTCC-VAR-RAS-0.15L             -> — UNMATCHED —                        (none)
+  Notes: לבדוק אם עדיין פעיל
+
+Row 33: קוקטיילים / סנגריה | GT Babka Bakery Red Sangria | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=9.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 9.0, Sales units: 6.8
+  Weekly: [0.0, 3.0, 2.0, 3.0, 1.0] (sum=9.0)
+  Excel SKUs: GTEL-BAB-RED-0.75L
+    X   GTEL-BAB-RED-0.75L             -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 34: קוקטיילים / סנגריה | GT Babka Bakery White Sangria | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=9.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 9.0, Sales units: 6.8
+  Weekly: [0.0, 3.0, 2.0, 3.0, 1.0] (sum=9.0)
+  Excel SKUs: GTEL-BAB-WHI-0.75L
+    X   GTEL-BAB-WHI-0.75L             -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 35: קוקטיילים / סנגריה | Muza Apple Zest | None
+  Pack-size totals: 1L=8.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 8.0, Sales units: 8.0
+  Weekly: [0.0, 2.0, 2.0, 3.0, 1.0] (sum=8.0)
+  Excel SKUs: GTCC-MUZ-APPZ-1L
+    X   GTCC-MUZ-APPZ-1L               -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 36: קוקטיילים / סנגריה | Muza Spicy Margarita | None
+  Pack-size totals: 1L=6.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 6.0, Sales units: 6.0
+  Weekly: [0.0, 2.0, 1.0, 2.0, 1.0] (sum=6.0)
+  Excel SKUs: GTCC-MUZ-SMAR-1L
+    X   GTCC-MUZ-SMAR-1L               -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 37: קוקטיילים / סנגריה | Muza Tropical in Japan | None
+  Pack-size totals: 1L=6.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 6.0, Sales units: 6.0
+  Weekly: [0.0, 2.0, 1.0, 2.0, 1.0] (sum=6.0)
+  Excel SKUs: GTCC-MUZ-TROJ-1L
+    X   GTCC-MUZ-TROJ-1L               -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 38: קוקטיילים / סנגריה | קוקטייל גאסמין גאז (וויסקי ) 0.15 ל | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=6.0, 3.85L=0.0
+  Total units: 6.0, Sales units: 0.9
+  Weekly: [0.0, 2.0, 1.0, 2.0, 1.0] (sum=6.0)
+  Excel SKUs: GTCC-JAS-JAZ-0.15L
+    X   GTCC-JAS-JAZ-0.15L             -> — UNMATCHED —                        (none)
+  Notes: לבדוק אם עדיין פעיל
+
+Row 39: קוקטיילים / סנגריה | Muza Passion Spritz | None
+  Pack-size totals: 1L=5.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 5.0, Sales units: 5.0
+  Weekly: [0.0, 1.0, 1.0, 2.0, 1.0] (sum=5.0)
+  Excel SKUs: GTCC-MUZ-PSSP-1L
+    X   GTCC-MUZ-PSSP-1L               -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 40: קוקטיילים / סנגריה | Muza Anise Bliss | None
+  Pack-size totals: 1L=4.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 4.0, Sales units: 4.0
+  Weekly: [0.0, 1.0, 1.0, 2.0, 0.0] (sum=4.0)
+  Excel SKUs: GTCC-MUZ-ANBL-1L
+    X   GTCC-MUZ-ANBL-1L               -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 41: קוקטיילים / סנגריה | Muza Blueberry Breeze | None
+  Pack-size totals: 1L=4.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 4.0, Sales units: 4.0
+  Weekly: [0.0, 1.0, 1.0, 1.0, 1.0] (sum=4.0)
+  Excel SKUs: GTCC-MUZ-BLBR-1L
+    X   GTCC-MUZ-BLBR-1L               -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 42: קוקטיילים / סנגריה | GT Sangria | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=3.0
+  Total units: 3.0, Sales units: 11.6
+  Weekly: [0.0, 1.0, 1.0, 1.0, 0.0] (sum=3.0)
+  Excel SKUs: GTCC-NM-SAN-3.85L
+    X   GTCC-NM-SAN-3.85L              -> — UNMATCHED —                        (none)
+
+Row 43: קוקטיילים / סנגריה | Muza Jasmin | None
+  Pack-size totals: 1L=3.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 3.0, Sales units: 3.0
+  Weekly: [0.0, 1.0, 1.0, 1.0, 0.0] (sum=3.0)
+  Excel SKUs: GTCC-MUZ-JASM-1L
+    X   GTCC-MUZ-JASM-1L               -> — UNMATCHED —                        (none)
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 44: קוקטיילים / סנגריה | Muza Passion Spritz | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=3.0, 3.85L=0.0
+  Total units: 3.0, Sales units: 0.6
+  Weekly: [0.0, 1.0, 1.0, 1.0, 0.0] (sum=3.0)
+  Excel SKUs: GTCC-MUZ-PSC-0.2L
+    OK  GTCC-MUZ-PSC-0.2L              -> FG-MUZ-PSC-200ML                     (sku)  pack-col=8 (0.15/0.2L (150-200ML)) qty=3.0
+  MONTHLY lines (1):
+    FG-MUZ-PSC-200ML                     bucket=2026-05-01  qty=3.0
+  WEEKLY lines (3):
+    FG-MUZ-PSC-200ML                     bucket=2026-05-04  qty=1.0
+    FG-MUZ-PSC-200ML                     bucket=2026-05-11  qty=1.0
+    FG-MUZ-PSC-200ML                     bucket=2026-05-18  qty=1.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 45: מיקסרים | Muza Pink Mama Mixer | None
+  Pack-size totals: 1L=30.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 30.0, Sales units: 30.0
+  Weekly: [0.0, 8.0, 7.0, 11.0, 4.0] (sum=30.0)
+  Excel SKUs: GTMX-MUZ-PNMM-1L
+    OK  GTMX-MUZ-PNMM-1L               -> ADD-MUZ-PNMM-1L                      (sku)  pack-col=4 (1L) qty=30.0
+  MONTHLY lines (1):
+    ADD-MUZ-PNMM-1L                      bucket=2026-05-01  qty=30.0
+  WEEKLY lines (4):
+    ADD-MUZ-PNMM-1L                      bucket=2026-05-04  qty=8.0
+    ADD-MUZ-PNMM-1L                      bucket=2026-05-11  qty=7.0
+    ADD-MUZ-PNMM-1L                      bucket=2026-05-18  qty=11.0
+    ADD-MUZ-PNMM-1L                      bucket=2026-05-25  qty=4.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 46: מיקסרים | Muza Jasmin Mixer | None
+  Pack-size totals: 1L=29.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 29.0, Sales units: 29.0
+  Weekly: [0.0, 8.0, 7.0, 11.0, 3.0] (sum=29.0)
+  Excel SKUs: GTMX-MUZ-JASM-1L
+    OK  GTMX-MUZ-JASM-1L               -> ADD-MUZ-JASM-1L                      (sku)  pack-col=4 (1L) qty=29.0
+  MONTHLY lines (1):
+    ADD-MUZ-JASM-1L                      bucket=2026-05-01  qty=29.0
+  WEEKLY lines (4):
+    ADD-MUZ-JASM-1L                      bucket=2026-05-04  qty=8.0
+    ADD-MUZ-JASM-1L                      bucket=2026-05-11  qty=7.0
+    ADD-MUZ-JASM-1L                      bucket=2026-05-18  qty=11.0
+    ADD-MUZ-JASM-1L                      bucket=2026-05-25  qty=3.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 47: מיקסרים | Muza Tropical Israeli Mixer | None
+  Pack-size totals: 1L=26.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 26.0, Sales units: 26.0
+  Weekly: [0.0, 7.0, 6.0, 10.0, 3.0] (sum=26.0)
+  Excel SKUs: GTMX-MUZ-TRIL-1L
+    OK  GTMX-MUZ-TRIL-1L               -> ADD-MUZ-TRIL-1L                      (sku)  pack-col=4 (1L) qty=26.0
+  MONTHLY lines (1):
+    ADD-MUZ-TRIL-1L                      bucket=2026-05-01  qty=26.0
+  WEEKLY lines (4):
+    ADD-MUZ-TRIL-1L                      bucket=2026-05-04  qty=7.0
+    ADD-MUZ-TRIL-1L                      bucket=2026-05-11  qty=6.0
+    ADD-MUZ-TRIL-1L                      bucket=2026-05-18  qty=10.0
+    ADD-MUZ-TRIL-1L                      bucket=2026-05-25  qty=3.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 48: מיקסרים | Muza Basil Smash Mixer | None
+  Pack-size totals: 1L=2.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 2.0, Sales units: 2.0
+  Weekly: [0.0, 1.0, 0.0, 1.0, 0.0] (sum=2.0)
+  Excel SKUs: GTMX-MUZ-BZSM-1L
+    OK  GTMX-MUZ-BZSM-1L               -> ADD-MUZ-BZSM-1L                      (sku)  pack-col=4 (1L) qty=2.0
+  MONTHLY lines (1):
+    ADD-MUZ-BZSM-1L                      bucket=2026-05-01  qty=2.0
+  WEEKLY lines (2):
+    ADD-MUZ-BZSM-1L                      bucket=2026-05-04  qty=1.0
+    ADD-MUZ-BZSM-1L                      bucket=2026-05-18  qty=1.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 49: מיקסרים | Muza Classic Margarita Mixer | None
+  Pack-size totals: 1L=1.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 1.0, Sales units: 1.0
+  Weekly: [0.0, 0.0, 0.0, 1.0, 0.0] (sum=1.0)
+  Excel SKUs: GTMX-MUZ-MRCL-1L
+    OK  GTMX-MUZ-MRCL-1L               -> ADD-MUZ-MRCL-1L                      (sku)  pack-col=4 (1L) qty=1.0
+  MONTHLY lines (1):
+    ADD-MUZ-MRCL-1L                      bucket=2026-05-01  qty=1.0
+  WEEKLY lines (1):
+    ADD-MUZ-MRCL-1L                      bucket=2026-05-18  qty=1.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 50: מיקסרים | Muza Herbal Mule Bliss Mixer | None
+  Pack-size totals: 1L=1.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 1.0, Sales units: 1.0
+  Weekly: [0.0, 0.0, 0.0, 1.0, 0.0] (sum=1.0)
+  Excel SKUs: GTMX-MUZ-HER-1L
+    OK  GTMX-MUZ-HER-1L                -> ADD-MUZ-HER-1L                       (sku)  pack-col=4 (1L) qty=1.0
+  MONTHLY lines (1):
+    ADD-MUZ-HER-1L                       bucket=2026-05-01  qty=1.0
+  WEEKLY lines (1):
+    ADD-MUZ-HER-1L                       bucket=2026-05-18  qty=1.0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Row 51: מאצ׳ה / לבדיקה | Shizuoka Ceremonial Matcha 22x18g.bags | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 50.0, Sales units: 0.0
+  Weekly: [0.0, 14.0, 12.0, 18.0, 6.0] (sum=50.0)
+  Excel SKUs: GT-SHI-CER-18*22
+    OK  GT-SHI-CER-18*22               -> FG-MAT-18G                           (legacy_sku)
+  MONTHLY lines (1):
+    FG-MAT-18G                           bucket=2026-05-01  qty=50.0
+  WEEKLY lines (4):
+    FG-MAT-18G                           bucket=2026-05-04  qty=14.0
+    FG-MAT-18G                           bucket=2026-05-11  qty=12.0
+    FG-MAT-18G                           bucket=2026-05-18  qty=18.0
+    FG-MAT-18G                           bucket=2026-05-25  qty=6.0
+  Notes: היסטוריה חלשה / מוצר חדש | דורש אישור אם רלוונטי לייצור
+
+Row 52: מאצ׳ה / לבדיקה | Shizuoka Ceremonial Matcha Bag 500g | None
+  Pack-size totals: 1L=0.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 21.0, Sales units: 0.0
+  Weekly: [0.0, 6.0, 5.0, 8.0, 2.0] (sum=21.0)
+  Excel SKUs: GT-SHI-CER-500
+    OK  GT-SHI-CER-500                 -> FG-MAT-500G                          (legacy_sku)
+  MONTHLY lines (1):
+    FG-MAT-500G                          bucket=2026-05-01  qty=21.0
+  WEEKLY lines (4):
+    FG-MAT-500G                          bucket=2026-05-04  qty=6.0
+    FG-MAT-500G                          bucket=2026-05-11  qty=5.0
+    FG-MAT-500G                          bucket=2026-05-18  qty=8.0
+    FG-MAT-500G                          bucket=2026-05-25  qty=2.0
+  Notes: דורש אישור אם רלוונטי לייצור
+
+Row 53: ODK / לבדיקה | ODK Strawberry Smoothie | None
+  Pack-size totals: 1L=77.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 79.0, Sales units: 77.0
+  Weekly: [0.0, 22.0, 18.0, 29.0, 10.0] (sum=79.0)
+  Excel SKUs: GT-ODK-STR-1, GT-ODK-STR
+    OK  GT-ODK-STR-1                   -> ADD-ODK-STR-1L                       (sku)  pack-col=4 (1L) qty=77.0
+    OK  GT-ODK-STR                     -> ADD-ODK-STR-1L                       (legacy_sku)  pack-col=4 (1L) qty=77.0
+  MONTHLY lines (2):
+    ADD-ODK-STR-1L                       bucket=2026-05-01  qty=77.0
+    ADD-ODK-STR-1L                       bucket=2026-05-01  qty=77.0
+  WEEKLY lines (8):
+    ADD-ODK-STR-1L                       bucket=2026-05-04  qty=21.443
+    ADD-ODK-STR-1L                       bucket=2026-05-11  qty=17.5443
+    ADD-ODK-STR-1L                       bucket=2026-05-18  qty=28.2658
+    ADD-ODK-STR-1L                       bucket=2026-05-25  qty=9.7468
+    ADD-ODK-STR-1L                       bucket=2026-05-04  qty=21.443
+    ADD-ODK-STR-1L                       bucket=2026-05-11  qty=17.5443
+    ADD-ODK-STR-1L                       bucket=2026-05-18  qty=28.2658
+    ADD-ODK-STR-1L                       bucket=2026-05-25  qty=9.7468
+  Notes: היסטוריה חלשה / מוצר חדש | דורש אישור אם רלוונטי לייצור
+
+Row 54: ODK / לבדיקה | ODK Mango Smoothie | None
+  Pack-size totals: 1L=49.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 52.0, Sales units: 49.0
+  Weekly: [0.0, 15.0, 12.0, 19.0, 6.0] (sum=52.0)
+  Excel SKUs: GT-ODK-MAN-1, GT-ODK-MAN
+    OK  GT-ODK-MAN-1                   -> ADD-ODK-MAN-1L                       (sku)  pack-col=4 (1L) qty=49.0
+    OK  GT-ODK-MAN                     -> ADD-ODK-MAN-1L                       (legacy_sku)  pack-col=4 (1L) qty=49.0
+  MONTHLY lines (2):
+    ADD-ODK-MAN-1L                       bucket=2026-05-01  qty=49.0
+    ADD-ODK-MAN-1L                       bucket=2026-05-01  qty=49.0
+  WEEKLY lines (8):
+    ADD-ODK-MAN-1L                       bucket=2026-05-04  qty=14.1346
+    ADD-ODK-MAN-1L                       bucket=2026-05-11  qty=11.3077
+    ADD-ODK-MAN-1L                       bucket=2026-05-18  qty=17.9038
+    ADD-ODK-MAN-1L                       bucket=2026-05-25  qty=5.6538
+    ADD-ODK-MAN-1L                       bucket=2026-05-04  qty=14.1346
+    ADD-ODK-MAN-1L                       bucket=2026-05-11  qty=11.3077
+    ADD-ODK-MAN-1L                       bucket=2026-05-18  qty=17.9038
+    ADD-ODK-MAN-1L                       bucket=2026-05-25  qty=5.6538
+  Notes: היסטוריה חלשה / מוצר חדש | לבדוק אם עדיין פעיל | דורש אישור אם רלוונטי לייצור
+
+Row 55: ODK / לבדיקה | ODK Peach Smoothie | None
+  Pack-size totals: 1L=4.0, 0.5L=0.0, 0.75L=0.0, 0.3L=0.0, 0.15-0.2L=0.0, 3.85L=0.0
+  Total units: 5.0, Sales units: 4.0
+  Weekly: [0.0, 1.0, 1.0, 2.0, 1.0] (sum=5.0)
+  Excel SKUs: GT-ODK-PEA-1, GT-ODK-PEA
+    OK  GT-ODK-PEA-1                   -> ADD-ODK-PEA-1L                       (sku)  pack-col=4 (1L) qty=4.0
+    OK  GT-ODK-PEA                     -> ADD-ODK-PEA-1L                       (legacy_sku)  pack-col=4 (1L) qty=4.0
+  MONTHLY lines (2):
+    ADD-ODK-PEA-1L                       bucket=2026-05-01  qty=4.0
+    ADD-ODK-PEA-1L                       bucket=2026-05-01  qty=4.0
+  WEEKLY lines (8):
+    ADD-ODK-PEA-1L                       bucket=2026-05-04  qty=0.8
+    ADD-ODK-PEA-1L                       bucket=2026-05-11  qty=0.8
+    ADD-ODK-PEA-1L                       bucket=2026-05-18  qty=1.6
+    ADD-ODK-PEA-1L                       bucket=2026-05-25  qty=0.8
+    ADD-ODK-PEA-1L                       bucket=2026-05-04  qty=0.8
+    ADD-ODK-PEA-1L                       bucket=2026-05-11  qty=0.8
+    ADD-ODK-PEA-1L                       bucket=2026-05-18  qty=1.6
+    ADD-ODK-PEA-1L                       bucket=2026-05-25  qty=0.8
+  Notes: היסטוריה חלשה / מוצר חדש | לבדוק אם עדיין פעיל | דורש אישור אם רלוונטי לייצור
+
+====================================================================================================
+UNMATCHED SKUs (23):
+  12002
+  GTCC-CAM-DAN-0.15L
+  GTCC-JAS-JAZ-0.15L
+  GTCC-JER-ARA-0.15L
+  GTCC-MUZ-ANBL-1L
+  GTCC-MUZ-APPZ-1L
+  GTCC-MUZ-BLBR-1L
+  GTCC-MUZ-JASM-1L
+  GTCC-MUZ-PNMM-1L
+  GTCC-MUZ-PSSP-1L
+  GTCC-MUZ-SMAR-1L
+  GTCC-MUZ-TROJ-1L
+  GTCC-NM-SAN-3.85L
+  GTCC-PIN-SAN-0.15L
+  GTCC-PIN-SAN-0.15Lx20
+  GTCC-TRO-JAP-0.15L
+  GTCC-TRO-JAP-1L
+  GTCC-VAR-RAS-0.15L
+  GTCC-WHI-SAN-0.15L
+  GTCC-WHI-SAN-0.15Lx20
+  GTEL-BAB-RED-0.75L
+  GTEL-BAB-WHI-0.75L
+  GTEL-COC-ARA-0.5L

@@ -1,0 +1,52 @@
+{
+  "_notes": [
+    "Project-local MCP starter config for GT Factory OS.",
+    "All entries are placeholders. Credentials must be supplied out-of-band and referenced via environment variables.",
+    "No entry here claims working credentials. UNRESOLVED credential dependencies are listed in the README's 'Unresolved' section.",
+    "Enable a server by removing the 'disabled: true' flag and supplying the referenced env vars."
+  ],
+  "mcpServers": {
+    "filesystem-canonical": {
+      "_description": "Filesystem access scoped to the canonical GT Factory OS repo. Read/write under the repo root only.",
+      "disabled": true,
+      "_enable_notes": "Requires @modelcontextprotocol/server-filesystem to be installed. Run: npx -y @modelcontextprotocol/server-filesystem <path>. Path below assumes canonical repo location from memory; confirm before enabling.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:/Users/tomw2/Projects/gt-factory-os"
+      ]
+    },
+    "github": {
+      "_description": "GitHub API access for PRs, issues, repo metadata.",
+      "disabled": true,
+      "_enable_notes": "Requires a GitHub personal access token with repo scope. Set GITHUB_PERSONAL_ACCESS_TOKEN in environment. UNRESOLVED: which GitHub org/repo hosts gt-factory-os (private? personal?). Confirm before enabling.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "postgres-readonly": {
+      "_description": "Read-only Postgres connection to the live Supabase DB. For verification queries only — no writes.",
+      "disabled": true,
+      "_enable_notes": "Requires DATABASE_URL_POOLED_READONLY in environment pointing at aws-1-eu-central-1.pooler.supabase.com:5432 with a role that has SELECT-only grants on the operational schema. Do NOT reuse the migration-capable DATABASE_URL_POOLED — this connection must be grant-limited to reads. UNRESOLVED: whether a readonly role has been provisioned in Supabase.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "${DATABASE_URL_POOLED_READONLY}"
+      ]
+    },
+    "sentry": {
+      "_description": "(Optional) Sentry error surfacing. Placeholder only.",
+      "disabled": true,
+      "_enable_notes": "Placeholder. No Sentry project is provisioned for GT Factory OS yet. UNRESOLVED: whether a Sentry project exists and its DSN/token."
+    },
+    "linear": {
+      "_description": "(Optional) Linear issue tracker. Placeholder only.",
+      "disabled": true,
+      "_enable_notes": "Placeholder. GT Factory OS issues are not tracked in Linear today. UNRESOLVED: whether Tom uses Linear/Jira/GitHub Issues for this project."
+    }
+  }
+}

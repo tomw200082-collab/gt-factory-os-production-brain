@@ -1,0 +1,252 @@
+========================================================================================================================
+UNMATCHED SKUs — full per-row breakdown
+========================================================================================================================
+
+--- GROUP: MUZA-1L (8 SKUs, total qty = 50.0) ---
+
+  Row 30  SKU: GTCC-MUZ-PNMM-1L
+    Name (HE): Muza Pink Mama  | flavor: None
+    Qty total: 14.0   Weekly: [0.0, 4.0, 3.0, 5.0, 2.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTCC-MUZ-PNMM-1L
+    Possible matches in items master:
+      ADD-MUZ-BZSM-1L                 MUZA BASIL SMASH MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-HER-1L                  MUZA HERBAL MULE BLISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-JASM-1L                 MUZA JASMIN MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-MRCL-1L                 MUZA CLASSIC MARGARITA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PNMM-1L                 MUZA PINK MAMA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PRPL-1L                 MUZA PURPLE KISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-TRIL-1L                 MUZA TROPICAL ISRAELI MIXER 1L   (MANUFACTURED, ACTIVE)
+      FG-MUZ-HER-200ML                MUZA HERBAL MULE BLISS COCKTAIL 0.2L   (MANUFACTURED, ACTIVE)
+
+  Row 35  SKU: GTCC-MUZ-APPZ-1L
+    Name (HE): Muza Apple Zest  | flavor: None
+    Qty total: 8.0   Weekly: [0.0, 2.0, 2.0, 3.0, 1.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTCC-MUZ-APPZ-1L
+    Possible matches in items master:
+      ADD-MUZ-BZSM-1L                 MUZA BASIL SMASH MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-HER-1L                  MUZA HERBAL MULE BLISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-JASM-1L                 MUZA JASMIN MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-MRCL-1L                 MUZA CLASSIC MARGARITA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PNMM-1L                 MUZA PINK MAMA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PRPL-1L                 MUZA PURPLE KISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-TRIL-1L                 MUZA TROPICAL ISRAELI MIXER 1L   (MANUFACTURED, ACTIVE)
+      FG-MUZ-HER-200ML                MUZA HERBAL MULE BLISS COCKTAIL 0.2L   (MANUFACTURED, ACTIVE)
+
+  Row 36  SKU: GTCC-MUZ-SMAR-1L
+    Name (HE): Muza Spicy Margarita  | flavor: None
+    Qty total: 6.0   Weekly: [0.0, 2.0, 1.0, 2.0, 1.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTCC-MUZ-SMAR-1L
+    Possible matches in items master:
+      ADD-MUZ-BZSM-1L                 MUZA BASIL SMASH MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-HER-1L                  MUZA HERBAL MULE BLISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-JASM-1L                 MUZA JASMIN MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-MRCL-1L                 MUZA CLASSIC MARGARITA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PNMM-1L                 MUZA PINK MAMA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PRPL-1L                 MUZA PURPLE KISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-TRIL-1L                 MUZA TROPICAL ISRAELI MIXER 1L   (MANUFACTURED, ACTIVE)
+      FG-MUZ-HER-200ML                MUZA HERBAL MULE BLISS COCKTAIL 0.2L   (MANUFACTURED, ACTIVE)
+
+  Row 37  SKU: GTCC-MUZ-TROJ-1L
+    Name (HE): Muza Tropical in Japan  | flavor: None
+    Qty total: 6.0   Weekly: [0.0, 2.0, 1.0, 2.0, 1.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTCC-MUZ-TROJ-1L
+    Possible matches in items master:
+      ADD-MUZ-BZSM-1L                 MUZA BASIL SMASH MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-HER-1L                  MUZA HERBAL MULE BLISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-JASM-1L                 MUZA JASMIN MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-MRCL-1L                 MUZA CLASSIC MARGARITA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PNMM-1L                 MUZA PINK MAMA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PRPL-1L                 MUZA PURPLE KISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-TRIL-1L                 MUZA TROPICAL ISRAELI MIXER 1L   (MANUFACTURED, ACTIVE)
+      FG-MUZ-HER-200ML                MUZA HERBAL MULE BLISS COCKTAIL 0.2L   (MANUFACTURED, ACTIVE)
+
+  Row 39  SKU: GTCC-MUZ-PSSP-1L
+    Name (HE): Muza Passion Spritz  | flavor: None
+    Qty total: 5.0   Weekly: [0.0, 1.0, 1.0, 2.0, 1.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTCC-MUZ-PSSP-1L
+    Possible matches in items master:
+      ADD-MUZ-BZSM-1L                 MUZA BASIL SMASH MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-HER-1L                  MUZA HERBAL MULE BLISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-JASM-1L                 MUZA JASMIN MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-MRCL-1L                 MUZA CLASSIC MARGARITA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PNMM-1L                 MUZA PINK MAMA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PRPL-1L                 MUZA PURPLE KISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-TRIL-1L                 MUZA TROPICAL ISRAELI MIXER 1L   (MANUFACTURED, ACTIVE)
+      FG-MUZ-HER-200ML                MUZA HERBAL MULE BLISS COCKTAIL 0.2L   (MANUFACTURED, ACTIVE)
+
+  Row 40  SKU: GTCC-MUZ-ANBL-1L
+    Name (HE): Muza Anise Bliss  | flavor: None
+    Qty total: 4.0   Weekly: [0.0, 1.0, 1.0, 2.0, 0.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTCC-MUZ-ANBL-1L
+    Possible matches in items master:
+      ADD-MUZ-BZSM-1L                 MUZA BASIL SMASH MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-HER-1L                  MUZA HERBAL MULE BLISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-JASM-1L                 MUZA JASMIN MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-MRCL-1L                 MUZA CLASSIC MARGARITA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PNMM-1L                 MUZA PINK MAMA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PRPL-1L                 MUZA PURPLE KISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-TRIL-1L                 MUZA TROPICAL ISRAELI MIXER 1L   (MANUFACTURED, ACTIVE)
+      FG-MUZ-HER-200ML                MUZA HERBAL MULE BLISS COCKTAIL 0.2L   (MANUFACTURED, ACTIVE)
+
+  Row 41  SKU: GTCC-MUZ-BLBR-1L
+    Name (HE): Muza Blueberry Breeze  | flavor: None
+    Qty total: 4.0   Weekly: [0.0, 1.0, 1.0, 1.0, 1.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTCC-MUZ-BLBR-1L
+    Possible matches in items master:
+      ADD-MUZ-BZSM-1L                 MUZA BASIL SMASH MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-HER-1L                  MUZA HERBAL MULE BLISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-JASM-1L                 MUZA JASMIN MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-MRCL-1L                 MUZA CLASSIC MARGARITA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PNMM-1L                 MUZA PINK MAMA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PRPL-1L                 MUZA PURPLE KISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-TRIL-1L                 MUZA TROPICAL ISRAELI MIXER 1L   (MANUFACTURED, ACTIVE)
+      FG-MUZ-HER-200ML                MUZA HERBAL MULE BLISS COCKTAIL 0.2L   (MANUFACTURED, ACTIVE)
+
+  Row 43  SKU: GTCC-MUZ-JASM-1L
+    Name (HE): Muza Jasmin  | flavor: None
+    Qty total: 3.0   Weekly: [0.0, 1.0, 1.0, 1.0, 0.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTCC-MUZ-JASM-1L
+    Possible matches in items master:
+      ADD-MUZ-BZSM-1L                 MUZA BASIL SMASH MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-HER-1L                  MUZA HERBAL MULE BLISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-JASM-1L                 MUZA JASMIN MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-MRCL-1L                 MUZA CLASSIC MARGARITA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PNMM-1L                 MUZA PINK MAMA MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-PRPL-1L                 MUZA PURPLE KISS MIXER 1L   (MANUFACTURED, ACTIVE)
+      ADD-MUZ-TRIL-1L                 MUZA TROPICAL ISRAELI MIXER 1L   (MANUFACTURED, ACTIVE)
+      FG-MUZ-HER-200ML                MUZA HERBAL MULE BLISS COCKTAIL 0.2L   (MANUFACTURED, ACTIVE)
+
+--- GROUP: SANGRIA-0.15L (4 SKUs, total qty = 424.0) ---
+
+  Row 17  SKU: GTCC-WHI-SAN-0.15L
+    Name (HE): קוקטייל סנגריה לבנה 0.15 ל  | flavor: None
+    Qty total: 134.0   Weekly: [0.0, 58.0, 62.0, 10.0, 4.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-WHI-SAN-0.15L, GTCC-WHI-SAN-1L, GTCC-WHI-SAN-0.15Lx20
+    Possible matches in items master:
+      FG-SAN-WHI-1L                   WHITE SANGRIA 1L   (MANUFACTURED, ACTIVE)
+      FG-SAN-WHI-300ML                WHITE SANGRIA ELITA 0.3L   (MANUFACTURED, PENDING)
+      FG-SAN-WHI-3850ML               WHITE SANGRIA 3.85L   (MANUFACTURED, ACTIVE)
+      FG-SAN-WHI-750ML                WHITE SANGRIA ELITA 0.75L   (MANUFACTURED, ACTIVE)
+
+  Row 17  SKU: GTCC-WHI-SAN-0.15Lx20
+    Name (HE): קוקטייל סנגריה לבנה 0.15 ל  | flavor: None
+    Qty total: 134.0   Weekly: [0.0, 58.0, 62.0, 10.0, 4.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-WHI-SAN-0.15L, GTCC-WHI-SAN-1L, GTCC-WHI-SAN-0.15Lx20
+    Possible matches in items master:
+      FG-SAN-WHI-1L                   WHITE SANGRIA 1L   (MANUFACTURED, ACTIVE)
+      FG-SAN-WHI-300ML                WHITE SANGRIA ELITA 0.3L   (MANUFACTURED, PENDING)
+      FG-SAN-WHI-3850ML               WHITE SANGRIA 3.85L   (MANUFACTURED, ACTIVE)
+      FG-SAN-WHI-750ML                WHITE SANGRIA ELITA 0.75L   (MANUFACTURED, ACTIVE)
+
+  Row 20  SKU: GTCC-PIN-SAN-0.15L
+    Name (HE): קוקטייל סנגריה ורודה 0.15 ל  | flavor: None
+    Qty total: 78.0   Weekly: [0.0, 15.0, 50.0, 13.0, 0.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-PIN-SAN-0.15L, GTCC-PIN-SAN-1L, GTCC-PIN-SAN-0.15Lx20
+    Possible matches in items master:
+      FG-SAN-PIN-1L                   PINK SANGRIA 1L   (MANUFACTURED, ACTIVE)
+
+  Row 20  SKU: GTCC-PIN-SAN-0.15Lx20
+    Name (HE): קוקטייל סנגריה ורודה 0.15 ל  | flavor: None
+    Qty total: 78.0   Weekly: [0.0, 15.0, 50.0, 13.0, 0.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-PIN-SAN-0.15L, GTCC-PIN-SAN-1L, GTCC-PIN-SAN-0.15Lx20
+    Possible matches in items master:
+      FG-SAN-PIN-1L                   PINK SANGRIA 1L   (MANUFACTURED, ACTIVE)
+
+--- GROUP: SANGRIA-OTHER (1 SKUs, total qty = 3.0) ---
+
+  Row 42  SKU: GTCC-NM-SAN-3.85L
+    Name (HE): GT Sangria  | flavor: None
+    Qty total: 3.0   Weekly: [0.0, 1.0, 1.0, 1.0, 0.0]
+    Notes: None
+    All SKUs in this row: GTCC-NM-SAN-3.85L
+    No plausible candidate in items master
+
+--- GROUP: ARAK (2 SKUs, total qty = 122.0) ---
+
+  Row 19  SKU: GTEL-COC-ARA-0.5L
+    Name (HE): GT Elita Arak  | flavor: None
+    Qty total: 89.0   Weekly: [0.0, 24.0, 21.0, 33.0, 11.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTEL-COC-ARA-0.5L
+    No plausible candidate in items master
+
+  Row 25  SKU: GTCC-JER-ARA-0.15L
+    Name (HE): קוקטייל תה תפוחים ירושלמי (ערק אמרטו) 0.15 ל  | flavor: None
+    Qty total: 33.0   Weekly: [0.0, 6.0, 0.0, 0.0, 27.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-JER-ARA-0.15L
+    No plausible candidate in items master
+
+--- GROUP: BABKA (2 SKUs, total qty = 18.0) ---
+
+  Row 33  SKU: GTEL-BAB-RED-0.75L
+    Name (HE): GT Babka Bakery Red Sangria  | flavor: None
+    Qty total: 9.0   Weekly: [0.0, 3.0, 2.0, 3.0, 1.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTEL-BAB-RED-0.75L
+    No plausible candidate in items master
+
+  Row 34  SKU: GTEL-BAB-WHI-0.75L
+    Name (HE): GT Babka Bakery White Sangria  | flavor: None
+    Qty total: 9.0   Weekly: [0.0, 3.0, 2.0, 3.0, 1.0]
+    Notes: היסטוריה חלשה / מוצר חדש
+    All SKUs in this row: GTEL-BAB-WHI-0.75L
+    No plausible candidate in items master
+
+--- GROUP: TROPICAL (2 SKUs, total qty = 26.0) ---
+
+  Row 31  SKU: GTCC-TRO-JAP-1L
+    Name (HE): קוקטייל טרופיקל אין גאפן (גין) 1 ל  | flavor: None
+    Qty total: 13.0   Weekly: [0.0, 4.0, 2.0, 5.0, 2.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-TRO-JAP-1L, GTCC-TRO-JAP-0.15L
+    No plausible candidate in items master
+
+  Row 31  SKU: GTCC-TRO-JAP-0.15L
+    Name (HE): קוקטייל טרופיקל אין גאפן (גין) 1 ל  | flavor: None
+    Qty total: 13.0   Weekly: [0.0, 4.0, 2.0, 5.0, 2.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-TRO-JAP-1L, GTCC-TRO-JAP-0.15L
+    No plausible candidate in items master
+
+--- GROUP: OTHER (4 SKUs, total qty = 107.0) ---
+
+  Row 22  SKU: 12002
+    Name (HE): קוקטייל סלסול 0.2 ל  | flavor: None
+    Qty total: 67.0   Weekly: [0.0, 67.0, 0.0, 0.0, 0.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: 12002
+    No plausible candidate in items master
+
+  Row 28  SKU: GTCC-CAM-DAN-0.15L
+    Name (HE): קוקטייל קמפרי טי דאנס (קמפרי) 0.15 ל  | flavor: None
+    Qty total: 22.0   Weekly: [0.0, 0.0, 0.0, 0.0, 22.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-CAM-DAN-0.15L
+    No plausible candidate in items master
+
+  Row 32  SKU: GTCC-VAR-RAS-0.15L
+    Name (HE): קוקטייל ראשן, וארי ראשן (וודקה) 0.15 ל  | flavor: None
+    Qty total: 12.0   Weekly: [0.0, 0.0, 12.0, 0.0, 0.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-VAR-RAS-0.15L
+    No plausible candidate in items master
+
+  Row 38  SKU: GTCC-JAS-JAZ-0.15L
+    Name (HE): קוקטייל גאסמין גאז (וויסקי ) 0.15 ל  | flavor: None
+    Qty total: 6.0   Weekly: [0.0, 2.0, 1.0, 2.0, 1.0]
+    Notes: לבדוק אם עדיין פעיל
+    All SKUs in this row: GTCC-JAS-JAZ-0.15L
+    No plausible candidate in items master

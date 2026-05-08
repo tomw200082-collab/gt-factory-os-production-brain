@@ -1,0 +1,3450 @@
+{
+  "month_bucket": "2026-05-01",
+  "iso_week_starts": [
+    "2026-05-04",
+    "2026-05-04",
+    "2026-05-11",
+    "2026-05-18",
+    "2026-05-25"
+  ],
+  "items_in_db": 68,
+  "rows": [
+    {
+      "excel_row": 6,
+      "family": "תה קר / חליטות",
+      "name": "DETOX",
+      "flavor": "רגיל / עם סוכר",
+      "pack_vals": {
+        "4": 1559.0,
+        "5": 310.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 1869.0,
+      "weekly": [
+        6.0,
+        547.0,
+        307.0,
+        535.0,
+        474.0
+      ],
+      "weekly_sum": 1869.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳",
+      "skus_raw": "GT-LUI-LOW-1L, GT-LUI-LOW-0.5L",
+      "skus": [
+        "GT-LUI-LOW-1L",
+        "GT-LUI-LOW-0.5L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-LUI-LOW-1L",
+          "matched_sku": "GT-LUI-LOW-1L",
+          "item_id": "FG-DET-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 1559.0
+        },
+        {
+          "sku_excel": "GT-LUI-LOW-0.5L",
+          "matched_sku": "GT-LUI-LOW-0.5L",
+          "item_id": "FG-DET-500ML",
+          "match_type": "sku",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 310.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-DET-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 1559.0
+        },
+        {
+          "item_id": "FG-DET-500ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 310.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-DET-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 461.2772
+        },
+        {
+          "item_id": "FG-DET-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 256.0797
+        },
+        {
+          "item_id": "FG-DET-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 446.2627
+        },
+        {
+          "item_id": "FG-DET-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 395.3804
+        },
+        {
+          "item_id": "FG-DET-500ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 91.7228
+        },
+        {
+          "item_id": "FG-DET-500ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 50.9203
+        },
+        {
+          "item_id": "FG-DET-500ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 88.7373
+        },
+        {
+          "item_id": "FG-DET-500ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 78.6196
+        }
+      ]
+    },
+    {
+      "excel_row": 7,
+      "family": "תה קר / חליטות",
+      "name": "NAMASTEA",
+      "flavor": "רגיל / עם סוכר",
+      "pack_vals": {
+        "4": 709.0,
+        "5": 390.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 1099.0,
+      "weekly": [
+        9.0,
+        394.0,
+        249.0,
+        246.0,
+        201.0
+      ],
+      "weekly_sum": 1099.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳ | היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GT-MAS-CHA-1L, GT-MAS-CHA-0.5L",
+      "skus": [
+        "GT-MAS-CHA-1L",
+        "GT-MAS-CHA-0.5L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-MAS-CHA-1L",
+          "matched_sku": "GT-MAS-CHA-1L",
+          "item_id": "FG-NAM-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 709.0
+        },
+        {
+          "sku_excel": "GT-MAS-CHA-0.5L",
+          "matched_sku": "GT-MAS-CHA-0.5L",
+          "item_id": "FG-NAM-500ML",
+          "match_type": "sku",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 390.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-NAM-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 709.0
+        },
+        {
+          "item_id": "FG-NAM-500ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 390.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-NAM-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 259.9882
+        },
+        {
+          "item_id": "FG-NAM-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 160.6379
+        },
+        {
+          "item_id": "FG-NAM-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 158.7025
+        },
+        {
+          "item_id": "FG-NAM-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 129.6715
+        },
+        {
+          "item_id": "FG-NAM-500ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 143.0118
+        },
+        {
+          "item_id": "FG-NAM-500ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 88.3621
+        },
+        {
+          "item_id": "FG-NAM-500ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 87.2975
+        },
+        {
+          "item_id": "FG-NAM-500ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 71.3285
+        }
+      ]
+    },
+    {
+      "excel_row": 8,
+      "family": "תה קר / חליטות",
+      "name": "FRESH",
+      "flavor": "רגיל / עם סוכר",
+      "pack_vals": {
+        "4": 727.0,
+        "5": 225.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 952.0,
+      "weekly": [
+        6.0,
+        249.0,
+        251.0,
+        246.0,
+        200.0
+      ],
+      "weekly_sum": 952.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳",
+      "skus_raw": "GT-HIB-LOW-1L, GT-HIB-LOW-0.5L",
+      "skus": [
+        "GT-HIB-LOW-1L",
+        "GT-HIB-LOW-0.5L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-HIB-LOW-1L",
+          "matched_sku": "GT-HIB-LOW-1L",
+          "item_id": "FG-FRE-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 727.0
+        },
+        {
+          "sku_excel": "GT-HIB-LOW-0.5L",
+          "matched_sku": "GT-HIB-LOW-0.5L",
+          "item_id": "FG-FRE-500ML",
+          "match_type": "sku",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 225.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-FRE-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 727.0
+        },
+        {
+          "item_id": "FG-FRE-500ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 225.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-FRE-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 194.7321
+        },
+        {
+          "item_id": "FG-FRE-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 191.6775
+        },
+        {
+          "item_id": "FG-FRE-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 187.8592
+        },
+        {
+          "item_id": "FG-FRE-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 152.7311
+        },
+        {
+          "item_id": "FG-FRE-500ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 60.2679
+        },
+        {
+          "item_id": "FG-FRE-500ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 59.3225
+        },
+        {
+          "item_id": "FG-FRE-500ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 58.1408
+        },
+        {
+          "item_id": "FG-FRE-500ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 47.2689
+        }
+      ]
+    },
+    {
+      "excel_row": 9,
+      "family": "תה קר / חליטות",
+      "name": "REVIVE",
+      "flavor": "רגיל / עם סוכר",
+      "pack_vals": {
+        "4": 496.0,
+        "5": 350.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 846.0,
+      "weekly": [
+        0.0,
+        323.0,
+        211.0,
+        216.0,
+        96.0
+      ],
+      "weekly_sum": 846.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳",
+      "skus_raw": "GT-SEN-LOW-1L, GT-SEN-LOW-0.5L",
+      "skus": [
+        "GT-SEN-LOW-1L",
+        "GT-SEN-LOW-0.5L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-SEN-LOW-1L",
+          "matched_sku": "GT-SEN-LOW-1L",
+          "item_id": "FG-REV-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 496.0
+        },
+        {
+          "sku_excel": "GT-SEN-LOW-0.5L",
+          "matched_sku": "GT-SEN-LOW-0.5L",
+          "item_id": "FG-REV-500ML",
+          "match_type": "sku",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 350.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-REV-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 496.0
+        },
+        {
+          "item_id": "FG-REV-500ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 350.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-REV-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 189.3712
+        },
+        {
+          "item_id": "FG-REV-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 123.7069
+        },
+        {
+          "item_id": "FG-REV-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 126.6383
+        },
+        {
+          "item_id": "FG-REV-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 56.2837
+        },
+        {
+          "item_id": "FG-REV-500ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 133.6288
+        },
+        {
+          "item_id": "FG-REV-500ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 87.2931
+        },
+        {
+          "item_id": "FG-REV-500ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 89.3617
+        },
+        {
+          "item_id": "FG-REV-500ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 39.7163
+        }
+      ]
+    },
+    {
+      "excel_row": 10,
+      "family": "תה קר / חליטות",
+      "name": "DETOX Sugar-Free",
+      "flavor": "ללא סוכר",
+      "pack_vals": {
+        "4": 353.0,
+        "5": 188.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 541.0,
+      "weekly": [
+        8.0,
+        134.0,
+        106.0,
+        202.0,
+        91.0
+      ],
+      "weekly_sum": 541.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳",
+      "skus_raw": "GT-LUI-FRE-1L, GT-LUI-FRE-0.5L",
+      "skus": [
+        "GT-LUI-FRE-1L",
+        "GT-LUI-FRE-0.5L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-LUI-FRE-1L",
+          "matched_sku": "GT-LUI-FRE-1L",
+          "item_id": "FG-DET-1L-NS",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 353.0
+        },
+        {
+          "sku_excel": "GT-LUI-FRE-0.5L",
+          "matched_sku": "GT-LUI-FRE-0.5L",
+          "item_id": "FG-DET-500ML-NS",
+          "match_type": "sku",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 188.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-DET-1L-NS",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 353.0
+        },
+        {
+          "item_id": "FG-DET-500ML-NS",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 188.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-DET-1L-NS",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 92.6543
+        },
+        {
+          "item_id": "FG-DET-1L-NS",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 69.1645
+        },
+        {
+          "item_id": "FG-DET-1L-NS",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 131.8041
+        },
+        {
+          "item_id": "FG-DET-1L-NS",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 59.3771
+        },
+        {
+          "item_id": "FG-DET-500ML-NS",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 49.3457
+        },
+        {
+          "item_id": "FG-DET-500ML-NS",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 36.8355
+        },
+        {
+          "item_id": "FG-DET-500ML-NS",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 70.1959
+        },
+        {
+          "item_id": "FG-DET-500ML-NS",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 31.6229
+        }
+      ]
+    },
+    {
+      "excel_row": 11,
+      "family": "תה קר / חליטות",
+      "name": "ENERGY",
+      "flavor": "רגיל / עם סוכר",
+      "pack_vals": {
+        "4": 253.0,
+        "5": 236.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 489.0,
+      "weekly": [
+        0.0,
+        103.0,
+        140.0,
+        215.0,
+        31.0
+      ],
+      "weekly_sum": 489.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳",
+      "skus_raw": "GT-LEM-LOW-1L, GT-LEM-LOW-0.5L",
+      "skus": [
+        "GT-LEM-LOW-1L",
+        "GT-LEM-LOW-0.5L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-LEM-LOW-1L",
+          "matched_sku": "GT-LEM-LOW-1L",
+          "item_id": "FG-ENE-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 253.0
+        },
+        {
+          "sku_excel": "GT-LEM-LOW-0.5L",
+          "matched_sku": "GT-LEM-LOW-0.5L",
+          "item_id": "FG-ENE-500ML",
+          "match_type": "sku",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 236.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-ENE-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 253.0
+        },
+        {
+          "item_id": "FG-ENE-500ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 236.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-ENE-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 53.2904
+        },
+        {
+          "item_id": "FG-ENE-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 72.4335
+        },
+        {
+          "item_id": "FG-ENE-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 111.2372
+        },
+        {
+          "item_id": "FG-ENE-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 16.0389
+        },
+        {
+          "item_id": "FG-ENE-500ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 49.7096
+        },
+        {
+          "item_id": "FG-ENE-500ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 67.5665
+        },
+        {
+          "item_id": "FG-ENE-500ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 103.7628
+        },
+        {
+          "item_id": "FG-ENE-500ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 14.9611
+        }
+      ]
+    },
+    {
+      "excel_row": 12,
+      "family": "תה קר / חליטות",
+      "name": "CALM",
+      "flavor": "רגיל / עם סוכר",
+      "pack_vals": {
+        "4": 152.0,
+        "5": 282.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 434.0,
+      "weekly": [
+        0.0,
+        171.0,
+        101.0,
+        123.0,
+        39.0
+      ],
+      "weekly_sum": 434.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳",
+      "skus_raw": "GT-CHA-LOW-0.5L, GT-CHA-LOW-1L",
+      "skus": [
+        "GT-CHA-LOW-0.5L",
+        "GT-CHA-LOW-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-CHA-LOW-0.5L",
+          "matched_sku": "GT-CHA-LOW-0.5L",
+          "item_id": "FG-CAL-500ML",
+          "match_type": "sku",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 282.0
+        },
+        {
+          "sku_excel": "GT-CHA-LOW-1L",
+          "matched_sku": "GT-CHA-LOW-1L",
+          "item_id": "FG-CAL-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 152.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-CAL-500ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 282.0
+        },
+        {
+          "item_id": "FG-CAL-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 152.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-CAL-500ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 111.1106
+        },
+        {
+          "item_id": "FG-CAL-500ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 65.6267
+        },
+        {
+          "item_id": "FG-CAL-500ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 79.9217
+        },
+        {
+          "item_id": "FG-CAL-500ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 25.341
+        },
+        {
+          "item_id": "FG-CAL-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 59.8894
+        },
+        {
+          "item_id": "FG-CAL-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 35.3733
+        },
+        {
+          "item_id": "FG-CAL-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 43.0783
+        },
+        {
+          "item_id": "FG-CAL-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 13.659
+        }
+      ]
+    },
+    {
+      "excel_row": 13,
+      "family": "תה קר / חליטות",
+      "name": "CONSCIOUSNESS",
+      "flavor": "רגיל / עם סוכר",
+      "pack_vals": {
+        "4": 185.0,
+        "5": 145.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 330.0,
+      "weekly": [
+        0.0,
+        119.0,
+        76.0,
+        80.0,
+        55.0
+      ],
+      "weekly_sum": 330.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳",
+      "skus_raw": "GT-JAS-LOW-1L, GT-JAS-LOW-0.5L",
+      "skus": [
+        "GT-JAS-LOW-1L",
+        "GT-JAS-LOW-0.5L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-JAS-LOW-1L",
+          "matched_sku": "GT-JAS-LOW-1L",
+          "item_id": "FG-CON-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 185.0
+        },
+        {
+          "sku_excel": "GT-JAS-LOW-0.5L",
+          "matched_sku": "GT-JAS-LOW-0.5L",
+          "item_id": "FG-CON-500ML",
+          "match_type": "sku",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 145.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-CON-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 185.0
+        },
+        {
+          "item_id": "FG-CON-500ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 145.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-CON-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 66.7121
+        },
+        {
+          "item_id": "FG-CON-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 42.6061
+        },
+        {
+          "item_id": "FG-CON-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 44.8485
+        },
+        {
+          "item_id": "FG-CON-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 30.8333
+        },
+        {
+          "item_id": "FG-CON-500ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 52.2879
+        },
+        {
+          "item_id": "FG-CON-500ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 33.3939
+        },
+        {
+          "item_id": "FG-CON-500ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 35.1515
+        },
+        {
+          "item_id": "FG-CON-500ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 24.1667
+        }
+      ]
+    },
+    {
+      "excel_row": 14,
+      "family": "תה קר / חליטות",
+      "name": "FRESH Sugar-Free",
+      "flavor": "ללא סוכר",
+      "pack_vals": {
+        "4": 133.0,
+        "5": 98.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 231.0,
+      "weekly": [
+        0.0,
+        100.0,
+        20.0,
+        90.0,
+        21.0
+      ],
+      "weekly_sum": 231.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳",
+      "skus_raw": "GT-HIB-FRE-1L, GT-HIB-FRE-0.5L",
+      "skus": [
+        "GT-HIB-FRE-1L",
+        "GT-HIB-FRE-0.5L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-HIB-FRE-1L",
+          "matched_sku": "GT-HIB-FRE-1L",
+          "item_id": "FG-FRE-1L-NS",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 133.0
+        },
+        {
+          "sku_excel": "GT-HIB-FRE-0.5L",
+          "matched_sku": "GT-HIB-FRE-0.5L",
+          "item_id": "FG-FRE-500ML-NS",
+          "match_type": "sku",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 98.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-FRE-1L-NS",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 133.0
+        },
+        {
+          "item_id": "FG-FRE-500ML-NS",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 98.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-FRE-1L-NS",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 57.5758
+        },
+        {
+          "item_id": "FG-FRE-1L-NS",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 11.5152
+        },
+        {
+          "item_id": "FG-FRE-1L-NS",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 51.8182
+        },
+        {
+          "item_id": "FG-FRE-1L-NS",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 12.0909
+        },
+        {
+          "item_id": "FG-FRE-500ML-NS",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 42.4242
+        },
+        {
+          "item_id": "FG-FRE-500ML-NS",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 8.4848
+        },
+        {
+          "item_id": "FG-FRE-500ML-NS",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 38.1818
+        },
+        {
+          "item_id": "FG-FRE-500ML-NS",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 8.9091
+        }
+      ]
+    },
+    {
+      "excel_row": 15,
+      "family": "תה קר / חליטות",
+      "name": "Desert Infusion",
+      "flavor": "רגיל / עם סוכר",
+      "pack_vals": {
+        "4": 196.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 196.0,
+      "weekly": [
+        0.0,
+        0.0,
+        44.0,
+        43.0,
+        109.0
+      ],
+      "weekly_sum": 196.0,
+      "notes": "0.5L ו-1L מאוחדים לאותו באצ׳",
+      "skus_raw": "GT-INF-DES-1L",
+      "skus": [
+        "GT-INF-DES-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-INF-DES-1L",
+          "matched_sku": "GT-INF-DES-1L",
+          "item_id": "FG-DES-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 196.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-DES-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 196.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-DES-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 44.0
+        },
+        {
+          "item_id": "FG-DES-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 43.0
+        },
+        {
+          "item_id": "FG-DES-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 109.0
+        }
+      ]
+    },
+    {
+      "excel_row": 16,
+      "family": "קוקטיילים / סנגריה",
+      "name": "GT Elita Red Sangria",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 192.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 192.0,
+      "weekly": [
+        0.0,
+        0.0,
+        0.0,
+        192.0,
+        0.0
+      ],
+      "weekly_sum": 192.0,
+      "notes": null,
+      "skus_raw": "GTEL-SAN-RED-0.75L",
+      "skus": [
+        "GTEL-SAN-RED-0.75L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTEL-SAN-RED-0.75L",
+          "matched_sku": "GTEL-SAN-RED-0.75L",
+          "item_id": "FG-SAN-RED-750ML",
+          "match_type": "sku",
+          "pack_col": 6,
+          "pack_label": "0.75L (750ML)",
+          "pack_share_qty": 192.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-SAN-RED-750ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 192.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-SAN-RED-750ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 192.0
+        }
+      ]
+    },
+    {
+      "excel_row": 17,
+      "family": "קוקטיילים / סנגריה",
+      "name": "קוקטייל סנגריה לבנה 0.15 ל",
+      "flavor": null,
+      "pack_vals": {
+        "4": 22.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 112.0,
+        "9": 0.0
+      },
+      "qty_total": 134.0,
+      "weekly": [
+        0.0,
+        58.0,
+        62.0,
+        10.0,
+        4.0
+      ],
+      "weekly_sum": 134.0,
+      "notes": "לבדוק אם עדיין פעיל",
+      "skus_raw": "GTCC-WHI-SAN-0.15L, GTCC-WHI-SAN-1L, GTCC-WHI-SAN-0.15Lx20",
+      "skus": [
+        "GTCC-WHI-SAN-0.15L",
+        "GTCC-WHI-SAN-1L",
+        "GTCC-WHI-SAN-0.15Lx20"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-WHI-SAN-0.15L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        },
+        {
+          "sku_excel": "GTCC-WHI-SAN-1L",
+          "matched_sku": "GTCC-WHI-SAN-1L",
+          "item_id": "FG-SAN-WHI-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 22.0
+        },
+        {
+          "sku_excel": "GTCC-WHI-SAN-0.15Lx20",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-SAN-WHI-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 22.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-SAN-WHI-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 9.5224
+        },
+        {
+          "item_id": "FG-SAN-WHI-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 10.1791
+        },
+        {
+          "item_id": "FG-SAN-WHI-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 1.6418
+        },
+        {
+          "item_id": "FG-SAN-WHI-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 0.6567
+        }
+      ]
+    },
+    {
+      "excel_row": 18,
+      "family": "קוקטיילים / סנגריה",
+      "name": "GT Nonomimi Sangria",
+      "flavor": null,
+      "pack_vals": {
+        "4": 89.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 29.0
+      },
+      "qty_total": 118.0,
+      "weekly": [
+        7.0,
+        11.0,
+        27.0,
+        47.0,
+        26.0
+      ],
+      "weekly_sum": 118.0,
+      "notes": null,
+      "skus_raw": "GTCC-NON-SAN-1L, GTCC-NON-SAN-3.85L",
+      "skus": [
+        "GTCC-NON-SAN-1L",
+        "GTCC-NON-SAN-3.85L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-NON-SAN-1L",
+          "matched_sku": "GTCC-NON-SAN-1L",
+          "item_id": "FG-NM-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 89.0
+        },
+        {
+          "sku_excel": "GTCC-NON-SAN-3.85L",
+          "matched_sku": "GTCC-NON-SAN-3.85L",
+          "item_id": "FG-NM-3850ML",
+          "match_type": "sku",
+          "pack_col": 9,
+          "pack_label": "3.85L (3850ML)",
+          "pack_share_qty": 29.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-NM-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 89.0
+        },
+        {
+          "item_id": "FG-NM-3850ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 29.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-NM-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 13.5763
+        },
+        {
+          "item_id": "FG-NM-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 20.3644
+        },
+        {
+          "item_id": "FG-NM-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 35.4492
+        },
+        {
+          "item_id": "FG-NM-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 19.6102
+        },
+        {
+          "item_id": "FG-NM-3850ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 4.4237
+        },
+        {
+          "item_id": "FG-NM-3850ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 6.6356
+        },
+        {
+          "item_id": "FG-NM-3850ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 11.5508
+        },
+        {
+          "item_id": "FG-NM-3850ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 6.3898
+        }
+      ]
+    },
+    {
+      "excel_row": 19,
+      "family": "קוקטיילים / סנגריה",
+      "name": "GT Elita Arak",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 89.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 89.0,
+      "weekly": [
+        0.0,
+        24.0,
+        21.0,
+        33.0,
+        11.0
+      ],
+      "weekly_sum": 89.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTEL-COC-ARA-0.5L",
+      "skus": [
+        "GTEL-COC-ARA-0.5L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTEL-COC-ARA-0.5L",
+          "matched_sku": "GTEL-COC-ARA-0.5L",
+          "item_id": "FG-ARK-PAS-500ML",
+          "match_type": "manual_override",
+          "pack_col": 5,
+          "pack_label": "0.5L (500ML)",
+          "pack_share_qty": 89.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-ARK-PAS-500ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 89.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-ARK-PAS-500ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 24.0
+        },
+        {
+          "item_id": "FG-ARK-PAS-500ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 21.0
+        },
+        {
+          "item_id": "FG-ARK-PAS-500ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 33.0
+        },
+        {
+          "item_id": "FG-ARK-PAS-500ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 11.0
+        }
+      ]
+    },
+    {
+      "excel_row": 20,
+      "family": "קוקטיילים / סנגריה",
+      "name": "קוקטייל סנגריה ורודה 0.15 ל",
+      "flavor": null,
+      "pack_vals": {
+        "4": 21.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 57.0,
+        "9": 0.0
+      },
+      "qty_total": 78.0,
+      "weekly": [
+        0.0,
+        15.0,
+        50.0,
+        13.0,
+        0.0
+      ],
+      "weekly_sum": 78.0,
+      "notes": "לבדוק אם עדיין פעיל",
+      "skus_raw": "GTCC-PIN-SAN-0.15L, GTCC-PIN-SAN-1L, GTCC-PIN-SAN-0.15Lx20",
+      "skus": [
+        "GTCC-PIN-SAN-0.15L",
+        "GTCC-PIN-SAN-1L",
+        "GTCC-PIN-SAN-0.15Lx20"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-PIN-SAN-0.15L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        },
+        {
+          "sku_excel": "GTCC-PIN-SAN-1L",
+          "matched_sku": "GTCC-PIN-SAN-1L",
+          "item_id": "FG-SAN-PIN-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 21.0
+        },
+        {
+          "sku_excel": "GTCC-PIN-SAN-0.15Lx20",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-SAN-PIN-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 21.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-SAN-PIN-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 4.0385
+        },
+        {
+          "item_id": "FG-SAN-PIN-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 13.4615
+        },
+        {
+          "item_id": "FG-SAN-PIN-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 3.5
+        }
+      ]
+    },
+    {
+      "excel_row": 21,
+      "family": "קוקטיילים / סנגריה",
+      "name": "GT Elita White Sangria",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 68.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 68.0,
+      "weekly": [
+        0.0,
+        19.0,
+        16.0,
+        25.0,
+        8.0
+      ],
+      "weekly_sum": 68.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTEL-SAN-WHI-0.75L",
+      "skus": [
+        "GTEL-SAN-WHI-0.75L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTEL-SAN-WHI-0.75L",
+          "matched_sku": "GTEL-SAN-WHI-0.75L",
+          "item_id": "FG-SAN-WHI-750ML",
+          "match_type": "sku",
+          "pack_col": 6,
+          "pack_label": "0.75L (750ML)",
+          "pack_share_qty": 68.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-SAN-WHI-750ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 68.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-SAN-WHI-750ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 19.0
+        },
+        {
+          "item_id": "FG-SAN-WHI-750ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 16.0
+        },
+        {
+          "item_id": "FG-SAN-WHI-750ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 25.0
+        },
+        {
+          "item_id": "FG-SAN-WHI-750ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 8.0
+        }
+      ]
+    },
+    {
+      "excel_row": 22,
+      "family": "קוקטיילים / סנגריה",
+      "name": "קוקטייל סלסול 0.2 ל",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 67.0,
+        "9": 0.0
+      },
+      "qty_total": 67.0,
+      "weekly": [
+        0.0,
+        67.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weekly_sum": 67.0,
+      "notes": "לבדוק אם עדיין פעיל",
+      "skus_raw": "12002",
+      "skus": [
+        "12002"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "12002",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 23,
+      "family": "קוקטיילים / סנגריה",
+      "name": "GT Elita Cosmo Lychee",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 47.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 47.0,
+      "weekly": [
+        0.0,
+        13.0,
+        11.0,
+        17.0,
+        6.0
+      ],
+      "weekly_sum": 47.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTEL-COS-LYC-0.3L",
+      "skus": [
+        "GTEL-COS-LYC-0.3L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTEL-COS-LYC-0.3L",
+          "matched_sku": "GTEL-COS-LYC-0.3L",
+          "item_id": "FG-COS-LYC-300ML",
+          "match_type": "sku",
+          "pack_col": 7,
+          "pack_label": "0.27/0.3L (300ML)",
+          "pack_share_qty": 47.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-COS-LYC-300ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 47.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-COS-LYC-300ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 13.0
+        },
+        {
+          "item_id": "FG-COS-LYC-300ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 11.0
+        },
+        {
+          "item_id": "FG-COS-LYC-300ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 17.0
+        },
+        {
+          "item_id": "FG-COS-LYC-300ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 6.0
+        }
+      ]
+    },
+    {
+      "excel_row": 24,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Jasmine",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 45.0,
+        "9": 0.0
+      },
+      "qty_total": 45.0,
+      "weekly": [
+        0.0,
+        12.0,
+        10.0,
+        17.0,
+        6.0
+      ],
+      "weekly_sum": 45.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-JAS-0.2L",
+      "skus": [
+        "GTCC-MUZ-JAS-0.2L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-JAS-0.2L",
+          "matched_sku": "GTCC-MUZ-JAS-0.2L",
+          "item_id": "FG-MUZ-JAS-200ML",
+          "match_type": "sku",
+          "pack_col": 8,
+          "pack_label": "0.15/0.2L",
+          "pack_share_qty": 45.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-MUZ-JAS-200ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 45.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-MUZ-JAS-200ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 12.0
+        },
+        {
+          "item_id": "FG-MUZ-JAS-200ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 10.0
+        },
+        {
+          "item_id": "FG-MUZ-JAS-200ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 17.0
+        },
+        {
+          "item_id": "FG-MUZ-JAS-200ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 6.0
+        }
+      ]
+    },
+    {
+      "excel_row": 25,
+      "family": "קוקטיילים / סנגריה",
+      "name": "קוקטייל תה תפוחים ירושלמי (ערק אמרטו) 0.15 ל",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 33.0,
+        "9": 0.0
+      },
+      "qty_total": 33.0,
+      "weekly": [
+        0.0,
+        6.0,
+        0.0,
+        0.0,
+        27.0
+      ],
+      "weekly_sum": 33.0,
+      "notes": "לבדוק אם עדיין פעיל",
+      "skus_raw": "GTCC-JER-ARA-0.15L",
+      "skus": [
+        "GTCC-JER-ARA-0.15L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-JER-ARA-0.15L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 26,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Herbal Mule Bliss",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 30.0,
+        "9": 0.0
+      },
+      "qty_total": 30.0,
+      "weekly": [
+        0.0,
+        8.0,
+        7.0,
+        11.0,
+        4.0
+      ],
+      "weekly_sum": 30.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-HER-0.2L",
+      "skus": [
+        "GTCC-MUZ-HER-0.2L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-HER-0.2L",
+          "matched_sku": "GTCC-MUZ-HER-0.2L",
+          "item_id": "FG-MUZ-HER-200ML",
+          "match_type": "sku",
+          "pack_col": 8,
+          "pack_label": "0.15/0.2L",
+          "pack_share_qty": 30.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-MUZ-HER-200ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 30.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-MUZ-HER-200ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 8.0
+        },
+        {
+          "item_id": "FG-MUZ-HER-200ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 7.0
+        },
+        {
+          "item_id": "FG-MUZ-HER-200ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 11.0
+        },
+        {
+          "item_id": "FG-MUZ-HER-200ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 4.0
+        }
+      ]
+    },
+    {
+      "excel_row": 27,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Negroni",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 27.0,
+        "9": 0.0
+      },
+      "qty_total": 27.0,
+      "weekly": [
+        0.0,
+        8.0,
+        6.0,
+        10.0,
+        3.0
+      ],
+      "weekly_sum": 27.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-NEG-0.2L",
+      "skus": [
+        "GTCC-MUZ-NEG-0.2L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-NEG-0.2L",
+          "matched_sku": "GTCC-MUZ-NEG-0.2L",
+          "item_id": "FG-MUZ-NEG-200ML",
+          "match_type": "sku",
+          "pack_col": 8,
+          "pack_label": "0.15/0.2L",
+          "pack_share_qty": 27.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-MUZ-NEG-200ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 27.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-MUZ-NEG-200ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 8.0
+        },
+        {
+          "item_id": "FG-MUZ-NEG-200ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 6.0
+        },
+        {
+          "item_id": "FG-MUZ-NEG-200ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 10.0
+        },
+        {
+          "item_id": "FG-MUZ-NEG-200ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 3.0
+        }
+      ]
+    },
+    {
+      "excel_row": 28,
+      "family": "קוקטיילים / סנגריה",
+      "name": "קוקטייל קמפרי טי דאנס (קמפרי) 0.15 ל",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 22.0,
+        "9": 0.0
+      },
+      "qty_total": 22.0,
+      "weekly": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        22.0
+      ],
+      "weekly_sum": 22.0,
+      "notes": "לבדוק אם עדיין פעיל",
+      "skus_raw": "GTCC-CAM-DAN-0.15L",
+      "skus": [
+        "GTCC-CAM-DAN-0.15L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-CAM-DAN-0.15L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 29,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Queen Violet",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 18.0,
+        "9": 0.0
+      },
+      "qty_total": 18.0,
+      "weekly": [
+        0.0,
+        5.0,
+        4.0,
+        7.0,
+        2.0
+      ],
+      "weekly_sum": 18.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-QUE-0.2L",
+      "skus": [
+        "GTCC-MUZ-QUE-0.2L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-QUE-0.2L",
+          "matched_sku": "GTCC-MUZ-QUE-0.2L",
+          "item_id": "FG-MUZ-QUE-200ML",
+          "match_type": "sku",
+          "pack_col": 8,
+          "pack_label": "0.15/0.2L",
+          "pack_share_qty": 18.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-MUZ-QUE-200ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 18.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-MUZ-QUE-200ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 5.0
+        },
+        {
+          "item_id": "FG-MUZ-QUE-200ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 4.0
+        },
+        {
+          "item_id": "FG-MUZ-QUE-200ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 7.0
+        },
+        {
+          "item_id": "FG-MUZ-QUE-200ML",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 2.0
+        }
+      ]
+    },
+    {
+      "excel_row": 30,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Pink Mama",
+      "flavor": null,
+      "pack_vals": {
+        "4": 14.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 14.0,
+      "weekly": [
+        0.0,
+        4.0,
+        3.0,
+        5.0,
+        2.0
+      ],
+      "weekly_sum": 14.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-PNMM-1L",
+      "skus": [
+        "GTCC-MUZ-PNMM-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-PNMM-1L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 31,
+      "family": "קוקטיילים / סנגריה",
+      "name": "קוקטייל טרופיקל אין גאפן (גין) 1 ל",
+      "flavor": null,
+      "pack_vals": {
+        "4": 7.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 6.0,
+        "9": 0.0
+      },
+      "qty_total": 13.0,
+      "weekly": [
+        0.0,
+        4.0,
+        2.0,
+        5.0,
+        2.0
+      ],
+      "weekly_sum": 13.0,
+      "notes": "לבדוק אם עדיין פעיל",
+      "skus_raw": "GTCC-TRO-JAP-1L, GTCC-TRO-JAP-0.15L",
+      "skus": [
+        "GTCC-TRO-JAP-1L",
+        "GTCC-TRO-JAP-0.15L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-TRO-JAP-1L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        },
+        {
+          "sku_excel": "GTCC-TRO-JAP-0.15L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 32,
+      "family": "קוקטיילים / סנגריה",
+      "name": "קוקטייל ראשן, וארי ראשן (וודקה) 0.15 ל",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 12.0,
+        "9": 0.0
+      },
+      "qty_total": 12.0,
+      "weekly": [
+        0.0,
+        0.0,
+        12.0,
+        0.0,
+        0.0
+      ],
+      "weekly_sum": 12.0,
+      "notes": "לבדוק אם עדיין פעיל",
+      "skus_raw": "GTCC-VAR-RAS-0.15L",
+      "skus": [
+        "GTCC-VAR-RAS-0.15L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-VAR-RAS-0.15L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 33,
+      "family": "קוקטיילים / סנגריה",
+      "name": "GT Babka Bakery Red Sangria",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 9.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 9.0,
+      "weekly": [
+        0.0,
+        3.0,
+        2.0,
+        3.0,
+        1.0
+      ],
+      "weekly_sum": 9.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTEL-BAB-RED-0.75L",
+      "skus": [
+        "GTEL-BAB-RED-0.75L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTEL-BAB-RED-0.75L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 34,
+      "family": "קוקטיילים / סנגריה",
+      "name": "GT Babka Bakery White Sangria",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 9.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 9.0,
+      "weekly": [
+        0.0,
+        3.0,
+        2.0,
+        3.0,
+        1.0
+      ],
+      "weekly_sum": 9.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTEL-BAB-WHI-0.75L",
+      "skus": [
+        "GTEL-BAB-WHI-0.75L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTEL-BAB-WHI-0.75L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 35,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Apple Zest",
+      "flavor": null,
+      "pack_vals": {
+        "4": 8.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 8.0,
+      "weekly": [
+        0.0,
+        2.0,
+        2.0,
+        3.0,
+        1.0
+      ],
+      "weekly_sum": 8.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-APPZ-1L",
+      "skus": [
+        "GTCC-MUZ-APPZ-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-APPZ-1L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 36,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Spicy Margarita",
+      "flavor": null,
+      "pack_vals": {
+        "4": 6.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 6.0,
+      "weekly": [
+        0.0,
+        2.0,
+        1.0,
+        2.0,
+        1.0
+      ],
+      "weekly_sum": 6.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-SMAR-1L",
+      "skus": [
+        "GTCC-MUZ-SMAR-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-SMAR-1L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 37,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Tropical in Japan",
+      "flavor": null,
+      "pack_vals": {
+        "4": 6.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 6.0,
+      "weekly": [
+        0.0,
+        2.0,
+        1.0,
+        2.0,
+        1.0
+      ],
+      "weekly_sum": 6.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-TROJ-1L",
+      "skus": [
+        "GTCC-MUZ-TROJ-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-TROJ-1L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 38,
+      "family": "קוקטיילים / סנגריה",
+      "name": "קוקטייל גאסמין גאז (וויסקי ) 0.15 ל",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 6.0,
+        "9": 0.0
+      },
+      "qty_total": 6.0,
+      "weekly": [
+        0.0,
+        2.0,
+        1.0,
+        2.0,
+        1.0
+      ],
+      "weekly_sum": 6.0,
+      "notes": "לבדוק אם עדיין פעיל",
+      "skus_raw": "GTCC-JAS-JAZ-0.15L",
+      "skus": [
+        "GTCC-JAS-JAZ-0.15L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-JAS-JAZ-0.15L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 39,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Passion Spritz",
+      "flavor": null,
+      "pack_vals": {
+        "4": 5.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 5.0,
+      "weekly": [
+        0.0,
+        1.0,
+        1.0,
+        2.0,
+        1.0
+      ],
+      "weekly_sum": 5.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-PSSP-1L",
+      "skus": [
+        "GTCC-MUZ-PSSP-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-PSSP-1L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 40,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Anise Bliss",
+      "flavor": null,
+      "pack_vals": {
+        "4": 4.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 4.0,
+      "weekly": [
+        0.0,
+        1.0,
+        1.0,
+        2.0,
+        0.0
+      ],
+      "weekly_sum": 4.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-ANBL-1L",
+      "skus": [
+        "GTCC-MUZ-ANBL-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-ANBL-1L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 41,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Blueberry Breeze",
+      "flavor": null,
+      "pack_vals": {
+        "4": 4.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 4.0,
+      "weekly": [
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "weekly_sum": 4.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-BLBR-1L",
+      "skus": [
+        "GTCC-MUZ-BLBR-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-BLBR-1L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 42,
+      "family": "קוקטיילים / סנגריה",
+      "name": "GT Sangria",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 3.0
+      },
+      "qty_total": 3.0,
+      "weekly": [
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "weekly_sum": 3.0,
+      "notes": null,
+      "skus_raw": "GTCC-NM-SAN-3.85L",
+      "skus": [
+        "GTCC-NM-SAN-3.85L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-NM-SAN-3.85L",
+          "matched_sku": "GTCC-NM-SAN-3.85L",
+          "item_id": "FG-NM-3850ML",
+          "match_type": "manual_override",
+          "pack_col": 9,
+          "pack_label": "3.85L (3850ML)",
+          "pack_share_qty": 3.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-NM-3850ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 3.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-NM-3850ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 1.0
+        },
+        {
+          "item_id": "FG-NM-3850ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 1.0
+        },
+        {
+          "item_id": "FG-NM-3850ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 1.0
+        }
+      ]
+    },
+    {
+      "excel_row": 43,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Jasmin",
+      "flavor": null,
+      "pack_vals": {
+        "4": 3.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 3.0,
+      "weekly": [
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "weekly_sum": 3.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-JASM-1L",
+      "skus": [
+        "GTCC-MUZ-JASM-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-JASM-1L",
+          "matched_sku": null,
+          "item_id": null,
+          "match_type": null,
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [],
+      "weekly_lines": []
+    },
+    {
+      "excel_row": 44,
+      "family": "קוקטיילים / סנגריה",
+      "name": "Muza Passion Spritz",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 3.0,
+        "9": 0.0
+      },
+      "qty_total": 3.0,
+      "weekly": [
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "weekly_sum": 3.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTCC-MUZ-PSC-0.2L",
+      "skus": [
+        "GTCC-MUZ-PSC-0.2L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTCC-MUZ-PSC-0.2L",
+          "matched_sku": "GTCC-MUZ-PSC-0.2L",
+          "item_id": "FG-MUZ-PSC-200ML",
+          "match_type": "sku",
+          "pack_col": 8,
+          "pack_label": "0.15/0.2L",
+          "pack_share_qty": 3.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-MUZ-PSC-200ML",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 3.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-MUZ-PSC-200ML",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 1.0
+        },
+        {
+          "item_id": "FG-MUZ-PSC-200ML",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 1.0
+        },
+        {
+          "item_id": "FG-MUZ-PSC-200ML",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 1.0
+        }
+      ]
+    },
+    {
+      "excel_row": 45,
+      "family": "מיקסרים",
+      "name": "Muza Pink Mama Mixer",
+      "flavor": null,
+      "pack_vals": {
+        "4": 30.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 30.0,
+      "weekly": [
+        0.0,
+        8.0,
+        7.0,
+        11.0,
+        4.0
+      ],
+      "weekly_sum": 30.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTMX-MUZ-PNMM-1L",
+      "skus": [
+        "GTMX-MUZ-PNMM-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTMX-MUZ-PNMM-1L",
+          "matched_sku": "GTMX-MUZ-PNMM-1L",
+          "item_id": "ADD-MUZ-PNMM-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 30.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "ADD-MUZ-PNMM-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 30.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "ADD-MUZ-PNMM-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 8.0
+        },
+        {
+          "item_id": "ADD-MUZ-PNMM-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 7.0
+        },
+        {
+          "item_id": "ADD-MUZ-PNMM-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 11.0
+        },
+        {
+          "item_id": "ADD-MUZ-PNMM-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 4.0
+        }
+      ]
+    },
+    {
+      "excel_row": 46,
+      "family": "מיקסרים",
+      "name": "Muza Jasmin Mixer",
+      "flavor": null,
+      "pack_vals": {
+        "4": 29.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 29.0,
+      "weekly": [
+        0.0,
+        8.0,
+        7.0,
+        11.0,
+        3.0
+      ],
+      "weekly_sum": 29.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTMX-MUZ-JASM-1L",
+      "skus": [
+        "GTMX-MUZ-JASM-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTMX-MUZ-JASM-1L",
+          "matched_sku": "GTMX-MUZ-JASM-1L",
+          "item_id": "ADD-MUZ-JASM-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 29.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "ADD-MUZ-JASM-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 29.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "ADD-MUZ-JASM-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 8.0
+        },
+        {
+          "item_id": "ADD-MUZ-JASM-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 7.0
+        },
+        {
+          "item_id": "ADD-MUZ-JASM-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 11.0
+        },
+        {
+          "item_id": "ADD-MUZ-JASM-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 3.0
+        }
+      ]
+    },
+    {
+      "excel_row": 47,
+      "family": "מיקסרים",
+      "name": "Muza Tropical Israeli Mixer",
+      "flavor": null,
+      "pack_vals": {
+        "4": 26.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 26.0,
+      "weekly": [
+        0.0,
+        7.0,
+        6.0,
+        10.0,
+        3.0
+      ],
+      "weekly_sum": 26.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTMX-MUZ-TRIL-1L",
+      "skus": [
+        "GTMX-MUZ-TRIL-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTMX-MUZ-TRIL-1L",
+          "matched_sku": "GTMX-MUZ-TRIL-1L",
+          "item_id": "ADD-MUZ-TRIL-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 26.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "ADD-MUZ-TRIL-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 26.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "ADD-MUZ-TRIL-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 7.0
+        },
+        {
+          "item_id": "ADD-MUZ-TRIL-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 6.0
+        },
+        {
+          "item_id": "ADD-MUZ-TRIL-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 10.0
+        },
+        {
+          "item_id": "ADD-MUZ-TRIL-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 3.0
+        }
+      ]
+    },
+    {
+      "excel_row": 48,
+      "family": "מיקסרים",
+      "name": "Muza Basil Smash Mixer",
+      "flavor": null,
+      "pack_vals": {
+        "4": 2.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 2.0,
+      "weekly": [
+        0.0,
+        1.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "weekly_sum": 2.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTMX-MUZ-BZSM-1L",
+      "skus": [
+        "GTMX-MUZ-BZSM-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTMX-MUZ-BZSM-1L",
+          "matched_sku": "GTMX-MUZ-BZSM-1L",
+          "item_id": "ADD-MUZ-BZSM-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 2.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "ADD-MUZ-BZSM-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 2.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "ADD-MUZ-BZSM-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 1.0
+        },
+        {
+          "item_id": "ADD-MUZ-BZSM-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 1.0
+        }
+      ]
+    },
+    {
+      "excel_row": 49,
+      "family": "מיקסרים",
+      "name": "Muza Classic Margarita Mixer",
+      "flavor": null,
+      "pack_vals": {
+        "4": 1.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 1.0,
+      "weekly": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "weekly_sum": 1.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTMX-MUZ-MRCL-1L",
+      "skus": [
+        "GTMX-MUZ-MRCL-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTMX-MUZ-MRCL-1L",
+          "matched_sku": "GTMX-MUZ-MRCL-1L",
+          "item_id": "ADD-MUZ-MRCL-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 1.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "ADD-MUZ-MRCL-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 1.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "ADD-MUZ-MRCL-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 1.0
+        }
+      ]
+    },
+    {
+      "excel_row": 50,
+      "family": "מיקסרים",
+      "name": "Muza Herbal Mule Bliss Mixer",
+      "flavor": null,
+      "pack_vals": {
+        "4": 1.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 1.0,
+      "weekly": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "weekly_sum": 1.0,
+      "notes": "היסטוריה חלשה / מוצר חדש",
+      "skus_raw": "GTMX-MUZ-HER-1L",
+      "skus": [
+        "GTMX-MUZ-HER-1L"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GTMX-MUZ-HER-1L",
+          "matched_sku": "GTMX-MUZ-HER-1L",
+          "item_id": "ADD-MUZ-HER-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 1.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "ADD-MUZ-HER-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 1.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "ADD-MUZ-HER-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 1.0
+        }
+      ]
+    },
+    {
+      "excel_row": 51,
+      "family": "מאצ׳ה / לבדיקה",
+      "name": "Shizuoka Ceremonial Matcha 22x18g.bags",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 50.0,
+      "weekly": [
+        0.0,
+        14.0,
+        12.0,
+        18.0,
+        6.0
+      ],
+      "weekly_sum": 50.0,
+      "notes": "היסטוריה חלשה / מוצר חדש | דורש אישור אם רלוונטי לייצור",
+      "skus_raw": "GT-SHI-CER-18*22",
+      "skus": [
+        "GT-SHI-CER-18*22"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-SHI-CER-18*22",
+          "matched_sku": "GT-SHI-CER-18*22",
+          "item_id": "FG-MAT-18G",
+          "match_type": "legacy_sku",
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-MAT-18G",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 50.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-MAT-18G",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 14.0
+        },
+        {
+          "item_id": "FG-MAT-18G",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 12.0
+        },
+        {
+          "item_id": "FG-MAT-18G",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 18.0
+        },
+        {
+          "item_id": "FG-MAT-18G",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 6.0
+        }
+      ]
+    },
+    {
+      "excel_row": 52,
+      "family": "מאצ׳ה / לבדיקה",
+      "name": "Shizuoka Ceremonial Matcha Bag 500g",
+      "flavor": null,
+      "pack_vals": {
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 21.0,
+      "weekly": [
+        0.0,
+        6.0,
+        5.0,
+        8.0,
+        2.0
+      ],
+      "weekly_sum": 21.0,
+      "notes": "דורש אישור אם רלוונטי לייצור",
+      "skus_raw": "GT-SHI-CER-500",
+      "skus": [
+        "GT-SHI-CER-500"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-SHI-CER-500",
+          "matched_sku": "GT-SHI-CER-500",
+          "item_id": "FG-MAT-500G",
+          "match_type": "legacy_sku",
+          "pack_col": null,
+          "pack_label": null,
+          "pack_share_qty": null
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "FG-MAT-500G",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 21.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "FG-MAT-500G",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 6.0
+        },
+        {
+          "item_id": "FG-MAT-500G",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 5.0
+        },
+        {
+          "item_id": "FG-MAT-500G",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 8.0
+        },
+        {
+          "item_id": "FG-MAT-500G",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 2.0
+        }
+      ]
+    },
+    {
+      "excel_row": 53,
+      "family": "ODK / לבדיקה",
+      "name": "ODK Strawberry Smoothie",
+      "flavor": null,
+      "pack_vals": {
+        "4": 77.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 79.0,
+      "weekly": [
+        0.0,
+        22.0,
+        18.0,
+        29.0,
+        10.0
+      ],
+      "weekly_sum": 79.0,
+      "notes": "היסטוריה חלשה / מוצר חדש | דורש אישור אם רלוונטי לייצור",
+      "skus_raw": "GT-ODK-STR-1, GT-ODK-STR",
+      "skus": [
+        "GT-ODK-STR-1",
+        "GT-ODK-STR"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-ODK-STR-1",
+          "matched_sku": "GT-ODK-STR-1",
+          "item_id": "ADD-ODK-STR-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 77.0
+        },
+        {
+          "sku_excel": "GT-ODK-STR",
+          "matched_sku": "GT-ODK-STR-1L",
+          "item_id": "ADD-ODK-STR-1L",
+          "match_type": "legacy_sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 77.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 77.0
+        },
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 77.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 21.443
+        },
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 17.5443
+        },
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 28.2658
+        },
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 9.7468
+        },
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 21.443
+        },
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 17.5443
+        },
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 28.2658
+        },
+        {
+          "item_id": "ADD-ODK-STR-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 9.7468
+        }
+      ]
+    },
+    {
+      "excel_row": 54,
+      "family": "ODK / לבדיקה",
+      "name": "ODK Mango Smoothie",
+      "flavor": null,
+      "pack_vals": {
+        "4": 49.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 52.0,
+      "weekly": [
+        0.0,
+        15.0,
+        12.0,
+        19.0,
+        6.0
+      ],
+      "weekly_sum": 52.0,
+      "notes": "היסטוריה חלשה / מוצר חדש | לבדוק אם עדיין פעיל | דורש אישור אם רלוונטי לייצור",
+      "skus_raw": "GT-ODK-MAN-1, GT-ODK-MAN",
+      "skus": [
+        "GT-ODK-MAN-1",
+        "GT-ODK-MAN"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-ODK-MAN-1",
+          "matched_sku": "GT-ODK-MAN-1",
+          "item_id": "ADD-ODK-MAN-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 49.0
+        },
+        {
+          "sku_excel": "GT-ODK-MAN",
+          "matched_sku": "GT-ODK-MAN-1L",
+          "item_id": "ADD-ODK-MAN-1L",
+          "match_type": "legacy_sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 49.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 49.0
+        },
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 49.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 14.1346
+        },
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 11.3077
+        },
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 17.9038
+        },
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 5.6538
+        },
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 14.1346
+        },
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 11.3077
+        },
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 17.9038
+        },
+        {
+          "item_id": "ADD-ODK-MAN-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 5.6538
+        }
+      ]
+    },
+    {
+      "excel_row": 55,
+      "family": "ODK / לבדיקה",
+      "name": "ODK Peach Smoothie",
+      "flavor": null,
+      "pack_vals": {
+        "4": 4.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0,
+        "9": 0.0
+      },
+      "qty_total": 5.0,
+      "weekly": [
+        0.0,
+        1.0,
+        1.0,
+        2.0,
+        1.0
+      ],
+      "weekly_sum": 5.0,
+      "notes": "היסטוריה חלשה / מוצר חדש | לבדוק אם עדיין פעיל | דורש אישור אם רלוונטי לייצור",
+      "skus_raw": "GT-ODK-PEA-1, GT-ODK-PEA",
+      "skus": [
+        "GT-ODK-PEA-1",
+        "GT-ODK-PEA"
+      ],
+      "resolved": [
+        {
+          "sku_excel": "GT-ODK-PEA-1",
+          "matched_sku": "GT-ODK-PEA-1",
+          "item_id": "ADD-ODK-PEA-1L",
+          "match_type": "sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 4.0
+        },
+        {
+          "sku_excel": "GT-ODK-PEA",
+          "matched_sku": "GT-ODK-PEA-1L",
+          "item_id": "ADD-ODK-PEA-1L",
+          "match_type": "legacy_sku",
+          "pack_col": 4,
+          "pack_label": "1L",
+          "pack_share_qty": 4.0
+        }
+      ],
+      "monthly_lines": [
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 4.0
+        },
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-01",
+          "forecast_quantity": 4.0
+        }
+      ],
+      "weekly_lines": [
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 0.8
+        },
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 0.8
+        },
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 1.6
+        },
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 0.8
+        },
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-04",
+          "forecast_quantity": 0.8
+        },
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-11",
+          "forecast_quantity": 0.8
+        },
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-18",
+          "forecast_quantity": 1.6
+        },
+        {
+          "item_id": "ADD-ODK-PEA-1L",
+          "period_bucket_key": "2026-05-25",
+          "forecast_quantity": 0.8
+        }
+      ]
+    }
+  ],
+  "unmatched_skus": [
+    "12002",
+    "GTCC-CAM-DAN-0.15L",
+    "GTCC-JAS-JAZ-0.15L",
+    "GTCC-JER-ARA-0.15L",
+    "GTCC-MUZ-ANBL-1L",
+    "GTCC-MUZ-APPZ-1L",
+    "GTCC-MUZ-BLBR-1L",
+    "GTCC-MUZ-JASM-1L",
+    "GTCC-MUZ-PNMM-1L",
+    "GTCC-MUZ-PSSP-1L",
+    "GTCC-MUZ-SMAR-1L",
+    "GTCC-MUZ-TROJ-1L",
+    "GTCC-PIN-SAN-0.15L",
+    "GTCC-PIN-SAN-0.15Lx20",
+    "GTCC-TRO-JAP-0.15L",
+    "GTCC-TRO-JAP-1L",
+    "GTCC-VAR-RAS-0.15L",
+    "GTCC-WHI-SAN-0.15L",
+    "GTCC-WHI-SAN-0.15Lx20",
+    "GTEL-BAB-RED-0.75L",
+    "GTEL-BAB-WHI-0.75L"
+  ],
+  "unmatched_sku_count": 21,
+  "matched_distinct_count": 43,
+  "summary": {
+    "excel_rows": 50,
+    "total_skus_in_excel": 68,
+    "matched_skus": 47,
+    "unmatched_skus": 21,
+    "manual_overrides_applied": [
+      "GTCC-NM-SAN-3.85L",
+      "GTEL-COC-ARA-0.5L"
+    ],
+    "total_lines_monthly": 47,
+    "total_lines_weekly": 173,
+    "total_qty_assigned": 8090.0,
+    "distinct_items_with_forecast": 43
+  }
+}

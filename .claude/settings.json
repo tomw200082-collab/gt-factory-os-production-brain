@@ -1,0 +1,138 @@
+﻿{
+    "_notes":  [
+                   "Project-local settings for GT Factory OS. Registers harness hooks and permissions.",
+                   "Hooks call bash scripts under .claude/hooks/. On Windows Git Bash handles them.",
+                   "Permissions default to speed-with-safety: safe local edits allowed; destructive commands denied; sensitive paths denied."
+               ],
+    "hooks":  {
+                  "SessionStart":  [
+                                       {
+                                           "matcher":  "",
+                                           "hooks":  [
+                                                         {
+                                                             "type":  "command",
+                                                             "command":  "bash .claude/hooks/session_start.sh"
+                                                         }
+                                                     ]
+                                       }
+                                   ],
+                  "PreToolUse":  [
+                                     {
+                                         "matcher":  "Write|Edit|NotebookEdit|Bash",
+                                         "hooks":  [
+                                                       {
+                                                           "type":  "command",
+                                                           "command":  "bash .claude/hooks/pre_tool_use.sh"
+                                                       }
+                                                   ]
+                                     }
+                                 ],
+                  "SubagentStop":  [
+                                       {
+                                           "matcher":  "",
+                                           "hooks":  [
+                                                         {
+                                                             "type":  "command",
+                                                             "command":  "bash .claude/hooks/subagent_stop.sh"
+                                                         }
+                                                     ]
+                                       }
+                                   ],
+                  "Stop":  [
+                               {
+                                   "matcher":  "",
+                                   "hooks":  [
+                                                 {
+                                                     "type":  "command",
+                                                     "command":  "bash .claude/hooks/stop.sh"
+                                                 }
+                                             ]
+                               }
+                           ]
+              },
+    "permissions":  {
+                        "allow":  [
+                                      "Read(**)",
+                                      "Glob(**)",
+                                      "Grep(**)",
+                                      "Edit(**)",
+                                      "Write(**)",
+                                      "Bash(git status)",
+                                      "Bash(git status *)",
+                                      "Bash(git diff)",
+                                      "Bash(git diff *)",
+                                      "Bash(git log)",
+                                      "Bash(git log *)",
+                                      "Bash(git show *)",
+                                      "Bash(git branch)",
+                                      "Bash(git branch *)",
+                                      "Bash(git checkout -b *)",
+                                      "Bash(git add *)",
+                                      "Bash(git commit *)",
+                                      "Bash(ls)",
+                                      "Bash(ls *)",
+                                      "Bash(pwd)",
+                                      "Bash(cat *)",
+                                      "Bash(head *)",
+                                      "Bash(tail *)",
+                                      "Bash(wc *)",
+                                      "Bash(find * -name *)",
+                                      "Bash(which *)",
+                                      "Bash(node *)",
+                                      "Bash(npm run *)",
+                                      "Bash(npm test*)",
+                                      "Bash(npx *)",
+                                      "Bash(pnpm *)",
+                                      "Bash(psql *)",
+                                      "Bash(pg_prove *)",
+                                      "Bash(python *)",
+                                      "Bash(python3 *)",
+                                      "Bash(ts-node *)"
+                                  ],
+                        "deny":  [
+                                     "Read(**/.env)",
+                                     "Read(**/.env.*)",
+                                     "Read(**/secrets/**)",
+                                     "Read(**/credentials/**)",
+                                     "Read(**/.ssh/**)",
+                                     "Read(**/.aws/**)",
+                                     "Edit(**/.env)",
+                                     "Edit(**/.env.*)",
+                                     "Edit(**/secrets/**)",
+                                     "Edit(**/credentials/**)",
+                                     "Write(**/.env)",
+                                     "Write(**/.env.*)",
+                                     "Write(**/secrets/**)",
+                                     "Write(**/credentials/**)",
+                                     "Bash(rm -rf /*)",
+                                     "Bash(rm -rf ~*)",
+                                     "Bash(rm -rf .*)",
+                                     "Bash(rm -fr /*)",
+                                     "Bash(git push --force*)",
+                                     "Bash(git push -f*)",
+                                     "Bash(git reset --hard*)",
+                                     "Bash(git clean -fd*)",
+                                     "Bash(DROP DATABASE*)",
+                                     "Bash(drop database*)",
+                                     "Bash(TRUNCATE TABLE*)",
+                                     "Bash(truncate table*)",
+                                     "Bash(sudo *)",
+                                     "Bash(curl * | sh)",
+                                     "Bash(curl * | bash)",
+                                     "Bash(wget * | sh)",
+                                     "Bash(wget * | bash)"
+                                 ],
+                        "ask":  [
+                                    "Bash(git push*)",
+                                    "Bash(git merge*)",
+                                    "Bash(git rebase*)",
+                                    "Bash(npm install*)",
+                                    "Bash(npm uninstall*)",
+                                    "Bash(pnpm install*)",
+                                    "Bash(pnpm remove*)",
+                                    "Bash(gh pr *)",
+                                    "Bash(gh issue *)"
+                                ]
+                    },
+    "$schema":  "https://json.schemastore.org/claude-code-settings.json"
+}

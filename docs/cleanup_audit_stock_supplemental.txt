@@ -1,0 +1,191 @@
+﻿node : (node:24864) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as 
+aliases for 'verify-full'.
+At line:1 char:56
++ ... ts/gt-factory-os/"; node scripts/_audit_supplemental.mjs 2>&1 | Out-F ...
++                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:24864) Wa... 'verify-full'.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq 
+semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:24864) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and 
+HTTPS requests insecure by disabling certificate verification.
+--- A) app_users by namespace prefix (test sentinels) ---
+┌─────────┬───────────────────────────────────────────┬────┐
+│ (index) │ bucket                                    │ n  │
+├─────────┼───────────────────────────────────────────┼────┤
+│ 0       │ 'eeeeeeee-* (test pattern B)'             │ 66 │
+│ 1       │ 'dddddddd-* (test pattern A)'             │ 35 │
+│ 2       │ 'OTHER'                                   │ 19 │
+│ 3       │ 'cccccccc-* (test pattern D)'             │ 19 │
+│ 4       │ 'bbbbbbbb-* (test pattern C)'             │ 7  │
+│ 5       │ 'M0059 fixture (planner/operator/viewer)' │ 3  │
+│ 6       │ '00000000-* (smoke pattern)'              │ 1  │
+│ 7       │ 'TOM ADMIN (real)'                        │ 1  │
+└─────────┴───────────────────────────────────────────┴────┘
+
+--- B) exceptions by category + status ---
+┌─────────┬───────────────────────────────┬─────────────────┬─────┐
+│ (index) │ category                      │ status          │ n   │
+├─────────┼───────────────────────────────┼─────────────────┼─────┤
+│ 0       │ 'lionwheel_capped_window_gap' │ 'open'          │ 179 │
+│ 1       │ 'gi_unmapped_supplier'        │ 'open'          │ 89  │
+│ 2       │ 'shopify_unmapped_item'       │ 'resolved'      │ 55  │
+│ 3       │ 'lionwheel_unknown_sku'       │ 'resolved'      │ 47  │
+│ 4       │ 'shopify_variant_not_found'   │ 'open'          │ 29  │
+│ 5       │ 'lionwheel_unknown_sku'       │ 'open'          │ 28  │
+│ 6       │ 'shopify_network_failure'     │ 'open'          │ 26  │
+│ 7       │ 'gi_unmapped_supplier'        │ 'resolved'      │ 26  │
+│ 8       │ 'count_large_variance'        │ 'resolved'      │ 10  │
+│ 9       │ 'shopify_unmapped_item'       │ 'open'          │ 6   │
+│ 10      │ 'gi_non_ils_currency'         │ 'open'          │ 4   │
+│ 11      │ 'gi_unmapped_supplier'        │ 'acknowledged'  │ 3   │
+│ 12      │ 'positive_adjustment'         │ 'open'          │ 2   │
+│ 13      │ 'positive_adjustment'         │ 'resolved'      │ 2   │
+│ 14      │ 'lionwheel_stale'             │ 'auto_resolved' │ 1   │
+│ 15      │ 'export_stale'                │ 'open'          │ 1   │
+│ 16      │ 'shopify_unmapped_item'       │ 'acknowledged'  │ 1   │
+│ 17      │ 'shopify_stale'               │ 'auto_resolved' │ 1   │
+│ 18      │ 'rebuild_stale'               │ 'open'          │ 1   │
+│ 19      │ 'po_line_over_receipt'        │ 'open'          │ 1   │
+│ 20      │ 'loss_above_threshold'        │ 'resolved'      │ 1   │
+│ 21      │ 'gi_non_ils_currency'         │ 'resolved'      │ 1   │
+└─────────┴───────────────────────────────┴─────────────────┴─────┘
+
+--- C) exceptions whose detail/title/dedupe_key contains test/smoke/fixture ---
+┌─────────┬────────────────────────────────────────┬─────────────────────────────┬─────────────────┬───────────────────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────┐
+│ (index) │ exception_id                           │ category                    │ status          │ title                                                                 │ dedupe_key                                                │
+├─────────┼────────────────────────────────────────┼─────────────────────────────┼─────────────────┼───────────────────────────────────────────────────────────────────────┼───────────────────────────────────────────────────────────┤
+│ 0       │ '0d1fcc18-33d7-4d60-9928-cd75d06d7061' │ 'shopify_variant_not_found' │ 'open'          │ 'Shopify variant not found for FG item TEST-PARITY-FCM-1777733047761' │ 'shopify_variant_not_found:TEST-PARITY-FCM-1777733047761' │
+│ 1       │ '6f04eef6-f488-4d13-bc6f-c254acad4ec8' │ 'shopify_variant_not_found' │ 'open'          │ 'Shopify variant not found for FG item TEST-PARITY-FCM-1777733022613' │ 'shopify_variant_not_found:TEST-PARITY-FCM-1777733022613' │
+│ 2       │ '1432c114-d37a-4799-80ee-5f6c51670297' │ 'shopify_variant_not_found' │ 'open'          │ 'Shopify variant not found for FG item TEST-LWBF-TGT-1'               │ 'shopify_variant_not_found:TEST-LWBF-TGT-1'               │
+│ 3       │ '7cc5ad07-d2f0-45d1-b168-82d178c60073' │ 'shopify_variant_not_found' │ 'open'          │ 'Shopify variant not found for FG item TEST-LWBF-RES-1'               │ 'shopify_variant_not_found:TEST-LWBF-RES-1'               │
+│ 4       │ 'c598f579-35b4-482b-a2ec-290cf05b3a27' │ 'shopify_variant_not_found' │ 'open'          │ 'Shopify variant not found for FG item TEST-LWBF-T5-ITEM'             │ 'shopify_variant_not_found:TEST-LWBF-T5-ITEM'             │
+│ 5       │ 'a4da7d22-6fba-4a14-a90b-bc0dec8e7ea7' │ 'shopify_variant_not_found' │ 'open'          │ 'Shopify variant not found for FG item TEST-LW-PHASE2-FG-1'           │ 'shopify_variant_not_found:TEST-LW-PHASE2-FG-1'           │
+│ 6       │ '6fa349f9-4ea1-43e4-b13c-0085270d49d1' │ 'shopify_variant_not_found' │ 'open'          │ 'Shopify variant not found for FG item TEST-LW-PHASE1-FG-1'           │ 'shopify_variant_not_found:TEST-LW-PHASE1-FG-1'           │
+│ 7       │ 'ad8d7f48-7ebd-4ec2-8dc5-5780a17871fb' │ 'lionwheel_stale'           │ 'auto_resolved' │ 'integration.lionwheel stale (34m)'                                   │ 'lionwheel_stale:singleton'                               │
+│ 8       │ 'ba540384-5c32-495f-b339-1578d4705277' │ 'shopify_stale'             │ 'auto_resolved' │ 'integration.shopify stale (35m)'                                     │ 'shopify_stale:singleton'                                 │
+│ 9       │ '4ea60628-e467-47bf-a477-9a587c36c2ce' │ 'lionwheel_unknown_sku'     │ 'resolved'      │ 'Test unknown SKU TEST-ISKU-SKU-1777199758864-T06'                    │ 'lw_sku:TEST-ISKU-SKU-1777199758864-T06'                  │
+│ 10      │ 'b27797dc-a049-46a7-ab35-433d3778ef61' │ 'lionwheel_unknown_sku'     │ 'resolved'      │ 'Test unknown SKU TEST-ISKU-SKU-1777199586722-T06'                    │ 'lw_sku:TEST-ISKU-SKU-1777199586722-T06'                  │
+│ 11      │ '7c4c2e86-ec5d-4f3d-960e-6ad36d7d75d2' │ 'shopify_unmapped_item'     │ 'open'          │ 'Unmapped FG item TEST-SKU-RESOLVER-FG-REJECTED'                      │ 'shopify_unmapped_item:TEST-SKU-RESOLVER-FG-REJECTED'     │
+│ 12      │ '8a43cfe4-08d0-4d4f-a17b-3a754590147c' │ 'shopify_unmapped_item'     │ 'acknowledged'  │ 'Unmapped FG item TEST-SKU-RESOLVER-FG-REJECTED'                      │ 'shopify_unmapped_item:TEST-SKU-RESOLVER-FG-REJECTED'     │
+│ 13      │ '8bef65cd-4966-4b69-959c-d7227b4e82ff' │ 'shopify_unmapped_item'     │ 'open'          │ 'Unmapped FG item TEST-SKU-RESOLVER-FG-PENDING'                       │ 'shopify_unmapped_item:TEST-SKU-RESOLVER-FG-PENDING'      │
+│ 14      │ '304b12f6-db36-474c-bc3e-87ac6eeddc16' │ 'shopify_unmapped_item'     │ 'open'          │ 'Unmapped FG item TEST-SKU-RESOLVER-FG-APPROVED'                      │ 'shopify_unmapped_item:TEST-SKU-RESOLVER-FG-APPROVED'     │
+│ 15      │ 'fd729e9d-eb5b-4b4a-b3b0-786a3adcfcb6' │ 'shopify_unmapped_item'     │ 'open'          │ 'Unmapped FG item TEST-LW-PROBE-FG-1'                                 │ 'shopify_unmapped_item:TEST-LW-PROBE-FG-1'                │
+│ 16      │ 'c9295dba-1d07-47c4-915f-f8f4589b41c4' │ 'shopify_unmapped_item'     │ 'open'          │ 'Unmapped FG item FG-PA-TEST-BF-STUB'                                 │ 'shopify_unmapped_item:FG-PA-TEST-BF-STUB'                │
+│ 17      │ '67ae317c-7af1-4e4c-a8e8-ff939a1f05e0' │ 'lionwheel_unknown_sku'     │ 'resolved'      │ 'Test unknown SKU TEST-ISKU-SKU-1776796409325-T06'                    │ 'lw_sku:TEST-ISKU-SKU-1776796409325-T06'                  │
+│ 18      │ 'cfaba704-a46b-4769-9f58-c5ea97792fc4' │ 'lionwheel_unknown_sku'     │ 'open'          │ 'Unknown SKU TEST-LW-PROBE-FG-1'                                      │ 'lw_sku:TEST-LW-PROBE-FG-1'                               │
+│ 19      │ 'c7a2c304-89a3-40a0-8e74-08dea3cdc602' │ 'positive_adjustment'       │ 'resolved'      │ 'Positive adjustment requires approval'                               │ null                                                      │
+│ 20      │ '7222b4be-5c42-4d8a-9f8e-c6ef23e9ff78' │ 'loss_above_threshold'      │ 'resolved'      │ 'Loss exceeds auto-post threshold'                                    │ null                                                      │
+│ 21      │ 'd555b696-4b70-4cbc-aff5-1104b0ef86f0' │ 'positive_adjustment'       │ 'resolved'      │ 'Positive adjustment requires approval'                               │ null                                                      │
+└─────────┴────────────────────────────────────────┴─────────────────────────────┴─────────────────┴───────────────────────────────────────────────────────────────────────┴───────────────────────────────────────────────────────────┘
+
+--- D) the special 7283a2d2 exception (RAW-VODKA pending) ---
+[
+  {
+    "exception_id": "7283a2d2-e820-4d66-83a8-0208cdbc9983",
+    "category": "positive_adjustment",
+    "severity": "warning",
+    "source": "form.waste_adjustment",
+    "title": "Positive adjustment requires approval",
+    "detail": "positive waste on RM:RAW-VODKA, quantity 50 L, reason=found_stock. Submitted by Tom at 2026-04-23T07:35:41.503Z. Awaiting planner approval.",
+    "raw_payload": {
+      "unit": "L",
+      "notes": "CHECK-NOT-RERAL",
+      "item_id": "RAW-VODKA",
+      "event_at": "2026-04-23T07:35:00.000Z",
+      "quantity": 50,
+      "direction": "positive",
+      "item_type": "RM",
+      "reason_code": "found_stock",
+      "idempotency_key": "67e47a1d-c11d-4153-afd3-17806beaa379"
+    },
+    "status": "open",
+    "acknowledged_by": null,
+    "acknowledged_at": null,
+    "resolved_by": null,
+    "resolved_at": null,
+    "resolution_notes": null,
+    "dedupe_key": null,
+    "superseded_by": null,
+    "related_job_run_id": null,
+    "related_entity_type": "form_submission",
+    "related_entity_id": "56c1be71-86ee-465b-9350-dd599ed3a6b3",
+    "recommended_action": "Verify the quantity and source, then approve or reject.",
+    "site_id": "GT-MAIN",
+    "created_at": "2026-04-23T07:35:41.503Z",
+    "updated_at": "2026-04-23T07:35:41.503Z"
+  }
+]
+
+--- E) form_submission 56c1be71 (the pending one) ---
+[
+  {
+    "submission_id": "56c1be71-86ee-465b-9350-dd599ed3a6b3",
+    "form_type": "waste_adjustment",
+    "idempotency_key": "67e47a1d-c11d-4153-afd3-17806beaa379",
+    "submitted_by": "0db008a9-05e3-4521-8b30-42e5d444818d",
+    "submitted_at": "2026-04-23T07:35:41.503Z",
+    "event_at": "2026-04-23T07:35:00.000Z",
+    "status": "pending",
+    "posted_at": null,
+    "posted_by": null,
+    "rejection_reason": null,
+    "site_id": "GT-MAIN",
+    "raw_payload": {
+      "unit": "L",
+      "notes": "CHECK-NOT-RERAL",
+      "item_id": "RAW-VODKA",
+      "event_at": "2026-04-23T07:35:00.000Z",
+      "quantity": 50,
+      "direction": "positive",
+      "item_type": "RM",
+      "reason_code": "found_stock",
+      "idempotency_key": "67e47a1d-c11d-4153-afd3-17806beaa379"
+    },
+    "created_at": "2026-04-23T07:35:41.503Z",
+    "updated_at": "2026-04-23T07:35:41.503Z"
+  }
+]
+
+--- F) suspect change_log breakdown by entity_table ---
+┌─────────┬─────────────────────────────────┬─────┐
+│ (index) │ entity_table                    │ n   │
+├─────────┼─────────────────────────────────┼─────┤
+│ 0       │ 'forecast_lines'                │ 620 │
+│ 1       │ 'production_plan'               │ 220 │
+│ 2       │ 'purchase_orders'               │ 132 │
+│ 3       │ 'purchase_order_lines'          │ 116 │
+│ 4       │ 'items'                         │ 98  │
+│ 5       │ 'components'                    │ 92  │
+│ 6       │ 'bom_version'                   │ 90  │
+│ 7       │ 'production_actual'             │ 78  │
+│ 8       │ 'bom_head'                      │ 70  │
+│ 9       │ 'bom_lines'                     │ 60  │
+│ 10      │ 'planning_runs'                 │ 59  │
+│ 11      │ 'planning_run_recommendations'  │ 46  │
+│ 12      │ 'suppliers'                     │ 36  │
+│ 13      │ 'credit_decisions'              │ 23  │
+│ 14      │ 'supplier_items'                │ 16  │
+│ 15      │ 'holidays_il'                   │ 8   │
+│ 16      │ 'integration_sku_map'           │ 6   │
+│ 17      │ 'planning_policy'               │ 4   │
+│ 18      │ 'items_subtable_override_probe' │ 4   │
+│ 19      │ 'app_users'                     │ 3   │
+└─────────┴─────────────────────────────────┴─────┘
+
+--- G) change_log rows for the called-out PRODUCTION_PLAN sentinel 875718c3-a95a-4e69-a158-a1fc8f868bd0 ---
+┌─────────┬────────────────────────────────────────┬───────────────────┬───────────────────────────┬────────────────┬──────────────────────────┐
+│ (index) │ change_log_id                          │ entity_table      │ action                    │ actor_snapshot │ created_at               │
+├─────────┼────────────────────────────────────────┼───────────────────┼───────────────────────────┼────────────────┼──────────────────────────┤
+│ 0       │ '7b85c8c4-b0ae-4f1d-897b-757a08155589' │ 'production_plan' │ 'PRODUCTION_PLAN_CREATED' │ 't3a-T13fix'   │ 2026-04-30T14:07:09.105Z │
+│ 1       │ 'e7b9d67e-cf55-48d6-945e-ba4e7329fbf3' │ 'production_plan' │ 'PRODUCTION_PLAN_EDITED'  │ 't3a-T13fix'   │ 2026-04-30T14:07:09.432Z │
+│ 2       │ 'b8acf9ec-ecf8-4bd5-906e-31a54088911d' │ 'production_plan' │ 'PRODUCTION_PLAN_DELETED' │ 't3a-T13fix'   │ 2026-04-30T14:07:09.510Z │
+└─────────┴────────────────────────────────────────┴───────────────────┴───────────────────────────┴────────────────┴──────────────────────────┘

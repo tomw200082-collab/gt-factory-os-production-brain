@@ -1,0 +1,539 @@
+=== GT May 2026 Forecast — Analysis Report ===
+
+Source: GT_May_2026_batch_forecast_RTL (1).xlsx
+Sheet:  תחזית מאי 2026
+Excel rows parsed: 50
+Items in live DB:  68
+Distinct SKU strings in Excel: 68
+  → matched to item_id:  42
+  → unmatched:           26
+
+Forecast lines to insert: 164
+
+Week buckets (May 2026):
+  Week 1 (May 1-3)          2026-05-01 → 2026-05-03
+  Week 2 (May 4-10)         2026-05-04 → 2026-05-10
+  Week 3 (May 11-17)        2026-05-11 → 2026-05-17
+  Week 4 (May 18-24)        2026-05-18 → 2026-05-24
+  Week 5 (May 25-31)        2026-05-25 → 2026-05-31
+
+====================================================================================================
+PER-ROW MAPPING
+====================================================================================================
+
+Excel row 6: תה קר / חליטות | DETOX | רגיל / עם סוכר
+  Weekly: [6.0, 547.0, 307.0, 535.0, 474.0]  (sum=1869.0)
+  Qty total/sales: 1869.0/1714.0
+  Excel SKUs: GT-LUI-LOW-1L, GT-LUI-LOW-0.5L
+    ✓  GT-LUI-LOW-1L                  → FG-DET-1L                       (sku)
+    ✓  GT-LUI-LOW-0.5L                → FG-DET-500ML                    (sku)
+  Lines to insert from this row: 10
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Excel row 7: תה קר / חליטות | NAMASTEA | רגיל / עם סוכר
+  Weekly: [9.0, 394.0, 249.0, 246.0, 201.0]  (sum=1099.0)
+  Qty total/sales: 1099.0/904.0
+  Excel SKUs: GT-MAS-CHA-1L, GT-MAS-CHA-0.5L
+    ✓  GT-MAS-CHA-1L                  → FG-NAM-1L                       (sku)
+    ✓  GT-MAS-CHA-0.5L                → FG-NAM-500ML                    (sku)
+  Lines to insert from this row: 10
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳ | היסטוריה חלשה / מוצר חדש
+
+Excel row 8: תה קר / חליטות | FRESH | רגיל / עם סוכר
+  Weekly: [6.0, 249.0, 251.0, 246.0, 200.0]  (sum=952.0)
+  Qty total/sales: 952.0/839.5
+  Excel SKUs: GT-HIB-LOW-1L, GT-HIB-LOW-0.5L
+    ✓  GT-HIB-LOW-1L                  → FG-FRE-1L                       (sku)
+    ✓  GT-HIB-LOW-0.5L                → FG-FRE-500ML                    (sku)
+  Lines to insert from this row: 10
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Excel row 9: תה קר / חליטות | REVIVE | רגיל / עם סוכר
+  Weekly: [0.0, 323.0, 211.0, 216.0, 96.0]  (sum=846.0)
+  Qty total/sales: 846.0/671.0
+  Excel SKUs: GT-SEN-LOW-1L, GT-SEN-LOW-0.5L
+    ✓  GT-SEN-LOW-1L                  → FG-REV-1L                       (sku)
+    ✓  GT-SEN-LOW-0.5L                → FG-REV-500ML                    (sku)
+  Lines to insert from this row: 8
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Excel row 10: תה קר / חליטות | DETOX Sugar-Free | ללא סוכר
+  Weekly: [8.0, 134.0, 106.0, 202.0, 91.0]  (sum=541.0)
+  Qty total/sales: 541.0/447.0
+  Excel SKUs: GT-LUI-FRE-1L, GT-LUI-FRE-0.5L
+    ✓  GT-LUI-FRE-1L                  → FG-DET-1L-NS                    (sku)
+    ✓  GT-LUI-FRE-0.5L                → FG-DET-500ML-NS                 (sku)
+  Lines to insert from this row: 10
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Excel row 11: תה קר / חליטות | ENERGY | רגיל / עם סוכר
+  Weekly: [0.0, 103.0, 140.0, 215.0, 31.0]  (sum=489.0)
+  Qty total/sales: 489.0/371.0
+  Excel SKUs: GT-LEM-LOW-1L, GT-LEM-LOW-0.5L
+    ✓  GT-LEM-LOW-1L                  → FG-ENE-1L                       (sku)
+    ✓  GT-LEM-LOW-0.5L                → FG-ENE-500ML                    (sku)
+  Lines to insert from this row: 8
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Excel row 12: תה קר / חליטות | CALM | רגיל / עם סוכר
+  Weekly: [0.0, 171.0, 101.0, 123.0, 39.0]  (sum=434.0)
+  Qty total/sales: 434.0/293.0
+  Excel SKUs: GT-CHA-LOW-0.5L, GT-CHA-LOW-1L
+    ✓  GT-CHA-LOW-0.5L                → FG-CAL-500ML                    (sku)
+    ✓  GT-CHA-LOW-1L                  → FG-CAL-1L                       (sku)
+  Lines to insert from this row: 8
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Excel row 13: תה קר / חליטות | CONSCIOUSNESS | רגיל / עם סוכר
+  Weekly: [0.0, 119.0, 76.0, 80.0, 55.0]  (sum=330.0)
+  Qty total/sales: 330.0/257.5
+  Excel SKUs: GT-JAS-LOW-1L, GT-JAS-LOW-0.5L
+    ✓  GT-JAS-LOW-1L                  → FG-CON-1L                       (sku)
+    ✓  GT-JAS-LOW-0.5L                → FG-CON-500ML                    (sku)
+  Lines to insert from this row: 8
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Excel row 14: תה קר / חליטות | FRESH Sugar-Free | ללא סוכר
+  Weekly: [0.0, 100.0, 20.0, 90.0, 21.0]  (sum=231.0)
+  Qty total/sales: 231.0/182.0
+  Excel SKUs: GT-HIB-FRE-1L, GT-HIB-FRE-0.5L
+    ✓  GT-HIB-FRE-1L                  → FG-FRE-1L-NS                    (sku)
+    ✓  GT-HIB-FRE-0.5L                → FG-FRE-500ML-NS                 (sku)
+  Lines to insert from this row: 8
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Excel row 15: תה קר / חליטות | Desert Infusion | רגיל / עם סוכר
+  Weekly: [0.0, 0.0, 44.0, 43.0, 109.0]  (sum=196.0)
+  Qty total/sales: 196.0/196.0
+  Excel SKUs: GT-INF-DES-1L
+    ✓  GT-INF-DES-1L                  → FG-DES-1L                       (sku)
+  Lines to insert from this row: 3
+  Notes: 0.5L ו-1L מאוחדים לאותו באצ׳
+
+Excel row 16: קוקטיילים / סנגריה | GT Elita Red Sangria | None
+  Weekly: [0.0, 0.0, 0.0, 192.0, 0.0]  (sum=192.0)
+  Qty total/sales: 192.0/144.0
+  Excel SKUs: GTEL-SAN-RED-0.75L
+    ✓  GTEL-SAN-RED-0.75L             → FG-SAN-RED-750ML                (sku)
+  Lines to insert from this row: 1
+
+Excel row 17: קוקטיילים / סנגריה | קוקטייל סנגריה לבנה 0.15 ל | None
+  Weekly: [0.0, 58.0, 62.0, 10.0, 4.0]  (sum=134.0)
+  Qty total/sales: 134.0/38.8
+  Excel SKUs: GTCC-WHI-SAN-0.15L, GTCC-WHI-SAN-1L, GTCC-WHI-SAN-0.15Lx20
+    ✗  GTCC-WHI-SAN-0.15L             → — UNMATCHED —                   (none)
+    ✓  GTCC-WHI-SAN-1L                → FG-SAN-WHI-1L                   (sku)
+    ✗  GTCC-WHI-SAN-0.15Lx20          → — UNMATCHED —                   (none)
+  Lines to insert from this row: 4
+  Notes: לבדוק אם עדיין פעיל
+
+Excel row 18: קוקטיילים / סנגריה | GT Nonomimi Sangria | None
+  Weekly: [7.0, 11.0, 27.0, 47.0, 26.0]  (sum=118.0)
+  Qty total/sales: 118.0/200.7
+  Excel SKUs: GTCC-NON-SAN-1L, GTCC-NON-SAN-3.85L
+    ✓  GTCC-NON-SAN-1L                → FG-NM-1L                        (sku)
+    ✓  GTCC-NON-SAN-3.85L             → FG-NM-3850ML                    (sku)
+  Lines to insert from this row: 10
+
+Excel row 19: קוקטיילים / סנגריה | GT Elita Arak | None
+  Weekly: [0.0, 24.0, 21.0, 33.0, 11.0]  (sum=89.0)
+  Qty total/sales: 89.0/44.5
+  Excel SKUs: GTEL-COC-ARA-0.5L
+    ✗  GTEL-COC-ARA-0.5L              → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 20: קוקטיילים / סנגריה | קוקטייל סנגריה ורודה 0.15 ל | None
+  Weekly: [0.0, 15.0, 50.0, 13.0, 0.0]  (sum=78.0)
+  Qty total/sales: 78.0/29.5
+  Excel SKUs: GTCC-PIN-SAN-0.15L, GTCC-PIN-SAN-1L, GTCC-PIN-SAN-0.15Lx20
+    ✗  GTCC-PIN-SAN-0.15L             → — UNMATCHED —                   (none)
+    ✓  GTCC-PIN-SAN-1L                → FG-SAN-PIN-1L                   (sku)
+    ✗  GTCC-PIN-SAN-0.15Lx20          → — UNMATCHED —                   (none)
+  Lines to insert from this row: 3
+  Notes: לבדוק אם עדיין פעיל
+
+Excel row 21: קוקטיילים / סנגריה | GT Elita White Sangria | None
+  Weekly: [0.0, 19.0, 16.0, 25.0, 8.0]  (sum=68.0)
+  Qty total/sales: 68.0/51.0
+  Excel SKUs: GTEL-SAN-WHI-0.75L
+    ✓  GTEL-SAN-WHI-0.75L             → FG-SAN-WHI-750ML                (sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 22: קוקטיילים / סנגריה | קוקטייל סלסול 0.2 ל | None
+  Weekly: [0.0, 67.0, 0.0, 0.0, 0.0]  (sum=67.0)
+  Qty total/sales: 67.0/13.4
+  Excel SKUs: 12002
+    ✗  12002                          → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: לבדוק אם עדיין פעיל
+
+Excel row 23: קוקטיילים / סנגריה | GT Elita Cosmo Lychee | None
+  Weekly: [0.0, 13.0, 11.0, 17.0, 6.0]  (sum=47.0)
+  Qty total/sales: 47.0/14.1
+  Excel SKUs: GTEL-COS-LYC-0.3L
+    ✓  GTEL-COS-LYC-0.3L              → FG-COS-LYC-300ML                (sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 24: קוקטיילים / סנגריה | Muza Jasmine | None
+  Weekly: [0.0, 12.0, 10.0, 17.0, 6.0]  (sum=45.0)
+  Qty total/sales: 45.0/9.0
+  Excel SKUs: GTCC-MUZ-JAS-0.2L
+    ✓  GTCC-MUZ-JAS-0.2L              → FG-MUZ-JAS-200ML                (sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 25: קוקטיילים / סנגריה | קוקטייל תה תפוחים ירושלמי (ערק אמרטו) 0.15 ל | None
+  Weekly: [0.0, 6.0, 0.0, 0.0, 27.0]  (sum=33.0)
+  Qty total/sales: 33.0/5.0
+  Excel SKUs: GTCC-JER-ARA-0.15L
+    ✗  GTCC-JER-ARA-0.15L             → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: לבדוק אם עדיין פעיל
+
+Excel row 26: קוקטיילים / סנגריה | Muza Herbal Mule Bliss | None
+  Weekly: [0.0, 8.0, 7.0, 11.0, 4.0]  (sum=30.0)
+  Qty total/sales: 30.0/6.0
+  Excel SKUs: GTCC-MUZ-HER-0.2L
+    ✓  GTCC-MUZ-HER-0.2L              → FG-MUZ-HER-200ML                (sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 27: קוקטיילים / סנגריה | Muza Negroni | None
+  Weekly: [0.0, 8.0, 6.0, 10.0, 3.0]  (sum=27.0)
+  Qty total/sales: 27.0/5.4
+  Excel SKUs: GTCC-MUZ-NEG-0.2L
+    ✓  GTCC-MUZ-NEG-0.2L              → FG-MUZ-NEG-200ML                (sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 28: קוקטיילים / סנגריה | קוקטייל קמפרי טי דאנס (קמפרי) 0.15 ל | None
+  Weekly: [0.0, 0.0, 0.0, 0.0, 22.0]  (sum=22.0)
+  Qty total/sales: 22.0/3.3
+  Excel SKUs: GTCC-CAM-DAN-0.15L
+    ✗  GTCC-CAM-DAN-0.15L             → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: לבדוק אם עדיין פעיל
+
+Excel row 29: קוקטיילים / סנגריה | Muza Queen Violet | None
+  Weekly: [0.0, 5.0, 4.0, 7.0, 2.0]  (sum=18.0)
+  Qty total/sales: 18.0/3.6
+  Excel SKUs: GTCC-MUZ-QUE-0.2L
+    ✓  GTCC-MUZ-QUE-0.2L              → FG-MUZ-QUE-200ML                (sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 30: קוקטיילים / סנגריה | Muza Pink Mama | None
+  Weekly: [0.0, 4.0, 3.0, 5.0, 2.0]  (sum=14.0)
+  Qty total/sales: 14.0/14.0
+  Excel SKUs: GTCC-MUZ-PNMM-1L
+    ✗  GTCC-MUZ-PNMM-1L               → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 31: קוקטיילים / סנגריה | קוקטייל טרופיקל אין גאפן (גין) 1 ל | None
+  Weekly: [0.0, 4.0, 2.0, 5.0, 2.0]  (sum=13.0)
+  Qty total/sales: 13.0/7.9
+  Excel SKUs: GTCC-TRO-JAP-1L, GTCC-TRO-JAP-0.15L
+    ✗  GTCC-TRO-JAP-1L                → — UNMATCHED —                   (none)
+    ✗  GTCC-TRO-JAP-0.15L             → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: לבדוק אם עדיין פעיל
+
+Excel row 32: קוקטיילים / סנגריה | קוקטייל ראשן, וארי ראשן (וודקה) 0.15 ל | None
+  Weekly: [0.0, 0.0, 12.0, 0.0, 0.0]  (sum=12.0)
+  Qty total/sales: 12.0/1.8
+  Excel SKUs: GTCC-VAR-RAS-0.15L
+    ✗  GTCC-VAR-RAS-0.15L             → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: לבדוק אם עדיין פעיל
+
+Excel row 33: קוקטיילים / סנגריה | GT Babka Bakery Red Sangria | None
+  Weekly: [0.0, 3.0, 2.0, 3.0, 1.0]  (sum=9.0)
+  Qty total/sales: 9.0/6.8
+  Excel SKUs: GTEL-BAB-RED-0.75L
+    ✗  GTEL-BAB-RED-0.75L             → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 34: קוקטיילים / סנגריה | GT Babka Bakery White Sangria | None
+  Weekly: [0.0, 3.0, 2.0, 3.0, 1.0]  (sum=9.0)
+  Qty total/sales: 9.0/6.8
+  Excel SKUs: GTEL-BAB-WHI-0.75L
+    ✗  GTEL-BAB-WHI-0.75L             → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 35: קוקטיילים / סנגריה | Muza Apple Zest | None
+  Weekly: [0.0, 2.0, 2.0, 3.0, 1.0]  (sum=8.0)
+  Qty total/sales: 8.0/8.0
+  Excel SKUs: GTCC-MUZ-APPZ-1L
+    ✗  GTCC-MUZ-APPZ-1L               → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 36: קוקטיילים / סנגריה | Muza Spicy Margarita | None
+  Weekly: [0.0, 2.0, 1.0, 2.0, 1.0]  (sum=6.0)
+  Qty total/sales: 6.0/6.0
+  Excel SKUs: GTCC-MUZ-SMAR-1L
+    ✗  GTCC-MUZ-SMAR-1L               → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 37: קוקטיילים / סנגריה | Muza Tropical in Japan | None
+  Weekly: [0.0, 2.0, 1.0, 2.0, 1.0]  (sum=6.0)
+  Qty total/sales: 6.0/6.0
+  Excel SKUs: GTCC-MUZ-TROJ-1L
+    ✗  GTCC-MUZ-TROJ-1L               → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 38: קוקטיילים / סנגריה | קוקטייל גאסמין גאז (וויסקי ) 0.15 ל | None
+  Weekly: [0.0, 2.0, 1.0, 2.0, 1.0]  (sum=6.0)
+  Qty total/sales: 6.0/0.9
+  Excel SKUs: GTCC-JAS-JAZ-0.15L
+    ✗  GTCC-JAS-JAZ-0.15L             → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: לבדוק אם עדיין פעיל
+
+Excel row 39: קוקטיילים / סנגריה | Muza Passion Spritz | None
+  Weekly: [0.0, 1.0, 1.0, 2.0, 1.0]  (sum=5.0)
+  Qty total/sales: 5.0/5.0
+  Excel SKUs: GTCC-MUZ-PSSP-1L
+    ✗  GTCC-MUZ-PSSP-1L               → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 40: קוקטיילים / סנגריה | Muza Anise Bliss | None
+  Weekly: [0.0, 1.0, 1.0, 2.0, 0.0]  (sum=4.0)
+  Qty total/sales: 4.0/4.0
+  Excel SKUs: GTCC-MUZ-ANBL-1L
+    ✗  GTCC-MUZ-ANBL-1L               → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 41: קוקטיילים / סנגריה | Muza Blueberry Breeze | None
+  Weekly: [0.0, 1.0, 1.0, 1.0, 1.0]  (sum=4.0)
+  Qty total/sales: 4.0/4.0
+  Excel SKUs: GTCC-MUZ-BLBR-1L
+    ✗  GTCC-MUZ-BLBR-1L               → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 42: קוקטיילים / סנגריה | GT Sangria | None
+  Weekly: [0.0, 1.0, 1.0, 1.0, 0.0]  (sum=3.0)
+  Qty total/sales: 3.0/11.6
+  Excel SKUs: GTCC-NM-SAN-3.85L
+    ✗  GTCC-NM-SAN-3.85L              → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+
+Excel row 43: קוקטיילים / סנגריה | Muza Jasmin | None
+  Weekly: [0.0, 1.0, 1.0, 1.0, 0.0]  (sum=3.0)
+  Qty total/sales: 3.0/3.0
+  Excel SKUs: GTCC-MUZ-JASM-1L
+    ✗  GTCC-MUZ-JASM-1L               → — UNMATCHED —                   (none)
+  Lines to insert from this row: 0
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 44: קוקטיילים / סנגריה | Muza Passion Spritz | None
+  Weekly: [0.0, 1.0, 1.0, 1.0, 0.0]  (sum=3.0)
+  Qty total/sales: 3.0/0.6
+  Excel SKUs: GTCC-MUZ-PSC-0.2L
+    ✓  GTCC-MUZ-PSC-0.2L              → FG-MUZ-PSC-200ML                (sku)
+  Lines to insert from this row: 3
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 45: מיקסרים | Muza Pink Mama Mixer | None
+  Weekly: [0.0, 8.0, 7.0, 11.0, 4.0]  (sum=30.0)
+  Qty total/sales: 30.0/30.0
+  Excel SKUs: GTMX-MUZ-PNMM-1L
+    ✓  GTMX-MUZ-PNMM-1L               → ADD-MUZ-PNMM-1L                 (sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 46: מיקסרים | Muza Jasmin Mixer | None
+  Weekly: [0.0, 8.0, 7.0, 11.0, 3.0]  (sum=29.0)
+  Qty total/sales: 29.0/29.0
+  Excel SKUs: GTMX-MUZ-JASM-1L
+    ✓  GTMX-MUZ-JASM-1L               → ADD-MUZ-JASM-1L                 (sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 47: מיקסרים | Muza Tropical Israeli Mixer | None
+  Weekly: [0.0, 7.0, 6.0, 10.0, 3.0]  (sum=26.0)
+  Qty total/sales: 26.0/26.0
+  Excel SKUs: GTMX-MUZ-TRIL-1L
+    ✓  GTMX-MUZ-TRIL-1L               → ADD-MUZ-TRIL-1L                 (sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 48: מיקסרים | Muza Basil Smash Mixer | None
+  Weekly: [0.0, 1.0, 0.0, 1.0, 0.0]  (sum=2.0)
+  Qty total/sales: 2.0/2.0
+  Excel SKUs: GTMX-MUZ-BZSM-1L
+    ✓  GTMX-MUZ-BZSM-1L               → ADD-MUZ-BZSM-1L                 (sku)
+  Lines to insert from this row: 2
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 49: מיקסרים | Muza Classic Margarita Mixer | None
+  Weekly: [0.0, 0.0, 0.0, 1.0, 0.0]  (sum=1.0)
+  Qty total/sales: 1.0/1.0
+  Excel SKUs: GTMX-MUZ-MRCL-1L
+    ✓  GTMX-MUZ-MRCL-1L               → ADD-MUZ-MRCL-1L                 (sku)
+  Lines to insert from this row: 1
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 50: מיקסרים | Muza Herbal Mule Bliss Mixer | None
+  Weekly: [0.0, 0.0, 0.0, 1.0, 0.0]  (sum=1.0)
+  Qty total/sales: 1.0/1.0
+  Excel SKUs: GTMX-MUZ-HER-1L
+    ✓  GTMX-MUZ-HER-1L                → ADD-MUZ-HER-1L                  (sku)
+  Lines to insert from this row: 1
+  Notes: היסטוריה חלשה / מוצר חדש
+
+Excel row 51: מאצ׳ה / לבדיקה | Shizuoka Ceremonial Matcha 22x18g.bags | None
+  Weekly: [0.0, 14.0, 12.0, 18.0, 6.0]  (sum=50.0)
+  Qty total/sales: 50.0/0.0
+  Excel SKUs: GT-SHI-CER-18*22
+    ✓  GT-SHI-CER-18*22               → FG-MAT-18G                      (legacy_sku)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש | דורש אישור אם רלוונטי לייצור
+
+Excel row 52: מאצ׳ה / לבדיקה | Shizuoka Ceremonial Matcha Bag 500g | None
+  Weekly: [0.0, 6.0, 5.0, 8.0, 2.0]  (sum=21.0)
+  Qty total/sales: 21.0/0.0
+  Excel SKUs: GT-SHI-CER-500
+    ✓  GT-SHI-CER-500                 → FG-MAT-500G                     (legacy_sku)
+  Lines to insert from this row: 4
+  Notes: דורש אישור אם רלוונטי לייצור
+
+Excel row 53: ODK / לבדיקה | ODK Strawberry Smoothie | None
+  Weekly: [0.0, 22.0, 18.0, 29.0, 10.0]  (sum=79.0)
+  Qty total/sales: 79.0/77.0
+  Excel SKUs: GT-ODK-STR-1, GT-ODK-STR
+    ✓  GT-ODK-STR-1                   → ADD-ODK-STR-1L                  (sku)
+    ✗  GT-ODK-STR                     → — UNMATCHED —                   (none)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש | דורש אישור אם רלוונטי לייצור
+
+Excel row 54: ODK / לבדיקה | ODK Mango Smoothie | None
+  Weekly: [0.0, 15.0, 12.0, 19.0, 6.0]  (sum=52.0)
+  Qty total/sales: 52.0/49.0
+  Excel SKUs: GT-ODK-MAN-1, GT-ODK-MAN
+    ✓  GT-ODK-MAN-1                   → ADD-ODK-MAN-1L                  (sku)
+    ✗  GT-ODK-MAN                     → — UNMATCHED —                   (none)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש | לבדוק אם עדיין פעיל | דורש אישור אם רלוונטי לייצור
+
+Excel row 55: ODK / לבדיקה | ODK Peach Smoothie | None
+  Weekly: [0.0, 1.0, 1.0, 2.0, 1.0]  (sum=5.0)
+  Qty total/sales: 5.0/4.0
+  Excel SKUs: GT-ODK-PEA-1, GT-ODK-PEA
+    ✓  GT-ODK-PEA-1                   → ADD-ODK-PEA-1L                  (sku)
+    ✗  GT-ODK-PEA                     → — UNMATCHED —                   (none)
+  Lines to insert from this row: 4
+  Notes: היסטוריה חלשה / מוצר חדש | לבדוק אם עדיין פעיל | דורש אישור אם רלוונטי לייצור
+
+====================================================================================================
+UNMATCHED SKUs (26)
+====================================================================================================
+  12002
+  GT-ODK-MAN
+  GT-ODK-PEA
+  GT-ODK-STR
+  GTCC-CAM-DAN-0.15L
+  GTCC-JAS-JAZ-0.15L
+  GTCC-JER-ARA-0.15L
+  GTCC-MUZ-ANBL-1L
+  GTCC-MUZ-APPZ-1L
+  GTCC-MUZ-BLBR-1L
+  GTCC-MUZ-JASM-1L
+  GTCC-MUZ-PNMM-1L
+  GTCC-MUZ-PSSP-1L
+  GTCC-MUZ-SMAR-1L
+  GTCC-MUZ-TROJ-1L
+  GTCC-NM-SAN-3.85L
+  GTCC-PIN-SAN-0.15L
+  GTCC-PIN-SAN-0.15Lx20
+  GTCC-TRO-JAP-0.15L
+  GTCC-TRO-JAP-1L
+  GTCC-VAR-RAS-0.15L
+  GTCC-WHI-SAN-0.15L
+  GTCC-WHI-SAN-0.15Lx20
+  GTEL-BAB-RED-0.75L
+  GTEL-BAB-WHI-0.75L
+  GTEL-COC-ARA-0.5L
+
+====================================================================================================
+ITEMS MASTER (for reference — what's in DB)
+====================================================================================================
+  ADD-GAR-ANISE                        sku='AP-GAR-ANISE'                  legacy_sku=None                            name=STAR ANISE GARNISH
+  ADD-GAR-CIN-STICKS                   sku='AP-STI-CIN'                    legacy_sku=None                            name=CINNAMON STICKS GARNISH
+  ADD-GAR-ORA-DRY                      sku='AP-DRI-ORA'                    legacy_sku=None                            name=DRIED ORANGE GARNISH
+  ADD-GAR-ROSE-DRY                     sku='AP-DRI-ROS'                    legacy_sku=None                            name=DRIED ROSE BUDS GARNISH
+  ADD-MUZ-BZSM-1L                      sku='GTMX-MUZ-BZSM-1L'              legacy_sku='GTMX-MUZ-BZSM-1L'              name=MUZA BASIL SMASH MIXER 1L
+  ADD-MUZ-HER-1L                       sku='GTMX-MUZ-HER-1L'               legacy_sku='GTMX-MUZ-HER-1L'               name=MUZA HERBAL MULE BLISS MIXER 1L
+  ADD-MUZ-JASM-1L                      sku='GTMX-MUZ-JASM-1L'              legacy_sku='GTMX-MUZ-JASM-1L'              name=MUZA JASMIN MIXER 1L
+  ADD-MUZ-MRCL-1L                      sku='GTMX-MUZ-MRCL-1L'              legacy_sku='GTMX-MUZ-MRCL-1L'              name=MUZA CLASSIC MARGARITA MIXER 1L
+  ADD-MUZ-PNMM-1L                      sku='GTMX-MUZ-PNMM-1L'              legacy_sku='GTMX-MUZ-PNMM-1L'              name=MUZA PINK MAMA MIXER 1L
+  ADD-MUZ-PRPL-1L                      sku='GTMX-MUZ-PRPL-1L'              legacy_sku='GTMX-MUZ-PRPL-1L'              name=MUZA PURPLE KISS MIXER 1L
+  ADD-MUZ-TRIL-1L                      sku='GTMX-MUZ-TRIL-1L'              legacy_sku='GTMX-MUZ-TRIL-1L'              name=MUZA TROPICAL ISRAELI MIXER 1L
+  ADD-ODK-MAN-1L                       sku='GT-ODK-MAN-1'                  legacy_sku='GT-ODK-MAN-1L'                 name=ODK MANGO 1L
+  ADD-ODK-PEA-1L                       sku='GT-ODK-PEA-1'                  legacy_sku='GT-ODK-PEA-1L'                 name=ODK PEACH 1L
+  ADD-ODK-STR-1L                       sku='GT-ODK-STR-1'                  legacy_sku='GT-ODK-STR-1L'                 name=ODK STRAWBERRY 1L
+  ADD-TAP-BLU-3400G                    sku='AP-TAP-BER-3.3'                legacy_sku='AP-TAP-BER-3.4'                name=TAPIOCA BLUEBERRY 3.4KG
+  ADD-TAP-LYC-3400G                    sku='AP-TAP-LYC-3.4'                legacy_sku='AP-TAP-LYC-3.4'                name=TAPIOCA LYCHEE 3.4KG
+  ADD-TAP-MAN-3400G                    sku='AP-TAP-MAN-3.4'                legacy_sku='AP-TAP-MAN-3.4'                name=TAPIOCA MANGO 3.4KG
+  ADD-TAP-PIN-3400G                    sku='AP-TAP-PIN-3.4'                legacy_sku='AP-TAP-PIN-3.4'                name=TAPIOCA PINEAPPLE 3.4KG
+  FG-AME-1L                            sku=None                            legacy_sku='GT-AME-LOW-1L'                 name=AMERICAN 1L
+  FG-AME-500ML                         sku=None                            legacy_sku='GT-AME-LOW-0.5L'               name=AMERICAN 0.5L
+  FG-ARK-PAS-500ML                     sku=None                            legacy_sku='GTEL-ARK-PAS-0.5L'             name=ARAK PASSION FRUIT 0.5L
+  FG-CAL-1L                            sku='GT-CHA-LOW-1L'                 legacy_sku='GT-CHA-LOW-1L'                 name=CALM 1L
+  FG-CAL-1L-NS                         sku=None                            legacy_sku='GT-CHA-FRE-1L'                 name=CALM 1L NO SUGAR
+  FG-CAL-500ML                         sku='GT-CHA-LOW-0.5L'               legacy_sku='GT-CHA-LOW-0.5L'               name=CALM 0.5L
+  FG-CAL-500ML-NS                      sku=None                            legacy_sku='GT-CHA-FRE-0.5L'               name=CALM 0.5L NO SUGAR
+  FG-CON-1L                            sku='GT-JAS-LOW-1L'                 legacy_sku='GT-JAS-LOW-1L'                 name=CONSCIOUSNESS 1L
+  FG-CON-500ML                         sku='GT-JAS-LOW-0.5L'               legacy_sku='GT-JAS-LOW-0.5L'               name=CONSCIOUSNESS 0.5L
+  FG-COS-LYC-300ML                     sku='GTEL-COS-LYC-0.3L'             legacy_sku='GTEL-COS-LYC-0.3L'             name=COSMO LYCHEE 0.3L
+  FG-DES-1L                            sku='GT-INF-DES-1L'                 legacy_sku='GT-INF-DES-1L'                 name=DESERTEA 1L
+  FG-DES-1L-NS                         sku=None                            legacy_sku='GT-DES-FRE-1L'                 name=DESERTEA 1L NO SUGAR
+  FG-DES-500ML                         sku=None                            legacy_sku='GT-DES-LOW-0.5L'               name=DESERTEA 0.5L
+  FG-DES-500ML-NS                      sku=None                            legacy_sku='GT-DES-FRE-0.5L'               name=DESERTEA 0.5L NO SUGAR
+  FG-DET-1L                            sku='GT-LUI-LOW-1L'                 legacy_sku='GT-LUI-LOW-1L'                 name=DETOX 1L
+  FG-DET-1L-NS                         sku='GT-LUI-FRE-1L'                 legacy_sku='GT-LUI-FRE-1L'                 name=DETOX 1L NO SUGAR
+  FG-DET-500ML                         sku='GT-LUI-LOW-0.5L'               legacy_sku='GT-LUI-LOW-0.5L'               name=DETOX 0.5L
+  FG-DET-500ML-NS                      sku='GT-LUI-FRE-0.5L'               legacy_sku='GT-LUI-FRE-0.5L'               name=DETOX 0.5L NO SUGAR
+  FG-ENE-1L                            sku='GT-LEM-LOW-1L'                 legacy_sku='GT-LEM-LOW-1L'                 name=ENERGY 1L
+  FG-ENE-500ML                         sku='GT-LEM-LOW-0.5L'               legacy_sku='GT-LEM-LOW-0.5L'               name=ENERGY 0.5L
+  FG-FRE-1L                            sku='GT-HIB-LOW-1L'                 legacy_sku='GT-HIB-LOW-1L'                 name=FRESH 1L
+  FG-FRE-1L-NS                         sku='GT-HIB-FRE-1L'                 legacy_sku='GT-HIB-FRE-1L'                 name=FRESH 1L NO SUGAR
+  FG-FRE-500ML                         sku='GT-HIB-LOW-0.5L'               legacy_sku='GT-HIB-LOW-0.5L'               name=FRESH 0.5L
+  FG-FRE-500ML-NS                      sku='GT-HIB-FRE-0.5L'               legacy_sku='GT-HIB-FRE-0.5L'               name=FRESH 0.5L NO SUGAR
+  FG-MAR-CLA-300ML                     sku='GTEL-MAR-CLA-0.3L'             legacy_sku='GTEL-MAR-CLA-0.3L'             name=MARGARITA CLASSIC ELITA 0.3L
+  FG-MAR-PEA-300ML                     sku='GTEL-MAR-PEA-0.3L'             legacy_sku='GTEL-MAR-PEA-0.3L'             name=MARGARITA PEAR ELITA 0.3L
+  FG-MAR-STR-300ML                     sku='GTEL-MAR-STR-0.3L'             legacy_sku='GTEL-MAR-STR-0.3L'             name=MARGARITA STRAWBERRY ELITA 0.3L
+  FG-MAT-100G                          sku=None                            legacy_sku='GT-SHI-CER-50'                 name=MATCHA 100G
+  FG-MAT-18G                           sku=None                            legacy_sku='GT-SHI-CER-18*22'              name=MATCHA 18G
+  FG-MAT-30G                           sku=None                            legacy_sku='GT-SHI-CER-30'                 name=MATCHA 30G
+  FG-MAT-500G                          sku=None                            legacy_sku='GT-SHI-CER-500'                name=MATCHA 0.5KG
+  FG-MUZ-HER-200ML                     sku='GTCC-MUZ-HER-0.2L'             legacy_sku='GTCC-MUZ-HER-0.2L'             name=MUZA HERBAL MULE BLISS COCKTAIL 0.2L
+  FG-MUZ-JAS-200ML                     sku='GTCC-MUZ-JAS-0.2L'             legacy_sku='GTCC-MUZ-JAS-0.2L'             name=MUZA JASMINE COCKTAIL 0.2L
+  FG-MUZ-NEG-200ML                     sku='GTCC-MUZ-NEG-0.2L'             legacy_sku='GTCC-MUZ-NEG-0.2L'             name=MUZA NEGRONI COCKTAIL 0.2L
+  FG-MUZ-PSC-200ML                     sku='GTCC-MUZ-PSC-0.2L'             legacy_sku='GTCC-MUZ-PSC-0.2L'             name=MUZA PASSION SPRITZ COCKTAIL 0.2L
+  FG-MUZ-QUE-200ML                     sku='GTCC-MUZ-QUE-0.2L'             legacy_sku='GTCC-MUZ-QUE-0.2L'             name=MUZA QUEEN VIOLET COCKTAIL 0.2L
+  FG-NAM-1L                            sku='GT-MAS-CHA-1L'                 legacy_sku='GT-MAS-CHA-1L'                 name=NAMASTEA 1L
+  FG-NAM-500ML                         sku='GT-MAS-CHA-0.5L'               legacy_sku='GT-MAS-CHA-0.5L'               name=NAMASTEA 0.5L
+  FG-NM-1L                             sku='GTCC-NON-SAN-1L'               legacy_sku='GTCC-NON-SAN-1L'               name=NONOMIMI SANGRIA 1L
+  FG-NM-3850ML                         sku='GTCC-NON-SAN-3.85L'            legacy_sku='GTCC-NON-SAN-3.85L'            name=NONOMIMI SANGRIA 3.85L
+  FG-REV-1L                            sku='GT-SEN-LOW-1L'                 legacy_sku='GT-SEN-LOW-1L'                 name=REVIVE 1L
+  FG-REV-500ML                         sku='GT-SEN-LOW-0.5L'               legacy_sku='GT-SEN-LOW-0.5L'               name=REVIVE 0.5L
+  FG-SAN-PIN-1L                        sku='GTCC-PIN-SAN-1L'               legacy_sku='GTCC-PIN-SAN-1L'               name=PINK SANGRIA 1L
+  FG-SAN-RED-300ML                     sku=None                            legacy_sku='GTEL-SAN-RED-0.3'              name=RED SANGRIA ELITA 0.3L
+  FG-SAN-RED-3850ML                    sku='GTCC-SAN-RED-3.85L'            legacy_sku='GTCC-SAN-RED-3.85L'            name=RED SANGRIA 3.85L
+  FG-SAN-RED-750ML                     sku='GTEL-SAN-RED-0.75L'            legacy_sku='GTEL-SAN-RED-0.75L'            name=RED SANGRIA ELITA 0.75L
+  FG-SAN-WHI-1L                        sku='GTCC-WHI-SAN-1L'               legacy_sku='GTCC-WHI-SAN-1L'               name=WHITE SANGRIA 1L
+  FG-SAN-WHI-300ML                     sku=None                            legacy_sku='GTEL-SAN-WHI-0.3'              name=WHITE SANGRIA ELITA 0.3L
+  FG-SAN-WHI-3850ML                    sku='GTCC-SAN-WHI-3.85L'            legacy_sku='GTCC-SAN-WHI-3.85L'            name=WHITE SANGRIA 3.85L
+  FG-SAN-WHI-750ML                     sku='GTEL-SAN-WHI-0.75L'            legacy_sku='GTEL-SAN-WHI-0.75L'            name=WHITE SANGRIA ELITA 0.75L

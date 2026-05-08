@@ -1,0 +1,3 @@
+# Preserves data/excel/active/ directory structure under git.
+# Contents (current operational Excel workbooks) are ignored — see PRODUCTION/.gitignore.
+# See data/README.md for purpose.

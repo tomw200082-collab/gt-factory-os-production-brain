@@ -1,0 +1,4 @@
+# Preserves data/invoices/suppliers/processed/ directory structure under git.
+# Contents (supplier invoices that have been entered into Green Invoice / the system) are
+# ignored as binaries — see PRODUCTION/.gitignore.
+# See data/README.md for purpose. Auto-routing here from unprocessed/ is a future GI pipeline enhancement.

@@ -1,0 +1,21 @@
+{
+  "id": "gid://shopify/InventoryLevel/FIXTURE_1",
+  "canDeactivate": true,
+  "createdAt": "2026-01-01T00:00:00Z",
+  "deactivationAlert": null,
+  "isActive": true,
+  "item": {
+    "id": "gid://shopify/InventoryItem/FIXTURE_1",
+    "sku": "GT-HIB-LOW-1L"
+  },
+  "location": {
+    "id": "gid://shopify/Location/FIXTURE_1",
+    "name": "FIXTURE_LOCATION",
+    "isActive": true
+  },
+  "quantities": [
+    { "name": "available", "quantity": 50, "updatedAt": "2026-04-16T12:00:00Z" },
+    { "name": "on_hand", "quantity": 50, "updatedAt": "2026-04-16T12:00:00Z" }
+  ],
+  "updatedAt": "2026-04-16T12:00:00Z"
+}

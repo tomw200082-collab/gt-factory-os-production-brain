@@ -1,0 +1,56 @@
+{
+  "_notes": "Price catalog extracted from 'חשבוניות ספקים'. Prices are PRE-VAT (net) where invoice shows it. Updated as we process invoices.",
+  "_unit": "ILS / NIS / ₪",
+  "prices": {
+    "RAW-HIBISCUS": {
+      "supplier_on_invoice": "Habshush Arie Spices Herbs Ltd",
+      "unit": "KG",
+      "price_per_unit": 25.80,
+      "vat_status": "pre-VAT",
+      "invoice_date": "2026-04-14",
+      "invoice_no": "23786",
+      "source_file": "03f877b8e6a6402db2fa3ef4c42c4296.jpg",
+      "notes": "Master listed Habshush only for dried orange/lemon, but they also supply hibiscus."
+    },
+    "RAW-WINE-RED": {
+      "supplier_on_invoice": "Tempo (1981) Ltd / טמפו משקאות",
+      "unit": "L",
+      "price_per_unit": 12.124,
+      "price_per_pack_unit": 278.86,
+      "pack_size": "23L jerrycan",
+      "vat_status": "pre-VAT (after 29.69% discount)",
+      "invoice_date": "2026-01-19",
+      "invoice_no": "103366238",
+      "source_file": "080f9b3910e54e6996a2aad92f6de269 (1).jpg",
+      "notes": "SYMPHONY אדום 23L Badatz. List 396.61, after discount 278.86 per jerrycan = 12.12/L."
+    },
+    "RAW-WINE-WHITE": {
+      "supplier_on_invoice": "Tempo (1981) Ltd / טמפו משקאות",
+      "unit": "L",
+      "price_per_unit": 12.124,
+      "price_per_pack_unit": 278.86,
+      "pack_size": "23L jerrycan",
+      "vat_status": "pre-VAT (after 29.69% discount)",
+      "invoice_date": "2026-01-19",
+      "invoice_no": "103366238",
+      "source_file": "080f9b3910e54e6996a2aad92f6de269 (1).jpg",
+      "notes": "SYMPHONY לבן 23L Badatz. Same price as red."
+    }
+  },
+  "_other_items_seen_not_in_scope": [
+    {"file": "042008b4b2404ee9a1a2b55d12781650.jpg", "supplier": "Habshush Arie", "items": [
+      {"name": "Hyssop (לבדר/אזוביון)", "price": 98.00, "unit": "KG"},
+      {"name": "Vanilla paste Lilsen 118ml", "price": 100.00, "unit": "UNIT"},
+      {"name": "Maldon sea salt 250g", "price": 21.00, "unit": "UNIT"},
+      {"name": "Smoked Maldon salt", "price": 19.00, "unit": "UNIT"}
+    ]},
+    {"file": "03f877b8e6a6402db2fa3ef4c42c4296.jpg", "supplier": "Habshush Arie", "items": [
+      {"name": "Lemongrass (עשב לימון) - this may be RAW-LEMON-GRASS, not RAW-LUISA", "price": 32.00, "unit": "KG"}
+    ]}
+  ],
+  "_processed_files": [
+    "03f877b8e6a6402db2fa3ef4c42c4296.jpg",
+    "042008b4b2404ee9a1a2b55d12781650.jpg",
+    "080f9b3910e54e6996a2aad92f6de269 (1).jpg"
+  ]
+}

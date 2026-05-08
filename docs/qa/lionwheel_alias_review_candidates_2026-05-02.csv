@@ -1,0 +1,32 @@
+lionwheel_sku,suggested_canonical_item_id,confidence,reason,planning_impact_if_unmapped,action_status
+GTCC-MUZ-JASM-1L,ADD-MUZ-JASM-1L,0.95,"Deterministic rule: GTCC-MUZ-<X>-1L -> ADD-MUZ-<X>-1L; target ADD-MUZ-JASM-1L exists in items master","Underplanning of ADD-MUZ-JASM-1L (2 rows / 4 qty)",safe_candidate
+GTCC-MUZ-PNMM-1L,ADD-MUZ-PNMM-1L,0.95,"Deterministic rule: GTCC-MUZ-<X>-1L -> ADD-MUZ-<X>-1L; target ADD-MUZ-PNMM-1L exists in items master","Underplanning of ADD-MUZ-PNMM-1L (9 rows / 32 qty)",safe_candidate
+GTCC-MUZ-APPZ-1L,,,"No matching ADD-MUZ-APPZ-1L in catalog; could be misspelling or new flavor","Underplanning (4 rows / 10 qty)",ambiguous
+GTCC-MUZ-SMAR-1L,,,"No matching ADD-MUZ-SMAR-1L in catalog","Underplanning (4 rows / 13 qty)",ambiguous
+GTCC-MUZ-TROJ-1L,,,"No matching ADD-MUZ-TROJ-1L in catalog","Underplanning (3 rows / 13 qty)",ambiguous
+GTCC-MUZ-PSSP-1L,,,"No matching ADD-MUZ-PSSP-1L in catalog","Underplanning (2 rows / 5 qty)",ambiguous
+GTCC-MUZ-ANBL-1L,,,"No matching ADD-MUZ-ANBL-1L in catalog","Underplanning (2 rows / 5 qty)",ambiguous
+GTCC-MUZ-BLBR-1L,,,"No matching ADD-MUZ-BLBR-1L in catalog (closest fuzzy: ADD-MUZ-BZSM-1L — substring/token differs)","Underplanning (1 row / 6 qty)",ambiguous
+GTCC-MUZ-CHRBL-1L,,,"No matching ADD-MUZ-CHRBL-1L in catalog","Underplanning (1 row / 3 qty)",ambiguous
+AP-DRI-PIN,,,"AP-DRI-* family pattern (compare AP-DRI-ORA -> ADD-GAR-ORA-DRY); PIN possibly Pineapple but no ADD-GAR-PIN-DRY in catalog","Underplanning (1 row / 1 qty)",ambiguous
+AP-FRO-MAT,,,"AP-FRO-MAT pattern unknown; possibly Frozen Matcha; no matching ADD-* item","Underplanning (1 row / 1 qty)",ambiguous
+AP-TAP-PIN,,,"AP-TAP-* family pattern unknown; possibly Tapioca Pineapple","Underplanning (1 row / 2 qty)",ambiguous
+AP-DRI-ORA,ADD-GAR-ORA-DRY,0.99,"Alias ALREADY APPROVED in integration_sku_map (alias created 2026-04-26); orders_mirror_lines NOT reconciled and exception NOT closed — W4 reconciler back-fill gap","Underplanning (2 rows / 8 qty)",ambiguous
+AP-DRI-ROS,ADD-GAR-ROSE-DRY,0.99,"Alias ALREADY APPROVED in integration_sku_map (alias created 2026-04-26); orders_mirror_lines NOT reconciled and exception NOT closed — W4 reconciler back-fill gap","Underplanning (1 row / 1 qty)",ambiguous
+GTSET-LOW-6FLAV-SALE,,,"Bundle SKU per Tom-locked cycle 17 default; do NOT propose decomposition; awaits LWR-1 ruling","Underplanning of constituent FGs (17 rows / 17 qty)",bundle
+GTSET-FREE-3FLAV-SALE,,,"Bundle SKU","Underplanning (7 rows / 10 qty)",bundle
+GTSET-FREE-DETOX-X4,,,"Bundle SKU","Underplanning (4 rows / 4 qty)",bundle
+GTSET-FREE-FRESH-DETOX,,,"Bundle SKU","Underplanning (4 rows / 4 qty)",bundle
+GTSET-LOW-3FLAV-SALE,,,"Bundle SKU","Underplanning (4 rows / 4 qty)",bundle
+GTSET-LOW-DETOX-X4,,,"Bundle SKU","Underplanning (3 rows / 3 qty)",bundle
+GTSET-LOW-3FLAV-PREMI,,,"Bundle SKU","Underplanning (3 rows / 3 qty)",bundle
+GTSET-LOW-JASMI-SENCH,,,"Bundle SKU","Underplanning (1 row / 1 qty)",bundle
+GTSET-LOW-ENERG-DETOX,,,"Bundle SKU","Underplanning (1 row / 1 qty)",bundle
+GT-GLA-CUP,,,"Non-catalog: 'Measuring Cup' accessory; no item record","No planning impact (visibility only)",non_catalog
+GT-PUE-FRE-1L,,,"Non-catalog: likely defunct PUE-Fresh line; no GT-PUE items in catalog","No planning impact (visibility only) — 5 rows / 6 qty",non_catalog
+GT-MAT-KIT,,,"Non-catalog: 'Complete Matcha Kit'; bundle-like accessory","No planning impact (visibility only) — 4 rows / 4 qty",non_catalog
+GTMN-PIK-254,,,"Non-catalog: 'Pikadon 254' likely promotional/legacy; 84 qty pending","No planning impact (visibility only) — 4 rows / 84 qty",non_catalog
+GT-GLA-MAT-PRINT,,,"Non-catalog: printed matcha glass accessory","No planning impact (visibility only) — 1 row / 100 qty",non_catalog
+GTEL-BAB-RED-0.75L,,,"Non-catalog: likely 'GTEL Babylon Red' — no GTEL items in catalog","No planning impact (visibility only) — 1 row / 12 qty",non_catalog
+7290003803217,,,"Non-catalog: barcode-as-SKU; ambiguous which item","No planning impact (visibility only) — 1 row / 1 qty",non_catalog
+,,,"Empty-string SKU — W4 normalizer parser bug candidate; should reject at parse time or emit lionwheel_malformed_line exception","Visibility-only parser-bug candidate — 1 row / 1 qty",malformed

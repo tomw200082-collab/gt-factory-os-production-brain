@@ -1,0 +1,14 @@
+{
+  "name": "available",
+  "reason": "correction",
+  "referenceDocumentUri": "gt-factory-os://integration-run/00000000-0000-0000-0000-000000000001",
+  "ignoreCompareQuantity": false,
+  "quantities": [
+    {
+      "inventoryItemId": "gid://shopify/InventoryItem/FIXTURE_1",
+      "locationId": "gid://shopify/Location/FIXTURE_1",
+      "quantity": 42,
+      "compareQuantity": 40
+    }
+  ]
+}

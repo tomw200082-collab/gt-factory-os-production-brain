@@ -1,0 +1,4143 @@
+{
+  "summary": {
+    "platform_items_total": 73,
+    "platform_active": 56,
+    "platform_pending": 10,
+    "platform_inactive": 7,
+    "shopify_products_total": 370,
+    "shopify_products_active": 105,
+    "shopify_products_draft": 9,
+    "shopify_products_archived": 256,
+    "unmapped_shopify_active_or_draft": 48,
+    "lionwheel_unresolved_skus": 26,
+    "lionwheel_resolved_skus": 41
+  },
+  "platform_audit": [
+    {
+      "item_id": "ADD-GAR-ANISE",
+      "item_name": "STAR ANISE GARNISH",
+      "item_status": "ACTIVE",
+      "platform_sku": "AP-GAR-ANISE",
+      "legacy_sku": "",
+      "platform_barcode": "",
+      "mapped_external_sku": "AP-GAR-ANISE",
+      "mapping_notes": "draft product created 2026-04-23; product_id=9564757557489",
+      "shopify_match": {
+        "variant_id": 48078378467569,
+        "product_id": 9564757557489,
+        "product_title": "Star Anise Garnish",
+        "product_status": "active",
+        "sku": "AP-GAR-ANISE",
+        "barcode": "",
+        "inventory_item_id": 50143699075313,
+        "routes": [
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 48078378467569,
+          "product_title": "Star Anise Garnish",
+          "product_status": "active",
+          "sku": "AP-GAR-ANISE",
+          "barcode": "",
+          "inventory_item_id": 50143699075313,
+          "routes": [
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "SKU_OK_NO_BARCODE_IN_SHOPIFY"
+      ]
+    },
+    {
+      "item_id": "ADD-GAR-CIN-STICKS",
+      "item_name": "CINNAMON STICKS GARNISH",
+      "item_status": "ACTIVE",
+      "platform_sku": "AP-STI-CIN",
+      "legacy_sku": "",
+      "platform_barcode": "2108",
+      "mapped_external_sku": "AP-STI-CIN",
+      "mapping_notes": "name-matched 2026-04-23; Shopify: Cinnamon Sticks 1000g barcode=2108",
+      "shopify_match": {
+        "variant_id": 44426326933745,
+        "product_id": 8163472277745,
+        "product_title": "Cinnamon Sticks 1000g",
+        "product_status": "active",
+        "sku": "AP-STI-CIN",
+        "barcode": "2108",
+        "inventory_item_id": 46526418682097,
+        "routes": [
+          "barcode",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44426326933745,
+          "product_title": "Cinnamon Sticks 1000g",
+          "product_status": "active",
+          "sku": "AP-STI-CIN",
+          "barcode": "2108",
+          "inventory_item_id": 46526418682097,
+          "routes": [
+            "barcode",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-GAR-ORA-DRY",
+      "item_name": "DRIED ORANGE GARNISH",
+      "item_status": "ACTIVE",
+      "platform_sku": "AP-DRI-ORA",
+      "legacy_sku": "",
+      "platform_barcode": "2100",
+      "mapped_external_sku": "AP-DRI-ORA",
+      "mapping_notes": "name-matched 2026-04-23; Shopify: Dried Orange barcode=2100",
+      "shopify_match": {
+        "variant_id": 43780619010289,
+        "product_id": 7939294626033,
+        "product_title": "Dried Orange approx. 30 pcs, 100g",
+        "product_status": "active",
+        "sku": "AP-DRI-ORA",
+        "barcode": "2100",
+        "inventory_item_id": 45879518691569,
+        "routes": [
+          "barcode",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43780619010289,
+          "product_title": "Dried Orange approx. 30 pcs, 100g",
+          "product_status": "active",
+          "sku": "AP-DRI-ORA",
+          "barcode": "2100",
+          "inventory_item_id": 45879518691569,
+          "routes": [
+            "barcode",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-GAR-ROSE-DRY",
+      "item_name": "DRIED ROSE BUDS GARNISH",
+      "item_status": "ACTIVE",
+      "platform_sku": "AP-DRI-ROS",
+      "legacy_sku": "",
+      "platform_barcode": "2102",
+      "mapped_external_sku": "AP-DRI-ROS",
+      "mapping_notes": "name-matched 2026-04-23; Shopify: Dried Purple Roses barcode=2102",
+      "shopify_match": {
+        "variant_id": 43780620648689,
+        "product_id": 7939295052017,
+        "product_title": "Dried Purple Roses 200g",
+        "product_status": "active",
+        "sku": "AP-DRI-ROS",
+        "barcode": "2102",
+        "inventory_item_id": 45879520329969,
+        "routes": [
+          "barcode",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43780620648689,
+          "product_title": "Dried Purple Roses 200g",
+          "product_status": "active",
+          "sku": "AP-DRI-ROS",
+          "barcode": "2102",
+          "inventory_item_id": 45879520329969,
+          "routes": [
+            "barcode",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-MUZ-BZSM-1L",
+      "item_name": "MUZA BASIL SMASH MIXER 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTMX-MUZ-BZSM-1L",
+      "legacy_sku": "GTMX-MUZ-BZSM-1L",
+      "platform_barcode": "01726529648188",
+      "mapped_external_sku": "GTMX-MUZ-BZSM-1L",
+      "mapping_notes": "legacy_sku-matched 2026-04-23; Shopify barcode has extra leading zero vs platform EAN-13",
+      "shopify_match": {
+        "variant_id": 46725165580529,
+        "product_id": 9232819585265,
+        "product_title": "Muza Basil Smash Mixer 1000ml",
+        "product_status": "active",
+        "sku": "GTMX-MUZ-BZSM-1L",
+        "barcode": "01726529648188",
+        "inventory_item_id": 48764517875953,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46725165580529,
+          "product_title": "Muza Basil Smash Mixer 1000ml",
+          "product_status": "active",
+          "sku": "GTMX-MUZ-BZSM-1L",
+          "barcode": "01726529648188",
+          "inventory_item_id": 48764517875953,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-MUZ-HER-1L",
+      "item_name": "MUZA HERBAL MULE BLISS MIXER 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTMX-MUZ-HER-1L",
+      "legacy_sku": "GTMX-MUZ-HER-1L",
+      "platform_barcode": "0726529648256",
+      "mapped_external_sku": "GTMX-MUZ-HER-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46747883864305,
+        "product_id": 9241229885681,
+        "product_title": "Muza Herbal Mule Bliss Mixer 1000ml",
+        "product_status": "active",
+        "sku": "GTMX-MUZ-HER-1L",
+        "barcode": "0726529648256",
+        "inventory_item_id": 48787854754033,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46747883864305,
+          "product_title": "Muza Herbal Mule Bliss Mixer 1000ml",
+          "product_status": "active",
+          "sku": "GTMX-MUZ-HER-1L",
+          "barcode": "0726529648256",
+          "inventory_item_id": 48787854754033,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-MUZ-JASM-1L",
+      "item_name": "MUZA JASMIN MIXER 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTMX-MUZ-JASM-1L",
+      "legacy_sku": "GTMX-MUZ-JASM-1L",
+      "platform_barcode": "0726529648218",
+      "mapped_external_sku": "GTMX-MUZ-JASM-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46747871903985,
+        "product_id": 9241226281201,
+        "product_title": "Muza Jasmin Mixer 1000ml",
+        "product_status": "active",
+        "sku": "GTMX-MUZ-JASM-1L",
+        "barcode": "0726529648218",
+        "inventory_item_id": 48787842793713,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46747871903985,
+          "product_title": "Muza Jasmin Mixer 1000ml",
+          "product_status": "active",
+          "sku": "GTMX-MUZ-JASM-1L",
+          "barcode": "0726529648218",
+          "inventory_item_id": 48787842793713,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-MUZ-MRCL-1L",
+      "item_name": "MUZA CLASSIC MARGARITA MIXER 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTMX-MUZ-MRCL-1L",
+      "legacy_sku": "GTMX-MUZ-MRCL-1L",
+      "platform_barcode": "0726529648201",
+      "mapped_external_sku": "GTMX-MUZ-MRCL-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46747864531185,
+        "product_id": 9241225363697,
+        "product_title": "Muza Classic Margarita Mixer 1000ml",
+        "product_status": "active",
+        "sku": "GTMX-MUZ-MRCL-1L",
+        "barcode": "0726529648201",
+        "inventory_item_id": 48787835388145,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46747864531185,
+          "product_title": "Muza Classic Margarita Mixer 1000ml",
+          "product_status": "active",
+          "sku": "GTMX-MUZ-MRCL-1L",
+          "barcode": "0726529648201",
+          "inventory_item_id": 48787835388145,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-MUZ-PNMM-1L",
+      "item_name": "MUZA PINK MAMA MIXER 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTMX-MUZ-PNMM-1L",
+      "legacy_sku": "GTMX-MUZ-PNMM-1L",
+      "platform_barcode": "0726529648195",
+      "mapped_external_sku": "GTMX-MUZ-PNMM-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46747877441777,
+        "product_id": 9241229164785,
+        "product_title": "Muza Pink Mama Mixer 1000ml",
+        "product_status": "active",
+        "sku": "GTMX-MUZ-PNMM-1L",
+        "barcode": "0726529648195",
+        "inventory_item_id": 48787848331505,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46747877441777,
+          "product_title": "Muza Pink Mama Mixer 1000ml",
+          "product_status": "active",
+          "sku": "GTMX-MUZ-PNMM-1L",
+          "barcode": "0726529648195",
+          "inventory_item_id": 48787848331505,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-MUZ-PRPL-1L",
+      "item_name": "MUZA PURPLE KISS MIXER 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTMX-MUZ-PRPL-1L",
+      "legacy_sku": "GTMX-MUZ-PRPL-1L",
+      "platform_barcode": "0726529648232",
+      "mapped_external_sku": "GTMX-MUZ-PRPL-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46747892580593,
+        "product_id": 9241231425777,
+        "product_title": "Muza Purple Kiss Mixer 1000ml",
+        "product_status": "active",
+        "sku": "GTMX-MUZ-PRPL-1L",
+        "barcode": "0726529648232",
+        "inventory_item_id": 48787863666929,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46747892580593,
+          "product_title": "Muza Purple Kiss Mixer 1000ml",
+          "product_status": "active",
+          "sku": "GTMX-MUZ-PRPL-1L",
+          "barcode": "0726529648232",
+          "inventory_item_id": 48787863666929,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-MUZ-TRIL-1L",
+      "item_name": "MUZA TROPICAL ISRAELI MIXER 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTMX-MUZ-TRIL-1L",
+      "legacy_sku": "GTMX-MUZ-TRIL-1L",
+      "platform_barcode": "0726529648249",
+      "mapped_external_sku": "GTMX-MUZ-TRIL-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46747887599857,
+        "product_id": 9241230508273,
+        "product_title": "Muza Tropical Israeli Mixer 1000ml",
+        "product_status": "active",
+        "sku": "GTMX-MUZ-TRIL-1L",
+        "barcode": "0726529648249",
+        "inventory_item_id": 48787858522353,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46747887599857,
+          "product_title": "Muza Tropical Israeli Mixer 1000ml",
+          "product_status": "active",
+          "sku": "GTMX-MUZ-TRIL-1L",
+          "barcode": "0726529648249",
+          "inventory_item_id": 48787858522353,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-ODK-MAN-1L",
+      "item_name": "ODK MANGO 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-ODK-MAN-1",
+      "legacy_sku": "GT-ODK-MAN-1L",
+      "platform_barcode": "8331",
+      "mapped_external_sku": "GT-ODK-MAN-1",
+      "mapping_notes": "name-matched 2026-04-23; Shopify barcode=8331",
+      "shopify_match": {
+        "variant_id": 46724914184433,
+        "product_id": 9232745103601,
+        "product_title": "ODK Mango Smoothie 1000ml",
+        "product_status": "active",
+        "sku": "GT-ODK-MAN-1",
+        "barcode": "8331",
+        "inventory_item_id": 48764257665265,
+        "routes": [
+          "barcode",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46724914184433,
+          "product_title": "ODK Mango Smoothie 1000ml",
+          "product_status": "active",
+          "sku": "GT-ODK-MAN-1",
+          "barcode": "8331",
+          "inventory_item_id": 48764257665265,
+          "routes": [
+            "barcode",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-ODK-PEA-1L",
+      "item_name": "ODK PEACH 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-ODK-PEA-1",
+      "legacy_sku": "GT-ODK-PEA-1L",
+      "platform_barcode": "8332",
+      "mapped_external_sku": "GT-ODK-PEA-1",
+      "mapping_notes": "name-matched 2026-04-23; Shopify barcode=8332",
+      "shopify_match": {
+        "variant_id": 46724918411505,
+        "product_id": 9232746643697,
+        "product_title": "ODK Peach Smoothie 1000ml",
+        "product_status": "active",
+        "sku": "GT-ODK-PEA-1",
+        "barcode": "8332",
+        "inventory_item_id": 48764261892337,
+        "routes": [
+          "barcode",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46724918411505,
+          "product_title": "ODK Peach Smoothie 1000ml",
+          "product_status": "active",
+          "sku": "GT-ODK-PEA-1",
+          "barcode": "8332",
+          "inventory_item_id": 48764261892337,
+          "routes": [
+            "barcode",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-ODK-STR-1L",
+      "item_name": "ODK STRAWBERRY 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-ODK-STR-1",
+      "legacy_sku": "GT-ODK-STR-1L",
+      "platform_barcode": "8330",
+      "mapped_external_sku": "GT-ODK-STR-1",
+      "mapping_notes": "name-matched 2026-04-23; Shopify barcode=8330",
+      "shopify_match": {
+        "variant_id": 46724904419569,
+        "product_id": 9232743137521,
+        "product_title": "ODK Strawberry Smoothie 1000ml",
+        "product_status": "active",
+        "sku": "GT-ODK-STR-1",
+        "barcode": "8330",
+        "inventory_item_id": 48764247900401,
+        "routes": [
+          "barcode",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46724904419569,
+          "product_title": "ODK Strawberry Smoothie 1000ml",
+          "product_status": "active",
+          "sku": "GT-ODK-STR-1",
+          "barcode": "8330",
+          "inventory_item_id": 48764247900401,
+          "routes": [
+            "barcode",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-TAP-BLU-3400G",
+      "item_name": "TAPIOCA BLUEBERRY 3.4KG",
+      "item_status": "ACTIVE",
+      "platform_sku": "AP-TAP-BER-3.3",
+      "legacy_sku": "AP-TAP-BER-3.4",
+      "platform_barcode": "0000000002006",
+      "mapped_external_sku": "AP-TAP-BER-3.3",
+      "mapping_notes": "name-matched 2026-04-23; platform barcode=0000000002006 Shopify=2006",
+      "shopify_match": {
+        "variant_id": 44378251526385,
+        "product_id": 8144965599473,
+        "product_title": "Bubbles Blueberry Tapioca Pearls 3400g",
+        "product_status": "active",
+        "sku": "AP-TAP-BER-3.3",
+        "barcode": "2006",
+        "inventory_item_id": 46478828175601,
+        "routes": [
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44378251526385,
+          "product_title": "Bubbles Blueberry Tapioca Pearls 3400g",
+          "product_status": "active",
+          "sku": "AP-TAP-BER-3.3",
+          "barcode": "2006",
+          "inventory_item_id": 46478828175601,
+          "routes": [
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-TAP-LYC-3400G",
+      "item_name": "TAPIOCA LYCHEE 3.4KG",
+      "item_status": "ACTIVE",
+      "platform_sku": "AP-TAP-LYC-3.4",
+      "legacy_sku": "AP-TAP-LYC-3.4",
+      "platform_barcode": "0000000002009",
+      "mapped_external_sku": "AP-TAP-LYC-3.4",
+      "mapping_notes": "name-matched 2026-04-23; platform barcode=0000000002009 Shopify=2009",
+      "shopify_match": {
+        "variant_id": 46120026636529,
+        "product_id": 8803877224689,
+        "product_title": "Bubbles Lychee Tapioca Pearls 3400g",
+        "product_status": "active",
+        "sku": "AP-TAP-LYC-3.4",
+        "barcode": "2009",
+        "inventory_item_id": 48156399010033,
+        "routes": [
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46120026636529,
+          "product_title": "Bubbles Lychee Tapioca Pearls 3400g",
+          "product_status": "active",
+          "sku": "AP-TAP-LYC-3.4",
+          "barcode": "2009",
+          "inventory_item_id": 48156399010033,
+          "routes": [
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-TAP-MAN-3400G",
+      "item_name": "TAPIOCA MANGO 3.4KG",
+      "item_status": "ACTIVE",
+      "platform_sku": "AP-TAP-MAN-3.4",
+      "legacy_sku": "AP-TAP-MAN-3.4",
+      "platform_barcode": "0000000002005",
+      "mapped_external_sku": "AP-TAP-MAN-3.4",
+      "mapping_notes": "name-matched 2026-04-23; platform barcode=0000000002005 Shopify=2005",
+      "shopify_match": {
+        "variant_id": 44274193465585,
+        "product_id": 8107891327217,
+        "product_title": "Bubbles Mango Tapioca Pearls 3400g",
+        "product_status": "active",
+        "sku": "AP-TAP-MAN-3.4",
+        "barcode": "2005",
+        "inventory_item_id": 46374784958705,
+        "routes": [
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44274193465585,
+          "product_title": "Bubbles Mango Tapioca Pearls 3400g",
+          "product_status": "active",
+          "sku": "AP-TAP-MAN-3.4",
+          "barcode": "2005",
+          "inventory_item_id": 46374784958705,
+          "routes": [
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "ADD-TAP-PIN-3400G",
+      "item_name": "TAPIOCA PINEAPPLE 3.4KG",
+      "item_status": "ACTIVE",
+      "platform_sku": "AP-TAP-PIN-3.4",
+      "legacy_sku": "AP-TAP-PIN-3.4",
+      "platform_barcode": "0000000002004",
+      "mapped_external_sku": "AP-TAP-PIN-3.4",
+      "mapping_notes": "name-matched 2026-04-23; platform barcode=0000000002004 Shopify=2004",
+      "shopify_match": {
+        "variant_id": 44274180423921,
+        "product_id": 8107885560049,
+        "product_title": "Bubbles Pineapple Tapioca Pearls 3400g",
+        "product_status": "active",
+        "sku": "AP-TAP-PIN-3.4",
+        "barcode": "2004",
+        "inventory_item_id": 46374771917041,
+        "routes": [
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44274180423921,
+          "product_title": "Bubbles Pineapple Tapioca Pearls 3400g",
+          "product_status": "active",
+          "sku": "AP-TAP-PIN-3.4",
+          "barcode": "2004",
+          "inventory_item_id": 46374771917041,
+          "routes": [
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-AME-1L",
+      "item_name": "AMERICAN 1L",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GT-AME-LOW-1L",
+      "platform_barcode": "0724133176684",
+      "mapped_external_sku": "GT-AME-LOW-1L",
+      "mapping_notes": "draft product created 2026-04-23; product_id=9564757065969",
+      "shopify_match": {
+        "variant_id": 48078377451761,
+        "product_id": 9564757065969,
+        "product_title": "American Tea 1L",
+        "product_status": "draft",
+        "sku": "GT-AME-LOW-1L",
+        "barcode": "0724133176684",
+        "inventory_item_id": 50143698059505,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 48078377451761,
+          "product_title": "American Tea 1L",
+          "product_status": "draft",
+          "sku": "GT-AME-LOW-1L",
+          "barcode": "0724133176684",
+          "inventory_item_id": 50143698059505,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-AME-500ML",
+      "item_name": "AMERICAN 0.5L",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GT-AME-LOW-0.5L",
+      "platform_barcode": "0724133176691",
+      "mapped_external_sku": "GT-AME-LOW-0.5L",
+      "mapping_notes": "draft product created 2026-04-23; product_id=9564757164273",
+      "shopify_match": {
+        "variant_id": 48078377550065,
+        "product_id": 9564757164273,
+        "product_title": "American Tea 0.5L",
+        "product_status": "draft",
+        "sku": "GT-AME-LOW-0.5L",
+        "barcode": "0724133176691",
+        "inventory_item_id": 50143698157809,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 48078377550065,
+          "product_title": "American Tea 0.5L",
+          "product_status": "draft",
+          "sku": "GT-AME-LOW-0.5L",
+          "barcode": "0724133176691",
+          "inventory_item_id": 50143698157809,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-ARK-PAS-500ML",
+      "item_name": "ARAK PASSION FRUIT 0.5L",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GTEL-ARK-PAS-0.5L",
+      "platform_barcode": "0693493238137",
+      "mapped_external_sku": "GT-LEM-LOW-0.3L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 47770045317361,
+        "product_id": 9465824542961,
+        "product_title": "GT Elita Arak Cocktail 500ml",
+        "product_status": "active",
+        "sku": "GTEL-COC-ARA-0.5L",
+        "barcode": "0693493238137",
+        "inventory_item_id": 49829322883313,
+        "routes": [
+          "barcode"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 47770045317361,
+          "product_title": "GT Elita Arak Cocktail 500ml",
+          "product_status": "active",
+          "sku": "GTEL-COC-ARA-0.5L",
+          "barcode": "0693493238137",
+          "inventory_item_id": 49829322883313,
+          "routes": [
+            "barcode"
+          ]
+        },
+        {
+          "variant_id": 43935323488497,
+          "product_title": "תמצית תה ירוק ולמון גראס 0.3 ל | \"ENERGY\"",
+          "product_status": "archived",
+          "sku": "GT-LEM-LOW-0.3L",
+          "barcode": "0693493238137",
+          "inventory_item_id": 46035877396721,
+          "routes": [
+            "barcode",
+            "mapping_external_sku"
+          ]
+        },
+        {
+          "variant_id": 47814264619249,
+          "product_title": "GT Arak Lemons 270ml",
+          "product_status": "archived",
+          "sku": "GTCC-ARA-LEM-0.27L",
+          "barcode": "0693493238137",
+          "inventory_item_id": 49874466439409,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "BARCODE_OK_BUT_MAPPING_SKU_WRONG"
+      ]
+    },
+    {
+      "item_id": "FG-CAL-1L",
+      "item_name": "CALM 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-CHA-LOW-1L",
+      "legacy_sku": "GT-CHA-LOW-1L",
+      "platform_barcode": "0693493164580",
+      "mapped_external_sku": "GT-CHA-LOW-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44933453807857,
+        "product_id": 8354317598961,
+        "product_title": "CALM 1000ml",
+        "product_status": "active",
+        "sku": "GT-CHA-LOW-1L",
+        "barcode": "0693493164580",
+        "inventory_item_id": 47022301806833,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44933453807857,
+          "product_title": "CALM 1000ml",
+          "product_status": "active",
+          "sku": "GT-CHA-LOW-1L",
+          "barcode": "0693493164580",
+          "inventory_item_id": 47022301806833,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44934030655729,
+          "product_title": "תמצית קמומיל, תפוח וציפורן 1 ל | \"CALM\"",
+          "product_status": "archived",
+          "sku": "GT-CHA-LOW-1L",
+          "barcode": "0693493164580",
+          "inventory_item_id": 47022878589169,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 40762012270752,
+          "product_title": "תמצית קמומיל, תפוח וציפורן 1 ל (6 יח) | \"CALM\"",
+          "product_status": "archived",
+          "sku": "GT-CHA-LOW-6L",
+          "barcode": "0693493164580",
+          "inventory_item_id": 42859075207328,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-CAL-1L-NS",
+      "item_name": "CALM 1L NO SUGAR",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GT-CHA-FRE-1L",
+      "platform_barcode": "0724133176653",
+      "mapped_external_sku": "GT-CHA-FRE-1L",
+      "mapping_notes": "draft product created 2026-04-23; product_id=9564757197041",
+      "shopify_match": {
+        "variant_id": 48078377615601,
+        "product_id": 9564757197041,
+        "product_title": "Calm No Sugar 1L",
+        "product_status": "draft",
+        "sku": "GT-CHA-FRE-1L",
+        "barcode": "0724133176653",
+        "inventory_item_id": 50143698223345,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 48078377615601,
+          "product_title": "Calm No Sugar 1L",
+          "product_status": "draft",
+          "sku": "GT-CHA-FRE-1L",
+          "barcode": "0724133176653",
+          "inventory_item_id": 50143698223345,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-CAL-500ML",
+      "item_name": "CALM 0.5L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-CHA-LOW-0.5L",
+      "legacy_sku": "GT-CHA-LOW-0.5L",
+      "platform_barcode": "0693493238052",
+      "mapped_external_sku": "GT-CHA-LOW-0.5L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43914784276721,
+        "product_id": 7986158108913,
+        "product_title": "CALM 500ml",
+        "product_status": "active",
+        "sku": "GT-CHA-LOW-0.5L",
+        "barcode": "0693493238052",
+        "inventory_item_id": 46015207309553,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43914784276721,
+          "product_title": "CALM 500ml",
+          "product_status": "active",
+          "sku": "GT-CHA-LOW-0.5L",
+          "barcode": "0693493238052",
+          "inventory_item_id": 46015207309553,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-CAL-500ML-NS",
+      "item_name": "CALM 0.5L NO SUGAR",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GT-CHA-FRE-0.5L",
+      "platform_barcode": "0724133176646",
+      "mapped_external_sku": "GT-CHA-FRE-0.5L",
+      "mapping_notes": "draft product created 2026-04-23; product_id=9564757262577",
+      "shopify_match": {
+        "variant_id": 48078377648369,
+        "product_id": 9564757262577,
+        "product_title": "Calm No Sugar 0.5L",
+        "product_status": "draft",
+        "sku": "GT-CHA-FRE-0.5L",
+        "barcode": "0724133176646",
+        "inventory_item_id": 50143698256113,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 48078377648369,
+          "product_title": "Calm No Sugar 0.5L",
+          "product_status": "draft",
+          "sku": "GT-CHA-FRE-0.5L",
+          "barcode": "0724133176646",
+          "inventory_item_id": 50143698256113,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-CON-1L",
+      "item_name": "CONSCIOUSNESS 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-JAS-LOW-1L",
+      "legacy_sku": "GT-JAS-LOW-1L",
+      "platform_barcode": "0693493164573",
+      "mapped_external_sku": "GT-JAS-LOW-6L",
+      "mapping_notes": "barcode-matched 2026-04-23; Tom-approved 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44933442666737,
+        "product_id": 8354312847601,
+        "product_title": "CONSCIOUSNESS 1000ml",
+        "product_status": "active",
+        "sku": "GT-JAS-LOW-1L",
+        "barcode": "0693493164573",
+        "inventory_item_id": 47022290665713,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44933442666737,
+          "product_title": "CONSCIOUSNESS 1000ml",
+          "product_status": "active",
+          "sku": "GT-JAS-LOW-1L",
+          "barcode": "0693493164573",
+          "inventory_item_id": 47022290665713,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 40761977995424,
+          "product_title": "תמצית תה ירוק יסמין וליצי 1 ל (6 יח) | \"CONSCIOUSNESS\"",
+          "product_status": "archived",
+          "sku": "GT-JAS-LOW-6L",
+          "barcode": "0693493164573",
+          "inventory_item_id": 42859038343328,
+          "routes": [
+            "barcode",
+            "mapping_external_sku"
+          ]
+        },
+        {
+          "variant_id": 44068696785137,
+          "product_title": "תמצית מאצ'ה 1 ל | \"IKIGAI\"",
+          "product_status": "archived",
+          "sku": "GT-MAT-TEA-1L",
+          "barcode": "0693493164573",
+          "inventory_item_id": 46169421938929,
+          "routes": [
+            "barcode"
+          ]
+        },
+        {
+          "variant_id": 44934024659185,
+          "product_title": "תמצית תה ירוק יסמין וליצ'י 1 ל | \"CONSCIOUSNESS\"",
+          "product_status": "archived",
+          "sku": "GT-JAS-LOW-1L",
+          "barcode": "0693493164573",
+          "inventory_item_id": 47022872592625,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "BARCODE_OK_BUT_MAPPING_SKU_WRONG"
+      ]
+    },
+    {
+      "item_id": "FG-CON-500ML",
+      "item_name": "CONSCIOUSNESS 0.5L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-JAS-LOW-0.5L",
+      "legacy_sku": "GT-JAS-LOW-0.5L",
+      "platform_barcode": "0693493238038",
+      "mapped_external_sku": "GT-JAS-LOW-0.5L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43914772283633,
+        "product_id": 7986148737265,
+        "product_title": "CONSCIOUSNESS 500ml",
+        "product_status": "active",
+        "sku": "GT-JAS-LOW-0.5L",
+        "barcode": "0693493238038",
+        "inventory_item_id": 46015195316465,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43914772283633,
+          "product_title": "CONSCIOUSNESS 500ml",
+          "product_status": "active",
+          "sku": "GT-JAS-LOW-0.5L",
+          "barcode": "0693493238038",
+          "inventory_item_id": 46015195316465,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-COS-LYC-300ML",
+      "item_name": "COSMO LYCHEE 0.3L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTEL-COS-LYC-0.3L",
+      "legacy_sku": "GTEL-COS-LYC-0.3L",
+      "platform_barcode": "0726529648171",
+      "mapped_external_sku": "GTEL-COS-LYC-0.3L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46612032258289,
+        "product_id": 9174787031281,
+        "product_title": "GT Elita Cosmo Lychee Cocktail 300ml",
+        "product_status": "active",
+        "sku": "GTEL-COS-LYC-0.3L",
+        "barcode": "0726529648171",
+        "inventory_item_id": 48650566500593,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46612032258289,
+          "product_title": "GT Elita Cosmo Lychee Cocktail 300ml",
+          "product_status": "active",
+          "sku": "GTEL-COS-LYC-0.3L",
+          "barcode": "0726529648171",
+          "inventory_item_id": 48650566500593,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-DES-1L",
+      "item_name": "DESERTEA 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-INF-DES-1L",
+      "legacy_sku": "GT-INF-DES-1L",
+      "platform_barcode": "0726529648133",
+      "mapped_external_sku": "GT-INF-DES-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46136732582129,
+        "product_id": 8808431517937,
+        "product_title": "Desert Infusion 1000ml",
+        "product_status": "active",
+        "sku": "GT-INF-DES-1L",
+        "barcode": "0726529648133",
+        "inventory_item_id": 48173057474801,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46136732582129,
+          "product_title": "Desert Infusion 1000ml",
+          "product_status": "active",
+          "sku": "GT-INF-DES-1L",
+          "barcode": "0726529648133",
+          "inventory_item_id": 48173057474801,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-DES-1L-NS",
+      "item_name": "DESERTEA 1L NO SUGAR",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GT-DES-FRE-1L",
+      "platform_barcode": "0724133176660",
+      "mapped_external_sku": "GT-DES-FRE-1L",
+      "mapping_notes": "draft product created 2026-04-23; product_id=9564757328113",
+      "shopify_match": {
+        "variant_id": 48078377844977,
+        "product_id": 9564757328113,
+        "product_title": "Desertea No Sugar 1L",
+        "product_status": "draft",
+        "sku": "GT-DES-FRE-1L",
+        "barcode": "0724133176660",
+        "inventory_item_id": 50143698452721,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 48078377844977,
+          "product_title": "Desertea No Sugar 1L",
+          "product_status": "draft",
+          "sku": "GT-DES-FRE-1L",
+          "barcode": "0724133176660",
+          "inventory_item_id": 50143698452721,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-DES-500ML",
+      "item_name": "DESERTEA 0.5L",
+      "item_status": "INACTIVE",
+      "platform_sku": "",
+      "legacy_sku": "GT-DES-LOW-0.5L",
+      "platform_barcode": "0693493238106",
+      "mapped_external_sku": "",
+      "mapping_notes": null,
+      "shopify_match": {
+        "variant_id": null,
+        "product_id": null,
+        "product_title": null,
+        "product_status": null,
+        "sku": null,
+        "barcode": null,
+        "inventory_item_id": null,
+        "routes": []
+      },
+      "all_candidates": [],
+      "verdict": [
+        "inactive_no_match"
+      ]
+    },
+    {
+      "item_id": "FG-DES-500ML-NS",
+      "item_name": "DESERTEA 0.5L NO SUGAR",
+      "item_status": "INACTIVE",
+      "platform_sku": "",
+      "legacy_sku": "GT-DES-FRE-0.5L",
+      "platform_barcode": "0693493238113",
+      "mapped_external_sku": "GT-LUI-LOW-0.3L",
+      "mapping_notes": "barcode-matched 2026-04-23; Tom-approved suspicious match 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43935318638833,
+        "product_id": 7993901842673,
+        "product_title": "תמצית תה ירוק, לואיזה ונענע 0.3 ל | \"DETOX\"",
+        "product_status": "archived",
+        "sku": "GT-LUI-LOW-0.3L",
+        "barcode": "0693493238113",
+        "inventory_item_id": 46035872415985,
+        "routes": [
+          "barcode",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43935318638833,
+          "product_title": "תמצית תה ירוק, לואיזה ונענע 0.3 ל | \"DETOX\"",
+          "product_status": "archived",
+          "sku": "GT-LUI-LOW-0.3L",
+          "barcode": "0693493238113",
+          "inventory_item_id": 46035872415985,
+          "routes": [
+            "barcode",
+            "mapping_external_sku"
+          ]
+        },
+        {
+          "variant_id": 43935322833137,
+          "product_title": "תמצית היביסקוס וליים 0.3 ל | \"FRESH\"",
+          "product_status": "archived",
+          "sku": "GT-LUI-LOW-0.3L",
+          "barcode": "0693493238120",
+          "inventory_item_id": 46035876741361,
+          "routes": [
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "MAPPING_TO_ARCHIVED_SHOPIFY"
+      ]
+    },
+    {
+      "item_id": "FG-DET-1L",
+      "item_name": "DETOX 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-LUI-LOW-1L",
+      "legacy_sku": "GT-LUI-LOW-1L",
+      "platform_barcode": "0608614315239",
+      "mapped_external_sku": "GT-LUI-LOW-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44933421662449,
+        "product_id": 8354304983281,
+        "product_title": "DETOX 1000ml",
+        "product_status": "active",
+        "sku": "GT-LUI-LOW-1L",
+        "barcode": "0608614315239",
+        "inventory_item_id": 47022269661425,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44933421662449,
+          "product_title": "DETOX 1000ml",
+          "product_status": "active",
+          "sku": "GT-LUI-LOW-1L",
+          "barcode": "0608614315239",
+          "inventory_item_id": 47022269661425,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44934015123697,
+          "product_title": "תמצית תה ירוק, לואיזה ונענע 1 ל | \"DETOX\"",
+          "product_status": "archived",
+          "sku": "GT-LUI-LOW-1L",
+          "barcode": "0608614315239",
+          "inventory_item_id": 47022863057137,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 37551221899424,
+          "product_title": "תמצית תה ירוק, לואיזה ונענע 1 ל (6 יח) | \"DETOX\"",
+          "product_status": "archived",
+          "sku": "GT-LUI-LOW-6L",
+          "barcode": "0608614315239",
+          "inventory_item_id": 39475763118240,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-DET-1L-NS",
+      "item_name": "DETOX 1L NO SUGAR",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-LUI-FRE-1L",
+      "legacy_sku": "GT-LUI-FRE-1L",
+      "platform_barcode": "0608614315246",
+      "mapped_external_sku": "GT-LUI-FRE-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44933385552113,
+        "product_id": 8354292170993,
+        "product_title": "DETOX Sugar-Free 1000ml",
+        "product_status": "active",
+        "sku": "GT-LUI-FRE-1L",
+        "barcode": "0608614315246",
+        "inventory_item_id": 47022233551089,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44933385552113,
+          "product_title": "DETOX Sugar-Free 1000ml",
+          "product_status": "active",
+          "sku": "GT-LUI-FRE-1L",
+          "barcode": "0608614315246",
+          "inventory_item_id": 47022233551089,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44933976621297,
+          "product_title": "תמצית תה ירוק, לואיזה ונענע ללא סוכר 1 ל | \"DETOX SUGAR-FREE\"",
+          "product_status": "archived",
+          "sku": "GT-LUI-FRE-1L",
+          "barcode": "0608614315246",
+          "inventory_item_id": 47022824554737,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 47039761711345,
+          "product_title": "DETOX Sugar-Free 1000ml (Copy)",
+          "product_status": "archived",
+          "sku": "GT-LUI-FRE-1L",
+          "barcode": "0608614315246",
+          "inventory_item_id": 49080159240433,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 37551220949152,
+          "product_title": "תמצית תה ירוק, לואיזה ונענע ללא סוכר 1 ל (6 יח) | \"DETOX SUGAR-FREE\"",
+          "product_status": "archived",
+          "sku": "GT-LUI-FRE-6L",
+          "barcode": "0608614315246",
+          "inventory_item_id": 39475762200736,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-DET-500ML",
+      "item_name": "DETOX 0.5L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-LUI-LOW-0.5L",
+      "legacy_sku": "GT-LUI-LOW-0.5L",
+      "platform_barcode": "0693493238069",
+      "mapped_external_sku": "GT-LUI-LOW-0.5L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43804830499057,
+        "product_id": 7948560400625,
+        "product_title": "DETOX 500ml",
+        "product_status": "active",
+        "sku": "GT-LUI-LOW-0.5L",
+        "barcode": "0693493238069",
+        "inventory_item_id": 45904451535089,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43804830499057,
+          "product_title": "DETOX 500ml",
+          "product_status": "active",
+          "sku": "GT-LUI-LOW-0.5L",
+          "barcode": "0693493238069",
+          "inventory_item_id": 45904451535089,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-DET-500ML-NS",
+      "item_name": "DETOX 0.5L NO SUGAR",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-LUI-FRE-0.5L",
+      "legacy_sku": "GT-LUI-FRE-0.5L",
+      "platform_barcode": "0693493238083",
+      "mapped_external_sku": "GT-LUI-FRE-0.5L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43914805346545,
+        "product_id": 7986172723441,
+        "product_title": "DETOX Sugar-Free 500ml",
+        "product_status": "active",
+        "sku": "GT-LUI-FRE-0.5L",
+        "barcode": "0693493238083",
+        "inventory_item_id": 46015228379377,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43914805346545,
+          "product_title": "DETOX Sugar-Free 500ml",
+          "product_status": "active",
+          "sku": "GT-LUI-FRE-0.5L",
+          "barcode": "0693493238083",
+          "inventory_item_id": 46015228379377,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-ENE-1L",
+      "item_name": "ENERGY 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-LEM-LOW-1L",
+      "legacy_sku": "GT-LEM-LOW-1L",
+      "platform_barcode": "0608614315253",
+      "mapped_external_sku": "GT-LEM-LOW-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44933447516401,
+        "product_id": 8354315075825,
+        "product_title": "ENERGY 1000ml",
+        "product_status": "active",
+        "sku": "GT-LEM-LOW-1L",
+        "barcode": "0608614315253",
+        "inventory_item_id": 47022295515377,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44933447516401,
+          "product_title": "ENERGY 1000ml",
+          "product_status": "active",
+          "sku": "GT-LEM-LOW-1L",
+          "barcode": "0608614315253",
+          "inventory_item_id": 47022295515377,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44934028329201,
+          "product_title": "תמצית תה ירוק ולמון גראס 1 ל | \"ENERGY\"",
+          "product_status": "archived",
+          "sku": "GT-LEM-LOW-1L",
+          "barcode": "0608614315253",
+          "inventory_item_id": 47022876262641,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 37551226945696,
+          "product_title": "תמצית תה ירוק ולמון גראס 1 ל (6 יח) | \"ENERGY\"",
+          "product_status": "archived",
+          "sku": "GT-LEM-LOW-6L",
+          "barcode": "0608614315253",
+          "inventory_item_id": 39475767574688,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-ENE-500ML",
+      "item_name": "ENERGY 0.5L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-LEM-LOW-0.5L",
+      "legacy_sku": "GT-LEM-LOW-0.5L",
+      "platform_barcode": "0693493238021",
+      "mapped_external_sku": "GT-LEM-LOW-0.5L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43914768646385,
+        "product_id": 7986145132785,
+        "product_title": "ENERGY 500ml",
+        "product_status": "active",
+        "sku": "GT-LEM-LOW-0.5L",
+        "barcode": "0693493238021",
+        "inventory_item_id": 46015191711985,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43914768646385,
+          "product_title": "ENERGY 500ml",
+          "product_status": "active",
+          "sku": "GT-LEM-LOW-0.5L",
+          "barcode": "0693493238021",
+          "inventory_item_id": 46015191711985,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-FRE-1L",
+      "item_name": "FRESH 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-HIB-LOW-1L",
+      "legacy_sku": "GT-HIB-LOW-1L",
+      "platform_barcode": "0608614315291",
+      "mapped_external_sku": "GT-HIB-LOW-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44933466620145,
+        "product_id": 8354324283633,
+        "product_title": "FRESH 1000ml",
+        "product_status": "active",
+        "sku": "GT-HIB-LOW-1L",
+        "barcode": "0608614315291",
+        "inventory_item_id": 47022314619121,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44933466620145,
+          "product_title": "FRESH 1000ml",
+          "product_status": "active",
+          "sku": "GT-HIB-LOW-1L",
+          "barcode": "0608614315291",
+          "inventory_item_id": 47022314619121,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44934033572081,
+          "product_title": "תמצית היביסקוס וליים 1 ל | \"FRESH\"",
+          "product_status": "archived",
+          "sku": "GT-HIB-LOW-1L",
+          "barcode": "0608614315291",
+          "inventory_item_id": 47022881505521,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 37551229665440,
+          "product_title": "תמצית היביסקוס וליים 1 ל (6 יח) | \"FRESH\"",
+          "product_status": "archived",
+          "sku": "GT-HIB-LOW-6L",
+          "barcode": "0608614315291",
+          "inventory_item_id": 39475769770144,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-FRE-1L-NS",
+      "item_name": "FRESH 1L NO SUGAR",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-HIB-FRE-1L",
+      "legacy_sku": "GT-HIB-FRE-1L",
+      "platform_barcode": "0608614315307",
+      "mapped_external_sku": "GT-HIB-FRE-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44933462032625,
+        "product_id": 8354322252017,
+        "product_title": "FRESH Sugar-Free 1000ml",
+        "product_status": "active",
+        "sku": "GT-HIB-FRE-1L",
+        "barcode": "0608614315307",
+        "inventory_item_id": 47022310031601,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44933462032625,
+          "product_title": "FRESH Sugar-Free 1000ml",
+          "product_status": "active",
+          "sku": "GT-HIB-FRE-1L",
+          "barcode": "0608614315307",
+          "inventory_item_id": 47022310031601,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44934045204721,
+          "product_title": "תמצית היביסקוס וליים ללא סוכר 1 ל | \"FRESH SUGAR-FREE\"",
+          "product_status": "archived",
+          "sku": "GT-HIB-FRE-1L",
+          "barcode": "0608614315307",
+          "inventory_item_id": 47022893138161,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 37551229010080,
+          "product_title": "תמצית היביסקוס וליים ללא סוכר 1 ל (6 יח) | \"FRESH SUGAR-FREE\"",
+          "product_status": "archived",
+          "sku": "GT-HIB-FRE-6L",
+          "barcode": "0608614315307",
+          "inventory_item_id": 39475769213088,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-FRE-500ML",
+      "item_name": "FRESH 0.5L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-HIB-LOW-0.5L",
+      "legacy_sku": "GT-HIB-LOW-0.5L",
+      "platform_barcode": "0693493238076",
+      "mapped_external_sku": "GT-HIB-LOW-0.5L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43914758324465,
+        "product_id": 7986137956593,
+        "product_title": "FRESH 500ml",
+        "product_status": "active",
+        "sku": "GT-HIB-LOW-0.5L",
+        "barcode": "0693493238076",
+        "inventory_item_id": 46015181390065,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43914758324465,
+          "product_title": "FRESH 500ml",
+          "product_status": "active",
+          "sku": "GT-HIB-LOW-0.5L",
+          "barcode": "0693493238076",
+          "inventory_item_id": 46015181390065,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-FRE-500ML-NS",
+      "item_name": "FRESH 0.5L NO SUGAR",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-HIB-FRE-0.5L",
+      "legacy_sku": "GT-HIB-FRE-0.5L",
+      "platform_barcode": "0693493238090",
+      "mapped_external_sku": "GT-HIB-FRE-0.5L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43914812981489,
+        "product_id": 7986178785521,
+        "product_title": "FRESH Sugar-Free 500ml",
+        "product_status": "active",
+        "sku": "GT-HIB-FRE-0.5L",
+        "barcode": "0693493238090",
+        "inventory_item_id": 46015236014321,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43914812981489,
+          "product_title": "FRESH Sugar-Free 500ml",
+          "product_status": "active",
+          "sku": "GT-HIB-FRE-0.5L",
+          "barcode": "0693493238090",
+          "inventory_item_id": 46015236014321,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MAR-CLA-300ML",
+      "item_name": "MARGARITA CLASSIC ELITA 0.3L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTEL-MAR-CLA-0.3L",
+      "legacy_sku": "GTEL-MAR-CLA-0.3L",
+      "platform_barcode": "0726529648270",
+      "mapped_external_sku": "GTEL-MAR-CLA-0.3L",
+      "mapping_notes": "draft product created 2026-04-23; product_id=9564757360881",
+      "shopify_match": {
+        "variant_id": 48078377877745,
+        "product_id": 9564757360881,
+        "product_title": "Margarita Classic Elita 0.3L",
+        "product_status": "active",
+        "sku": "GTEL-MAR-CLA-0.3L",
+        "barcode": "0726529648270",
+        "inventory_item_id": 50143698485489,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 48078377877745,
+          "product_title": "Margarita Classic Elita 0.3L",
+          "product_status": "active",
+          "sku": "GTEL-MAR-CLA-0.3L",
+          "barcode": "0726529648270",
+          "inventory_item_id": 50143698485489,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MAR-PEA-300ML",
+      "item_name": "MARGARITA PEAR ELITA 0.3L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTEL-MAR-PEA-0.3L",
+      "legacy_sku": "GTEL-MAR-PEA-0.3L",
+      "platform_barcode": "0726529648157",
+      "mapped_external_sku": "GTEL-MAR-PEA-0.3L",
+      "mapping_notes": "draft product created 2026-04-23; product_id=9564757459185",
+      "shopify_match": {
+        "variant_id": 48078378303729,
+        "product_id": 9564757459185,
+        "product_title": "Margarita Pear Elita 0.3L",
+        "product_status": "active",
+        "sku": "GTEL-MAR-PEA-0.3L",
+        "barcode": "0726529648157",
+        "inventory_item_id": 50143698911473,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 48078378303729,
+          "product_title": "Margarita Pear Elita 0.3L",
+          "product_status": "active",
+          "sku": "GTEL-MAR-PEA-0.3L",
+          "barcode": "0726529648157",
+          "inventory_item_id": 50143698911473,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MAR-STR-300ML",
+      "item_name": "MARGARITA STRAWBERRY ELITA 0.3L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTEL-MAR-STR-0.3L",
+      "legacy_sku": "GTEL-MAR-STR-0.3L",
+      "platform_barcode": "0726529648294",
+      "mapped_external_sku": "GTEL-BAB-WHI-0.75L",
+      "mapping_notes": "barcode-matched 2026-04-23; Tom-approved suspicious match 2026-04-23",
+      "shopify_match": {
+        "variant_id": 47641874039025,
+        "product_id": 9427059015921,
+        "product_title": "GT Babka Bakery White Sangria Cocktail 750ml",
+        "product_status": "active",
+        "sku": "GTEL-BAB-WHI-0.75L",
+        "barcode": "0726529648294",
+        "inventory_item_id": 49685815230705,
+        "routes": [
+          "barcode",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 47641874039025,
+          "product_title": "GT Babka Bakery White Sangria Cocktail 750ml",
+          "product_status": "active",
+          "sku": "GTEL-BAB-WHI-0.75L",
+          "barcode": "0726529648294",
+          "inventory_item_id": 49685815230705,
+          "routes": [
+            "barcode",
+            "mapping_external_sku"
+          ]
+        },
+        {
+          "variant_id": 48090324336881,
+          "product_title": "Margarita Strawberry Elita 0.3L",
+          "product_status": "active",
+          "sku": "GTEL-MAR-STR-0.3L",
+          "barcode": "",
+          "inventory_item_id": 50160143204593,
+          "routes": [
+            "legacy_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MAT-100G",
+      "item_name": "MATCHA 100G",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GT-SHI-CER-50",
+      "platform_barcode": "0724133176622",
+      "mapped_external_sku": "GT-SHI-CER-100",
+      "mapping_notes": "draft product created 2026-04-23; product_id=9564757524721",
+      "shopify_match": {
+        "variant_id": 46027119657201,
+        "product_id": 8776179187953,
+        "product_title": "Shizuoka Ceremonial Matcha Bag 50g",
+        "product_status": "active",
+        "sku": "GT-SHI-CER-50",
+        "barcode": "0726529648102",
+        "inventory_item_id": 48063759483121,
+        "routes": [
+          "legacy_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46027119657201,
+          "product_title": "Shizuoka Ceremonial Matcha Bag 50g",
+          "product_status": "active",
+          "sku": "GT-SHI-CER-50",
+          "barcode": "0726529648102",
+          "inventory_item_id": 48063759483121,
+          "routes": [
+            "legacy_sku"
+          ]
+        },
+        {
+          "variant_id": 48078378402033,
+          "product_title": "Matcha 100G",
+          "product_status": "draft",
+          "sku": "GT-SHI-CER-100",
+          "barcode": "0724133176622",
+          "inventory_item_id": 50143699009777,
+          "routes": [
+            "barcode",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "SUSPICIOUS_NO_DIRECT_MATCH"
+      ]
+    },
+    {
+      "item_id": "FG-MAT-18G",
+      "item_name": "MATCHA 18G",
+      "item_status": "ACTIVE",
+      "platform_sku": "",
+      "legacy_sku": "GT-SHI-CER-18*22",
+      "platform_barcode": "0726529648003",
+      "mapped_external_sku": "GT-SHI-CER-18*22",
+      "mapping_notes": "barcode-matched 2026-04-23; Tom-approved suspicious match 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46027097964785,
+        "product_id": 8776170242289,
+        "product_title": "Shizuoka Ceremonial Matcha 22x18g.bags",
+        "product_status": "active",
+        "sku": "GT-SHI-CER-18*22",
+        "barcode": "0726529648003",
+        "inventory_item_id": 48063737987313,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46027097964785,
+          "product_title": "Shizuoka Ceremonial Matcha 22x18g.bags",
+          "product_status": "active",
+          "sku": "GT-SHI-CER-18*22",
+          "barcode": "0726529648003",
+          "inventory_item_id": 48063737987313,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MAT-30G",
+      "item_name": "MATCHA 30G",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GT-SHI-CER-30",
+      "platform_barcode": "0724133176639",
+      "mapped_external_sku": "GT-SHI-CER-30",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 47968223265009,
+        "product_id": 9531677901041,
+        "product_title": "GT Elita Matcha can 30g",
+        "product_status": "active",
+        "sku": "GT-SHI-CER-30",
+        "barcode": "0724133176639",
+        "inventory_item_id": 50032221028593,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 47968223265009,
+          "product_title": "GT Elita Matcha can 30g",
+          "product_status": "active",
+          "sku": "GT-SHI-CER-30",
+          "barcode": "0724133176639",
+          "inventory_item_id": 50032221028593,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MAT-500G",
+      "item_name": "MATCHA 0.5KG",
+      "item_status": "ACTIVE",
+      "platform_sku": "",
+      "legacy_sku": "GT-SHI-CER-500",
+      "platform_barcode": "0726529648041",
+      "mapped_external_sku": "GT-SHI-CER-500",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46027113464049,
+        "product_id": 8776177254641,
+        "product_title": "Shizuoka Ceremonial Matcha Bag 500g",
+        "product_status": "active",
+        "sku": "GT-SHI-CER-500",
+        "barcode": "0726529648041",
+        "inventory_item_id": 48063753289969,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46027113464049,
+          "product_title": "Shizuoka Ceremonial Matcha Bag 500g",
+          "product_status": "active",
+          "sku": "GT-SHI-CER-500",
+          "barcode": "0726529648041",
+          "inventory_item_id": 48063753289969,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MUZ-HER-200ML",
+      "item_name": "MUZA HERBAL MULE BLISS COCKTAIL 0.2L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-MUZ-HER-0.2L",
+      "legacy_sku": "GTCC-MUZ-HER-0.2L",
+      "platform_barcode": "0762497394214",
+      "mapped_external_sku": "GTCC-MUZ-HER-0.2L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46665597681905,
+        "product_id": 9215487901937,
+        "product_title": "Muza Herbal Mule Bliss Cocktail 200ml",
+        "product_status": "active",
+        "sku": "GTCC-MUZ-HER-0.2L",
+        "barcode": "0762497394214",
+        "inventory_item_id": 48705762263281,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46665597681905,
+          "product_title": "Muza Herbal Mule Bliss Cocktail 200ml",
+          "product_status": "active",
+          "sku": "GTCC-MUZ-HER-0.2L",
+          "barcode": "0762497394214",
+          "inventory_item_id": 48705762263281,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 46815262867697,
+          "product_title": "Muza Basil Smash Cocktail 1000ml",
+          "product_status": "active",
+          "sku": "GTCC-MUZ-BZSM-1L",
+          "barcode": "0762497394214",
+          "inventory_item_id": 48855523328241,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MUZ-JAS-200ML",
+      "item_name": "MUZA JASMINE COCKTAIL 0.2L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-MUZ-JAS-0.2L",
+      "legacy_sku": "GTCC-MUZ-JAS-0.2L",
+      "platform_barcode": "0762497394245",
+      "mapped_external_sku": "GTCC-MUZ-JAS-0.2L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46665597452529,
+        "product_id": 9215487738097,
+        "product_title": "Muza Jasmine Cocktail 200ml",
+        "product_status": "active",
+        "sku": "GTCC-MUZ-JAS-0.2L",
+        "barcode": "0762497394245",
+        "inventory_item_id": 48705762033905,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46665597452529,
+          "product_title": "Muza Jasmine Cocktail 200ml",
+          "product_status": "active",
+          "sku": "GTCC-MUZ-JAS-0.2L",
+          "barcode": "0762497394245",
+          "inventory_item_id": 48705762033905,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 46725169774833,
+          "product_title": "Muza Jasmin Jazz Cocktail 1000ml",
+          "product_status": "active",
+          "sku": "GTCC-MUZ-JASJ-1L",
+          "barcode": "0762497394245",
+          "inventory_item_id": 48764522070257,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MUZ-NEG-200ML",
+      "item_name": "MUZA NEGRONI COCKTAIL 0.2L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-MUZ-NEG-0.2L",
+      "legacy_sku": "GTCC-MUZ-NEG-0.2L",
+      "platform_barcode": "0762497394252",
+      "mapped_external_sku": "GTCC-MUZ-NEG-0.2L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46665597419761,
+        "product_id": 9215487705329,
+        "product_title": "Muza Negroni Cocktail 200ml",
+        "product_status": "active",
+        "sku": "GTCC-MUZ-NEG-0.2L",
+        "barcode": "0762497394252",
+        "inventory_item_id": 48705762001137,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46665597419761,
+          "product_title": "Muza Negroni Cocktail 200ml",
+          "product_status": "active",
+          "sku": "GTCC-MUZ-NEG-0.2L",
+          "barcode": "0762497394252",
+          "inventory_item_id": 48705762001137,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MUZ-PSC-200ML",
+      "item_name": "MUZA PASSION SPRITZ COCKTAIL 0.2L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-MUZ-PSC-0.2L",
+      "legacy_sku": "GTCC-MUZ-PSC-0.2L",
+      "platform_barcode": "0762497394276",
+      "mapped_external_sku": "GTCC-MUZ-PSC-0.2L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46940458221809,
+        "product_id": 9301218754801,
+        "product_title": "Muza Passion Spritz Cocktail 200ml",
+        "product_status": "active",
+        "sku": "GTCC-MUZ-PSC-0.2L",
+        "barcode": "0762497394276",
+        "inventory_item_id": 48981827715313,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46940458221809,
+          "product_title": "Muza Passion Spritz Cocktail 200ml",
+          "product_status": "active",
+          "sku": "GTCC-MUZ-PSC-0.2L",
+          "barcode": "0762497394276",
+          "inventory_item_id": 48981827715313,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 46770073895153,
+          "product_title": "Muza Passion Spritz Cocktail 1000ml",
+          "product_status": "active",
+          "sku": "GTCC-MUZ-PSSP-1L",
+          "barcode": "0762497394276",
+          "inventory_item_id": 48810552951025,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-MUZ-QUE-200ML",
+      "item_name": "MUZA QUEEN VIOLET COCKTAIL 0.2L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-MUZ-QUE-0.2L",
+      "legacy_sku": "GTCC-MUZ-QUE-0.2L",
+      "platform_barcode": "0762497394238",
+      "mapped_external_sku": "GTCC-MUZ-QUE-0.2L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46665597518065,
+        "product_id": 9215487803633,
+        "product_title": "Muza Queen Violet Cocktail 200ml",
+        "product_status": "active",
+        "sku": "GTCC-MUZ-QUE-0.2L",
+        "barcode": "0762497394238",
+        "inventory_item_id": 48705762099441,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46665597518065,
+          "product_title": "Muza Queen Violet Cocktail 200ml",
+          "product_status": "active",
+          "sku": "GTCC-MUZ-QUE-0.2L",
+          "barcode": "0762497394238",
+          "inventory_item_id": 48705762099441,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-NAM-1L",
+      "item_name": "NAMASTEA 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-MAS-CHA-1L",
+      "legacy_sku": "GT-MAS-CHA-1L",
+      "platform_barcode": "0693493238205",
+      "mapped_external_sku": "GT-MAS-CHA-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44933460295921,
+        "product_id": 8354320580849,
+        "product_title": "NAMASTEA 1000ml",
+        "product_status": "active",
+        "sku": "GT-MAS-CHA-1L",
+        "barcode": "0693493238205",
+        "inventory_item_id": 47022308294897,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44933460295921,
+          "product_title": "NAMASTEA 1000ml",
+          "product_status": "active",
+          "sku": "GT-MAS-CHA-1L",
+          "barcode": "0693493238205",
+          "inventory_item_id": 47022308294897,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44934038618353,
+          "product_title": "תמצית צאי מסאלה 1 ל | \"NAMASTEA\"",
+          "product_status": "archived",
+          "sku": "GT-MAS-CHA-1L",
+          "barcode": "0693493238205",
+          "inventory_item_id": 47022886551793,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44030555848945,
+          "product_title": "תמצית צאי מסאלה 1 ל (6 יח) | \"NAMASTEA\"",
+          "product_status": "archived",
+          "sku": "GT-MAS-CHA-6L",
+          "barcode": "0693493238205",
+          "inventory_item_id": 46131253051633,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-NAM-500ML",
+      "item_name": "NAMASTEA 0.5L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-MAS-CHA-0.5L",
+      "legacy_sku": "GT-MAS-CHA-0.5L",
+      "platform_barcode": "0693493238212",
+      "mapped_external_sku": "GT-MAS-CHA-0.5L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 47816127217905,
+        "product_id": 9482229088497,
+        "product_title": "NAMASTEA 500ml",
+        "product_status": "active",
+        "sku": "GT-MAS-CHA-0.5L",
+        "barcode": "0693493238212",
+        "inventory_item_id": 49876400439537,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 47816127217905,
+          "product_title": "NAMASTEA 500ml",
+          "product_status": "active",
+          "sku": "GT-MAS-CHA-0.5L",
+          "barcode": "0693493238212",
+          "inventory_item_id": 49876400439537,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44030568169713,
+          "product_title": "תמצית צאי מסאלה 0.5 ל | \"NAMASTEA\"",
+          "product_status": "archived",
+          "sku": "GT-MAS-CHA-0.5L",
+          "barcode": "0693493238212",
+          "inventory_item_id": 46131265372401,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-NM-1L",
+      "item_name": "NONOMIMI SANGRIA 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-NON-SAN-1L",
+      "legacy_sku": "GTCC-NON-SAN-1L",
+      "platform_barcode": "0693493164610",
+      "mapped_external_sku": "GTCC-NON-SAN-0.75L",
+      "mapping_notes": "barcode-matched 2026-04-23; Tom-approved suspicious match 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44308137804017,
+        "product_id": 8121763758321,
+        "product_title": "GT Nonomimi Sangria Cocktail 1000ml",
+        "product_status": "active",
+        "sku": "GTCC-NON-SAN-1L",
+        "barcode": "0693493164610",
+        "inventory_item_id": 46408765112561,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44308137804017,
+          "product_title": "GT Nonomimi Sangria Cocktail 1000ml",
+          "product_status": "active",
+          "sku": "GTCC-NON-SAN-1L",
+          "barcode": "0693493164610",
+          "inventory_item_id": 46408765112561,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 46752803324145,
+          "product_title": "קוקטייל סנגריה נונומימי 0.75 ל | \"NONOMIMI SANGRIA\"",
+          "product_status": "archived",
+          "sku": "GTCC-NON-SAN-0.75L",
+          "barcode": "0693493164610",
+          "inventory_item_id": 48792820056305,
+          "routes": [
+            "barcode",
+            "mapping_external_sku"
+          ]
+        },
+        {
+          "variant_id": 45841421336817,
+          "product_title": "קוקטייל סנגריה SANGRIA NM 1L",
+          "product_status": "archived",
+          "sku": "GTCC-NM-SAN-1L",
+          "barcode": "0693493164610",
+          "inventory_item_id": 47877586059505,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "BARCODE_OK_BUT_MAPPING_SKU_WRONG"
+      ]
+    },
+    {
+      "item_id": "FG-NM-3850ML",
+      "item_name": "NONOMIMI SANGRIA 3.85L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-NON-SAN-3.85L",
+      "legacy_sku": "GTCC-NON-SAN-3.85L",
+      "platform_barcode": "0693493164603",
+      "mapped_external_sku": "GTCC-NON-SAN-3.85L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44156336931057,
+        "product_id": 8070346047729,
+        "product_title": "GT Nonomimi Sangria Cocktail 3850ml",
+        "product_status": "active",
+        "sku": "GTCC-NON-SAN-3.85L",
+        "barcode": "0693493164603",
+        "inventory_item_id": 46257151443185,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44156336931057,
+          "product_title": "GT Nonomimi Sangria Cocktail 3850ml",
+          "product_status": "active",
+          "sku": "GTCC-NON-SAN-3.85L",
+          "barcode": "0693493164603",
+          "inventory_item_id": 46257151443185,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-PA-TEST-BF-STUB",
+      "item_name": "PA test bought-finished stub",
+      "item_status": "INACTIVE",
+      "platform_sku": "",
+      "legacy_sku": "",
+      "platform_barcode": "",
+      "mapped_external_sku": "",
+      "mapping_notes": null,
+      "shopify_match": {
+        "variant_id": null,
+        "product_id": null,
+        "product_title": null,
+        "product_status": null,
+        "sku": null,
+        "barcode": null,
+        "inventory_item_id": null,
+        "routes": []
+      },
+      "all_candidates": [],
+      "verdict": [
+        "inactive_no_match"
+      ]
+    },
+    {
+      "item_id": "FG-REV-1L",
+      "item_name": "REVIVE 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-SEN-LOW-1L",
+      "legacy_sku": "GT-SEN-LOW-1L",
+      "platform_barcode": "7290115250688",
+      "mapped_external_sku": "GT-SEN-LOW-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 44933436473585,
+        "product_id": 8354310193393,
+        "product_title": "REVIVE 1000ml",
+        "product_status": "active",
+        "sku": "GT-SEN-LOW-1L",
+        "barcode": "7290115250688",
+        "inventory_item_id": 47022284472561,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 44933436473585,
+          "product_title": "REVIVE 1000ml",
+          "product_status": "active",
+          "sku": "GT-SEN-LOW-1L",
+          "barcode": "7290115250688",
+          "inventory_item_id": 47022284472561,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 44934020137201,
+          "product_title": "תמצית תה ירוק סנצ'ה ופסיפלורה 1 ל | \"REVIVE\"",
+          "product_status": "archived",
+          "sku": "GT-SEN-LOW-1L",
+          "barcode": "7290115250688",
+          "inventory_item_id": 47022868070641,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 40761943523488,
+          "product_title": "תמצית תה ירוק סנצ'ה ופסיפלורה 1 ל (6 יח) | \"REVIVE\"",
+          "product_status": "archived",
+          "sku": "GT-SEN-LOW-6L",
+          "barcode": "7290115250688",
+          "inventory_item_id": 42859006460064,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-REV-500ML",
+      "item_name": "REVIVE 0.5L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GT-SEN-LOW-0.5L",
+      "legacy_sku": "GT-SEN-LOW-0.5L",
+      "platform_barcode": "0693493238045",
+      "mapped_external_sku": "GT-SEN-LOW-0.5L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43914777100529,
+        "product_id": 7986152931569,
+        "product_title": "REVIVE 500ml",
+        "product_status": "active",
+        "sku": "GT-SEN-LOW-0.5L",
+        "barcode": "0693493238045",
+        "inventory_item_id": 46015200133361,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43914777100529,
+          "product_title": "REVIVE 500ml",
+          "product_status": "active",
+          "sku": "GT-SEN-LOW-0.5L",
+          "barcode": "0693493238045",
+          "inventory_item_id": 46015200133361,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-SAN-PIN-1L",
+      "item_name": "PINK SANGRIA 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-PIN-SAN-1L",
+      "legacy_sku": "GTCC-PIN-SAN-1L",
+      "platform_barcode": "0693493237888",
+      "mapped_external_sku": "GTCC-PIN-SAN-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43780594073841,
+        "product_id": 7939286991089,
+        "product_title": "GT Pink Sangria Cocktail 1000ml",
+        "product_status": "active",
+        "sku": "GTCC-PIN-SAN-1L",
+        "barcode": "0693493237888",
+        "inventory_item_id": 45879492215025,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43780594073841,
+          "product_title": "GT Pink Sangria Cocktail 1000ml",
+          "product_status": "active",
+          "sku": "GTCC-PIN-SAN-1L",
+          "barcode": "0693493237888",
+          "inventory_item_id": 45879492215025,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-SAN-RED-300ML",
+      "item_name": "RED SANGRIA ELITA 0.3L",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GTEL-SAN-RED-0.3",
+      "platform_barcode": "0724133176608",
+      "mapped_external_sku": "GTEL-SAN-RED-0.3",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 47968217497841,
+        "product_id": 9531676360945,
+        "product_title": "GT Elita Red Sangria Cocktail 300ml",
+        "product_status": "active",
+        "sku": "GTEL-SAN-RED-0.3",
+        "barcode": "0724133176608",
+        "inventory_item_id": 50032214966513,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 47968217497841,
+          "product_title": "GT Elita Red Sangria Cocktail 300ml",
+          "product_status": "active",
+          "sku": "GTEL-SAN-RED-0.3",
+          "barcode": "0724133176608",
+          "inventory_item_id": 50032214966513,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-SAN-RED-3850ML",
+      "item_name": "RED SANGRIA 3.85L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-SAN-RED-3.85L",
+      "legacy_sku": "GTCC-SAN-RED-3.85L",
+      "platform_barcode": "0726529648027",
+      "mapped_external_sku": "GT-MAR-CER-18*22",
+      "mapping_notes": "barcode-matched 2026-04-23; Tom-approved suspicious match 2026-04-23",
+      "shopify_match": {
+        "variant_id": 46027095769329,
+        "product_id": 8776169357553,
+        "product_title": "Maruei Ceremonial Matcha 22x18g.bags",
+        "product_status": "active",
+        "sku": "GT-MAR-CER-18*22",
+        "barcode": "0726529648027",
+        "inventory_item_id": 48063735791857,
+        "routes": [
+          "barcode",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 46027095769329,
+          "product_title": "Maruei Ceremonial Matcha 22x18g.bags",
+          "product_status": "active",
+          "sku": "GT-MAR-CER-18*22",
+          "barcode": "0726529648027",
+          "inventory_item_id": 48063735791857,
+          "routes": [
+            "barcode",
+            "mapping_external_sku"
+          ]
+        },
+        {
+          "variant_id": 48090324402417,
+          "product_title": "Red Sangria 3.85L",
+          "product_status": "active",
+          "sku": "GTCC-SAN-RED-3.85L",
+          "barcode": "",
+          "inventory_item_id": 50160143270129,
+          "routes": [
+            "legacy_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-SAN-RED-750ML",
+      "item_name": "RED SANGRIA ELITA 0.75L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTEL-SAN-RED-0.75L",
+      "legacy_sku": "GTEL-SAN-RED-0.75L",
+      "platform_barcode": "0693493238120",
+      "mapped_external_sku": "",
+      "mapping_notes": null,
+      "shopify_match": {
+        "variant_id": 45913914867953,
+        "product_id": 8743938818289,
+        "product_title": "GT Elita Red Sangria Cocktail 750ml",
+        "product_status": "active",
+        "sku": "GTEL-SAN-RED-0.75L",
+        "barcode": "0693493238120",
+        "inventory_item_id": 47949810434289,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 45913914867953,
+          "product_title": "GT Elita Red Sangria Cocktail 750ml",
+          "product_status": "active",
+          "sku": "GTEL-SAN-RED-0.75L",
+          "barcode": "0693493238120",
+          "inventory_item_id": 47949810434289,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 43935322833137,
+          "product_title": "תמצית היביסקוס וליים 0.3 ל | \"FRESH\"",
+          "product_status": "archived",
+          "sku": "GT-LUI-LOW-0.3L",
+          "barcode": "0693493238120",
+          "inventory_item_id": 46035876741361,
+          "routes": [
+            "barcode"
+          ]
+        }
+      ],
+      "verdict": [
+        "NO_MAPPING_ROW_BUT_BARCODE_HIT"
+      ]
+    },
+    {
+      "item_id": "FG-SAN-WHI-1L",
+      "item_name": "WHITE SANGRIA 1L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-WHI-SAN-1L",
+      "legacy_sku": "GTCC-WHI-SAN-1L",
+      "platform_barcode": "0693493237871",
+      "mapped_external_sku": "GTCC-WHI-SAN-1L",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 43780594041073,
+        "product_id": 7939286958321,
+        "product_title": "GT White Sangria Cocktail 1000ml",
+        "product_status": "active",
+        "sku": "GTCC-WHI-SAN-1L",
+        "barcode": "0693493237871",
+        "inventory_item_id": 45879492182257,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 43780594041073,
+          "product_title": "GT White Sangria Cocktail 1000ml",
+          "product_status": "active",
+          "sku": "GTCC-WHI-SAN-1L",
+          "barcode": "0693493237871",
+          "inventory_item_id": 45879492182257,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-SAN-WHI-300ML",
+      "item_name": "WHITE SANGRIA ELITA 0.3L",
+      "item_status": "PENDING",
+      "platform_sku": "",
+      "legacy_sku": "GTEL-SAN-WHI-0.3",
+      "platform_barcode": "0724133176615",
+      "mapped_external_sku": "GTEL-SAN-WHI-0.3",
+      "mapping_notes": "barcode-matched 2026-04-23",
+      "shopify_match": {
+        "variant_id": 47968213270769,
+        "product_id": 9531674394865,
+        "product_title": "GT Elita White Sangria Cocktail 300ml",
+        "product_status": "active",
+        "sku": "GTEL-SAN-WHI-0.3",
+        "barcode": "0724133176615",
+        "inventory_item_id": 50032207855857,
+        "routes": [
+          "barcode",
+          "legacy_sku",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 47968213270769,
+          "product_title": "GT Elita White Sangria Cocktail 300ml",
+          "product_status": "active",
+          "sku": "GTEL-SAN-WHI-0.3",
+          "barcode": "0724133176615",
+          "inventory_item_id": 50032207855857,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "FG-SAN-WHI-3850ML",
+      "item_name": "WHITE SANGRIA 3.85L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTCC-SAN-WHI-3.85L",
+      "legacy_sku": "GTCC-SAN-WHI-3.85L",
+      "platform_barcode": "0726529648034",
+      "mapped_external_sku": "GT-MAR-XP-18*22",
+      "mapping_notes": "barcode-matched 2026-04-23; Tom-approved suspicious match 2026-04-23",
+      "shopify_match": {
+        "variant_id": 48090324467953,
+        "product_id": 9568888553713,
+        "product_title": "White Sangria 3.85L",
+        "product_status": "active",
+        "sku": "GTCC-SAN-WHI-3.85L",
+        "barcode": "",
+        "inventory_item_id": 50160143335665,
+        "routes": [
+          "legacy_sku",
+          "platform_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 48090324467953,
+          "product_title": "White Sangria 3.85L",
+          "product_status": "active",
+          "sku": "GTCC-SAN-WHI-3.85L",
+          "barcode": "",
+          "inventory_item_id": 50160143335665,
+          "routes": [
+            "legacy_sku",
+            "platform_sku"
+          ]
+        },
+        {
+          "variant_id": 46027098849521,
+          "product_title": "Maruei XP Premium Ceremonial Matcha 22x18g.bags",
+          "product_status": "archived",
+          "sku": "GT-MAR-XP-18*22",
+          "barcode": "0726529648034",
+          "inventory_item_id": 48063738675441,
+          "routes": [
+            "barcode",
+            "mapping_external_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "SUSPICIOUS_NO_DIRECT_MATCH"
+      ]
+    },
+    {
+      "item_id": "FG-SAN-WHI-750ML",
+      "item_name": "WHITE SANGRIA ELITA 0.75L",
+      "item_status": "ACTIVE",
+      "platform_sku": "GTEL-SAN-WHI-0.75L",
+      "legacy_sku": "GTEL-SAN-WHI-0.75L",
+      "platform_barcode": "0726529648126",
+      "mapped_external_sku": "GTCC-NM-SAN-3.85L",
+      "mapping_notes": "barcode-matched 2026-04-23; Tom-approved suspicious match 2026-04-23",
+      "shopify_match": {
+        "variant_id": 45866912776433,
+        "product_id": 8731066040561,
+        "product_title": "GT Sangria Cocktail 3850ml",
+        "product_status": "active",
+        "sku": "GTCC-NM-SAN-3.85L",
+        "barcode": "0726529648126",
+        "inventory_item_id": 47902992269553,
+        "routes": [
+          "barcode",
+          "mapping_external_sku"
+        ]
+      },
+      "all_candidates": [
+        {
+          "variant_id": 45866912776433,
+          "product_title": "GT Sangria Cocktail 3850ml",
+          "product_status": "active",
+          "sku": "GTCC-NM-SAN-3.85L",
+          "barcode": "0726529648126",
+          "inventory_item_id": 47902992269553,
+          "routes": [
+            "barcode",
+            "mapping_external_sku"
+          ]
+        },
+        {
+          "variant_id": 46678455255281,
+          "product_title": "GT Elita White Sangria Cocktail 750ml",
+          "product_status": "active",
+          "sku": "GTEL-SAN-WHI-0.75L",
+          "barcode": "0726529648126",
+          "inventory_item_id": 48719039660273,
+          "routes": [
+            "barcode",
+            "legacy_sku",
+            "platform_sku"
+          ]
+        }
+      ],
+      "verdict": [
+        "VERIFIED_OK"
+      ]
+    },
+    {
+      "item_id": "TEST-LW-PROBE-FG-1",
+      "item_name": "LW Polling Test FG",
+      "item_status": "INACTIVE",
+      "platform_sku": "",
+      "legacy_sku": "",
+      "platform_barcode": "",
+      "mapped_external_sku": "",
+      "mapping_notes": null,
+      "shopify_match": {
+        "variant_id": null,
+        "product_id": null,
+        "product_title": null,
+        "product_status": null,
+        "sku": null,
+        "barcode": null,
+        "inventory_item_id": null,
+        "routes": []
+      },
+      "all_candidates": [],
+      "verdict": [
+        "inactive_no_match"
+      ]
+    },
+    {
+      "item_id": "TEST-SKU-RESOLVER-FG-APPROVED",
+      "item_name": "SKU Resolver Approved FG",
+      "item_status": "INACTIVE",
+      "platform_sku": "",
+      "legacy_sku": "",
+      "platform_barcode": "",
+      "mapped_external_sku": "",
+      "mapping_notes": null,
+      "shopify_match": {
+        "variant_id": null,
+        "product_id": null,
+        "product_title": null,
+        "product_status": null,
+        "sku": null,
+        "barcode": null,
+        "inventory_item_id": null,
+        "routes": []
+      },
+      "all_candidates": [],
+      "verdict": [
+        "inactive_no_match"
+      ]
+    },
+    {
+      "item_id": "TEST-SKU-RESOLVER-FG-PENDING",
+      "item_name": "SKU Resolver Pending FG",
+      "item_status": "INACTIVE",
+      "platform_sku": "",
+      "legacy_sku": "",
+      "platform_barcode": "",
+      "mapped_external_sku": "",
+      "mapping_notes": null,
+      "shopify_match": {
+        "variant_id": null,
+        "product_id": null,
+        "product_title": null,
+        "product_status": null,
+        "sku": null,
+        "barcode": null,
+        "inventory_item_id": null,
+        "routes": []
+      },
+      "all_candidates": [],
+      "verdict": [
+        "inactive_no_match"
+      ]
+    },
+    {
+      "item_id": "TEST-SKU-RESOLVER-FG-REJECTED",
+      "item_name": "SKU Resolver Rejected FG",
+      "item_status": "INACTIVE",
+      "platform_sku": "",
+      "legacy_sku": "",
+      "platform_barcode": "",
+      "mapped_external_sku": "",
+      "mapping_notes": null,
+      "shopify_match": {
+        "variant_id": null,
+        "product_id": null,
+        "product_title": null,
+        "product_status": null,
+        "sku": null,
+        "barcode": null,
+        "inventory_item_id": null,
+        "routes": []
+      },
+      "all_candidates": [],
+      "verdict": [
+        "inactive_no_match"
+      ]
+    }
+  ],
+  "unmapped_shopify": [
+    {
+      "product_id": 7939295346929,
+      "product_title": "Dried Pineapple 1000g",
+      "product_status": "active",
+      "variant_id": 43780621435121,
+      "variant_title": "Default Title",
+      "sku": "AP-DRI-PIN",
+      "barcode": "2103",
+      "inventory_item_id": 45879521116401
+    },
+    {
+      "product_id": 7939295576305,
+      "product_title": "Dried Mango 1000g",
+      "product_status": "active",
+      "variant_id": 43780622156017,
+      "variant_title": "Default Title",
+      "sku": "AP-DRI-MAN",
+      "barcode": "2104",
+      "inventory_item_id": 45879521837297
+    },
+    {
+      "product_id": 8056815943921,
+      "product_title": "Dried Apple 300g",
+      "product_status": "active",
+      "variant_id": 44111903129841,
+      "variant_title": "Default Title",
+      "sku": "AP-DRI-APP",
+      "barcode": "2106",
+      "inventory_item_id": 46212642636017
+    },
+    {
+      "product_id": 8175230451953,
+      "product_title": "Can Sealing Machine",
+      "product_status": "active",
+      "variant_id": 44459145855217,
+      "variant_title": "Default Title",
+      "sku": "MM-CAN-CLO-MACHI",
+      "barcode": "10000",
+      "inventory_item_id": 46559241797873
+    },
+    {
+      "product_id": 8175231631601,
+      "product_title": "Beverage Can 500ml (100 Pack)",
+      "product_status": "active",
+      "variant_id": 44459147985137,
+      "variant_title": "Default Title",
+      "sku": "MM-DRI-CAN-0.5L",
+      "barcode": "10001",
+      "inventory_item_id": 46559243927793
+    },
+    {
+      "product_id": 8175233794289,
+      "product_title": "Beverage Can 330ml (100 Pack)",
+      "product_status": "active",
+      "variant_id": 44459153490161,
+      "variant_title": "Default Title",
+      "sku": "MM-DRI-CAN-0.33L",
+      "barcode": "10002",
+      "inventory_item_id": 46559249432817
+    },
+    {
+      "product_id": 8175234547953,
+      "product_title": "Beverage Can 200ml (100 Pack)",
+      "product_status": "active",
+      "variant_id": 44459155456241,
+      "variant_title": "Default Title",
+      "sku": "MM-DRI-CAN-0.2L",
+      "barcode": "10003",
+      "inventory_item_id": 46559251398897
+    },
+    {
+      "product_id": 8341610037489,
+      "product_title": "Plastic Straws for Bubbles 11mm (100 pcs)",
+      "product_status": "active",
+      "variant_id": 44897695072497,
+      "variant_title": "Default Title",
+      "sku": "AP-PLA-STR-11",
+      "barcode": "711387",
+      "inventory_item_id": 46986982326513
+    },
+    {
+      "product_id": 8717110477041,
+      "product_title": "Neapolitan Glass Jug with Infuser",
+      "product_status": "active",
+      "variant_id": 45822799675633,
+      "variant_title": "Default Title",
+      "sku": "AP-JUG-NEA",
+      "barcode": "3160236",
+      "inventory_item_id": 47858771394801
+    },
+    {
+      "product_id": 8726414885105,
+      "product_title": "Dried Coconut Chips",
+      "product_status": "active",
+      "variant_id": 45852480340209,
+      "variant_title": "Default Title",
+      "sku": "AP-DRI-COC-CHI",
+      "barcode": "2113",
+      "inventory_item_id": 47888641786097
+    },
+    {
+      "product_id": 8776176173297,
+      "product_title": "Maruei Ceremonial Matcha Bag 500g",
+      "product_status": "active",
+      "variant_id": 46027111170289,
+      "variant_title": "Default Title",
+      "sku": "GT-MAR-CER-500",
+      "barcode": "0726529648065",
+      "inventory_item_id": 48063750996209
+    },
+    {
+      "product_id": 8793035964657,
+      "product_title": "Complete Matcha Kit",
+      "product_status": "active",
+      "variant_id": 46084002873585,
+      "variant_title": "Default Title",
+      "sku": "GT-MAT-KIT",
+      "barcode": "8900",
+      "inventory_item_id": 48120621793521
+    },
+    {
+      "product_id": 8793036423409,
+      "product_title": "Measuring Cup",
+      "product_status": "active",
+      "variant_id": 46084005658865,
+      "variant_title": "Default Title",
+      "sku": "GT-GLA-CUP",
+      "barcode": "5016",
+      "inventory_item_id": 48120624578801
+    },
+    {
+      "product_id": 8795567915249,
+      "product_title": "ODK Strawberry Smoothie 6Pack",
+      "product_status": "draft",
+      "variant_id": 46093042942193,
+      "variant_title": "Default Title",
+      "sku": "GT-ODK-STR",
+      "barcode": "8300",
+      "inventory_item_id": 48129681359089
+    },
+    {
+      "product_id": 8795568898289,
+      "product_title": "ODK Mango Smoothie 6Pack",
+      "product_status": "draft",
+      "variant_id": 46093046284529,
+      "variant_title": "Default Title",
+      "sku": "GT-ODK-MAN",
+      "barcode": "8831",
+      "inventory_item_id": 48129684701425
+    },
+    {
+      "product_id": 8795568963825,
+      "product_title": "ODK Peach Smoothie 6Pack",
+      "product_status": "draft",
+      "variant_id": 46093046481137,
+      "variant_title": "Default Title",
+      "sku": "GT-ODK-PEA",
+      "barcode": "8832",
+      "inventory_item_id": 48129684898033
+    },
+    {
+      "product_id": 8795794342129,
+      "product_title": "Matcha GT Printed Cup with Lid",
+      "product_status": "active",
+      "variant_id": 46093918404849,
+      "variant_title": "Default Title",
+      "sku": "GT-GLA-MAT-PRINT",
+      "barcode": "5020",
+      "inventory_item_id": 48130556428529
+    },
+    {
+      "product_id": 8802548711665,
+      "product_title": "Strawberry Tapioca Pearls 1300g",
+      "product_status": "active",
+      "variant_id": 46115273933041,
+      "variant_title": "Default Title",
+      "sku": "AP-TAP-STR",
+      "barcode": "2007",
+      "inventory_item_id": 48151703159025
+    },
+    {
+      "product_id": 8802552316145,
+      "product_title": "Salted Caramel Tapioca Pearls 1300g",
+      "product_status": "active",
+      "variant_id": 46115278979313,
+      "variant_title": "Default Title",
+      "sku": "AP-TAP-SCR",
+      "barcode": "2008",
+      "inventory_item_id": 48151708205297
+    },
+    {
+      "product_id": 9220224844017,
+      "product_title": "GT Elita White Sangria Cocktail 750ml",
+      "product_status": "active",
+      "variant_id": 46678455255281,
+      "variant_title": "Default Title",
+      "sku": "GTEL-SAN-WHI-0.75L",
+      "barcode": "0726529648126",
+      "inventory_item_id": 48719039660273
+    },
+    {
+      "product_id": 9232758604017,
+      "product_title": "Muza Spicy Margarita Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46724971299057,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-SMAR-1L",
+      "barcode": "0762497394269",
+      "inventory_item_id": 48764314779889
+    },
+    {
+      "product_id": 9232817062129,
+      "product_title": "Muza Anise Bliss Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46725158764785,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-ANBL-1L",
+      "barcode": "0762497394306",
+      "inventory_item_id": 48764505522417
+    },
+    {
+      "product_id": 9232818012401,
+      "product_title": "Muza Russian Sputnik Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46725161386225,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-RSSP-1L",
+      "barcode": "0693493237864",
+      "inventory_item_id": 48764508340465
+    },
+    {
+      "product_id": 9232820273393,
+      "product_title": "Muza Blueberry Breeze Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46725167874289,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-BLBR-1L",
+      "barcode": "0762497394320",
+      "inventory_item_id": 48764520169713
+    },
+    {
+      "product_id": 9232820830449,
+      "product_title": "Muza Jasmin Jazz Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46725169774833,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-JASJ-1L",
+      "barcode": "0762497394245",
+      "inventory_item_id": 48764522070257
+    },
+    {
+      "product_id": 9232887480561,
+      "product_title": "Muza Pink Mama Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46725363925233,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-PNMM-1L",
+      "barcode": "0762497394283",
+      "inventory_item_id": 48764731326705
+    },
+    {
+      "product_id": 9238848471281,
+      "product_title": "Muza Tropical Israeli Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46742314221809,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-TRIL-1L",
+      "barcode": "0762497394313",
+      "inventory_item_id": 48782206501105
+    },
+    {
+      "product_id": 9239004807409,
+      "product_title": "Muza Cherry Bloom Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46742730408177,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-CHRBL-1L",
+      "barcode": "0762497394290",
+      "inventory_item_id": 48782626947313
+    },
+    {
+      "product_id": 9246440980721,
+      "product_title": "Pikadon 254",
+      "product_status": "active",
+      "variant_id": 46766567588081,
+      "variant_title": "Default Title",
+      "sku": "GTMN-PIK-254",
+      "barcode": "gtmnpik254",
+      "inventory_item_id": 48806940016881
+    },
+    {
+      "product_id": 9246441865457,
+      "product_title": "Cardboard Box for 200ml",
+      "product_status": "active",
+      "variant_id": 46766574502129,
+      "variant_title": "Default Title",
+      "sku": "PCKBX-CAR-BOX-0.2L",
+      "barcode": "pckbxcb200",
+      "inventory_item_id": 48806946930929
+    },
+    {
+      "product_id": 9246442553585,
+      "product_title": "Cardboard Box for 1000ml",
+      "product_status": "active",
+      "variant_id": 46766578335985,
+      "variant_title": "Default Title",
+      "sku": "PCKBX-CAR-BOX-PCKBX-CAR-BOX-1L",
+      "barcode": "pckbxcb1000",
+      "inventory_item_id": 48806950764785
+    },
+    {
+      "product_id": 9247588057329,
+      "product_title": "Muza Apple Zest Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46770071994609,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-APPZ-1L",
+      "barcode": "0762497394207",
+      "inventory_item_id": 48810547937521
+    },
+    {
+      "product_id": 9247588450545,
+      "product_title": "Muza Passion Spritz Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46770073895153,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-PSSP-1L",
+      "barcode": "0762497394276",
+      "inventory_item_id": 48810552951025
+    },
+    {
+      "product_id": 9254951125233,
+      "product_title": "Muza Basil Smash Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46815262867697,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-BZSM-1L",
+      "barcode": "0762497394214",
+      "inventory_item_id": 48855523328241
+    },
+    {
+      "product_id": 9267099795697,
+      "product_title": "Muza Jasmin Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46865148182769,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-JASM-1L",
+      "barcode": "0693493237826",
+      "inventory_item_id": 48905761030385
+    },
+    {
+      "product_id": 9268277575921,
+      "product_title": "Muza Tropical in Japan Cocktail 1000ml",
+      "product_status": "active",
+      "variant_id": 46869494300913,
+      "variant_title": "Default Title",
+      "sku": "GTCC-MUZ-TROJ-1L",
+      "barcode": "0693493237819",
+      "inventory_item_id": 48910136115441
+    },
+    {
+      "product_id": 9427058852081,
+      "product_title": "GT Babka Bakery Red Sangria Cocktail 750ml",
+      "product_status": "active",
+      "variant_id": 47641873809649,
+      "variant_title": "Default Title",
+      "sku": "GTEL-BAB-RED-0.75L",
+      "barcode": "0726529648287",
+      "inventory_item_id": 49685815001329
+    },
+    {
+      "product_id": 9445132730609,
+      "product_title": "GT Elita Pear Margarita Cocktail 300ml",
+      "product_status": "active",
+      "variant_id": 47708247916785,
+      "variant_title": "Default Title",
+      "sku": "",
+      "barcode": "777555777",
+      "inventory_item_id": 49764432675057
+    },
+    {
+      "product_id": 9480078459121,
+      "product_title": "Bubbles Pineapple Tapioca Pearls 600g",
+      "product_status": "active",
+      "variant_id": 47810775810289,
+      "variant_title": "Default Title",
+      "sku": "AP-TAP-PIN-0.6",
+      "barcode": "2064",
+      "inventory_item_id": 49870681604337
+    },
+    {
+      "product_id": 9480080883953,
+      "product_title": "Bubbles Mango Tapioca Pearls 600g",
+      "product_status": "active",
+      "variant_id": 47810780659953,
+      "variant_title": "Default Title",
+      "sku": "AP-TAP-MAN-0.6",
+      "barcode": "20065",
+      "inventory_item_id": 49870686454001
+    },
+    {
+      "product_id": 9480080949489,
+      "product_title": "Bubbles Blueberry Tapioca Pearls 600g",
+      "product_status": "active",
+      "variant_id": 47810780856561,
+      "variant_title": "Default Title",
+      "sku": "AP-TAP-BER-0.6",
+      "barcode": "20066",
+      "inventory_item_id": 49870686650609
+    },
+    {
+      "product_id": 9480081113329,
+      "product_title": "Strawberry Tapioca Pearls 600g",
+      "product_status": "active",
+      "variant_id": 47810781151473,
+      "variant_title": "Default Title",
+      "sku": "AP-TAP-STR-0.6",
+      "barcode": "20067",
+      "inventory_item_id": 49870686945521
+    },
+    {
+      "product_id": 9480081211633,
+      "product_title": "Salted Caramel Tapioca Pearls 600g",
+      "product_status": "active",
+      "variant_id": 47810781380849,
+      "variant_title": "Default Title",
+      "sku": "AP-TAP-SCR-0.6",
+      "barcode": "20068",
+      "inventory_item_id": 49870687174897
+    },
+    {
+      "product_id": 9480081375473,
+      "product_title": "Bubbles Lychee Tapioca Pearls 600g",
+      "product_status": "active",
+      "variant_id": 47810781544689,
+      "variant_title": "Default Title",
+      "sku": "AP-TAP-LYC-0.6",
+      "barcode": "2069",
+      "inventory_item_id": 49870687338737
+    },
+    {
+      "product_id": 9563491631345,
+      "product_title": "Matcha Frother",
+      "product_status": "active",
+      "variant_id": 48072575058161,
+      "variant_title": "Default Title",
+      "sku": "AP-FRO-MAT",
+      "barcode": "0693493237956",
+      "inventory_item_id": 50137873580273
+    },
+    {
+      "product_id": 9564757524721,
+      "product_title": "Matcha 100G",
+      "product_status": "draft",
+      "variant_id": 48078378402033,
+      "variant_title": "Default Title",
+      "sku": "GT-SHI-CER-100",
+      "barcode": "0724133176622",
+      "inventory_item_id": 50143699009777
+    },
+    {
+      "product_id": 9568888488177,
+      "product_title": "Margarita Strawberry Elita 0.3L",
+      "product_status": "active",
+      "variant_id": 48090324336881,
+      "variant_title": "Default Title",
+      "sku": "GTEL-MAR-STR-0.3L",
+      "barcode": "",
+      "inventory_item_id": 50160143204593
+    },
+    {
+      "product_id": 9568888520945,
+      "product_title": "Red Sangria 3.85L",
+      "product_status": "active",
+      "variant_id": 48090324402417,
+      "variant_title": "Default Title",
+      "sku": "GTCC-SAN-RED-3.85L",
+      "barcode": "",
+      "inventory_item_id": 50160143270129
+    }
+  ],
+  "lionwheel_unresolved": [
+    {
+      "lw_sku": "GTSET-LOW-6FLAV-SALE",
+      "lw_name_sample": "מארז טעימות ב-6 טעמים מופחת סוכר במבצע",
+      "uses": 17,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "GTSET-FREE-3FLAV-SALE",
+      "lw_name_sample": "מארז טעימות ב-3 טעמים ללא סוכר במבצע",
+      "uses": 7,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "GT-PUE-FRE-1L",
+      "lw_name_sample": "תה פואר ולימון ללא סוכר",
+      "uses": 5,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "GTCC-MUZ-PNMM-1L",
+      "lw_name_sample": "Muza Pink Mama Cocktail 1000ml",
+      "uses": 4,
+      "has_resolution": false,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTSET-FREE-FRESH-DETOX",
+      "lw_name_sample": "מארז FRESH&DETOX ללא סוכר במבצע",
+      "uses": 4,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "GTSET-FREE-DETOX-X4",
+      "lw_name_sample": "מארז MONTHLY DETOX PACK ללא סוכר במבצע",
+      "uses": 4,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "GTSET-LOW-3FLAV-SALE",
+      "lw_name_sample": "מארז טעימות ב-3 טעמים מופחת סוכר במבצע",
+      "uses": 4,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "GT-GLA-CUP",
+      "lw_name_sample": "Measuring Cup",
+      "uses": 3,
+      "has_resolution": false,
+      "first_seen": "2026-04-19",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTSET-LOW-DETOX-X4",
+      "lw_name_sample": "מארז MONTHLY DETOX PACK במבצע",
+      "uses": 3,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "GTCC-MUZ-APPZ-1L",
+      "lw_name_sample": "Muza Apple Zest Cocktail 1000ml",
+      "uses": 3,
+      "has_resolution": false,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTSET-LOW-3FLAV-PREMI",
+      "lw_name_sample": "מארז טעימות ב-3 טעמים פרימיום מופחת סוכר במבצע",
+      "uses": 3,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "AP-DRI-ORA",
+      "lw_name_sample": "Dried Orange approx. 30 pcs, 100g",
+      "uses": 2,
+      "has_resolution": false,
+      "first_seen": "2026-04-19",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTCC-MUZ-ANBL-1L",
+      "lw_name_sample": "Muza Anise Bliss Cocktail 1000ml",
+      "uses": 2,
+      "has_resolution": false,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTCC-MUZ-PSSP-1L",
+      "lw_name_sample": "Muza Passion Spritz Cocktail 1000ml",
+      "uses": 2,
+      "has_resolution": false,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTCC-MUZ-SMAR-1L",
+      "lw_name_sample": "Muza Spicy Margarita Cocktail 1000ml",
+      "uses": 2,
+      "has_resolution": false,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTCC-MUZ-BLBR-1L",
+      "lw_name_sample": "Muza Blueberry Breeze Cocktail 1000ml",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTMN-PIK-254",
+      "lw_name_sample": "Pikadon 254",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-19",
+      "last_seen": "2026-04-19"
+    },
+    {
+      "lw_sku": "GT-GLA-MAT-PRINT",
+      "lw_name_sample": "Matcha GT Printed Cup with Lid",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-26",
+      "last_seen": "2026-04-26"
+    },
+    {
+      "lw_sku": "7290003803217",
+      "lw_name_sample": "מגרדת לזכוכית וקרמיקה",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "AP-TAP-PIN",
+      "lw_name_sample": "Pineapple Tapioca Pearls 1300g",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-26",
+      "last_seen": "2026-04-26"
+    },
+    {
+      "lw_sku": "GTSET-LOW-ENERG-DETOX",
+      "lw_name_sample": "מארז ENERGY&DETOX במבצע",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    },
+    {
+      "lw_sku": "",
+      "lw_name_sample": "מקציף חשמלי",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTCC-MUZ-TROJ-1L",
+      "lw_name_sample": "Muza Tropical in Japan Cocktail 1000ml",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "AP-DRI-ROS",
+      "lw_name_sample": "Dried Purple Roses 200g",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-21",
+      "last_seen": "2026-04-21"
+    },
+    {
+      "lw_sku": "GTCC-MUZ-JASM-1L",
+      "lw_name_sample": "Muza Jasmin Cocktail 1000ml",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20"
+    },
+    {
+      "lw_sku": "GTSET-LOW-JASMI-SENCH",
+      "lw_name_sample": "מארז BRAIN BOOSTER במבצע",
+      "uses": 1,
+      "has_resolution": false,
+      "first_seen": "2026-04-18",
+      "last_seen": "2026-04-18"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+# === GT Factory OS PRODUCTION workspace ===
+# Phase 7 cleanup baseline (2026-05-08).
+#
+# Tracks:
+#   - authority docs (CLAUDE.md, CURRENT_STATE.md, EXECUTION_POLICY.md,
+#     WORKSPACE_MAP.md, ACTIVE_NOW.md)
+#   - .claude/ AI brain (agents, hooks, settings, mcp.json, state, README, SIGNALS)
+#   - archive/ (history-only reference; excluding large binary duplicates)
+#   - data/ (operational reference; structure + READMEs only — binaries ignored)
+#   - docs/ (operational workspace)
+#
+# Ignores: rotating output, vendored binaries, large reference data files.
+# See WORKSPACE_MAP.md for the canonical layout this represents.
+
+# --- Rotating output directories ---
+.audit-tmp/
+.audits/*
+!.audits/RETENTION_POLICY.md
+.lionwheel-prints/
+.superpowers/
+
+# --- Vendored binaries ---
+.tools/
+
+# --- Reference data files (large binaries; structure + READMEs tracked, content not) ---
+data/excel/active/*.xls*
+data/excel/backups/
+data/excel/temp-locks/
+data/json/shopify/*.json
+data/invoices/suppliers/**/*.pdf
+data/invoices/suppliers/**/*.jpg
+data/invoices/suppliers/**/*.jpeg
+data/invoices/suppliers/**/*.png
+
+# --- Archive: historical binaries duplicated under data/ ---
+archive/migrated-to-data/**/*.jpg
+archive/migrated-to-data/**/*.jpeg
+archive/migrated-to-data/**/*.pdf
+archive/migrated-to-data/**/*.png
+archive/migrated-to-data/**/_resized/
+
+# --- OS noise ---
+Thumbs.db
+.DS_Store
+~$*
+
+# --- Editor noise ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Node / build artifacts (defensive; PRODUCTION should not host code) ---
+node_modules/
+dist/
+build/
+.next/
+
+# --- Defensive: secrets / credentials must never land in PRODUCTION git ---
+# (also enforced by .claude/settings.json deny rules and pre_tool_use.sh hook)
+.env
+.env.*
+*.env
+secrets/
+credentials/
+*.pem
+*.key
+.aws/
+.ssh/

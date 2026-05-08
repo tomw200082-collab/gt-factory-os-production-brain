@@ -1,0 +1,50 @@
+C:\Users\tomw2\AppData\Roaming\Python\Python313\site-packages\openpyxl\worksheet\_reader.py:329: UserWarning: Unknown extension is not supported and will be removed
+  warn(msg)
+C:\Users\tomw2\AppData\Roaming\Python\Python313\site-packages\openpyxl\worksheet\_reader.py:329: UserWarning: Conditional Formatting extension is not supported and will be removed
+  warn(msg)
+Reading: c:\Users\tomw2\GTeveryday Dropbox\Data Center\Tom\AI Agents & Projects\Code Agents\PRODUCTION\GT_May_2026_batch_forecast_RTL (1).xlsx
+Exists: True, size: 17508
+
+Sheet names (1):
+  - 'תחזית מאי 2026' — 55 rows × 22 cols
+
+================================================================================
+SHEET: תחזית מאי 2026
+  rows=55, cols=22
+
+  Headers (row 1):
+    col  1: 'תחזית מכירות מאי 2026 — מקובצת לפי באצ׳ ייצור'
+    col  2: None
+    col  3: None
+    col  4: None
+    col  5: None
+    col  6: None
+    col  7: None
+    col  8: None
+    col  9: None
+    col 10: None
+    col 11: None
+    col 12: None
+    col 13: None
+    col 14: None
+    col 15: None
+    col 16: None
+    col 17: None
+    col 18: None
+    col 19: None
+    col 20: None
+    col 21: None
+    col 22: None
+
+  First 5 data rows (row 2-6):
+    row   2: ['\'0.5L ו־1L מאוחדים לאותו באצ׳ לפי קוד מוצר/מתכון. המספרים הם תחזית יחידות מכירה; "ליטרים משוערים" נועד לתרגום ראשוני לייצור.\'', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·']
+    row   3: ["'סה״כ יחידות'", '8677', "'ליטרים משוערים'", '6818.4', "'באצ׳ים/שורות'", '57', "'לתיקון אחרי אישור מוצרים'", "'כן'", '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·']
+    row   4: ['·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·', '·']
+    row   5: ["'סוג'", "'באצ׳ / מוצר'", "'סוכר / גרסה'", "'1L'", "'0.5L'", "'0.75L'", "'0.27/0.3L'", "'0.15/0.2L'", "'3.85L'", "'אחר'", "'סה״כ יחידות'", "'ליטרים משוערים'", "'שבוע 1\\n1-3/5'", "'שבוע 2\\n4-10/5'", "'שבוע 3\\n11-17/5'", "'שבוע 4\\n18-24/5'", "'שבוע 5\\n25-31/5'", "'ביטחון'", "'פעולה לתיקון'", "'כמות סופית'", "'הערות'", "'SKUים מקוריים'"]
+    row   6: ["'תה קר / חליטות'", "'DETOX'", "'רגיל / עם סוכר'", '1559', '310', '0', '0', '0', '0', '0', '1869', '1714', '6', '547', '307', '535', '474', "'בינוני-גבוה'", '·', '·', "'0.5L ו-1L מאוחדים לאותו באצ׳'", "'GT-LUI-LOW-1L, GT-LUI-LOW-0.5L'"]
+
+  Last 3 data rows:
+    row  53: ["'ODK / לבדיקה'", "'ODK Strawberry Smoothie'", '·', '77', '0', '0', '0', '0', '0', '2', '79', '77', '0', '22', '18', '29', '10', "'נמוך-בינוני'", '·', '·', "'היסטוריה חלשה / מוצר חדש | דורש אישור אם רלוונטי לייצור'", "'GT-ODK-STR-1, GT-ODK-STR'"]
+    row  54: ["'ODK / לבדיקה'", "'ODK Mango Smoothie'", '·', '49', '0', '0', '0', '0', '0', '3', '52', '49', '0', '15', '12', '19', '6', "'נמוך-בינוני'", '·', '·', "'היסטוריה חלשה / מוצר חדש | לבדוק אם עדיין פעיל | דורש אישור אם רלוונטי לייצור'", "'GT-ODK-MAN-1, GT-ODK-MAN'"]
+    row  55: ["'ODK / לבדיקה'", "'ODK Peach Smoothie'", '·', '4', '0', '0', '0', '0', '0', '1', '5', '4', '0', '1', '1', '2', '1', "'נמוך-בינוני'", '·', '·', "'היסטוריה חלשה / מוצר חדש | לבדוק אם עדיין פעיל | דורש אישור אם רלוונטי לייצור'", "'GT-ODK-PEA-1, GT-ODK-PEA'"]
+
