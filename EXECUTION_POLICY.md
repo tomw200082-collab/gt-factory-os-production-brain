@@ -44,31 +44,9 @@ Owner of db / schema / migrations / tests / imports / verification / Gate 3 runt
 
 Mode B does **not** generalize to other forms. A new `RUNTIME_READY(other_form)` is required for each additional form.
 
-### W2 — Mode B-AMMC (Admin Master Control authoring mode)
+### W2 — Mode B-AMMC — RETIRED 2026-05-08 (Phase 8 Wave 0)
 
-**Amendment dated 2026-04-21 (Tom-authorized); codifies the pan-form W2 authoring carve-out previously invoked via per-slice Path C overrides during AMMC v1 build (cutover-phase-2 → slice 3/4/5 precedent).**
-
-**Activation:** W2 may enter Mode B-AMMC when ALL of the following hold:
-1. A Tom-approved plan file at `C:/Users/tomw2/.claude/plans/*.md` explicitly names AMMC as in-scope (the current approved plan is `crystalline-drifting-dusk.md` — AMMC v1 integrated design)
-2. The dispatch cites the plan's §G slice number AND that slice is within §G.1-§G.7 of the AMMC v1 scope
-3. No `contract_failure` or `assumption_failure` is open on AMMC prerequisites
-
-**Allowed under Mode B-AMMC:**
-- Canonical portal authoring across `/admin/**` surfaces (items, components, suppliers, supplier-items, planning-policy, sku-aliases, boms, products/[item_id] Product 360) in a single dispatch
-- Pan-entity page + detail + wizard + drawer-stack components
-- Portal proxy routes mirroring AMMC Slice-2 admin mutation endpoints
-- Consumes W1-authored backend (mutations, readiness views, readiness GETs) — **does not author backend code**
-
-**Forbidden under Mode B-AMMC:**
-- Any non-`/admin/**` surface (operator forms, planner forms, dashboard, auth flow, sku-aliases alias workflow — all remain under individual Mode B or Mode A rules)
-- Any backend authorship (`api/src/**` writes remain W1-owned; cross-lane bundling requires explicit W1 dispatch)
-- New migrations, schema changes, handler stacks
-
-**Exit:** Mode B-AMMC exits when AMMC v1 §G.7 (Wizard + integration + verification) closes and `docs/ammc_v1_closure.md` lands. Subsequent admin-surface work returns to standard Mode B with per-form `RUNTIME_READY`.
-
-**Expiry:** this amendment terminates automatically on AMMC v1 closure (commit boundary: whichever commit authors `docs/ammc_v1_closure.md`). Further admin-master edits post-AMMC-v1 require either a new named mode amendment or standard per-form Mode B.
-
-**Precedent reconciliation:** Slices 3, 4, 5 (primitives, list pages, detail + Product 360) were authored under Path C overrides before this amendment. This amendment retroactively codifies those as policy-compliant; no rollback or re-authorship required. Checkpoints `docs/ammc_slice3_primitives_checkpoint.md`, `docs/ammc_slice4_list_pages_checkpoint.md`, `docs/ammc_slice5_ui_checkpoint.md` are hereby ratified.
+**Status:** RETIRED. Closure condition met: `gt-factory-os/docs/checkpoints/ammc_v1_closure.md` exists (path moved to the docs/checkpoints/ subdirectory in PR #21 docs hierarchy). AMMC v1 §G.7 wizard + integration + verification is closed. Per the original expiry clause, this amendment terminated automatically on closure-doc landing. The full text is preserved in §Legacy amendments (retired) at the end of this file. Subsequent admin-master surface work returns to standard Mode B with per-form `RUNTIME_READY`.
 
 ### W2 — Mode B-Portal-Refactor (portal-wide substrate, route-tree, and truthfulness authoring)
 
@@ -172,38 +150,9 @@ Mode B does **not** generalize to other forms. A new `RUNTIME_READY(other_form)`
 
 **Coexistence with Mode B-AMMC and Mode B-Portal-Refactor:** all three amendments can coexist as policies; only one mode-B-variant may be ACTIVE at a time. W2 remains a single-lane.
 
-### W1 — Mode B-LionWheel-Runtime-Closure (Cycle 19 only carve-out, 2026-05-02)
+### W1 — Mode B-LionWheel-Runtime-Closure — RETIRED 2026-05-08 (Phase 8 Wave 0)
 
-**Tom-authorized 2026-05-02 in response to cycle 18 W4 lane-ambiguity halt. Single-cycle bounded carve-out — does NOT broadly reopen the W1/W4 boundary.**
-
-**Activation:** Cycle 19 dispatch only. Auto-expires when cycle 19 closes.
-
-**Allowed files (W1 may edit, exclusively):**
-- `c:/Users/tomw2/Projects/gt-factory-os/api/src/integrations/lionwheel/reconciliation.ts`
-- `c:/Users/tomw2/Projects/gt-factory-os/api/src/integrations/lionwheel/schemas.ts`
-- `c:/Users/tomw2/Projects/gt-factory-os/api/src/integrations/lionwheel/sku_resolver.ts`
-- `c:/Users/tomw2/Projects/gt-factory-os/api/src/integrations/lionwheel/poller.ts` — only if strictly necessary
-
-**Purpose:**
-- Historical back-fill after alias creation (closes 11 JASM/PNMM rows + 2 AP-DRI rows)
-- `related_entity_id` population on `lionwheel_unknown_sku` exceptions
-- Empty-string SKU rejection if local + safe
-
-**Forbidden under this carve-out:**
-- Raw mirror semantic changes
-- Bundle explosion in raw mirror
-- A3 `v_planning_demand` changes
-- A4 planning netting changes
-- `stock_ledger` writes
-- FG_OUT_PICK enablement
-- Green Invoice calls
-- Guessed alias mapping
-- Autonomous resolution of ambiguous rows
-- Broad runtime refactor
-
-**Rationale:** historical W1 ownership of integration runtime signals #5 LionWheel + #10 GreenInvoice + #11 Shopify (per `runtime_ready.json` evidence_path docs); W4's agent file `executor-w4.md` forbids runtime code; W1's agent file forbids "W4 integration runtime" — both refusals are correct in spirit but leave a real gap. Tom's cycle 17 dispatch text named W4 as runtime owner; cycle 18 W4 correctly enforced its agent file. This carve-out resolves the ambiguity for cycle 19 only without changing either agent file.
-
-**Expiry:** automatic on cycle 19 closure. Subsequent LionWheel runtime work returns to standard lane discipline (W4 contracts, W1 schema/views/imports). Any post-cycle-19 LionWheel runtime edit needs a fresh Tom dispatch with explicit carve-out — no rolling precedent.
+**Status:** RETIRED. Closure condition met: cycle 19 closed via commit `3ac1964` "feat(lionwheel): runtime closure — back-fill + exception related_entity_id + empty-string SKU rejection + bundle-map contract commit (cycle 19 carve-out, signal #30)". Active mode history (`active_mode.json`) further evidences cycles 20, 21 closing after cycle 19. Per the original expiry clause, this single-cycle carve-out terminated automatically on cycle 19 closure. The full text is preserved in §Legacy amendments (retired) at the end of this file. Any post-cycle-19 LionWheel runtime edit needs a fresh Tom dispatch with an explicit carve-out — no rolling precedent.
 
 ### W4 — rolling standing-order requirements lane
 Executes one artifact at a time in the pre-authorized backlog order:
@@ -309,3 +258,85 @@ The standing-order policy does **not** override the failure taxonomy or human-ch
 - no reopening of locked decisions
 - MCP is not a runtime input channel
 - Claude Code tooling must not become part of the live operational path
+
+---
+
+## Legacy amendments (retired)
+
+> Amendments below were retired in Phase 8 Wave 0 (2026-05-08) after their per-amendment closure conditions were verified met. Full original text is preserved here as audit trail. Active policy lives in the §W2 / §W1 / §W4 sections above.
+
+### W2 — Mode B-AMMC (RETIRED 2026-05-08; original text preserved)
+
+**Original amendment dated 2026-04-21 (Tom-authorized); codified the pan-form W2 authoring carve-out previously invoked via per-slice Path C overrides during AMMC v1 build (cutover-phase-2 → slice 3/4/5 precedent).**
+
+**Activation (now historical):** W2 may enter Mode B-AMMC when ALL of the following hold:
+1. A Tom-approved plan file at `C:/Users/tomw2/.claude/plans/*.md` explicitly names AMMC as in-scope (the current approved plan is `crystalline-drifting-dusk.md` — AMMC v1 integrated design)
+2. The dispatch cites the plan's §G slice number AND that slice is within §G.1-§G.7 of the AMMC v1 scope
+3. No `contract_failure` or `assumption_failure` is open on AMMC prerequisites
+
+**Allowed under Mode B-AMMC (now historical):**
+- Canonical portal authoring across `/admin/**` surfaces (items, components, suppliers, supplier-items, planning-policy, sku-aliases, boms, products/[item_id] Product 360) in a single dispatch
+- Pan-entity page + detail + wizard + drawer-stack components
+- Portal proxy routes mirroring AMMC Slice-2 admin mutation endpoints
+- Consumes W1-authored backend (mutations, readiness views, readiness GETs) — **does not author backend code**
+
+**Forbidden under Mode B-AMMC (now historical):**
+- Any non-`/admin/**` surface (operator forms, planner forms, dashboard, auth flow, sku-aliases alias workflow — all remain under individual Mode B or Mode A rules)
+- Any backend authorship (`api/src/**` writes remain W1-owned; cross-lane bundling requires explicit W1 dispatch)
+- New migrations, schema changes, handler stacks
+
+**Original exit:** Mode B-AMMC exits when AMMC v1 §G.7 (Wizard + integration + verification) closes and `docs/ammc_v1_closure.md` lands.
+
+**Original expiry:** this amendment terminates automatically on AMMC v1 closure (commit boundary: whichever commit authors `docs/ammc_v1_closure.md`). Further admin-master edits post-AMMC-v1 require either a new named mode amendment or standard per-form Mode B.
+
+**Precedent reconciliation:** Slices 3, 4, 5 (primitives, list pages, detail + Product 360) were authored under Path C overrides before this amendment. This amendment retroactively codifies those as policy-compliant; no rollback or re-authorship required. Checkpoints `docs/ammc_slice3_primitives_checkpoint.md`, `docs/ammc_slice4_list_pages_checkpoint.md`, `docs/ammc_slice5_ui_checkpoint.md` were ratified.
+
+**Phase 8 retirement evidence (2026-05-08):** closure doc found at `gt-factory-os/docs/checkpoints/ammc_v1_closure.md` (path moved to checkpoints/ subdir in PR #21 docs hierarchy). Closure condition met → amendment auto-expired.
+
+---
+
+### W1 — Mode B-LionWheel-Runtime-Closure (Cycle 19 only carve-out, 2026-05-02 — RETIRED 2026-05-08; original text preserved)
+
+**Original Tom-authorization 2026-05-02 in response to cycle 18 W4 lane-ambiguity halt. Single-cycle bounded carve-out — does NOT broadly reopen the W1/W4 boundary.**
+
+**Activation (now historical):** Cycle 19 dispatch only. Auto-expires when cycle 19 closes.
+
+**Allowed files (W1 may edit, exclusively) (now historical):**
+- `c:/Users/tomw2/Projects/gt-factory-os/api/src/integrations/lionwheel/reconciliation.ts`
+- `c:/Users/tomw2/Projects/gt-factory-os/api/src/integrations/lionwheel/schemas.ts`
+- `c:/Users/tomw2/Projects/gt-factory-os/api/src/integrations/lionwheel/sku_resolver.ts`
+- `c:/Users/tomw2/Projects/gt-factory-os/api/src/integrations/lionwheel/poller.ts` — only if strictly necessary
+
+**Original purpose:**
+- Historical back-fill after alias creation (closes 11 JASM/PNMM rows + 2 AP-DRI rows)
+- `related_entity_id` population on `lionwheel_unknown_sku` exceptions
+- Empty-string SKU rejection if local + safe
+
+**Forbidden under this carve-out (now historical):**
+- Raw mirror semantic changes
+- Bundle explosion in raw mirror
+- A3 `v_planning_demand` changes
+- A4 planning netting changes
+- `stock_ledger` writes
+- FG_OUT_PICK enablement
+- Green Invoice calls
+- Guessed alias mapping
+- Autonomous resolution of ambiguous rows
+- Broad runtime refactor
+
+**Rationale (preserved):** historical W1 ownership of integration runtime signals #5 LionWheel + #10 GreenInvoice + #11 Shopify (per `runtime_ready.json` evidence_path docs); W4's agent file `executor-w4.md` forbids runtime code; W1's agent file forbids "W4 integration runtime" — both refusals are correct in spirit but leave a real gap. Tom's cycle 17 dispatch text named W4 as runtime owner; cycle 18 W4 correctly enforced its agent file. This carve-out resolved the ambiguity for cycle 19 only without changing either agent file.
+
+**Original expiry:** automatic on cycle 19 closure. Subsequent LionWheel runtime work returns to standard lane discipline (W4 contracts, W1 schema/views/imports). Any post-cycle-19 LionWheel runtime edit needs a fresh Tom dispatch with explicit carve-out — no rolling precedent.
+
+**Phase 8 retirement evidence (2026-05-08):** cycle 19 closure commit `3ac1964` "feat(lionwheel): runtime closure — back-fill + exception related_entity_id + empty-string SKU rejection + bundle-map contract commit (cycle 19 carve-out, signal #30)". Active-mode history shows cycles 20 and 21 subsequent and closed. Closure condition met → amendment auto-expired.
+
+---
+
+### Future Phase 8 lane-rename mapping note (informational)
+
+Phase 8 (revision 2) plans to introduce production-named replacements for the build-era executor agents:
+- `executor-w1` → `backend-db-executor`
+- `executor-w2` → `portal-production-executor`
+- `executor-w4` → `integration-boundary-executor`
+
+The rename is **not** applied in Wave 0. It will land in Phase 8 Waves 3 + 5 (add-new-alongside, then refit EXECUTION_POLICY.md). Until then, all references in this file to `executor-w1` / `executor-w2` / `executor-w4` remain authoritative for the existing agent files. After Phase 8 Wave 5, this section will be expanded with a Legacy mapping table.
