@@ -123,3 +123,34 @@ For important human actions, preserve both a user foreign key and a display-name
 - Emit exceptions for stale integrations and failed jobs
 - Global break-glass mode that makes the system read-only and pauses jobs
 - Prefer clear failure over silent drift
+
+---
+
+## Live DB connectivity
+
+The direct `db.*` host on Supabase is IPv6-only and is unreachable from Tom's network. All connections from this workstation use the Session-mode pooler:
+
+- **Host:** `aws-1-eu-central-1.pooler.supabase.com:5432`
+- **Env var:** `DATABASE_URL_POOLED` (in `.env`)
+- **Safe for:** migrations, pgTAP, imports, ad-hoc inspection
+- **Not safe for:** anything that requires session-pinned LISTEN/NOTIFY semantics (use direct host on a network where IPv6 works)
+
+This connectivity rule applies to local Node.js `pg`, `psql`, Supabase SQL editor invocations, and any `apply_<NNNN>.mjs`-style migration runner script in `gt-factory-os/scripts/`.
+
+> Migrated from `CURRENT_STATE.md` §"Live DB connectivity note" during Phase 8 Run F Wave 4 Hole 2 cleanup (2026-05-09).
+
+---
+
+## Migration authoring patterns
+
+### Lesson 2026-05-10 — dry-run-via-outer-rollback does NOT work when the migration has its own BEGIN/COMMIT
+
+**Symptom observed in Wave 1 of Master Data Fix (migration 0180):** the plan called for verifying each migration section with `psql -c "begin; \i db/migrations/0180_master_data_consistency_pass1.sql ; rollback;"`. Because 0180 contains its own `BEGIN; … COMMIT;` wrapper, the inner COMMIT closed the inner transaction. The outer `rollback;` then ran against a fresh empty transaction and had no effect. **The migration applied during what was intended as a dry-run** — surfacing only after `npm run db:test:0180` showed post-apply state. Tom's end-to-end approval covered the apply so no authorization breach occurred, but the safety property was illusory.
+
+**Rule:** A migration file MUST NOT include its own outer `BEGIN;`/`COMMIT;` if the operator expects to dry-run it via an outer transaction wrapper. Choose one of:
+1. **Caller-supplied transaction (preferred for migrations called by `npm run db:apply:*`):** remove the inner `BEGIN; … COMMIT;` from the migration body. The caller's transaction frames the apply; `psql … -v ON_ERROR_STOP=1 -f file.sql` runs in an implicit transaction unless overridden. Dry-runs become safe via `psql -c "begin; \i file.sql ; rollback;"`.
+2. **Explicit savepoint dry-run mode:** keep the migration's own `BEGIN; COMMIT;` but add a `SAVEPOINT pre_apply;` + `ROLLBACK TO SAVEPOINT pre_apply;` block conditional on a psql variable like `:dryrun`. Caller runs with `psql -v dryrun=1 …`.
+
+**Test for compliance:** grep the migration file for top-level `^begin;` (case-insensitive). If found AND the migration is intended to be dry-run-able, refactor to caller-supplied transaction OR savepoint mode.
+
+**Past commits demonstrating the flaw:** `f9daf57`, `6fc7f2a`, `23caca3` in branch `master-data-fix-wave-1` of `gt-factory-os.worktrees/master-data-fix-wave-1` (fix commits that surfaced because the "dry-run" had already applied to live DB).
