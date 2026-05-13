@@ -11,8 +11,27 @@
 **Spec:** [`docs/superpowers/specs/2026-05-13-display-clamp-physical-stock-truth-design.md`](../specs/2026-05-13-display-clamp-physical-stock-truth-design.md)
 
 **Prerequisites NOT covered by this plan:**
-- UX handoff packet for `<ReconcileBadge>` and `<StockTruthDrawer>` from `interaction-design-specialist` + `visual-system-designer` (per `portal-production-executor` allowed-paths). Plan tasks marked **[UX-GATED]** require the packet to be produced first.
+- ~~UX handoff packet~~ — **delivered 2026-05-13** by `interaction-design-specialist` (INTER-001 through INTER-008) and `visual-system-designer` (VISUAL-001 through VISUAL-004). All decision-grade and flow-completion findings are incorporated into the task bodies below. See **Revision history** for the diff.
 - Tom written approval of the spec — **already granted** 2026-05-13.
+
+## Revision history
+
+**2026-05-13 — handoff-packet revisions (this plan is v2):**
+
+- **VISUAL-001 (decision-grade):** Task 6 rewritten — `StockTruthDrawer` composes the canonical `<Drawer>` primitive from `@/components/overlays/Drawer` instead of rolling a raw `Dialog.Root`. The portal already has a stack-aware drawer with built-in focus management, close button, and Esc/backdrop handling. Composing it eliminates the four divergences flagged in the audit and inherits the stack-context behavior for future drawer-within-drawer flows.
+- **INTER-005 (decision-grade):** Task 7 Step 9 rewritten — `InventoryCardMobile` no longer uses `<Link>` as its outer wrapper (button-inside-link is invalid HTML). The item-name block becomes its own `<Link>` child; the `ReconcileBadge` is a sibling.
+- **INTER-001 (flow-completion):** Task 5 updated — `ReconcileBadge` uses Radix Tooltip (`@radix-ui/react-tooltip`) instead of the `title` attribute (which is unreachable on touch and keyboard). Adds `disabled?: boolean` prop for role-gated cases.
+- **INTER-002 (flow-completion):** Task 6 CTA `Link` carries `target="_blank" rel="noopener"`; the drawer stays open while the GR form opens in a new tab.
+- **INTER-003 (flow-completion):** Task 6 error state renders prose + a Retry button that calls `refetch()`; raw API error code is hidden behind a `<details>` disclosure.
+- **INTER-004 (flow-completion):** Task 6 empty-state CTA conditional on `data.rows.length === 0` — disabled "Post corrective count (coming soon)" when there are no events, since the count route may not yet exist. Executor confirms route availability before activating.
+- **INTER-006 (polish):** Task 7 Step 8 — `negativeCount` useMemo scopes to `allRows` (active tab) instead of merged `[...fgRows, ...rmRows]`. One-line change.
+- **VISUAL-002:** Task 5 — `ReconcileBadge` uses `ring-warning/50` (not `/40`) to match the `TierBadge.reconcile` entry and complete the ring-weight ladder (Low/30, Critical/40, Reconcile/50).
+- **VISUAL-003:** Task 7 Step 3 — `TierBadge.reconcile` glyph is `◈` (diamond) instead of `⚠` to avoid collision with `CostBadge.missing_cost` which already uses `⚠`. The standalone `ReconcileBadge` (a button) keeps `⚠` — it never co-renders with a CostBadge.
+- **VISUAL-004:** Task 6 — ledger event list rows use `bg-bg-subtle/60` (not `/30`) for visibility in compact mode.
+- **INTER-007 (polish):** Inherited by composing `<Drawer>` (which has its own focus-management semantics). No separate focus sentinel needed.
+- **New Task 4.5:** Add `@radix-ui/react-tooltip` to portal dependencies.
+
+The acceptance criteria for each finding live next to the affected task step.
 
 **Out of scope (explicit, deferred to follow-up plans):**
 - Migration of: `/(shared)/dashboard`, `/(shared)/dashboard/v2`, `/(admin)/admin/items/[item_id]`, `/(shared)/stock/movement-log`, GR / Waste / Production Actual form previews, `/(planning)/planning/inventory-flow/*`.
@@ -421,9 +440,37 @@ EOF
 )"
 ```
 
-### Task 5: Create the `<ReconcileBadge>` component [UX-GATED]
+### Task 4.5: Add `@radix-ui/react-tooltip` dependency
 
-**Prerequisite:** UX handoff packet from `interaction-design-specialist` + `visual-system-designer` for the badge appearance. If not yet produced, the visual treatment may need adjustment after this task lands.
+**Reason:** INTER-001 requires a tooltip reachable on keyboard focus and touch, not just hover. The `title` attribute does not satisfy this.
+
+- [ ] **Step 1: Add the package**
+
+```bash
+cd C:/Users/tomw2/Projects/window2-portal-sandbox && npm install @radix-ui/react-tooltip
+```
+
+- [ ] **Step 2: Verify it appears in package.json under `dependencies`** alongside the other `@radix-ui/*` entries.
+
+- [ ] **Step 3: Commit the lockfile + manifest only**
+
+```bash
+cd C:/Users/tomw2/Projects/window2-portal-sandbox && git add package.json package-lock.json
+git commit -m "$(cat <<'EOF'
+chore(deps): add @radix-ui/react-tooltip
+
+Required by ReconcileBadge (INTER-001) for keyboard- and touch-reachable
+tooltip semantics. Existing badges that rely on the title attribute alone
+will be revisited in a follow-up audit.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+EOF
+)"
+```
+
+### Task 5: Create the `<ReconcileBadge>` component
+
+**Handoff-packet findings incorporated:** INTER-001 (Radix Tooltip + disabled prop), VISUAL-002 (`ring-warning/50`).
 
 **Files:**
 - Create: `window2-portal-sandbox/src/components/stock/ReconcileBadge.tsx`
@@ -434,39 +481,71 @@ EOF
 Create `src/components/stock/ReconcileBadge.test.tsx`:
 
 ```tsx
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/vitest';
+import * as Tooltip from '@radix-ui/react-tooltip';
 import { ReconcileBadge } from './ReconcileBadge';
 
+function renderWithTooltipProvider(ui: React.ReactNode) {
+  return render(<Tooltip.Provider>{ui}</Tooltip.Provider>);
+}
+
 describe('ReconcileBadge', () => {
-  it('renders the label "Reconcile"', () => {
-    render(<ReconcileBadge floorGap={5} uom="unit" onClick={() => {}} />);
-    expect(screen.getByRole('button', { name: /reconcile/i })).toBeInTheDocument();
+  it('renders a button with the label "Reconcile"', () => {
+    renderWithTooltipProvider(
+      <ReconcileBadge floorGap={5} uom="unit" onClick={() => {}} />,
+    );
+    expect(
+      screen.getByRole('button', { name: /reconcile/i }),
+    ).toBeInTheDocument();
   });
 
-  it('shows the floor_gap and uom in the tooltip', () => {
-    render(<ReconcileBadge floorGap={5} uom="unit" onClick={() => {}} />);
+  it('carries a short aria-label including the gap magnitude', () => {
+    renderWithTooltipProvider(
+      <ReconcileBadge floorGap={5} uom="unit" onClick={() => {}} />,
+    );
     const btn = screen.getByRole('button', { name: /reconcile/i });
     expect(btn).toHaveAttribute(
-      'title',
-      expect.stringMatching(/recorded outflows exceed receipts by 5\b.*unit/i),
+      'aria-label',
+      expect.stringMatching(/reconcile.*5.*unit/i),
     );
+  });
+
+  it('shows tooltip content on focus', async () => {
+    const user = userEvent.setup();
+    renderWithTooltipProvider(
+      <ReconcileBadge floorGap={5} uom="unit" onClick={() => {}} />,
+    );
+    await user.tab(); // focus the badge
+    // Radix renders the tooltip in a portal; assert by text content.
+    expect(
+      await screen.findByText(/recorded outflows exceed receipts by 5\b.*unit/i),
+    ).toBeInTheDocument();
   });
 
   it('calls onClick when activated', async () => {
-    let clicked = false;
-    render(
+    const handler = vi.fn();
+    const user = userEvent.setup();
+    renderWithTooltipProvider(
+      <ReconcileBadge floorGap={5} uom="unit" onClick={handler} />,
+    );
+    await user.click(screen.getByRole('button', { name: /reconcile/i }));
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders as a non-interactive span when disabled', () => {
+    renderWithTooltipProvider(
       <ReconcileBadge
         floorGap={5}
         uom="unit"
-        onClick={() => {
-          clicked = true;
-        }}
+        onClick={() => {}}
+        disabled
       />,
     );
-    screen.getByRole('button', { name: /reconcile/i }).click();
-    expect(clicked).toBe(true);
+    expect(screen.queryByRole('button', { name: /reconcile/i })).toBeNull();
+    expect(screen.getByText(/reconcile/i)).toBeInTheDocument();
   });
 });
 ```
@@ -486,6 +565,7 @@ Create `src/components/stock/ReconcileBadge.tsx`:
 ```tsx
 "use client";
 
+import * as Tooltip from '@radix-ui/react-tooltip';
 import { cn } from '@/lib/cn';
 
 export interface ReconcileBadgeProps {
@@ -495,6 +575,8 @@ export interface ReconcileBadgeProps {
   uom: string | null;
   /** Click handler — opens the StockTruthDrawer at the call site. */
   onClick: () => void;
+  /** When true, render as a non-interactive span (role-gated case). */
+  disabled?: boolean;
   /** Optional className for surface-specific positioning. */
   className?: string;
 }
@@ -503,33 +585,76 @@ export interface ReconcileBadgeProps {
  * Amber "Reconcile" badge surfaced when calculated_on_hand < 0.
  *
  * Spec: PRODUCTION/docs/superpowers/specs/2026-05-13-display-clamp-physical-stock-truth-design.md §4
+ * Handoff: INTER-001 (Radix Tooltip + disabled prop), VISUAL-002 (ring-warning/50)
  */
-export function ReconcileBadge({ floorGap, uom, onClick, className }: ReconcileBadgeProps) {
+export function ReconcileBadge({
+  floorGap,
+  uom,
+  onClick,
+  disabled,
+  className,
+}: ReconcileBadgeProps) {
   const gapDisplay = typeof floorGap === 'number' ? floorGap : Number(floorGap);
   const gapText = Number.isNaN(gapDisplay) ? '?' : String(gapDisplay);
   const uomText = uom ?? 'units';
-  const tooltip = `Recorded outflows exceed receipts by ${gapText} ${uomText}. Click to review.`;
+  const tooltipBody = `Recorded outflows exceed receipts by ${gapText} ${uomText}. Click to review.`;
+  const ariaShort = `Reconcile — ${gapText} ${uomText} below floor`;
 
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={tooltip}
-      aria-label={tooltip}
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-medium ring-1',
-        'bg-warning-softer text-warning-fg ring-warning/40',
-        'transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50',
-        'hover:bg-warning-softer/80',
-        className,
-      )}
-    >
+  const visualBody = (
+    <>
       <span aria-hidden className="font-mono">⚠</span>
       Reconcile
-    </button>
+    </>
+  );
+
+  const sharedClass = cn(
+    'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-medium ring-1',
+    'bg-warning-softer text-warning-fg ring-warning/50',
+    className,
+  );
+
+  return (
+    <Tooltip.Root delayDuration={300}>
+      <Tooltip.Trigger asChild>
+        {disabled ? (
+          <span
+            role="status"
+            aria-label={`${ariaShort} (action unavailable)`}
+            className={cn(sharedClass, 'opacity-70 cursor-not-allowed')}
+          >
+            {visualBody}
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={onClick}
+            aria-label={ariaShort}
+            className={cn(
+              sharedClass,
+              'transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50',
+              'hover:bg-warning-softer/80',
+            )}
+          >
+            {visualBody}
+          </button>
+        )}
+      </Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Content
+          side="top"
+          sideOffset={6}
+          className="z-50 rounded border border-border bg-bg-raised px-2 py-1 text-2xs text-fg shadow-md"
+        >
+          {tooltipBody}
+          <Tooltip.Arrow className="fill-bg-raised" />
+        </Tooltip.Content>
+      </Tooltip.Portal>
+    </Tooltip.Root>
   );
 }
 ```
+
+**Important:** Every call site that mounts `<ReconcileBadge>` MUST be inside a `<Tooltip.Provider>`. The inventory page (Task 7) wraps the entire page in `<Tooltip.Provider>` once, near the outermost return.
 
 - [ ] **Step 4: Run test — expect PASS**
 
@@ -558,9 +683,9 @@ EOF
 )"
 ```
 
-### Task 6: Create the `<StockTruthDrawer>` component [UX-GATED]
+### Task 6: Create the `<StockTruthDrawer>` component
 
-**Prerequisite:** UX handoff packet (same as Task 5).
+**Handoff-packet findings incorporated:** VISUAL-001 (compose canonical `<Drawer>`), INTER-002 (`target="_blank"` CTA), INTER-003 (Retry button), INTER-004 (conditional empty-state CTA), VISUAL-004 (`bg-bg-subtle/60` row alpha).
 
 **Files:**
 - Create: `window2-portal-sandbox/src/components/stock/StockTruthDrawer.tsx`
@@ -584,24 +709,24 @@ function renderWithQuery(ui: React.ReactNode) {
   return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
 }
 
+const baseProps = {
+  itemId: 'X-001',
+  itemType: 'FG',
+  displayName: 'Test Beverage',
+  onHandRaw: '-5',
+  floorGap: '5',
+  uom: 'unit',
+};
+
 describe('StockTruthDrawer', () => {
   it('does not render when closed', () => {
     renderWithQuery(
-      <StockTruthDrawer
-        itemId="X-001"
-        itemType="FG"
-        displayName="Test"
-        onHandRaw="-5"
-        floorGap="5"
-        uom="unit"
-        open={false}
-        onClose={() => {}}
-      />,
+      <StockTruthDrawer {...baseProps} open={false} onClose={() => {}} />,
     );
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('renders the math reconciliation when open', async () => {
+  it('renders math summary, title, and ledger event when open', async () => {
     const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -625,27 +750,69 @@ describe('StockTruthDrawer', () => {
     } as Response);
 
     renderWithQuery(
-      <StockTruthDrawer
-        itemId="X-001"
-        itemType="FG"
-        displayName="Test Beverage"
-        onHandRaw="-5"
-        floorGap="5"
-        uom="unit"
-        open={true}
-        onClose={() => {}}
-      />,
+      <StockTruthDrawer {...baseProps} open={true} onClose={() => {}} />,
     );
 
     await waitFor(() => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
-    expect(screen.getByText(/Below physical floor by 5/i)).toBeInTheDocument();
+    // Title in the canonical Drawer header.
     expect(screen.getByText('Test Beverage')).toBeInTheDocument();
-
+    expect(screen.getByText(/Below physical floor by 5/i)).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText('WASTE_POSTED')).toBeInTheDocument();
     });
+    // CTA opens in a new tab (INTER-002).
+    const cta = screen.getByRole('link', { name: /Post corrective Goods Receipt/i });
+    expect(cta).toHaveAttribute('target', '_blank');
+    expect(cta).toHaveAttribute('rel', expect.stringContaining('noopener'));
+
+    fetchSpy.mockRestore();
+  });
+
+  it('renders Try again button on error and calls refetch (INTER-003)', async () => {
+    const fetchSpy = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({}) } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ rows: [], count: 0, total_matching: 0 }),
+      } as Response);
+
+    renderWithQuery(
+      <StockTruthDrawer {...baseProps} open={true} onClose={() => {}} />,
+    );
+
+    const retry = await screen.findByRole('button', { name: /try again/i });
+    expect(retry).toBeInTheDocument();
+    // Raw API code is not surfaced in the default error state.
+    expect(screen.queryByText(/LEDGER_FETCH_500/)).toBeNull();
+
+    fetchSpy.mockRestore();
+  });
+
+  it('renders the no-events disabled CTA when ledger is empty (INTER-004)', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({ rows: [], count: 0, total_matching: 0 }),
+    } as Response);
+
+    renderWithQuery(
+      <StockTruthDrawer {...baseProps} open={true} onClose={() => {}} />,
+    );
+
+    // GR link should not be present.
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('link', { name: /Post corrective Goods Receipt/i }),
+      ).toBeNull();
+    });
+    // Disabled count-corrective span should be present.
+    expect(screen.getByText(/Post corrective count/i)).toBeInTheDocument();
+    expect(screen.getByText(/Post corrective count/i)).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
 
     fetchSpy.mockRestore();
   });
@@ -668,8 +835,8 @@ Create `src/components/stock/StockTruthDrawer.tsx`:
 "use client";
 
 import { useQuery } from '@tanstack/react-query';
-import * as Dialog from '@radix-ui/react-dialog';
 import Link from 'next/link';
+import { Drawer } from '@/components/overlays/Drawer';
 import { cn } from '@/lib/cn';
 
 interface LedgerEvent {
@@ -716,9 +883,12 @@ export interface StockTruthDrawerProps {
  * Stock Truth Drawer — opens from a Reconcile badge click.
  *
  * Shows:
- *   - Header: item name + math summary
+ *   - Header (delegated to <Drawer>): item name + itemId · itemType
+ *   - Math summary block: floor gap, calculated vs display value, prose explanation
  *   - Recent ledger events (last 10) for the item
- *   - CTA: Post corrective Goods Receipt
+ *   - CTA: Post corrective Goods Receipt (opens in new tab; drawer stays open)
+ *
+ * Composes the canonical <Drawer> primitive (VISUAL-001).
  *
  * Spec: PRODUCTION/docs/superpowers/specs/2026-05-13-display-clamp-physical-stock-truth-design.md §4.2
  */
@@ -732,125 +902,133 @@ export function StockTruthDrawer({
   open,
   onClose,
 }: StockTruthDrawerProps) {
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['stock-truth-drawer', itemId],
     queryFn: () => fetchRecentLedger(itemId),
     enabled: open,
     staleTime: 30_000,
   });
 
+  const hasEvents = data ? data.rows.length > 0 : false;
+
   return (
-    <Dialog.Root open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40 data-[state=open]:animate-in data-[state=open]:fade-in" />
-        <Dialog.Content
-          className={cn(
-            'fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto bg-bg p-5 shadow-xl',
-            'data-[state=open]:animate-in data-[state=open]:slide-in-from-right',
-            'focus-visible:outline-none',
-          )}
+    <Drawer
+      open={open}
+      onClose={onClose}
+      title={displayName ?? itemId}
+      description={`${itemId} · ${itemType}`}
+      width="md"
+    >
+      {/* Math summary */}
+      <div className="rounded-md border border-warning/30 bg-warning-softer/40 p-3 text-sm">
+        <div className="font-medium text-warning-fg">
+          Below physical floor by {floorGap} {uom ?? 'units'}
+        </div>
+        <div className="mt-2 space-y-0.5 font-mono text-xs text-fg-muted">
+          <div>Calculated on-hand : {onHandRaw}</div>
+          <div>Display value      : 0</div>
+        </div>
+        <p className="mt-2 text-2xs text-fg-muted">
+          The system has recorded more outflow events than offsetting
+          receipts. Likely causes: a missing Goods Receipt, an
+          out-of-sequence shipment post, or an under-counted physical
+          count. Investigate below.
+        </p>
+      </div>
+
+      {/* Recent ledger events */}
+      <h3 className="mt-5 text-2xs font-semibold uppercase tracking-wider text-fg-subtle">
+        Recent ledger events
+      </h3>
+      {isLoading && (
+        <div className="mt-2 space-y-1.5" aria-busy="true">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-7 animate-pulse rounded bg-bg-subtle" />
+          ))}
+        </div>
+      )}
+      {isError && (
+        <div
+          className="mt-2 rounded-md border border-danger/40 bg-danger-softer/40 p-3 text-xs text-danger-fg"
+          role="alert"
         >
-          <Dialog.Title className="text-base font-semibold text-fg">
-            {displayName ?? itemId}
-          </Dialog.Title>
-          <Dialog.Description className="mt-1 text-xs text-fg-muted">
-            <span className="font-mono">{itemId}</span> · <span>{itemType}</span>
-          </Dialog.Description>
-
-          {/* Math summary */}
-          <div className="mt-4 rounded-md border border-warning/30 bg-warning-softer/40 p-3 text-sm">
-            <div className="font-medium text-warning-fg">
-              Below physical floor by {floorGap} {uom ?? 'units'}
-            </div>
-            <div className="mt-2 space-y-0.5 font-mono text-xs text-fg-muted">
-              <div>Calculated on-hand : {onHandRaw}</div>
-              <div>Display value      : 0</div>
-            </div>
-            <p className="mt-2 text-2xs text-fg-muted">
-              The system has recorded more outflow events than offsetting
-              receipts. Likely causes: a missing Goods Receipt, an
-              out-of-sequence shipment post, or an under-counted physical
-              count. Investigate below.
-            </p>
-          </div>
-
-          {/* Recent ledger events */}
-          <h3 className="mt-5 text-2xs font-semibold uppercase tracking-wider text-fg-subtle">
-            Recent ledger events
-          </h3>
-          {isLoading && (
-            <div className="mt-2 space-y-1.5" aria-busy="true">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-7 animate-pulse rounded bg-bg-subtle" />
-              ))}
-            </div>
-          )}
-          {isError && (
-            <div className="mt-2 rounded-md border border-danger/40 bg-danger-softer/40 p-2 text-2xs text-danger-fg" role="alert">
-              Could not load ledger events: {(error as Error).message}
-            </div>
-          )}
-          {data && data.rows.length === 0 && (
-            <p className="mt-2 text-xs text-fg-muted">
-              No ledger events found for this item. The anchor itself may be wrong — post a corrective count to repair the projection.
-            </p>
-          )}
-          {data && data.rows.length > 0 && (
-            <ul className="mt-2 space-y-1.5">
-              {data.rows.map((ev) => (
-                <li
-                  key={ev.movement_id}
-                  className="flex items-center justify-between gap-2 rounded border border-border/50 bg-bg-subtle/30 px-2 py-1 text-2xs"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate font-medium text-fg">{ev.movement_type}</div>
-                    <div className="truncate text-fg-muted">
-                      {new Date(ev.event_at).toLocaleString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                      {ev.reported_by_snapshot ? ` · ${ev.reported_by_snapshot}` : ''}
-                      {ev.po_number ? ` · PO ${ev.po_number}` : ''}
-                      {ev.lw_destination_city ? ` · → ${ev.lw_destination_city}` : ''}
-                    </div>
-                  </div>
-                  <div className={cn(
-                    'shrink-0 font-mono tabular-nums',
-                    Number(ev.qty_delta) < 0 ? 'text-danger-fg' : 'text-success-fg',
-                  )}>
-                    {Number(ev.qty_delta) > 0 ? '+' : ''}{ev.qty_delta} {ev.uom}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {/* CTA */}
-          <div className="mt-5 flex items-center justify-between gap-2">
-            <Link
-              href={`/stock/receipts?item_id=${encodeURIComponent(itemId)}`}
-              className="btn btn-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
-              onClick={onClose}
+          <p>Could not load ledger events.</p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="mt-2 inline-flex items-center gap-1 rounded border border-danger/40 bg-bg px-2 py-0.5 text-2xs font-medium text-danger-fg hover:bg-danger-softer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          >
+            Try again
+          </button>
+        </div>
+      )}
+      {data && data.rows.length === 0 && (
+        <p className="mt-2 text-xs text-fg-muted">
+          No ledger events found for this item. The anchor itself may be wrong — a corrective physical count will repair the projection.
+        </p>
+      )}
+      {data && data.rows.length > 0 && (
+        <ul className="mt-2 space-y-1.5">
+          {data.rows.map((ev) => (
+            <li
+              key={ev.movement_id}
+              className="flex items-center justify-between gap-2 rounded border border-border/50 bg-bg-subtle/60 px-2 py-1 text-2xs"
             >
-              Post corrective Goods Receipt
-            </Link>
-            <Dialog.Close asChild>
-              <button
-                type="button"
-                className="text-xs text-fg-muted hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
-              >
-                Close
-              </button>
-            </Dialog.Close>
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+              <div className="min-w-0 flex-1">
+                <div className="truncate font-medium text-fg">{ev.movement_type}</div>
+                <div className="truncate text-fg-muted">
+                  {new Date(ev.event_at).toLocaleString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                  {ev.reported_by_snapshot ? ` · ${ev.reported_by_snapshot}` : ''}
+                  {ev.po_number ? ` · PO ${ev.po_number}` : ''}
+                  {ev.lw_destination_city ? ` · → ${ev.lw_destination_city}` : ''}
+                </div>
+              </div>
+              <div className={cn(
+                'shrink-0 font-mono tabular-nums',
+                Number(ev.qty_delta) < 0 ? 'text-danger-fg' : 'text-success-fg',
+              )}>
+                {Number(ev.qty_delta) > 0 ? '+' : ''}{ev.qty_delta} {ev.uom}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* CTA — opens in a new tab to preserve drawer context (INTER-002).
+          When there are no ledger events, the CTA is gated to a count-corrective
+          path (INTER-004). Until the count form route is confirmed by the
+          executor, render the no-events case as a disabled span. */}
+      <div className="mt-6 flex items-center justify-between gap-2">
+        {hasEvents ? (
+          <Link
+            href={`/stock/receipts?item_id=${encodeURIComponent(itemId)}`}
+            target="_blank"
+            rel="noopener"
+            className="btn btn-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          >
+            Post corrective Goods Receipt
+          </Link>
+        ) : (
+          <span
+            aria-disabled="true"
+            title="Physical-count form route pending — see follow-up plan."
+            className="btn btn-sm cursor-not-allowed opacity-50"
+          >
+            Post corrective count (coming soon)
+          </span>
+        )}
+      </div>
+    </Drawer>
   );
 }
 ```
+
+**Executor note on INTER-004 fallback:** before merging, verify whether the portal already exposes a physical-count form route reachable from `/stock/counts` (or equivalent). If yes, swap the disabled `<span>` for an enabled `<Link href="/stock/counts?item_id=...">`. If no, leave the disabled fallback in place and open a follow-up issue.
 
 - [ ] **Step 4: Run test — expect PASS**
 
@@ -931,6 +1109,8 @@ function deriveTier(onHandRaw: string): Tier {
 
 - [ ] **Step 3: Update `TierBadge` to render Reconcile instead of Negative**
 
+**VISUAL-003 finding:** the `TierBadge.reconcile` glyph must NOT be `⚠` because `CostBadge.missing_cost` already uses `⚠` on the same row. Use `◈` (diamond) for `TierBadge.reconcile`.
+
 Find the `TierBadge` component (around line 293) and update its `meta` table:
 
 ```tsx
@@ -940,7 +1120,7 @@ function TierBadge({ tier }: { tier: Tier }) {
     low:        { label: "Low",        cls: "bg-warning-softer text-warning-fg ring-warning/30", glyph: "◐" },
     critical:   { label: "Critical",   cls: "bg-warning-softer text-warning-fg ring-warning/40", glyph: "◑" },
     out:        { label: "Out",        cls: "bg-danger-softer text-danger-fg ring-danger/30",    glyph: "◯" },
-    reconcile:  { label: "Reconcile",  cls: "bg-warning-softer text-warning-fg ring-warning/50", glyph: "⚠" },
+    reconcile:  { label: "Reconcile",  cls: "bg-warning-softer text-warning-fg ring-warning/50", glyph: "◈" },
     unknown:    { label: "Unknown",    cls: "bg-bg-subtle text-fg-subtle ring-border",            glyph: "?" },
   };
   const m = meta[tier];
@@ -1011,11 +1191,14 @@ At the top of the file, alongside the other imports:
 
 ```tsx
 import { useState } from "react"; // ensure useState is in the existing react import
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { ReconcileBadge } from "@/components/stock/ReconcileBadge";
 import { StockTruthDrawer } from "@/components/stock/StockTruthDrawer";
 ```
 
 (If `useState` is already imported, leave it.)
+
+**Tooltip provider wrap:** in the page's final return statement, wrap the entire `<div className="space-y-5 sm:space-y-6">…</div>` in `<Tooltip.Provider>…</Tooltip.Provider>`. The provider does not render visible DOM; it scopes Radix tooltip portals to this page. Without it, the `ReconcileBadge` tooltips will throw a console warning.
 
 - [ ] **Step 6: Add drawer state and handler inside `InventoryPage`**
 
@@ -1067,11 +1250,21 @@ Find the negative-stock alert block (around line 936) and replace with:
 ) : null}
 ```
 
-The `negativeCount` computation already filters `Number(r.calculated_on_hand) < 0` which still works; consider renaming it later but not in this task.
+**INTER-006 fix — also update the `negativeCount` useMemo (around line 814) to scope to the active tab:**
 
-- [ ] **Step 9: Update both desktop and mobile usages of `OnHandCell`**
+```tsx
+const negativeCount = useMemo(() => {
+  return allRows.filter((r) => Number(r.calculated_on_hand) < 0).length;
+}, [allRows]);
+```
 
-In the desktop table (around line 1339) replace:
+Previously this merged `[...fgRows, ...rmRows]` and fired the alert even when the active tab had no reconcile rows. Scoping to `allRows` (which is already tab-scoped at line 706) eliminates the alert / list mismatch.
+
+The variable name `negativeCount` is preserved to keep this commit small; rename to `reconcileCount` later if desired.
+
+- [ ] **Step 9: Update desktop table + restructure `InventoryCardMobile`**
+
+**Desktop table** (around line 1339). Replace:
 
 ```tsx
 <OnHandCell value={row.calculated_on_hand} uom={row.base_uom} />
@@ -1083,16 +1276,88 @@ with:
 <OnHandCell row={row} onReconcileClick={handleReconcileClick} />
 ```
 
-Repeat for the `InventoryCardMobile` component (around line 487): it passes `value={row.calculated_on_hand} uom={row.base_uom}`. Replace those two props with `row={row} onReconcileClick={...}` and adjust the `InventoryCardMobile` props signature to accept and forward an `onReconcileClick` callback.
-
-In the mobile card list usage (around line 1387), pass `onReconcileClick={handleReconcileClick}` down to `InventoryCardMobile`.
-
-Also update the negative-row left-border accent: replace the `tier === "negative"` branch with `tier === "reconcile"` in both the desktop `<tr>` (line ~1310) and the mobile card `<Link>` wrapper (line ~470). Keep the accent color tier; bump to warning instead of danger:
+Update the negative-row left-border accent on the `<tr>` (line ~1310): replace the `tier === "negative"` branch with `tier === "reconcile"`. Keep `/60` alpha; switch family from `danger` to `warning`:
 
 ```tsx
 tier === "reconcile"
-  ? "border-l-4 border-l-warning/60 ..."
+  ? "border-l-4 border-l-warning/60"
+  : tier === "out"
+  ? "border-l-4 border-l-warning/30"
+  : "",
 ```
+
+**`InventoryCardMobile` — STRUCTURAL CHANGE per INTER-005.** The current `InventoryCardMobile` uses `<Link>` as its outer wrapper. The new `ReconcileBadge` is a `<button>`. Nesting a button inside a link is invalid HTML and breaks the badge click on most browsers. Restructure:
+
+```tsx
+function InventoryCardMobile({
+  row,
+  value,
+  onReconcileClick,
+}: {
+  row: StockRow;
+  value: ValueMeta | null;
+  onReconcileClick: (row: StockRow) => void;
+}) {
+  const tier = deriveTier(row.on_hand_raw);
+  const cost = deriveCostStatus(row.item_type, value);
+  const date = smartRelativeDate(row.last_event_at);
+  const totalVal = fmtIlsAccountancy(value?.total_value ?? null);
+  return (
+    <article
+      className={cn(
+        "flex flex-col gap-2 rounded-lg border bg-bg px-3 py-3 transition hover:bg-bg-subtle/40",
+        tier === "reconcile"
+          ? "border-l-4 border-l-warning/60 border-y-border/70 border-r-border/70"
+          : tier === "out"
+          ? "border-l-4 border-l-warning/30 border-y-border/70 border-r-border/70"
+          : "border-border/70",
+      )}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <Link
+          href={`/admin/masters/items/${encodeURIComponent(row.item_id)}`}
+          className="min-w-0 flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          title={row.display_name ?? row.item_id}
+        >
+          <div className="truncate text-sm font-medium text-fg">
+            {row.display_name ?? row.item_id}
+          </div>
+          <div className="mt-0.5 flex items-center gap-1.5 font-mono text-2xs text-fg-subtle">
+            <span className="truncate">{row.item_id}</span>
+            <SupplyMethodBadge method={value?.supply_method ?? null} />
+          </div>
+        </Link>
+        <div className="text-right tabular-nums">
+          <OnHandCell row={row} onReconcileClick={onReconcileClick} />
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <TierBadge tier={tier} />
+        {cost === "has_cost" ? (
+          <span className="text-2xs font-medium tabular-nums text-fg-muted">
+            {totalVal.display}
+          </span>
+        ) : (
+          <CostBadge status={cost} />
+        )}
+        <StaleBadge daysAgo={date.daysAgo} />
+        <span className="ml-auto text-2xs text-fg-subtle" title={date.aria}>
+          {date.label}
+        </span>
+      </div>
+    </article>
+  );
+}
+```
+
+Key changes vs the existing component:
+- Outer wrapper: `<Link>` → `<article>`. No interactive nesting.
+- Item name + SKU block: own `<Link>` child. Operator can tap to navigate.
+- `OnHandCell` is a sibling, not a descendant of the Link. The badge click works.
+- New `onReconcileClick` prop, forwarded to `OnHandCell`.
+- Tier branch updated: `negative` → `reconcile`; family `danger` → `warning` at `/60`.
+
+In the mobile card list usage (around line 1387), pass `onReconcileClick={handleReconcileClick}` down to `InventoryCardMobile`.
 
 - [ ] **Step 10: Mount the drawer at the bottom of the page**
 
