@@ -40,7 +40,7 @@ Tom reviewed `shopify_available_write_contract.md` and the dry-run evidence pack
 |---|---|---|
 | AW-G1 | **CLOSED** | This doc |
 | AW-G2 | **CLOSED** | Migration 0187 + 28/28 smoke assertions PASS, PR #28 merged `4a3d773` |
-| AW-G3 | PENDING AW-G2 | integration-boundary-executor after AW-G2 PASS |
+| AW-G3 | **PENDING TOM REVIEW** | Handler written `f4879cf` on `aw-g3-shopify-available-handler`. Zero Shopify HTTP. Awaiting Tom review + merge + Edge Function redeploy + 48h shadow soak. |
 | AW-G4 | BLOCKED | `SHOPIFY_GRAPHQL_SYNC_ENABLED` not yet live; v2 Gate E must close first or in parallel |
 | AW-G5 | PENDING AW-G3 | end-to-end shadow smoke |
 | AW-G6 | PENDING AW-G3 | rollback plan operational |
