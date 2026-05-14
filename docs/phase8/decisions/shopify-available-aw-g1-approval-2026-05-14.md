@@ -40,8 +40,8 @@ Tom reviewed `shopify_available_write_contract.md` and the dry-run evidence pack
 |---|---|---|
 | AW-G1 | **CLOSED** | This doc |
 | AW-G2 | **CLOSED** | Migration 0187 + 28/28 smoke assertions PASS, PR #28 merged `4a3d773` |
-| AW-G3 | **SHADOW SOAK IN PROGRESS** | Handler merged PR #29 `a5d6505`. Migration 0187 applied to prod DB. Edge Function redeployed 2026-05-14. Cron `*/5 * * * *` registered. **48h soak window: 2026-05-14 → 2026-05-16.** Monitor: `SELECT status, COUNT(*) FROM private_core.shopify_available_write_attempts GROUP BY status ORDER BY COUNT(*) DESC;` |
-| AW-G4 | BLOCKED | `SHOPIFY_GRAPHQL_SYNC_ENABLED` not yet live; v2 Gate E must close first or in parallel |
+| AW-G3 | **SHADOW SOAK IN PROGRESS** | Handler merged PR #29 `a5d6505`. Bug fix: `i.name` → `i.item_name` in source query (`017ef14`). Redeployed 2026-05-14. First clean cycle: 2026-05-14T16:30Z — 186 rows (108 shadow_would_set_available, 78 shadow_skip_unmapped). **48h soak window: 2026-05-14T16:30Z → 2026-05-16T16:30Z.** Monitor: `SELECT status, COUNT(*) FROM private_core.shopify_available_write_attempts GROUP BY status ORDER BY COUNT(*) DESC;` |
+| AW-G4 | **CLOSED** | `SHOPIFY_GRAPHQL_SYNC_ENABLED=true` set in prod secrets 2026-05-14. v2 on_hand sync (`shopify_fg_sync_v2`) was already running — 410+ successful cycles before flag was acknowledged. v2_healthy=true confirmed in 16:30 cycle. |
 | AW-G5 | PENDING AW-G3 | end-to-end shadow smoke |
 | AW-G6 | PENDING AW-G3 | rollback plan operational |
 | AW-G7 | **CLOSED** | This doc (4 defaults ratified above) |
