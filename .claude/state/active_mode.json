@@ -3,10 +3,19 @@
   "w2_mode": "A",
   "w2_scoped_form": null,
   "w2_scoped_tranche": null,
-  "last_updated": "2026-05-02T22:00:00Z",
-  "entered_by": "executor-w2",
-  "entry_reason": "W2 returned to Mode A after cycle 21 reconciliation cycle CLOSED via Path A (complete cycle 21). Inspection of on-disk state at cycle entry showed dispatch pre-flight summary was stale — work was already substantially complete (all 5 untracked _components/Planned*.tsx files present + _lib/plannedInflow.ts + /api/inventory/planned-inflow/route.ts proxy + 8 modified files including the previously-claimed-missing MobileCardStream.tsx, all coherent and contract-compliant). No unrelated inbox/bulk-resolve modifications existed in working tree as the dispatch claimed. Cycle 21 atomic commit f439cb4 landed and pushed origin/main 20033fb..f439cb4. 3-gate validation: typecheck EXIT=0; next build EXIT=0 (89+ pages; /planning/inventory-flow 11.1 kB / 158 kB FL; /api/inventory/planned-inflow registered); lint:urls baseline preserved (1 pre-existing dashboard leak in src/app/(shared)/dashboard/page.tsx unchanged; zero new route-group leaks from cycle 21 work). Vitest tests/unit/features/planned-inflow.test.ts 7/7 PASS. All Tom-locked deltas honored (English/LTR localization register; verbatim footer caveat 'Planned production is not inventory. Inventory changes only after actual production is reported.'; weekly aggregation client-side bucketed). Backend READ-ONLY. No migrations / schemas / runtime_ready.json writes / .env touch. /planning/blockers Hebrew untouched. Vercel auto-deploys on push.",
+  "last_updated": "2026-05-15T11:10:00Z",
+  "entered_by": "portal-production-executor",
+  "entry_reason": "Returned to Mode A after Tranche 0A of the portal UX/UI deep pass CLOSED. Atomic commit 1faf657 landed locally on branch main (not pushed — Tom-only per CLAUDE.md). Consolidated 6 badge/status components onto one canonical <Badge> primitive (src/components/ui/Badge.tsx) + one shared BADGE_TONE_CLASSES lookup; deleted 3 duplicated tone maps. No user-visible copy changes — every badge label string verbatim. Validation: typecheck exit 0; next build exit 0 (89 routes, no page-count regression); lint:urls only the known pre-existing dashboard route-group leak (zero new); vitest 240/275 (35 pre-existing failures, baseline-identical, zero regression; ReconcileBadge suite 5/5 PASS); Playwright inventory-reconcile.spec.ts PASS, admin-routes-smoke 6 pre-existing data-dependency failures (baseline-identical, badge-unrelated). Tranche 0B (label dictionary) remains gated on separate Tom sign-off. Backend READ-ONLY honored. FLOW-003 /planning/blockers substrate untouched.",
   "history": [
+    {
+      "mode": "B",
+      "scoped_form": "portal-uxui-deep-pass-tranche-0a",
+      "scoped_tranche": "portal-uxui-deep-pass-tranche-0a",
+      "entered_at": "2026-05-15T00:00:00Z",
+      "exited_at": "2026-05-15T11:10:00Z",
+      "entry_reason": "Tranche 0A — badge/status primitive consolidation. See top-level entry_reason for full scope. Exit row appended at completion.",
+      "exit_reason": "Tranche 0A CLOSED. Atomic commit 1faf657 on branch main (not pushed). 7 files changed (+356 -226): NEW src/components/ui/Badge.tsx (canonical primitive + BADGE_TONE_CLASSES, 7 tones incl new `muted`); StatusBadge.tsx -> re-export shim + thin wrapper (TONE_CLASSES deleted); ReadinessBadge.tsx -> composes Badge (CONFIG deleted); ReadinessPill.tsx -> import repointed, dotted->dot; ReconcileBadge.tsx -> thin wrapper; FreshnessBadge.tsx -> dot-color uses BADGE_TONE_CLASSES; DetailPage.tsx -> Badge import repointed. SideNav count pills left as-is (bespoke pills, not the consolidated primitive — no badge-module import to repoint; converting would risk a user-visible change, out of scope). SectionCard border-tone map left unchanged per packet. Validation gates: typecheck exit 0; next build exit 0 (89 routes, no regression); lint:urls only known dashboard leak (zero new); vitest 240/275 baseline-identical (zero regression); Playwright inventory-reconcile PASS. No backend / token / globals.css / enum changes. No push, no merge, no deploy."
+    },
     {
       "mode": "B-Planning-Corridor",
       "scoped_form": "inventory-flow-planned-inflow-overlay",

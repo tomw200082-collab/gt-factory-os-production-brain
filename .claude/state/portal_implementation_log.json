@@ -1,0 +1,12 @@
+{
+  "_description": "Append-only record of portal surfaces implemented by portal-production-executor. Newest entries last. Never overwrite prior entries.",
+  "entries": [
+    {
+      "surface": "portal-uxui-deep-pass-tranche-0a (shared: badge/status primitive consolidation)",
+      "commit": "1faf657517a531e856100d9eb85451c2a8210cd7",
+      "date": "2026-05-15",
+      "ux_packet": "C:/Users/tomw2/.claude/plans/portal-uxui-deep-pass-2026-05-15.md (Tranche 0) + visual-system-designer handoff packet 2026-05-15 (dispatch)",
+      "note": "Consolidated 6 badge/status components onto one canonical <Badge> primitive (src/components/ui/Badge.tsx) + one shared BADGE_TONE_CLASSES lookup. No user-visible copy changes. Tranche 0B label dictionary deferred (Tom-gated). Commit on branch main, not pushed."
+    }
+  ]
+}
