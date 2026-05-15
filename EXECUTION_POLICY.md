@@ -8,34 +8,36 @@
 > - `ACTIVE_NOW.md` — short, fast-moving operator context.
 >
 > **Authority rule:** this file is an **operator-facing mirror** of the skill. **If this file diverges from the skill, the skill wins.** Update both together. This file cannot relax a locked decision in CLAUDE.md.
+>
+> **Lane-naming note (Phase 8 Run F Wave 4 — 2026-05-09):** active operational language uses the production lane names `backend-db / portal / integration / docs / governance`. Historical `W1 / W2 / W3 / W4 / W5` window-codes are preserved verbatim only inside §Legacy amendments (retired) at the end of this file. Identifier names that originated under window-codes (mode names, signal names, file paths, signal-marker tokens) are kept exactly as written; only narrative lane references were renamed.
 
 ---
 
 ## Purpose
 Autonomous build work on GT Factory OS runs under a standing-order model: once scope is locked, lanes proceed on pre-authorized backlogs without per-item operator re-authorization, bounded by the mode and constraint rules below. The goal is less operator babysitting without sacrificing stock-truth discipline.
 
-## Window ownership (locked)
+## Lane ownership (locked)
 
-| Window | Owns | Hard limit |
+| Lane | Owns | Hard limit |
 |---|---|---|
-| **W1 — DB / Schema / Migrations / Tests / Imports** | schema, migrations, pgTAP/tests, imports, fixture validation, runbooks, Gate 3 runtime closure | does not own UI; does not own integration contracts |
-| **W2 — Canonical Portal / Production UI** | canonical portal UI, route tree, contracts-layer reconciliation, real admin/planner/operator surface | does not invent backend contracts; never adopts sandbox files literally |
-| **W3 — Sandbox Portal / Mock UI** | experimental / mock / reference UI only; concepts and patterns | **never becomes canonical owner**; never owns production routes; never sources stock truth |
-| **W4 — Integrations / Jobs / Exports / Dashboard Contracts** | LionWheel / Shopify / Green Invoice contract-first specs, jobs, exports, dashboard read-model contracts | must not invent core truth contracts owned elsewhere; must not write to ledger directly |
-| **W5 — Architecture / Governance / Cross-Window Coordination** | orchestration, gating, overlap detection, stop conditions, rollout discipline, cross-window conflict resolution | does not implement features; routes work, does not perform it |
+| **backend-db — DB / Schema / Migrations / Tests / Imports** | schema, migrations, pgTAP/tests, imports, fixture validation, runbooks, Gate 3 runtime closure | does not own UI; does not own integration contracts |
+| **portal — Canonical Portal / Production UI** | canonical portal UI, route tree, contracts-layer reconciliation, real admin/planner/operator surface | does not invent backend contracts; never adopts sandbox files literally |
+| **sandbox — Sandbox Portal / Mock UI** (historical lane; not a canonical owner) | experimental / mock / reference UI only; concepts and patterns | **never becomes canonical owner**; never owns production routes; never sources stock truth |
+| **integration — Integrations / Jobs / Exports / Dashboard Contracts** | LionWheel / Shopify / Green Invoice contract-first specs, jobs, exports, dashboard read-model contracts | must not invent core truth contracts owned elsewhere; must not write to ledger directly |
+| **governance — Architecture / Governance / Cross-Lane Coordination** | orchestration, gating, overlap detection, stop conditions, rollout discipline, cross-lane conflict resolution | does not implement features; routes work, does not perform it |
 
-A move crossing a window boundary without explicit W5 approval is an **`ownership_conflict`**.
+A move crossing a lane boundary without explicit governance approval is an **`ownership_conflict`**.
 
 ### Phase 8 production agent mapping
 
-| Window | Legacy executor (active until Wave 6) | New production agent (Phase 8 Run B) |
+| Lane | Legacy executor (active until Wave 6) | New production agent (Phase 8 Run B) |
 |--------|----------------------------------------|---------------------------------------|
-| W1 — DB / Schema / Migrations / Tests | `executor-w1` | `backend-db-executor` |
-| W2 — Canonical Portal / Production UI | `executor-w2` | `portal-production-executor` |
-| W4 — Integrations / Jobs / Exports / Dashboard | `executor-w4` | `integration-boundary-executor` |
-| W3 — Sandbox / Mock UI | (no canonical owner; sandbox-only) | (no agent — never canonical) |
-| W5 — Architecture / Governance | `governor.md` (legacy) | `factory-os-governor` (Run A) |
-| Cross-Window — Docs / Archive / Hygiene | (no role) | `ops-docs-curator` (new role) |
+| backend-db — DB / Schema / Migrations / Tests | `executor-w1` | `backend-db-executor` |
+| portal — Canonical Portal / Production UI | `executor-w2` | `portal-production-executor` |
+| integration — Integrations / Jobs / Exports / Dashboard | `executor-w4` | `integration-boundary-executor` |
+| sandbox — Sandbox / Mock UI | (no canonical owner; sandbox-only) | (no agent — never canonical) |
+| governance — Architecture / Governance | `governor.md` (legacy) | `factory-os-governor` (Run A) |
+| Cross-lane — Docs / Archive / Hygiene | (no role) | `ops-docs-curator` (new role) |
 
 Both columns remain dispatchable through Wave 6. After Wave 6 evidence (per
 `PRODUCTION/docs/phase8/deprecation/ACTIVE_SURFACE_REDUCTION_PLAN.md`), legacy executors
@@ -43,7 +45,7 @@ move to `archive/legacy-agents/`. Tom must approve each archive step.
 
 The UX agents (`ux-flow-architect`, `interaction-design-specialist`, `visual-system-designer`,
 `ux-content-state-designer`, `accessibility-usability-auditor`) are read-only and do not
-own a Window. They produce handoff packets that `portal-production-executor` consumes.
+own a lane. They produce handoff packets that `portal-production-executor` consumes.
 
 ### Execution lanes (Phase 8)
 
@@ -66,12 +68,12 @@ both at once. The default is the new production agent unless Tom specifies other
 
 ## Standing-order policy
 
-**Global rule:** at most **three active lanes** at any time. The active set is **W1 + W2 + W4**. **W5 is service-on-demand**, not a continuously active lane.
+**Global rule:** at most **three active lanes** at any time. The active set is **backend-db + portal + integration**. **governance is service-on-demand**, not a continuously active lane.
 
-### W1 — critical path (always-on)
-Owner of db / schema / migrations / tests / imports / verification / Gate 3 runtime closure. Lane ownership and the 1→2→3 retry policy are unchanged. W1 emits `RUNTIME_READY(form)` when backend closure for a named form is sufficient for W2 to begin canonical authoring on that form.
+### backend-db — critical path (always-on)
+Owner of db / schema / migrations / tests / imports / verification / Gate 3 runtime closure. Lane ownership and the 1→2→3 retry policy are unchanged. backend-db emits `RUNTIME_READY(form)` when backend closure for a named form is sufficient for portal to begin canonical authoring on that form.
 
-### W2 — two modes gated by `RUNTIME_READY(form)`
+### portal — two modes gated by `RUNTIME_READY(form)`
 
 - **Mode A** (default; active while no `RUNTIME_READY(form)` is in effect):
   - **Allowed:** read-only audits; canonical pattern extraction; handoff-prep docs; portal convention docs; local inspection that writes no portal code.
@@ -82,15 +84,15 @@ Owner of db / schema / migrations / tests / imports / verification / Gate 3 runt
 
 Mode B does **not** generalize to other forms. A new `RUNTIME_READY(other_form)` is required for each additional form.
 
-### W2 — Mode B-AMMC — RETIRED 2026-05-08 (Phase 8 Wave 0)
+### portal — Mode B-AMMC — RETIRED 2026-05-08 (Phase 8 Wave 0)
 
 **Status:** RETIRED. Closure condition met: `gt-factory-os/docs/checkpoints/ammc_v1_closure.md` exists (path moved to the docs/checkpoints/ subdirectory in PR #21 docs hierarchy). AMMC v1 §G.7 wizard + integration + verification is closed. Per the original expiry clause, this amendment terminated automatically on closure-doc landing. The full text is preserved in §Legacy amendments (retired) at the end of this file. Subsequent admin-master surface work returns to standard Mode B with per-form `RUNTIME_READY`.
 
-### W2 — Mode B-Portal-Refactor (portal-wide substrate, route-tree, and truthfulness authoring)
+### portal — Mode B-Portal-Refactor (portal-wide substrate, route-tree, and truthfulness authoring)
 
-**Amendment dated 2026-04-21 (Tom-authorized; unblocks Round-3 portal-full-production-refactor plan). Introduces a second pan-form W2 authoring carve-out alongside Mode B-AMMC. Where Mode B-AMMC scopes `/admin/**` authoring under `crystalline-drifting-dusk.md`, Mode B-Portal-Refactor scopes pan-portal substrate + route-tree + truthfulness authoring under `portal-full-production-refactor.md`.**
+**Amendment dated 2026-04-21 (Tom-authorized; unblocks Round-3 portal-full-production-refactor plan). Introduces a second pan-form portal authoring carve-out alongside Mode B-AMMC. Where Mode B-AMMC scopes `/admin/**` authoring under `crystalline-drifting-dusk.md`, Mode B-Portal-Refactor scopes pan-portal substrate + route-tree + truthfulness authoring under `portal-full-production-refactor.md`.**
 
-**Activation:** W2 may enter Mode B-Portal-Refactor when ALL of the following hold:
+**Activation:** portal may enter Mode B-Portal-Refactor when ALL of the following hold:
 1. A Tom-approved plan file at `C:/Users/tomw2/.claude/plans/portal-full-production-refactor.md` exists and explicitly names portal-full-production-refactor as in-scope (the plan codifies Rounds 1–3 of the portal-rebuild ping-pong dialogue).
 2. The dispatch cites the plan's specific tranche section (§C through §K, i.e., Tranche A through Tranche I per the plan's numbering).
 3. No `contract_failure` or `assumption_failure` is open on portal-full-production-refactor prerequisites.
@@ -110,21 +112,21 @@ Mode B does **not** generalize to other forms. A new `RUNTIME_READY(other_form)`
 - Dev-shim vestige cleanup: delete `X-Fake-Session` forwarding from client fetches; rename `FakeSession` → `Session` in client pages; remove internal milestone names ("Slice", "Phase", "MVP", "endgame") from user-visible UI strings
 - CI lint guards against route-group leakage into URL strings
 - Portal proxy routes (mirrors of upstream backend contracts — **mirror only**, no contract authorship)
-- Consumes W1-authored backend; consumes W4 contract packs verbatim — **does not author backend code**
+- Consumes backend-db-authored backend; consumes integration contract packs verbatim — **does not author backend code**
 
 **Forbidden under Mode B-Portal-Refactor:**
-- Any backend authorship (`api/src/**` writes remain W1-owned; any change there requires explicit W1 dispatch)
+- Any backend authorship (`api/src/**` writes remain backend-db-owned; any change there requires explicit backend-db dispatch)
 - New migrations, schema changes, handler stacks
 - Invented backend contract values (if a portal hook needs a value not in upstream schemas, emit `assumption_failure`)
 - Sandbox-to-canonical file promotion (`window2-portal-sandbox` IS the canonical portal per Tom's ruling; this rule still forbids literal copies from any other sandbox surface)
 - Touching `.env*`, credentials, or secrets
-- Touching `.claude/state/runtime_ready.json` (W1-owned signal registry)
-- Editing prior entries in `.claude/state/active_mode.json` (W2 writes its own current-mode entry and appends history; does not rewrite prior rows)
+- Touching `.claude/state/runtime_ready.json` (backend-db-owned signal registry)
+- Editing prior entries in `.claude/state/active_mode.json` (portal writes its own current-mode entry and appends history; does not rewrite prior rows)
 - Splitting Tranche A into partial commit sets ("substrate first, truthfulness later" is explicitly forbidden by the plan § C)
 
 **Exit:** Mode B-Portal-Refactor exits **per-tranche**. Each tranche within the plan is a separate exit boundary. For each dispatched tranche:
 - The tranche's validation gate (per plan §C.2, §D.x, …) must pass: typecheck, build, lint (if available), Playwright real-HTTP smoke on touched surfaces, role-matrix walkthrough, and any tranche-specific evidence listed in the plan.
-- `active_mode.json` records mode exit (W2 writes its own exit row).
+- `active_mode.json` records mode exit (portal writes its own exit row).
 - Between tranches, mode returns to A.
 - Tranche dependencies are strict: a tranche cannot be dispatched unless its predecessor per the plan has landed.
 
@@ -132,13 +134,13 @@ Mode B does **not** generalize to other forms. A new `RUNTIME_READY(other_form)`
 
 **Precedent reconciliation:** this amendment does NOT retroactively cover the 2026-04-21T00:00 production-cutover-phase-2 cycle or the 2026-04-21T02:00 Phase 4 HALT. Those remain on record as policy-stretched / policy-blocked per their `active_mode.json` rows. Forward-only authorization.
 
-**Coexistence with Mode B-AMMC:** the two amendments can coexist. Per-form Mode B and Mode B-AMMC (for `/admin/**` under `crystalline-drifting-dusk.md`) remain available outside portal-full-production-refactor dispatches. Only one mode-B-variant may be active at a time; W2 remains a single-lane.
+**Coexistence with Mode B-AMMC:** the two amendments can coexist. Per-form Mode B and Mode B-AMMC (for `/admin/**` under `crystalline-drifting-dusk.md`) remain available outside portal-full-production-refactor dispatches. Only one mode-B-variant may be active at a time; portal remains a single-lane.
 
-### W2 — Mode B-Planning-Corridor (planning-corridor production-facing surfaces)
+### portal — Mode B-Planning-Corridor (planning-corridor production-facing surfaces)
 
-**Amendment dated 2026-05-02 (Tom-authorized in response to overnight Ralph Loop cycle 1 governance question Q1). Introduces a third pan-form W2 authoring carve-out alongside Mode B-AMMC and Mode B-Portal-Refactor. Where Mode B-AMMC scopes `/admin/**` under `crystalline-drifting-dusk.md`, and Mode B-Portal-Refactor scopes pan-portal substrate/route-tree under `portal-full-production-refactor.md`, Mode B-Planning-Corridor scopes the production-facing planning corridor under Tom's overnight Ralph Loop directive 2026-04-30 + 2026-05-01 + 2026-05-02.**
+**Amendment dated 2026-05-02 (Tom-authorized in response to overnight Ralph Loop cycle 1 governance question Q1). Introduces a third pan-form portal authoring carve-out alongside Mode B-AMMC and Mode B-Portal-Refactor. Where Mode B-AMMC scopes `/admin/**` under `crystalline-drifting-dusk.md`, and Mode B-Portal-Refactor scopes pan-portal substrate/route-tree under `portal-full-production-refactor.md`, Mode B-Planning-Corridor scopes the production-facing planning corridor under Tom's overnight Ralph Loop directive 2026-04-30 + 2026-05-01 + 2026-05-02.**
 
-**Activation:** W2 may enter Mode B-Planning-Corridor when ALL of the following hold:
+**Activation:** portal may enter Mode B-Planning-Corridor when ALL of the following hold:
 1. The dispatch cites the active "Planning Corridor v1 (baseline 2026-04-30)" tracked in `CURRENT_STATE.md`.
 2. The target surface is one of the production-facing planning corridor surfaces enumerated under "Allowed" below, OR is a navigation/dashboard quick-link that connects two corridor surfaces.
 3. No `contract_failure` or `assumption_failure` is open on planning-corridor prerequisites.
@@ -164,10 +166,10 @@ Mode B does **not** generalize to other forms. A new `RUNTIME_READY(other_form)`
 - Empty/loading/error state hygiene on corridor surfaces
 - Source/freshness display on existing-data surfaces
 - Dead-end fixes on corridor navigation paths
-- Consumes W1-authored backend; consumes W4 contract packs verbatim — **does not author backend code**
+- Consumes backend-db-authored backend; consumes integration contract packs verbatim — **does not author backend code**
 
 **Forbidden under Mode B-Planning-Corridor:**
-- Any backend authorship (`api/src/**` writes remain W1-owned; cross-lane bundling requires explicit W1 dispatch)
+- Any backend authorship (`api/src/**` writes remain backend-db-owned; cross-lane bundling requires explicit backend-db dispatch)
 - New migrations, schema changes, handler stacks
 - Invented backend contract values (if a portal hook needs a value not in upstream schemas, emit `assumption_failure`)
 - Changing stock_ledger semantics, current_balances triggers, planning engine logic, or A3/A4 locked invariants
@@ -175,24 +177,24 @@ Mode B does **not** generalize to other forms. A new `RUNTIME_READY(other_form)`
 - Changing external integration authority
 - Surfaces outside the enumerated list above (admin surfaces stay under Mode B-AMMC; portal substrate stays under Mode B-Portal-Refactor; per-form RUNTIME_READY surfaces remain available outside this amendment)
 - Touching `.env*`, credentials, or secrets
-- Touching `.claude/state/runtime_ready.json` (W1-owned)
-- Editing prior entries in `.claude/state/active_mode.json` (W2 writes its own current-mode entry and appends history; does not rewrite prior rows)
+- Touching `.claude/state/runtime_ready.json` (backend-db-owned)
+- Editing prior entries in `.claude/state/active_mode.json` (portal writes its own current-mode entry and appends history; does not rewrite prior rows)
 
 **Exit:** Mode B-Planning-Corridor exits **per-tranche**. Each named P0 closure cycle is a separate exit boundary. For each dispatched tranche:
 - Validation gate must pass: typecheck, build, route lint (if available), and the cycle-specific evidence (live-API smoke / mobile probe / role-matrix where applicable).
-- `active_mode.json` records mode exit (W2 writes its own exit row).
+- `active_mode.json` records mode exit (portal writes its own exit row).
 - Between tranches, mode returns to A.
 - A second tranche cannot dispatch until the prior tranche's exit row lands.
 
 **Expiry:** this amendment terminates automatically when all 11 P0 audit findings on planning corridor surfaces (per `PRODUCTION/docs/overnight_audit_2026-05-01.md` §16) are CLOSED-and-verified, OR when Tom dispatches an explicit termination. Subsequent planning corridor work post-expiry returns to standard Mode B with per-form `RUNTIME_READY`.
 
-**Coexistence with Mode B-AMMC and Mode B-Portal-Refactor:** all three amendments can coexist as policies; only one mode-B-variant may be ACTIVE at a time. W2 remains a single-lane.
+**Coexistence with Mode B-AMMC and Mode B-Portal-Refactor:** all three amendments can coexist as policies; only one mode-B-variant may be ACTIVE at a time; portal remains a single-lane.
 
-### W1 — Mode B-LionWheel-Runtime-Closure — RETIRED 2026-05-08 (Phase 8 Wave 0)
+### backend-db — Mode B-LionWheel-Runtime-Closure — RETIRED 2026-05-08 (Phase 8 Wave 0)
 
 **Status:** RETIRED. Closure condition met: cycle 19 closed via commit `3ac1964` "feat(lionwheel): runtime closure — back-fill + exception related_entity_id + empty-string SKU rejection + bundle-map contract commit (cycle 19 carve-out, signal #30)". Active mode history (`active_mode.json`) further evidences cycles 20, 21 closing after cycle 19. Per the original expiry clause, this single-cycle carve-out terminated automatically on cycle 19 closure. The full text is preserved in §Legacy amendments (retired) at the end of this file. Any post-cycle-19 LionWheel runtime edit needs a fresh Tom dispatch with an explicit carve-out — no rolling precedent.
 
-### W4 — rolling standing-order requirements lane
+### integration — rolling standing-order requirements lane
 Executes one artifact at a time in the pre-authorized backlog order:
 
 1. Shopify FG sync contract-requirements spec
@@ -204,7 +206,7 @@ Executes one artifact at a time in the pre-authorized backlog order:
 
 #### Pre-write fresh-read protocol (FR1→write→FR2 bracket) — MANDATORY
 
-**Scope (when this protocol applies).** Any W4 artifact — new file or edit to an existing file — that references `db/migrations/` filenames by number, OR that implies a "next free migration number" claim, OR whose correctness depends on the current state of the migrations directory. Illustrative examples (not an exhaustive enumeration): a handoff pack that names a target migration path such as `NNNN_orders_mirror.sql`; a contract that cites a "target migration `NNNN_*.sql`"; an integration spec that asserts "the mirror lives at the next available migration slot". Out of scope: requirements-only specs that name no migration file and make no numbering claim — do not apply this protocol to non-numerical references.
+**Scope (when this protocol applies).** Any integration artifact — new file or edit to an existing file — that references `db/migrations/` filenames by number, OR that implies a "next free migration number" claim, OR whose correctness depends on the current state of the migrations directory. Illustrative examples (not an exhaustive enumeration): a handoff pack that names a target migration path such as `NNNN_orders_mirror.sql`; a contract that cites a "target migration `NNNN_*.sql`"; an integration spec that asserts "the mirror lives at the next available migration slot". Out of scope: requirements-only specs that name no migration file and make no numbering claim — do not apply this protocol to non-numerical references.
 
 **The bracket has three phases.**
 
@@ -212,50 +214,50 @@ Executes one artifact at a time in the pre-authorized backlog order:
 
 2. **WRITE the artifact.** The write must complete within **60 seconds** of the FR1 capture timestamp. If the FR1→write-end window exceeds 60 seconds, abort the write, discard the in-flight artifact state, and restart the bracket from a fresh FR1.
 
-3. **FR2 — post-write fresh-read.** IMMEDIATELY after the last `Edit` / `Write` tool call on the artifact, re-run `ls -la C:/Users/tomw2/Projects/gt-factory-os/db/migrations/`. If any new migration file appeared between FR1 and write completion, **HALT** and emit `contract_failure` to the governor: the artifact is stale on landing because W1 raced the bracket.
+3. **FR2 — post-write fresh-read.** IMMEDIATELY after the last `Edit` / `Write` tool call on the artifact, re-run `ls -la C:/Users/tomw2/Projects/gt-factory-os/db/migrations/`. If any new migration file appeared between FR1 and write completion, **HALT** and emit `contract_failure` to the governor: the artifact is stale on landing because backend-db raced the bracket.
 
-**Two-try ceiling (cross-reference: `.claude/SIGNALS.md`).** The two-try retry ceiling defined in `.claude/SIGNALS.md` applies inside this bracket. A second FR1 collision OR FR2 race detection on the same artifact within the same cycle = `TOOL_FAILURE_UNCLEARED` per the existing W4 variant: park the artifact and escalate to the governor. Do not attempt a third bracket.
+**Two-try ceiling (cross-reference: `.claude/SIGNALS.md`).** The two-try retry ceiling defined in `.claude/SIGNALS.md` applies inside this bracket. A second FR1 collision OR FR2 race detection on the same artifact within the same cycle = `TOOL_FAILURE_UNCLEARED` per the existing integration variant: park the artifact and escalate to the governor. Do not attempt a third bracket.
 
 **Failure-class semantics (cross-reference: `.claude/SIGNALS.md` "Five failure classes (locked)").** An FR1 collision OR an FR2 race detection emits `contract_failure` (failure class 1: no retry, human checkpoint mandatory). A silent renumber substitution by the executor — i.e., quietly bumping a referenced migration number to dodge a collision instead of halting — emits `assumption_failure` (failure class 4: no retry, human checkpoint mandatory). A repeat FR1/FR2 collision on the same artifact within the same cycle escalates to `TOOL_FAILURE_UNCLEARED` (status marker inside failure class 3, `tool_failure`).
 
-**Why this protocol exists.** Cycles **3, 4, 5, and 5c** of the GT Factory OS rebuild produced a recurring W1↔W4 timing race: autonomous W1 migration landings invalidated W4 renumber math mid-flight. Cycle 5 produced a `contract_failure` on a W4 handoff pack whose referenced target migration number had been claimed by a W1 landing during W4 authoring. Cycle 5c's surgical fix was itself partially stale by 6 minutes when a follow-on W1 migration landed during the fix window. The FR1→write→FR2 bracket catches this race deterministically by bounding the write window and verifying the directory state on both sides of the write.
+**Why this protocol exists.** Cycles **3, 4, 5, and 5c** of the GT Factory OS rebuild produced a recurring backend-db↔integration timing race: autonomous backend-db migration landings invalidated integration renumber math mid-flight. Cycle 5 produced a `contract_failure` on an integration handoff pack whose referenced target migration number had been claimed by a backend-db landing during integration authoring. Cycle 5c's surgical fix was itself partially stale by 6 minutes when a follow-on backend-db migration landed during the fix window. The FR1→write→FR2 bracket catches this race deterministically by bounding the write window and verifying the directory state on both sides of the write.
 
-**Non-retroactive.** This protocol governs W4 artifacts authored or edited from this codification forward. It does not retroactively invalidate or re-classify any previously landed W4 artifact.
+**Non-retroactive.** This protocol governs integration artifacts authored or edited from this codification forward. It does not retroactively invalidate or re-classify any previously landed integration artifact.
 
-### W5 — service-on-demand
-Invoked only for (a) approve / reject review of a landed artifact, (b) real ownership collision, (c) `contract_failure` or `assumption_failure` requiring arbitration, (d) explicit execution-map revision request. W5 is not a continuously running lane.
+### governance — service-on-demand
+Invoked only for (a) approve / reject review of a landed artifact, (b) real ownership collision, (c) `contract_failure` or `assumption_failure` requiring arbitration, (d) explicit execution-map revision request. governance is not a continuously running lane.
 
 ## Signals
 
-Signals flow from W1 outward. They are **not aliases**.
+Signals flow from backend-db outward. They are **not aliases**.
 
-- **`FILE_READY(form)`** — file / surface readiness only. Relevant files, paths, or implementation surfaces exist in a usable handoff shape. **Does not authorize W2 canonical authoring.**
-- **`RUNTIME_READY(form)`** — execution-authorization signal from W1. Backend / runtime contract for the named form is sufficiently closed and evidenced for W2 to begin canonical authoring for that one form only, under Mode B.
-- **`TOOL_FAILURE_UNCLEARED`** — status marker on a W4 rolling-requirements artifact whose same tool failure has repeated after one retry. Parks the artifact; does **not** authorize silent continuation. Lives inside the `tool_failure` class — not a sixth failure class.
+- **`FILE_READY(form)`** — file / surface readiness only. Relevant files, paths, or implementation surfaces exist in a usable handoff shape. **Does not authorize portal canonical authoring.**
+- **`RUNTIME_READY(form)`** — execution-authorization signal from backend-db. Backend / runtime contract for the named form is sufficiently closed and evidenced for portal to begin canonical authoring for that one form only, under Mode B.
+- **`TOOL_FAILURE_UNCLEARED`** — status marker on an integration rolling-requirements artifact whose same tool failure has repeated after one retry. Parks the artifact; does **not** authorize silent continuation. Lives inside the `tool_failure` class — not a sixth failure class.
 
-**Rule:** W2 moves from Mode A to Mode B **only on `RUNTIME_READY(form)`**, never on `FILE_READY(form)` alone.
+**Rule:** portal moves from Mode A to Mode B **only on `RUNTIME_READY(form)`**, never on `FILE_READY(form)` alone.
 
-> **`FILE_READY` may be necessary, but is not sufficient, for W2 authoring authorization.**
+> **`FILE_READY` may be necessary, but is not sufficient, for portal authoring authorization.**
 
 Edit discipline: preserve historical `FILE_READY` references where they genuinely denote file-surface readiness. Upgrade any older "go build" use of `FILE_READY` to `RUNTIME_READY`. Never alias the two terms silently.
 
-## `TOOL_FAILURE_UNCLEARED` handling (W4 variant)
+## `TOOL_FAILURE_UNCLEARED` handling (integration variant)
 
-On a W4 rolling-requirements artifact:
+On an integration rolling-requirements artifact:
 - Retry once.
 - If the same failure repeats, mark the **current artifact** `TOOL_FAILURE_UNCLEARED` and **park it**. The parked artifact stays parked until explicitly revisited.
-- W4 may continue to the **next backlog item** only if **all** of the following hold:
+- integration may continue to the **next backlog item** only if **all** of the following hold:
   - no open `contract_failure`
   - no open `assumption_failure`
   - no dependency collision with the parked artifact
-- If the dependency relationship is **unclear**, **escalate to the governor (W5)** rather than silently skipping ahead.
-- Do **not** convert a single W4 tool failure into a reassessment of the whole project.
+- If the dependency relationship is **unclear**, **escalate to governance** rather than silently skipping ahead.
+- Do **not** convert a single integration tool failure into a reassessment of the whole project.
 
-The 1→2→3 retry policy (retry / replan / human checkpoint) continues to apply unchanged to W1 critical-path work and to W2 canonical authoring under Mode B. A `contract_failure` or `assumption_failure` inside W4 collapses the W4 two-try budget to 0 and forces governor escalation.
+The 1→2→3 retry policy (retry / replan / human checkpoint) continues to apply unchanged to backend-db critical-path work and to portal canonical authoring under Mode B. A `contract_failure` or `assumption_failure` inside integration collapses the integration two-try budget to 0 and forces governance escalation.
 
-## Artifact visibility rule (W5 review)
+## Artifact visibility rule (governance review)
 
-W5 may review an artifact only when one of the following is present:
+governance may review an artifact only when one of the following is present:
 
 1. the **full artifact text pasted inline** in the activation message, **or**
 2. a **verified readable path** on disk (the path exists, the file is readable, and the content has been inspected, not merely named).
@@ -264,35 +266,35 @@ W5 may review an artifact only when one of the following is present:
 
 ## No-dead-air rule
 
-A response must **never** end with all lanes parked and no next action for Tom. If every lane is parked, blocked, or awaiting upstream input, the "What the user must do" section must still name the **single smallest concrete operator action** that moves the system forward — e.g., "paste the W1 checkpoint for migration X", "supply LionWheel sandbox credentials", "approve or reject landed artifact Y", "confirm the auth-method UNRESOLVED item". Silence, "waiting", or "all lanes idle" are **not** valid output states.
+A response must **never** end with all lanes parked and no next action for Tom. If every lane is parked, blocked, or awaiting upstream input, the "What the user must do" section must still name the **single smallest concrete operator action** that moves the system forward — e.g., "paste the backend-db checkpoint for migration X", "supply LionWheel sandbox credentials", "approve or reject landed artifact Y", "confirm the auth-method UNRESOLVED item". Silence, "waiting", or "all lanes idle" are **not** valid output states.
 
-## Per-window reply mode
+## Per-lane reply mode
 
-If the activation message contains updates from **more than one window**, the reply must emit a **separate reply block per window** (clearly labeled `Reply for W1`, `Reply for W2`, `Reply for W4` as applicable), and the operator action must close with **one overall next action for Tom** that reconciles across the per-window blocks (for example, which lane to unblock first, or which governor decision resolves the cross-window dependency).
+If the activation message contains updates from **more than one lane**, the reply must emit a **separate reply block per lane** (clearly labeled `Reply for backend-db`, `Reply for portal`, `Reply for integration` as applicable), and the operator action must close with **one overall next action for Tom** that reconciles across the per-lane blocks (for example, which lane to unblock first, or which governance decision resolves the cross-lane dependency).
 
-## Window-label sanity check
+## Lane-label sanity check
 
-If a pasted message carries a window label that does not match the actual surface touched (e.g., labeled "Window 2" but content is W4 integration work, or labeled "Window 1" but content is a W2 portal change), **correct the window classification before any routing, contract check, or reply drafting.** Record the relabel explicitly: "message labeled WX → reclassified as WY because <reason>". Never pass a mislabeled window through to later steps.
+If a pasted message carries a lane label that does not match the actual surface touched (e.g., labeled "portal" but content is integration work, or labeled "backend-db" but content is a portal change), **correct the lane classification before any routing, contract check, or reply drafting.** Record the relabel explicitly: "message labeled `<X>` → reclassified as `<Y>` because <reason>". Never pass a mislabeled lane through to later steps.
 
 ## Stop semantics
 
-Any of the following halts the standing order for the affected lane and forces governor arbitration:
+Any of the following halts the standing order for the affected lane and forces governance arbitration:
 
 - stop condition
 - ownership collision
 - `contract_failure`
 - `assumption_failure`
-- W4 `TOOL_FAILURE_UNCLEARED` with unclear dependency
+- integration `TOOL_FAILURE_UNCLEARED` with unclear dependency
 
 The standing-order policy does **not** override the failure taxonomy or human-checkpoint rules. Collapsing any of these into silent continuation is an anti-pattern.
 
 ## Global constraints (also locked in CLAUDE.md)
 - no live integration runtime
-- no DDL outside W1 ownership
+- no DDL outside backend-db ownership
 - no auth wiring beyond locked decisions
 - no dashboard runtime
 - no planning runtime
-- no W3 → canonical promotion
+- no sandbox → canonical promotion
 - no reopening of locked decisions
 - MCP is not a runtime input channel
 - Claude Code tooling must not become part of the live operational path
@@ -338,7 +340,7 @@ A flag flip without all four prerequisites (Tom written approval, dry-run eviden
 
 ## Legacy amendments (retired)
 
-> Amendments below were retired in Phase 8 Wave 0 (2026-05-08) after their per-amendment closure conditions were verified met. Full original text is preserved here as audit trail. Active policy lives in the §W2 / §W1 / §W4 sections above.
+> Amendments below were retired in Phase 8 Wave 0 (2026-05-08) after their per-amendment closure conditions were verified met. Full original text is preserved here as audit trail. Active policy lives in the §portal / §backend-db / §integration sections above.
 
 ### W2 — Mode B-AMMC (RETIRED 2026-05-08; original text preserved)
 
@@ -407,6 +409,8 @@ A flag flip without all four prerequisites (Tom written approval, dry-run eviden
 
 ---
 
-### Phase 8 lane-rename: completed (Run B, 2026-05-08)
+### Phase 8 lane-rename: completed (Run B, 2026-05-08; policy text completed Run F Wave 4, 2026-05-09)
 
 The production-named replacement agents were added alongside the legacy executors in Phase 8 Run B (2026-05-08). Both legacy and new agents are active and dispatchable per the §Phase 8 production agent mapping table above. Wave 6 evidence-based deprecation of legacy agents is governed by `PRODUCTION/docs/phase8/deprecation/ACTIVE_SURFACE_REDUCTION_PLAN.md`. The legacy mapping is the table in §Phase 8 production agent mapping; no separate Legacy mapping table is needed.
+
+In Phase 8 Run F Wave 4 (2026-05-09), the active operational language in this file was renamed from W1/W2/W3/W4/W5 to backend-db/portal/sandbox/integration/governance to match the production lane vocabulary used by `CLAUDE.md`, `AI_BRAIN_ROUTER.md`, and the agent registries. Policy meaning, ownership boundaries, stop conditions, authority hierarchy, signal names, mode names, and historical identifiers are unchanged. Historical text inside §Legacy amendments (retired) was preserved verbatim and continues to use the W-codes — this is intentional audit-trail preservation.

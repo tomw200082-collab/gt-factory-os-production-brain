@@ -13,7 +13,7 @@
 
 ---
 
-## UX commands (6)
+## UX commands (7)
 
 | Command | Path | Primary agent | Supporting agents | Type | Verdicts | Writes? | Intended use |
 |---|---|---|---|---|---|---|---|

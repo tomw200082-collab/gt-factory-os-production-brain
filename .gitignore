@@ -18,6 +18,14 @@
 !.audits/RETENTION_POLICY.md
 .lionwheel-prints/
 .superpowers/
+.playwright-mcp/
+
+# --- Root-level loose screenshots (must be filed under docs/) ---
+/*.png
+/*.jpg
+/*.jpeg
+/*.gif
+/*.webp
 
 # --- Vendored binaries ---
 .tools/

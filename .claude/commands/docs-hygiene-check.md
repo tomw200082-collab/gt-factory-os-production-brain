@@ -66,16 +66,23 @@ A hygiene report at `PRODUCTION/docs/phase8/hygiene/HC-<NNN>-<date>.md` containi
    Excludes docs in `archive/`. Lists each candidate.
 7. **Archive integrity check** — archive docs without an INDEX.md entry; INDEX.md entries
    pointing to nonexistent paths. Lists each.
-8. **Authority doc reference check** — docs referencing CLAUDE.md, EXECUTION_POLICY.md,
+8. **Registry integrity check (MANDATORY)** — count-vs-disk verification for `PRODUCTION/AGENT_REGISTRY.md` and `PRODUCTION/COMMAND_REGISTRY.md`. The check must:
+   - Compute `ls PRODUCTION/.claude/agents/*.md | wc -l` and compare against the "Total active agents" claim in `AGENT_REGISTRY.md`.
+   - Compute `ls PRODUCTION/.claude/commands/*.md | wc -l` and compare against the "Total active commands" claim in `COMMAND_REGISTRY.md`.
+   - Verify per-section subtotals in each registry sum to the global total (e.g., COMMAND_REGISTRY: UX + governance + execution = global). Any section header showing a count must match the actual table-row count beneath it.
+   - Verify every agent file on disk has a row in AGENT_REGISTRY, and every row in AGENT_REGISTRY points to a file that exists. Same check for COMMAND_REGISTRY.
+   - Lists each mismatch with: claimed count, actual count, missing/extra entries, exact line reference.
+   - Mandatory trigger: any commit touching `PRODUCTION/AGENT_REGISTRY.md`, `PRODUCTION/COMMAND_REGISTRY.md`, `PRODUCTION/.claude/agents/**`, or `PRODUCTION/.claude/commands/**` must run this sub-check before the commit lands. If `/docs-hygiene-check` is invoked with no scope arg, this sub-check always runs.
+9. **Authority doc reference check** — docs referencing CLAUDE.md, EXECUTION_POLICY.md,
    WORKSPACE_MAP.md, CURRENT_STATE.md by section/anchor that no longer exists. Lists each.
-9. **Verdict** — one of:
-   - `CLEAN` — all checks green; no proposals.
-   - `MINOR_DRIFT` — limited proposals; no critical drift.
-   - `SIGNIFICANT_DRIFT` — multiple categories show drift; recommend a focused
-     `ops-docs-curator` follow-up run.
-   - `CRITICAL_DRIFT` — authority doc references broken or contract drift detected;
-     escalate to `factory-os-governor`.
-10. **Proposed archive moves** — list of (original_path, proposed_archive_path, reason).
+10. **Verdict** — one of:
+    - `CLEAN` — all checks green; no proposals.
+    - `MINOR_DRIFT` — limited proposals; no critical drift.
+    - `SIGNIFICANT_DRIFT` — multiple categories show drift; recommend a focused
+      `ops-docs-curator` follow-up run.
+    - `CRITICAL_DRIFT` — authority doc references broken, contract drift detected, or registry integrity broken;
+      escalate to `factory-os-governor`.
+11. **Proposed archive moves** — list of (original_path, proposed_archive_path, reason).
     Each proposal is **proposal only**; not executed.
 
 ## Allowed scope (read-only)
@@ -110,6 +117,7 @@ The command must verify:
 3. Every archive-move proposal includes a reference check showing zero live inbound references.
 4. Every "stale runbook" proposal cites the missing "last verified" stamp.
 5. Every "stale contract" proposal cites the specific symbol or path that no longer exists.
+6. The registry integrity sub-check ran (mandatory; never skipped) and its disk-vs-claim numbers are recorded in the report — even when both registries are clean.
 
 ## Tom approval triggers
 
@@ -130,6 +138,9 @@ The hygiene report alone authorizes nothing. Tom must explicitly authorize:
 | Same fact stated in three or more docs without cross-reference | `SIGNIFICANT_DRIFT` |
 | Flat-root regression detected (> 30 unstructured top-level docs) | `SIGNIFICANT_DRIFT` |
 | Doc with active inbound reference proposed for archive | `STOP` — never propose archiving an actively-referenced doc |
+| AGENT_REGISTRY or COMMAND_REGISTRY count claim mismatches disk reality | `CRITICAL_DRIFT` — registry integrity is broken; escalate to factory-os-governor; `ops-docs-curator` proposes the patch |
+| Per-section subtotal in a registry does not match table-row count | `SIGNIFICANT_DRIFT` — same-day fix expected before next dispatch |
+| Agent or command file on disk has no registry row, or vice versa | `CRITICAL_DRIFT` — registry no longer indexes the active surface |
 
 ## GitHub / mobile usability
 
