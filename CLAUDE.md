@@ -81,7 +81,7 @@ Every dispatch consults `AI_BRAIN_ROUTER.md` to classify input → lane → agen
 - Other authority docs (EXECUTION_POLICY.md, CURRENT_STATE.md, WORKSPACE_MAP.md, ACTIVE_NOW.md, AI_BRAIN_ROUTER.md) — `ops-docs-curator` writes under `factory-os-governor` approval.
 - `.claude/state/*.json` — only emitting executors append; never overwrite.
 - Frozen flags (`LIONWHEEL_FG_OUT_BRIDGE_ENABLED`, `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED`) — `false` until Tom written approval + dry-run + ≥24h soak + RUNTIME_READY signal.
-- `git push`, merge, deploy — Tom only; no autonomous push under any circumstance (Phase 8 Run F, 2026-05-08, supersedes any contradicting memory).
+- `git push`, merge, deploy — **mission-scoped** (2026-05-15, Tom-directed; supersedes the Phase 8 Run F "no autonomous push" rule). Inside a Tom-approved mission/corridor, Claude may commit, push, open/merge PRs, and deploy to existing targets without per-action approval when all safety gates pass and no hard stop gate is triggered; every action is reported with evidence afterward. Outside an approved mission — and always for any hard stop gate (history rewrite, force-push, secret exposure, frozen-flag flip, external-system write, destructive DB op, irreversible/risky action) — it stays Tom-only. Full rule: `EXECUTION_POLICY.md` §Git / deploy execution authority.
 
 ## Stop conditions (any agent halts)
 

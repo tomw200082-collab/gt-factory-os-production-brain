@@ -326,15 +326,45 @@ A flag flip without all four prerequisites (Tom written approval, dry-run eviden
 | FLOW-003 resolution (any change to /planning/blockers substrate code) | Tom written per FLOW-003 decision packet |
 | Frozen flag flip | Tom written + dry-run + ≥24h soak + RUNTIME_READY |
 | External integration write (LW/Shopify/GI POST/PUT/DELETE) | Tom written + dry-run |
-| Vercel production deploy | Tom written |
-| Supabase Edge Function deploy | Tom written |
+| Vercel production deploy | Tom written — OR mission-scoped (see §Git / deploy execution authority) |
+| Supabase Edge Function deploy | Tom written — OR mission-scoped (see §Git / deploy execution authority) |
 | Auth flow change (middleware.ts, (auth)/**) | Tom written |
-| `git push` to any remote | Tom (always requires explicit user instruction) |
+| `git push` / merge / deploy | mission-scoped — see §Git / deploy execution authority; explicit Tom instruction otherwise |
 | Archiving any legacy agent | Tom written + Wave 6 evidence per ACTIVE_SURFACE_REDUCTION_PLAN.md |
 | Updating any authority doc | Tom (only writer) |
 | RUNTIME_READY emission with full test evidence | none — self-authorizing |
 | Local dev work on dev DB | none |
 | New unit / integration test (no production change) | none |
+
+---
+
+## Git / deploy execution authority (2026-05-15 — Tom-directed)
+
+**Supersedes** the prior "no autonomous git push / merge / deploy" rule (Phase 8 Run F decision A). Memory files or historical planning docs that still state the old rule are superseded by this section.
+
+GT Factory OS runs a **mission-scoped execution model**. Tom opens a mission or corridor with an explicit written standing authorization that names the scope and the allowed actions. **Inside that authorized scope:**
+
+- Claude **may**, without per-action approval: stage and commit with explicit paths; create branches; push branches; open PRs; merge PRs whose checks are green and whose scope matches the mission; push to `main` for changes that are clearly safe, verified, and in mission scope; and deploy to **existing** project targets when the mission requires it.
+- Claude **must** report each such action afterward with evidence (commit SHA, branch, push target, verification result, rollback path) — report-after, not ask-before.
+- Claude **does not** pause for routine confirmation on the above.
+
+**Outside an approved mission/corridor**, the conservative default holds: branch + commit are free; push / merge / deploy require explicit Tom instruction.
+
+**Always Tom-only — hard stop gates (Claude halts and asks, in or out of mission):**
+1. Rewriting git history; force-push of any kind.
+2. Deleting production data; destructive or irreversible DB operations (truncate, drop, reset, destructive migration).
+3. Exposing, printing, committing, or moving secrets/tokens; modifying `.env` values (documenting required variable *names* is allowed).
+4. Flipping a frozen flag (`LIONWHEEL_FG_OUT_BRIDGE_ENABLED`, `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED`, or any equivalent external-write flag).
+5. Writing to external business systems (Shopify, LionWheel, Green Invoice, Telegram, customer/supplier systems) beyond existing safe / read-only verification.
+6. Creating a new paid cloud resource or changing billing.
+7. Merging a product runtime change unrelated to the active mission.
+8. Removing branches or worktrees before their WIP is preserved.
+9. Any action conflicting with a locked `CLAUDE.md` decision, locked architecture, or a source-of-truth rule.
+10. Any uncertain action that could materially affect stock truth, orders, finance, production, inventory value, or external integrations.
+
+**Deploy conditions (when a mission authorizes deploy):** the target must already exist; no new production system is created; no frozen flag is flipped; no external business system is mutated; build / typecheck / tests pass, or the failure is documented as pre-existing and non-blocking; the rollback path is known; the action is reported with what deployed, where, the commit SHA, and the verification result.
+
+This section changes only the *routine-execution default* — from "ask first" to "execute safely inside an approved scope, report with evidence after." It does **not** relax any locked decision in `CLAUDE.md`, any frozen flag, any external-write restriction, or the `CLAUDE.md` sole-writer rule.
 
 ---
 

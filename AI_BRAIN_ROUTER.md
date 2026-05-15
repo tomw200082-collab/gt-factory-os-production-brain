@@ -112,7 +112,7 @@ For each input, walk the tree in order. The first matching rule produces the rou
    → lane=`source-of-truth` (read-only `source-of-truth-auditor`) → patch proposals → `ops-docs-curator` applies under factory-os-governor approval. CLAUDE.md changes require Tom (sole writer).
 
 7. **Release / merge / deploy decision?**
-   → lane=`release-gate` (`release-verifier`) → `factory-os-governor` final go/no-go → Tom for deploy. Per Tom decision A (Run F): no autonomous push, no merge, no deploy; branch/PR push only on explicit Tom instruction.
+   → lane=`release-gate` (`release-verifier`) → `factory-os-governor` final go/no-go. Push / merge / deploy follow `EXECUTION_POLICY.md` §Git / deploy execution authority (2026-05-15): mission-scoped — Claude-authorized inside a Tom-approved mission/corridor with all safety gates passing, explicit Tom instruction otherwise, hard stop gates always Tom-only.
 
 8. **Audit / dry-run / scorecard?**
    → relevant UX or audit agent → evidence under `docs/phase8/dry-runs/` → no production change.
