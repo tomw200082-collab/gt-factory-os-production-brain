@@ -1,0 +1,179 @@
+[
+  {
+    "taskId": "24563614",
+    "routeOrder": 1,
+    "recipientName": "שם\n    \n  \n  \n      \n        אר.טו.אם קורפוראשיין בע\"מ (דליקטסן אפקה פנחס רוזן)",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        פנחס רוזן מספר בניין\n    \n  \n  \n      \n        67 עיר\n    \n  \n  \n      \n        תל אביב",
+    "driverNote": "הערות נהג\n    \n  \n  \n      \n        https://www.greeninvoice.co.il/api/v1/documents/download?d=CIcAYQJoZWzkXYP8%2Br4bNlAPXGA%2FARH7MocbeBPzDXwN8B6uMjzfXuSwKNxxmpKywyBOODWJ9pNhAwuhdQVhZLTDr8CQ8SSMnIqeEiM7zh8EUwnpv8j4hMbDPqjPOXbtg0mqB8A5Kzd49J0a45EHIESHBkK1c6oj9j3moJvf769ISc8G3VARbzC9F%2Fh7rKaAcoBUSr5C5Kn4EZPfIiF0VdB8cPid29SXygLRO78iEf3MjgCHiwiV1rIe%2B4dXPDRVbH6RoApoLGtWDs6c",
+    "greenInvoiceUrls": [
+      "https://www.greeninvoice.co.il/api/v1/documents/download?d=CIcAYQJoZWzkXYP8%2Br4bNlAPXGA%2FARH7MocbeBPzDXwN8B6uMjzfXuSwKNxxmpKywyBOODWJ9pNhAwuhdQVhZLTDr8CQ8SSMnIqeEiM7zh8EUwnpv8j4hMbDPqjPOXbtg0mqB8A5Kzd49J0a45EHIESHBkK1c6oj9j3moJvf769ISc8G3VARbzC9F%2Fh7rKaAcoBUSr5C5Kn4EZPfIiF0VdB8cPid29SXygLRO78iEf3MjgCHiwiV1rIe%2B4dXPDRVbH6RoApoLGtWDs6c"
+    ],
+    "notes": "הערות משלוח",
+    "destinationNotes": "הערות מיקום",
+    "isSelfPickup": false,
+    "orderItemsCount": 18,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה\n    \n  \n  \n      \n        #GT12805",
+    "noInvoiceReason": null
+  },
+  {
+    "taskId": "24563566",
+    "routeOrder": 2,
+    "recipientName": "שם\n    \n  \n  \n      \n        נ.ר.ד השקעות בע\"מ (קולולו)",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        שחם מספר בניין\n    \n  \n  \n      \n        36 עיר\n    \n  \n  \n      \n        פתח תקווה",
+    "driverNote": "הערות נהג\n    \n  \n  \n      \n        https://www.greeninvoice.co.il/api/v1/documents/download?d=X51fnbk9T89G2Iu0WuLhvngPUUKU0HWGMU1Bf4y7jcltg%2FC79owQrrZ5P0Pp2w4cYcht3vSBXlemQdKP%2BaFckflaIRctynlUZgUKosoEtOJUgxIOf30JY2ZYgVkJWQOlkuhyexCoA%2BFY%2Fyos4JHtCFhzP3FlC%2B4rHqsxLrJPVEiqxWSbzgM739J3sCNiMVSPcdVs5XHwkSqHg0QphKeQMK2tf1U3lwJKlY6xz4QipMEUQADe4JUiPLs9sN5j4cL%2B5D5KivxqOu46csRF",
+    "greenInvoiceUrls": [
+      "https://www.greeninvoice.co.il/api/v1/documents/download?d=X51fnbk9T89G2Iu0WuLhvngPUUKU0HWGMU1Bf4y7jcltg%2FC79owQrrZ5P0Pp2w4cYcht3vSBXlemQdKP%2BaFckflaIRctynlUZgUKosoEtOJUgxIOf30JY2ZYgVkJWQOlkuhyexCoA%2BFY%2Fyos4JHtCFhzP3FlC%2B4rHqsxLrJPVEiqxWSbzgM739J3sCNiMVSPcdVs5XHwkSqHg0QphKeQMK2tf1U3lwJKlY6xz4QipMEUQADe4JUiPLs9sN5j4cL%2B5D5KivxqOu46csRF"
+    ],
+    "notes": "הערות משלוח",
+    "destinationNotes": "הערות מיקום",
+    "isSelfPickup": false,
+    "orderItemsCount": 4,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה\n    \n  \n  \n      \n        #GT12804",
+    "noInvoiceReason": null
+  },
+  {
+    "taskId": "24563525",
+    "routeOrder": 3,
+    "recipientName": "שם\n    \n  \n  \n      \n        ארומה הזהב (2003) בע\"מ (קפה אריאה) - איסוף צק",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        סחרוב דוד מספר בניין\n    \n  \n  \n      \n        21 עיר\n    \n  \n  \n      \n        ראשון לציון",
+    "driverNote": "הערות נהג",
+    "greenInvoiceUrls": [],
+    "notes": "הערות משלוח",
+    "destinationNotes": "הערות מיקום\n    \n  \n  \n      \n        קניון הזהב",
+    "isSelfPickup": false,
+    "orderItemsCount": 0,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה",
+    "noInvoiceReason": "no_url_in_driver_note"
+  },
+  {
+    "taskId": "24563510",
+    "routeOrder": 4,
+    "recipientName": "שם\n    \n  \n  \n      \n        נונומימי הרצליה בע\"מ",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        אריק איינשטין מספר בניין\n    \n  \n  \n      \n        3 עיר\n    \n  \n  \n      \n        הרצליה",
+    "driverNote": "הערות נהג\n    \n  \n  \n      \n        https://www.greeninvoice.co.il/api/v1/documents/download?d=T71nKurSkBFeqP4Pgq5TDW%2BNMT3Ep6IJKhiKpfOprdntzgn1krNqLvjZTsIwG%2BO6djZWrw4BRNkbywmfkIn4C9xnka4yy7HxfCgzF%2BdoODTeaxAQXVHI29W5rXuGrSGz22xaYIqKKjxAiya1dKhbw%2F6xwpRCmPg8hTPtfrMrtpHyWU7DsAFVflSSVgzZrHRisTeHKRelngcd8QBUqVxWkf5ksBwnMtz%2FMp7sYwpsi0l9ckBd5RsEmPa%2BZXDR859EwKAFTOyCihighx5%2F",
+    "greenInvoiceUrls": [
+      "https://www.greeninvoice.co.il/api/v1/documents/download?d=T71nKurSkBFeqP4Pgq5TDW%2BNMT3Ep6IJKhiKpfOprdntzgn1krNqLvjZTsIwG%2BO6djZWrw4BRNkbywmfkIn4C9xnka4yy7HxfCgzF%2BdoODTeaxAQXVHI29W5rXuGrSGz22xaYIqKKjxAiya1dKhbw%2F6xwpRCmPg8hTPtfrMrtpHyWU7DsAFVflSSVgzZrHRisTeHKRelngcd8QBUqVxWkf5ksBwnMtz%2FMp7sYwpsi0l9ckBd5RsEmPa%2BZXDR859EwKAFTOyCihighx5%2F"
+    ],
+    "notes": "הערות משלוח",
+    "destinationNotes": "הערות מיקום",
+    "isSelfPickup": false,
+    "orderItemsCount": 4,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה\n    \n  \n  \n      \n        #GT12803",
+    "noInvoiceReason": null
+  },
+  {
+    "taskId": "24528840",
+    "routeOrder": 5,
+    "recipientName": "שם\n    \n  \n  \n      \n        קפה אנסטסיה + קפה אניצה - איסוף צ'קים מאנסטסיה",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        פרישמן מספר בניין\n    \n  \n  \n      \n        54 עיר\n    \n  \n  \n      \n        תל אביב",
+    "driverNote": "הערות נהג",
+    "greenInvoiceUrls": [],
+    "notes": "הערות משלוח",
+    "destinationNotes": "הערות מיקום",
+    "isSelfPickup": false,
+    "orderItemsCount": 0,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה",
+    "noInvoiceReason": "no_url_in_driver_note"
+  },
+  {
+    "taskId": "24528186",
+    "routeOrder": 6,
+    "recipientName": "שם\n    \n  \n  \n      \n        ברדקלאב בייקרי בע\"מ (בראדקלאב שרונים)",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        הרקון מספר בניין\n    \n  \n  \n      \n        2 עיר\n    \n  \n  \n      \n        Hod Hasharon",
+    "driverNote": "הערות נהג\n    \n  \n  \n      \n        https://www.greeninvoice.co.il/api/v1/documents/download?d=ZkGtYVaeS2dov%2FCzRTxVczoKV%2BqIZEkbJGLoOPr0u2CoD%2B9nATUjV3OEmAOUBneZqay3noEkVy5%2BQMpLiRgfHiLeeq4UBJJ8SQOuAsMK8W0HtJaNZ2hrAHpBfg8Ig0EoVwUFr1wqOBSe8%2F%2F6mPGPQuZlEHx3ANPZIO8wC30JWRRu3qhB8oReSV7DFBqF%2FU8MIjpUU0dZkUCeP9FOXHLzULRgEIRQuBxICTzXJvU4UTjUnP5ncJuZoK9WJSlu%2BU7dYe6KfcWtahJGBmO%2B",
+    "greenInvoiceUrls": [
+      "https://www.greeninvoice.co.il/api/v1/documents/download?d=ZkGtYVaeS2dov%2FCzRTxVczoKV%2BqIZEkbJGLoOPr0u2CoD%2B9nATUjV3OEmAOUBneZqay3noEkVy5%2BQMpLiRgfHiLeeq4UBJJ8SQOuAsMK8W0HtJaNZ2hrAHpBfg8Ig0EoVwUFr1wqOBSe8%2F%2F6mPGPQuZlEHx3ANPZIO8wC30JWRRu3qhB8oReSV7DFBqF%2FU8MIjpUU0dZkUCeP9FOXHLzULRgEIRQuBxICTzXJvU4UTjUnP5ncJuZoK9WJSlu%2BU7dYe6KfcWtahJGBmO%2B"
+    ],
+    "notes": "הערות משלוח",
+    "destinationNotes": "הערות מיקום",
+    "isSelfPickup": false,
+    "orderItemsCount": 6,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה\n    \n  \n  \n      \n        #GT12802",
+    "noInvoiceReason": null
+  },
+  {
+    "taskId": "24522493",
+    "routeOrder": 7,
+    "recipientName": "שם\n    \n  \n  \n      \n        ביסקוטי איסוף צ'קים - רבקה \\ גילה",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        הירקון מספר בניין\n    \n  \n  \n      \n        67 עיר\n    \n  \n  \n      \n        בני ברק",
+    "driverNote": "הערות נהג",
+    "greenInvoiceUrls": [],
+    "notes": "הערות משלוח",
+    "destinationNotes": "הערות מיקום",
+    "isSelfPickup": false,
+    "orderItemsCount": 0,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה",
+    "noInvoiceReason": "no_url_in_driver_note"
+  },
+  {
+    "taskId": "24516076",
+    "routeOrder": 8,
+    "recipientName": "שם\n    \n  \n  \n      \n        אולי מסעדות בע\"מ (גוטה סניף הרצליה)",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        שדרות אבא אבן מספר בניין\n    \n  \n  \n      \n        12 עיר\n    \n  \n  \n      \n        הרצליה",
+    "driverNote": "הערות נהג\n    \n  \n  \n      \n        https://www.greeninvoice.co.il/api/v1/documents/download?d=BbIWg58c6p6%2B1C9bym0ippnEKWpjS3B9W6mz0Pkra0aSY1QHXNW2Mm0a97hGjG12eWeGg%2Fcei9xnroTmQNDtWSocWJTzWizJ6YIZTvq9bXHHwhKmOS7KBpxJDwNSpNPSYgqZwNMTmnRgSwL1lY1%2BgsMaUQqhaZbfd%2BGP%2FRt3ujJMO%2BcHRT%2F8MWMKZ%2BHCDJrU5hyflIMClln0c3dQ8ydku%2BI9mfocM%2FZu2LqoJVHsrlw0FGY9aeiyxBJsob6SkkXObsTxv%2F4qh4U38R7a",
+    "greenInvoiceUrls": [
+      "https://www.greeninvoice.co.il/api/v1/documents/download?d=BbIWg58c6p6%2B1C9bym0ippnEKWpjS3B9W6mz0Pkra0aSY1QHXNW2Mm0a97hGjG12eWeGg%2Fcei9xnroTmQNDtWSocWJTzWizJ6YIZTvq9bXHHwhKmOS7KBpxJDwNSpNPSYgqZwNMTmnRgSwL1lY1%2BgsMaUQqhaZbfd%2BGP%2FRt3ujJMO%2BcHRT%2F8MWMKZ%2BHCDJrU5hyflIMClln0c3dQ8ydku%2BI9mfocM%2FZu2LqoJVHsrlw0FGY9aeiyxBJsob6SkkXObsTxv%2F4qh4U38R7a"
+    ],
+    "notes": "הערות משלוח",
+    "destinationNotes": "הערות מיקום",
+    "isSelfPickup": false,
+    "orderItemsCount": 2,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה\n    \n  \n  \n      \n        #GT12800",
+    "noInvoiceReason": null
+  },
+  {
+    "taskId": "24500795",
+    "routeOrder": 9,
+    "recipientName": "שם\n    \n  \n  \n      \n        בבקה כיכר הבימה ת\"א (חברת נטו אינווסטמנט (1998) בע\"מ) - איסוף צ'קים",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        ככר הבימה מספר בניין עיר\n    \n  \n  \n      \n        תל אביב",
+    "driverNote": "הערות נהג",
+    "greenInvoiceUrls": [],
+    "notes": "הערות משלוח\n    \n  \n  \n      \n        ניתן לאסוף החל מיום 10.5 בלבד! לא לפני. ולוודא עם דורין. הצ'ק יגיע לכיכר הבימה רק עוד כמה ימים. תודה!",
+    "destinationNotes": "הערות מיקום",
+    "isSelfPickup": false,
+    "orderItemsCount": 0,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה",
+    "noInvoiceReason": "no_url_in_driver_note"
+  },
+  {
+    "taskId": "24497354",
+    "routeOrder": 10,
+    "recipientName": "שם\n    \n  \n  \n      \n        זוזוברה וויוינו - איסוף צ'קים",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        יוחנן הסנדלר מספר בניין\n    \n  \n  \n      \n        6 עיר\n    \n  \n  \n      \n        כפר סבא",
+    "driverNote": "הערות נהג",
+    "greenInvoiceUrls": [],
+    "notes": "הערות משלוח\n    \n  \n  \n      \n        לאסוף רק החל מה -11.5",
+    "destinationNotes": "הערות מיקום\n    \n  \n  \n      \n        לאסוף מהמשרד",
+    "isSelfPickup": false,
+    "orderItemsCount": 0,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה",
+    "noInvoiceReason": "no_url_in_driver_note"
+  },
+  {
+    "taskId": "24461304",
+    "routeOrder": 11,
+    "recipientName": "שם\n    \n  \n  \n      \n        יונימרקט בע\"מ",
+    "destinationAddress": "רחוב\n    \n  \n  \n      \n        המרכבה מספר בניין\n    \n  \n  \n      \n        13 עיר\n    \n  \n  \n      \n        חולון",
+    "driverNote": "הערות נהג\n    \n  \n  \n      \n        https://www.greeninvoice.co.il/api/v1/documents/download?d=JLYqIuD5wJBJA2uuONIyNKQkPWF8NnyKqdSKgE7uZrc1tA0R9AEope18pe549v5iMOBIiRgTr7Won51qevP7cnFj5ldD4%2B2HC3uVG8CftmA7HiuYYRWRC5vJ6r6nmEXIA4yEzSRwNMfqn9ydDXlfN5cG0f%2FY81qaPLuQDKyIou6CCmzhrKcYB20ZPVaUoSqIjAGvPlEE1TypPNwRyBX2VGpxCCDYC66RdF%2Fajl6Uu%2F6XYW8cMihOH1Gvi3m8hN4O4%2FFrF92N%2Bsyx8e5o",
+    "greenInvoiceUrls": [
+      "https://www.greeninvoice.co.il/api/v1/documents/download?d=JLYqIuD5wJBJA2uuONIyNKQkPWF8NnyKqdSKgE7uZrc1tA0R9AEope18pe549v5iMOBIiRgTr7Won51qevP7cnFj5ldD4%2B2HC3uVG8CftmA7HiuYYRWRC5vJ6r6nmEXIA4yEzSRwNMfqn9ydDXlfN5cG0f%2FY81qaPLuQDKyIou6CCmzhrKcYB20ZPVaUoSqIjAGvPlEE1TypPNwRyBX2VGpxCCDYC66RdF%2Fajl6Uu%2F6XYW8cMihOH1Gvi3m8hN4O4%2FFrF92N%2Bsyx8e5o"
+    ],
+    "notes": "הערות משלוח",
+    "destinationNotes": "הערות מיקום",
+    "isSelfPickup": false,
+    "orderItemsCount": 2,
+    "packagesQuantity": null,
+    "wpOrderId": "מזהה הזמנה\n    \n  \n  \n      \n        #GT12766",
+    "noInvoiceReason": null
+  }
+]
