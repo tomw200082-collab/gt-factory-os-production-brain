@@ -474,7 +474,7 @@ lionwheel_unknown_sku rows are bulk-closed in a separate runbook step)."
 
 ### Task 10: Document the runbook step
 
-- [ ] **Step 1: Append to PRODUCTION/CURRENT_STATE.md "DB ops log" section**
+- [ ] **Step 1: Append to PRODUCTION/docs/operations/db-ops-log.md** *(was: PRODUCTION/CURRENT_STATE.md "DB ops log" section — moved 2026-05-09 in Phase 8 Run F Wave 4 Hole 2 cleanup)*
 
   Add a new entry under DB ops log:
   ```markdown

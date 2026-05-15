@@ -336,4 +336,20 @@ The aggregate HOLD on `/ux-release-gate` remains in effect until Tom decides AND
 
 ---
 
-**END OF DECISION PACKET — Tom decision required. No code, copy, or contract change occurs until Tom answers in writing.**
+---
+
+## Q. Tom Decision — 2026-05-08
+
+**Status:** DECIDED — CLOSED
+
+**Tom answer (written, 2026-05-08):** Option D — "Pending system fix — no action available." Text only. No CTA, no link, no ticket form, no mailto. The `check_po_substrate` row renders an informational label indicating a fix requires developer intervention but no planner action is currently available.
+
+**Additional Tom decision (2026-05-08):** The entire blockers page is to be converted from Hebrew to English/LTR. The Tom-lock from 2026-04-27 on Hebrew strings in `labelMaps.ts`, `BlockerRow.tsx`, `BlockerCard.tsx`, and `page.tsx` is **superseded by this written decision**. Portal-production-executor is authorized to:
+1. Convert all Hebrew UI strings in `/planning/blockers/**` to English/LTR
+2. Replace the `"פנה למפתח"` CTA (Q4 cell for `check_po_substrate`) with English text: `"Pending fix — developer action required"` as a static label (not a button/link)
+3. Replace the mobile sub-line `"חסם זה דורש התערבות מפתח/אדמין"` with `"This blocker requires a system fix. No planner action available."`
+4. Remove I5–I12 decorative features per DEC-3 in `planning-ux-full-pass-handoff-2026-05-08.md`
+
+**This packet is now CLOSED.** The ux-release-gate HOLD on `/planning/blockers` is released for the English conversion + Option D implementation. A new `/ux-release-gate` run is required after implementation to confirm.
+
+**END OF DECISION PACKET.**
