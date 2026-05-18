@@ -2,7 +2,7 @@
 
 > **Authority:** ephemeral operator context. **Not authoritative on anything.** `CURRENT_STATE.md` is the sole authority on gate status, completion range, critical path, and open gaps. On any disagreement, defer to `CURRENT_STATE.md`.
 
-**Last refreshed:** 2026-05-08 (Phase 8 Run G — final AI Brain governance closure; Run F.2b pushed PRODUCTION to private remote `gt-factory-os-production-brain` at HEAD `875424b`; Run G closing signals policy, state freshness, registry, and acceptance record on branch `run-g-final-brain-closure`; no product runtime change).
+**Last refreshed:** 2026-05-08 (Phase 8 Run G landed — final AI Brain governance closure merged to `main` via PR #1, HEAD `258ac3c`; Run F.2b pushed PRODUCTION to private remote `gt-factory-os-production-brain`; no product runtime change).
 
 ---
 
@@ -10,9 +10,9 @@
 
 **Run F landed (2026-05-08):** AI Brain kernel rewrite — CLAUDE.md 355 → 133 lines; 6 scaffolding files in PRODUCTION root; 2 extraction files in docs/; 6 commits on main.
 
-**Run F.2b completed (2026-05-08):** PRODUCTION remote established — `https://github.com/tomw200082-collab/gt-factory-os-production-brain.git` (private), HEAD `875424b`. No product code touched.
+**Run F.2b completed (2026-05-08):** PRODUCTION remote established — `https://github.com/tomw200082-collab/gt-factory-os-production-brain.git` (private). No product code touched.
 
-**Run G in progress (2026-05-08):** patching SIGNALS.md (CONFLICT-003 closed), CURRENT_STATE.md, ACTIVE_NOW.md, COMMAND_REGISTRY.md count fix, PRODUCTION-REMOTE-PLAN.md status, FINAL_AI_BRAIN_ACCEPTANCE.md creation. Branch `run-g-final-brain-closure`. PR pending Tom merge.
+**Run G landed (2026-05-08):** SIGNALS.md (CONFLICT-003 closed), CURRENT_STATE.md, ACTIVE_NOW.md, COMMAND_REGISTRY.md count fix, PRODUCTION-REMOTE-PLAN.md status, FINAL_AI_BRAIN_ACCEPTANCE.md creation. Merged to `main` via PR #1 (HEAD `258ac3c`).
 
 ---
 
