@@ -216,6 +216,22 @@ Executes one artifact at a time in the pre-authorized backlog order:
 
 **Two-try ceiling (cross-reference: `.claude/SIGNALS.md`).** The two-try retry ceiling defined in `.claude/SIGNALS.md` applies inside this bracket. A second FR1 collision OR FR2 race detection on the same artifact within the same cycle = `TOOL_FAILURE_UNCLEARED` per the existing W4 variant: park the artifact and escalate to the governor. Do not attempt a third bracket.
 
+**Same-day same-slot intentional pairing exception (Tom-ratified 2026-05-23).** A same-day same-slot migration pairing is permitted when ALL of the following hold:
+
+1. Both files are authored in the same dispatch (or coordinated dispatches whose authors agree on the pairing in the commit message).
+2. Both files are co-applied in a single deployment (one PR / one Railway push / one `psql` invocation, atomically).
+3. Each filename suffix describes a distinct concern that does NOT create schema or contract ownership collision (typical patterns: one perf/refactor of an existing function PLUS one data archival/cleanup; one DDL PLUS one companion seed; never two `CREATE TABLE`s of the same table; never two `CREATE OR REPLACE FUNCTION` of the same signature).
+4. The commit message explicitly enumerates the pair and the rationale.
+
+When all four hold, the FR1 fresh-read MUST NOT classify the same-slot pair as a `contract_failure`. The W4 protocol's silent-renumber-substitution prohibition is NOT triggered because the second file is not renumbered — it is intentionally co-numbered with disclosure.
+
+Precedent: 2026-05-15 backend deployment co-applied `0198_cleanup_test_forecasts.sql` (`4dbffd3`) AND `0198_fg_projection_v3_fast_days_of_cover.sql` (`4943388`) in a single push.
+
+Non-applicable to (still `contract_failure` / `assumption_failure`):
+- a second author silently renumbering an existing same-slot file (this remains `assumption_failure`);
+- a pair where one file `CREATE`s or `REPLACE`s schema that the other file references in a way requiring deterministic apply order outside a single transaction;
+- a pair landing in different deployments (must be co-deployed).
+
 **Failure-class semantics (cross-reference: `.claude/SIGNALS.md` "Five failure classes (locked)").** An FR1 collision OR an FR2 race detection emits `contract_failure` (failure class 1: no retry, human checkpoint mandatory). A silent renumber substitution by the executor — i.e., quietly bumping a referenced migration number to dodge a collision instead of halting — emits `assumption_failure` (failure class 4: no retry, human checkpoint mandatory). A repeat FR1/FR2 collision on the same artifact within the same cycle escalates to `TOOL_FAILURE_UNCLEARED` (status marker inside failure class 3, `tool_failure`).
 
 **Why this protocol exists.** Cycles **3, 4, 5, and 5c** of the GT Factory OS rebuild produced a recurring W1↔W4 timing race: autonomous W1 migration landings invalidated W4 renumber math mid-flight. Cycle 5 produced a `contract_failure` on a W4 handoff pack whose referenced target migration number had been claimed by a W1 landing during W4 authoring. Cycle 5c's surgical fix was itself partially stale by 6 minutes when a follow-on W1 migration landed during the fix window. The FR1→write→FR2 bracket catches this race deterministically by bounding the write window and verifying the directory state on both sides of the write.
@@ -307,7 +323,7 @@ RUNTIME_READY signal from the relevant executor.
 
 | Flag | Default | Authorized state | Authorization reference |
 |------|---------|------------------|------------------------|
-| `LIONWHEEL_FG_OUT_BRIDGE_ENABLED` | `false` | `false` (Phase 8 Wave 0; no flip authorized) | CLAUDE.md "LionWheel pickup → ledger decrement" locked decision |
+| `LIONWHEEL_FG_OUT_BRIDGE_ENABLED` | `false` | **behaviorally `true`** as of Sunday 2026-05-10 cutover; live ledger audited 2026-05-23 (`rebuild_verifier() = 0`; 487 `FG_OUT_PICK` rows). Exact Railway env-var literal `NEEDS_READONLY_VERIFICATION` (Tom decision 2026-05-23: do not read or write env vars in this docs cycle). Rollback to `false` requires explicit Tom decision + parity replay. The four pre-flip prerequisites (Tom written approval, dry-run evidence, ≥24h soak, RUNTIME_READY signal) are historically satisfied; post-cutover RUNTIME_READY signal coverage to be re-verified against `.claude/state/runtime_ready.json`. | `LOCKED_DECISIONS.md` §LionWheel (post-cutover ratification — Tom direct edit, same PR); runbook `docs/superpowers/runbooks/2026-05-10-sunday-cutover-runbook.md`; live-evidence summary in `CURRENT_STATE.md` §"Post-cutover state" |
 | `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED` | `false` | `false` (Phase 5 only; not approved) | CLAUDE.md "Shopify v2 phase plan"; current corridor evidence in `gt-factory-os/docs/superpowers/evidence/2026-05-07-shopify-phase0-bleeding-stopped.md` |
 
 A flag flip without all four prerequisites (Tom written approval, dry-run evidence,
