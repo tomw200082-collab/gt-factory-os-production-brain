@@ -93,6 +93,52 @@ INTER-001 Cancel-PO confirmation polish, A11Y-001 form-label gap on waste-adjust
 
 **Run G (in progress, 2026-05-08):** final AI Brain governance closure — signals policy (CONFLICT-003), state freshness, registry count fix, acceptance record. Branch `run-g-final-brain-closure`.
 
+## Post-cutover state (2026-05-10..2026-05-23 — audited via Supabase MCP 2026-05-23)
+
+**Sunday 2026-05-10 LionWheel FG_OUT bridge cutover: EXECUTED.** Bridge has been in continuous production use through 2026-05-21+. `LIONWHEEL_FG_OUT_BRIDGE_ENABLED` is behaviorally `true`; exact Railway env-var literal `NEEDS_READONLY_VERIFICATION` (Tom decision 2026-05-23: do not read or write env vars in this docs cycle). Stock truth holds: `rebuild_verifier() = 0`.
+
+**Live ledger evidence** (read-only SELECT, project `rvadsozabmxkkrktwgnv` / `gt-ops-prod` / Postgres 17, audited 2026-05-23):
+
+| movement_type | rows | first_event (UTC) | latest_event (UTC) |
+|---|---|---|---|
+| `FG_OUT_PICK` | 487 | 2026-04-30 07:00 | 2026-05-21 10:34 |
+| `FG_OUT_PICK_REVERSAL` | 29 | 2026-05-13 05:41 | 2026-05-13 05:41 |
+| `LIONWHEEL_PICK_ADJUSTMENT` | 6 | 2026-05-11 09:43 | 2026-05-17 05:46 |
+| `WASTE_POSTED` | 17 | 2026-05-11 11:17 | 2026-05-18 14:04 |
+| `GR_POSTED` | 4 | 2026-05-12 05:56 | 2026-05-20 10:06 |
+| `PRODUCTION_OUTPUT` | 5 | 2026-05-17 05:41 | 2026-05-20 09:17 |
+| `PRODUCTION_CONSUMPTION` | 36 | 2026-05-17 05:41 | 2026-05-20 09:17 |
+| **TOTAL** | **584** | — | **2026-05-21 10:34** |
+
+138 distinct LionWheel tasks reconciled. Pre-cutover FG_OUT_PICK activity (2026-04-30..2026-05-09) reflects soak/shadow rows ahead of the formal Sunday cutover. The 29 reversals all posted at the same timestamp on 2026-05-13 are count-freeze interaction reversals (idem key prefix `reversal-YYYY-MM-DD-<SKU>`); the 6 `LIONWHEEL_PICK_ADJUSTMENT` rows are a single Tom-approved manual carton/bag backfill posted 2026-05-17 (idem key prefix `lw_fg_out_pick_x22_backfill:`). The underlying matcha production-code defect was fixed in backend commit `b12e230` 2026-05-17. Per Tom decision 2026-05-23 (Option A), the 6 historical `LIONWHEEL_PICK_ADJUSTMENT` rows are accepted as Tom-approved manual-only backfill evidence; production code must not emit this movement type, and any future use requires Tom approval.
+
+**Cutover-window ramp (FG_OUT_PICK only):**
+
+| Date | rows |
+|---|---|
+| 2026-05-10 (Sunday cutover) | 29 |
+| 2026-05-11 (Monday) | 53 |
+| 2026-05-12 | 53 |
+| 2026-05-13 | 42 (+29 count-freeze reversals same day) |
+| 2026-05-14 | 103 (typical daily volume reached) |
+
+**Backend code-side progress (`gt-factory-os`) since Run G 2026-05-08:**
+
+- 2026-05-14: production-plan note_type discriminator (migrations 0195/0196); inventory-flow algebra fixes; Shopify available-write mapping_status filter.
+- 2026-05-15: migration renumber `7d301fa` (0188/0189/0190 → 0193/0194/0195); migrations 0197 + 0198 pair (perf fix + archival, intentional same-slot pairing — see `EXECUTION_POLICY.md` §W4 amendment); 0199/0200 (FG projection v4 + canonical disaggregation).
+- 2026-05-16: purchase-session phase 1 + 2 (migrations 0204–0206; `api/src/purchase-session/`).
+- 2026-05-17: matcha carton/bag fix (`b12e230`); REPACK in credit gating (`268eb66`); test cleanup (`d33570d`); economics layer (RM/PKG valuation, manual avg sale price, COGS rollup, SEMI base recipes).
+- 2026-05-18: production-simulation date-range endpoint (PR #38).
+
+**Portal code-side progress (`gt-factory-os-portal`) since Run G 2026-05-08:**
+
+- 2026-05-17/18: planning overview command center (PR #35); production-simulation date-range plan mode (PR #36); chip tone family + planning section tabs (PR #33); inventory category filtering + grouped views + mobile sort (PR #34); economics SEMI base components recipe-derived; UX dead-end elimination (PR #30).
+- New surfaces: `/planning/page.tsx`, `/planning/production-simulation`, `/planning/purchase-session`, `/planning/purchase-calendar`, `/admin/sku-health`, `/admin/products`, `/(economics)/admin/*`.
+
+**Monitoring blind-spot (P1, not P0):** `private_core.audit_runs` table exists (migration 0151, 21 columns) but `row_count = 0` as of 2026-05-23. The daily `.github/workflows/audit-daily-cron.yml` workflow returns 503 when `JOB_RUNNER_TOKEN` is unset on Railway, 401 on mismatch, and the route also requires the Python audit skill `run_audit.py` to be deployed in the container at `AUDIT_SCRIPT_PATH`. Both dependencies are listed as Tom-pending in the original cutover runbook and remain unresolved. Diagnosis plan (read-only): `TEST-GT-START/docs/ruflo/26_PROPOSED_BRAIN_PATCH_DIFF.md` §5.
+
+**Brain freshness verdict after this section lands:** brain reflects post-cutover live truth; remaining items are individually NEEDS_TOM (LOCKED_DECISIONS reversal/adjustment text — Tom direct edit in the same PR; D3 range — Tom recalibration to **80–90%** based on post-cutover evidence, not an auto-computed percentage; audit_runs cron; Telegram tokens; app_users uuid).
+
 ## UX release gate (2026-05-08, post-Run-C)
 
 **Aggregate verdict:** **CONDITIONAL_SHIP** (was HOLD pre-Run-C).
@@ -434,6 +480,20 @@ Any activation that would otherwise touch one of these items must emit `assumpti
 - **Auth method** — CLAUDE.md locks Supabase magic-link email auth; wiring mechanics and first-user bootstrap still open; dev-shim fake-auth still in use in sandbox
 - **The `.claude/agents/` executor / verifier / governor files** — the skill defines target architecture; compiled subagents not yet authored
 
+- **Count-freeze-driven LionWheel reversal class (added 2026-05-23 post-cutover audit)** — 29 rows on 2026-05-13 use idem-key format `reversal-YYYY-MM-DD-<SKU>` and reverse "items pre-picked before morning count" (count-freeze interaction). Distinct from the delivery-correction reversal class. Tom direct edit to `LOCKED_DECISIONS.md` §LionWheel ratifies this second class in the same PR as the rest of this revision.
+
+- **`LIONWHEEL_PICK_ADJUSTMENT` movement_type (Tom decision Option A, 2026-05-23)** — 6 Tom-approved manual backfill rows posted 2026-05-17 are accepted in place. The value is ratified for Tom-approved manual-only reconciliation under documented note + idem prefix conventions; production code may not emit it; any future use requires Tom approval. Historical rows NOT being rewritten by this revision; rewrite would require a separate Tom-approved data-correction migration.
+
+- **`audit_runs` daily cron not writing (P1 monitoring blind-spot)** — table created by migration 0151 (21 columns) but `row_count = 0` as of 2026-05-23. Root cause: `JOB_RUNNER_TOKEN` provisioning + Python audit-skill container deployment (both Tom-pending from the original cutover runbook §"Open Tom dependencies"). Monitoring blind-spot during a live cutover period; next runtime closure item but runtime NOT changed by this revision. Read-only diagnosis plan: `TEST-GT-START/docs/ruflo/26_PROPOSED_BRAIN_PATCH_DIFF.md` §5.
+
+- **Same-day same-slot migration pairing convention** — the 2026-05-15 deployment co-applied `0198_cleanup_test_forecasts.sql` (`4dbffd3`) and `0198_fg_projection_v3_fast_days_of_cover.sql` (`4943388`) in a single push. Intentional, not an FR1 collision. `EXECUTION_POLICY.md` §W4 amended in this revision to permit the pattern when both files are co-deployed atomically and do not create schema/contract ownership collision.
+
+- **D3 — overall completion-range Tom recalibration (2026-05-23)** — pre-cutover stale value `~60–70%` carried a self-flagged stale-calibration note. Post-cutover evidence (Gate 3 stock truth confirmed by ledger activity + parity gate; Gate 4 LionWheel mirror operational; Gate 5 planning engine consuming live data; portal scorecard 86/100; 35 RUNTIME_READY signals plus operationally-observed post-2026-05-08 work) supports Tom recalibration to **80–90%**. Marked as Tom recalibration based on post-cutover evidence, not as an automatically computed percentage.
+
+- **Shopify External Boundary v2 Gate E — Tom decisions recorded 2026-05-23** — GE-1 test SKU = `ADD-GAR-ANISE`; GE-2 sentinel strategy = Option C (SKU-allowlist guard). Corridor execution against these inputs remains open. Last in-flight state was `bcb2d0f` GE-D bridge starvation fix (per `ACTIVE_NOW.md` Run G summary 2026-05-08). No backend or portal commits since 2026-05-08 named Shopify Gate E in commit messages; corridor state unchanged. `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED` remains `false`.
+
+- **RUNTIME_READY signal coverage post-cutover** — re-verify `.claude/state/runtime_ready.json` for entries dated after 2026-05-08 (especially post-cutover LionWheel closure, production-simulation date-range, purchase-session, economics layer). Emit any missing signals via the appropriate `backend-db-executor` dispatch (signal emission is the only authorized write to that file).
+
 ## Current-state reference artifacts
 Primary current-state source:
 - `GT_Factory_OS.xlsx`
@@ -459,7 +519,13 @@ The shapes most likely to fail or mislead over the next gate transition:
 8. **Planning begun before Gate 3 closes.** "Stock truth ships before planning cutover" is non-negotiable (CLAUDE.md §non-negotiables #1). Beginning Gate 5 work while Gate 3 is PARTIAL is a contract_failure.
 9. **Admin CRUD mass-edits to BOM or supplier mapping without approval gates.** CLAUDE.md Gate 2 / Gate 3 evidence rules forbid this; the admin screens today are mocked precisely because wiring them to writes is not yet safe.
 10. **Excel round-trip creeping back in.** Any operator-facing workflow that edits the workbook re-introduces the system being rebuilt out of.
-11. **LionWheel pick-reconciliation chain blocked by operator discipline + code defects + soak verification, NOT by missing API capability.** Live evidence 2026-04-30 (verifier PASS, `docs/integrations/lionwheel_live_inspection_2026-04-30.md` §9): LionWheel populates `body.task.order_items[].picked_quantity` when pickers explicitly enter quantities in the UI; Tom-edited shipment 24328405 (#GT12705) confirms the field path matches production code expectations. The 11/11-null finding from the prior W4 capture (5 unique ROUNDTRIP_DELIVERED tasks) reflects pickers not entering quantities, not API gap. Open blockers: (a) operational soak — 5-10 real Day-1 orders required to confirm picker discipline in normal workflow without Tom's intervention; (b) Phase 1 code defects — `task.status='COMPLETED'` enum drift (5th value beyond the 2026-04-18 4-element enum), type asymmetry (picked_quantity is JSON integer; ordered quantity is string-encoded), per-line `status` field schema drift (NEW values {NEW, PICKED, PARTIALLY_PICKED} not in 2026-04-18 §3.4 10-key schema); (c) Phase 2 code defect — premature `reconciledMirrorIds.add(row.mirror_id)` at `index.ts:876` / `reconciliation.ts:225` inside the `!fg_out_bridge_enabled` short-circuit (root-cause report `docs/lionwheel_chain_root_cause_2026-04-30.md`). Zero LionWheel-derived `FG_OUT_PICK` rows in production history; FG `current_balances` overstated by cumulative delivered volume since cutover. Path forward: see `docs/lionwheel_chain_repair_plan_2026-04-30.md` (soak → W1 Phase 1+2 repair → W4 Inbox/credit-draft contracts → W2 authoring after `RUNTIME_READY`).
+11. **LionWheel pick-reconciliation chain — OPERATIONAL POST-CUTOVER** (supersedes pre-cutover risk text 2026-04-30..2026-05-08). Bridge flipped Sunday 2026-05-10. Live ledger evidence audited 2026-05-23: 487 `FG_OUT_PICK` rows (2026-04-30 → 2026-05-21); 138 distinct LW tasks reconciled; `rebuild_verifier() = 0` confirms parity holds post-cutover. Matcha carton/bag production-code defect fixed in backend commit `b12e230` (2026-05-17); 6 historical rows were repaired via Tom-approved manual `LIONWHEEL_PICK_ADJUSTMENT` backfill 2026-05-17 (idem prefix `lw_fg_out_pick_x22_backfill:`); per Tom decision 2026-05-23 (Option A) those rows are accepted in place and the value is ratified for Tom-approved-manual-only use, with production-code emission still forbidden and any future use requiring Tom approval. Count-freeze interaction reversals (29 rows on 2026-05-13, idem prefix `reversal-YYYY-MM-DD-<SKU>`) are an operationally legitimate second reversal class — see `LOCKED_DECISIONS.md` §LionWheel amendments (Tom direct edit, same PR). Pre-cutover root-cause report `docs/lionwheel_chain_root_cause_2026-04-30.md` and repair plan `docs/lionwheel_chain_repair_plan_2026-04-30.md` are historical reference only; the chain is in operation.
+
+    **Residual risks (post-cutover, not blocking but worth tracking):**
+    a) `audit_runs` table empty — daily monitoring cron is non-writing (see §"Post-cutover state" monitoring blind-spot).
+    b) `LOCKED_DECISIONS.md` §LionWheel forbidden-movement-types text was authored under the pre-cutover assumption that `LIONWHEEL_PICK_ADJUSTMENT` would never appear; the amendment in the companion Tom edit updates the text without removing the enum-preservation rationale.
+    c) Two reversal classes now coexist (delivery-correction vs count-freeze-driven); operator runbooks and dashboards should distinguish the two.
+    d) RUNTIME_READY signal coverage for the post-cutover LionWheel state — confirm `.claude/state/runtime_ready.json` carries a post-cutover entry; emit via authorized emitter if missing.
 
 ## Three corrective commits during Gate 3 DB run (reference)
 - `c03990c` — 0001 pgTAP plan count 23 → 26 (3 `col_is_pk` miscounted)

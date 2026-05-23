@@ -114,10 +114,23 @@ No CRM code, schema, agent, command, or UX surface may be built before step 3 is
 
 The AI Brain is ready. Recommended next non-brain work, in priority order:
 
-1. **D-B3.1c / D-B3.2 — Shadow DB setup** (blocked; DATABASE_URL_SHADOW missing). Unblock shadow DB to resume backend migration work.
-2. **Shopify External Boundary v2 Gate E** — GE-1 test SKU + GE-2 sentinel strategy (Option C) are open Tom decisions.
-3. **Sunday 2026-05-10 physical count + bridge cutover** — per runbook `docs/superpowers/runbooks/2026-05-10-sunday-cutover-runbook.md`.
-4. **Portal autonomous program** — UX audit releases blocked surfaces through the gate model.
+1. **CONFIRMED EXECUTED (2026-05-10):** Sunday physical count + LionWheel FG_OUT bridge cutover. Bridge in continuous production use since 2026-05-10; verified 2026-05-23 via Supabase MCP read-only audit (`CURRENT_STATE.md` §"Post-cutover state"). Stock truth holds (`rebuild_verifier() = 0`).
+
+2. **Open monitoring blind-spot:** `audit_runs` daily cron is non-writing (table empty as of 2026-05-23). Root cause is `JOB_RUNNER_TOKEN` provisioning AND/OR Python audit-skill container deployment — both listed as Tom-pending from the original cutover runbook. Resolve before next monitoring iteration.
+
+3. **Open Tom ratifications** (governance patch packet at `TEST-GT-START/docs/ruflo/26_LIONWHEEL_POST_CUTOVER_GOVERNANCE_PATCH_PACKET.md`):
+   - Two LionWheel reversal classes (delivery-correction + count-freeze interaction) — Tom direct edit to `LOCKED_DECISIONS.md` §LionWheel, same PR as this revision.
+   - Tom-approved manual-only allowance for `LIONWHEEL_PICK_ADJUSTMENT` (Option A; production code may not emit; any future use requires Tom approval) — same Tom edit.
+   - Same-day same-slot migration pairing exception in `EXECUTION_POLICY.md` §W4 — landed in this revision.
+   - Frozen flags log update for `LIONWHEEL_FG_OUT_BRIDGE_ENABLED` — landed in this revision.
+
+4. **Shopify External Boundary v2 Gate E — Tom decisions recorded 2026-05-23:** GE-1 test SKU = `ADD-GAR-ANISE`; GE-2 sentinel strategy = Option C (SKU-allowlist guard). Corridor execution against these inputs remains open.
+
+5. **D3 completion-range Tom recalibration (2026-05-23):** pre-cutover stale value `~60–70%`. Post-cutover evidence-anchored Tom recalibration: **80–90%**. Marked as Tom recalibration based on post-cutover evidence, not as an automatically computed percentage.
+
+6. **Portal autonomous program** — backend-blocked items in `admin_superuser_depth` (5 endpoints; documented in `gt-factory-os-portal/docs/portal-os/backend-package-admin-superuser-depth.md`) remain the gate to portal scorecard category 10.
+
+7. **RUNTIME_READY signal coverage re-verification** against `.claude/state/runtime_ready.json` for any post-2026-05-08 backend work that emitted readiness signals (production-simulation, purchase-session, economics, post-cutover LionWheel).
 
 ---
 
