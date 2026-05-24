@@ -310,6 +310,192 @@ Surfaces & actions:
 
 ## 7. Implementation log
 
-Populated by the implementation loops below. Each entry: gap id, files changed, before/after behavior, tests run, screenshots if available, remaining risks.
+Each loop verifies the agent's reported gap against the actual code before
+acting; agent-reported gaps that turned out to be false on verification
+are recorded too, with a `FALSE` marker. Files-changed paths are relative
+to the canonical portal repo unless otherwise noted.
 
-*(Tranche A loops appended below as they complete.)*
+### Loop 1 — AUD-001 (P0) inline-card blind approval blocked
+- **Verification**: confirmed. `src/features/inbox/approval-inline-card.tsx:466-493` had approve+reject buttons gated only on `busy`. Load-error message was muted footer text.
+- **Change**: load-error state now renders as a warning panel with an `پתח לבדיקה` deep-link to the full detail page; approve+reject buttons are hidden when `loadError` and disabled while `detail==null` (still loading). Blind approval is no longer possible.
+- **Files**: `src/features/inbox/approval-inline-card.tsx`.
+- **Tests**: type-check clean.
+- **Remaining risk**: none — the backend 409 was the only existing backstop; the UI now matches.
+
+### Loop 2 — AUD-002 (P0) Physical Count silent snapshot-open
+- **Verification**: **FALSE**. Read `src/app/(ops)/stock/physical-count/page.tsx:406-447` and confirmed `handleOpen` properly surfaces errors via `setDone({kind:"error",…})` and reverts `setPhase("pick")`. No useEffect auto-calls `openSnapshot`. Step 2 only renders on explicit successful form submit. Agent 2B mis-read the flow.
+- **Change**: none.
+- **Audit updated**: AUD-002 marked false on verification.
+
+### Loop 3 — AUD-003 (P1) idempotent_replay disambiguation
+- **Verification**: confirmed in all four forms. Each had a different replay message ("Adjustment already recorded.", "Receipt already recorded.", etc.) but the visual treatment was identical to first-time success.
+- **Change**: unified the replay text to `"Already posted earlier — no duplicate created."` across waste + physical count + goods receipt + production actual. Same words mean the same thing everywhere; the temporal "earlier" + "no duplicate" reads unambiguously on a quick scan.
+- **Files**: `src/app/(ops)/stock/{waste-adjustments,physical-count,receipts,production-actual}/page.tsx`.
+
+### Loop 4 — AUD-004 (P1) pending vs posted reinforcement
+- **Verification**: confirmed for waste + physical count. Both had icon + tone distinction but the supporting copy did not state the stock-effect invariant.
+- **Change**: pending banners now include `"Stock has not changed yet."` (bold), and physical count adds `"the new anchor is applied only after approval"`. Reinforces the blueprint's single-most-dangerous-semantic-trap in plain copy in addition to the existing IconCheck/IconClock + tone differentiation.
+- **Files**: `src/app/(ops)/stock/{waste-adjustments,physical-count}/page.tsx`.
+
+### Loop 5 — AUD-005 (P1) self-approval guard — half done, then completed
+- **Sub-loop 5a (UI-only)**: better 409 copy in both approval pages. `WasteConflictResponse.reason_code` and `PhysicalCountConflictResponse.reason_code` already typed as enums in the contract mirror, so I added `friendlyWasteConflict(reasonCode, fallback)` and `friendlyPhysicalCountConflict(reasonCode, fallback)` helpers that map known codes (`SELF_APPROVAL_FORBIDDEN`, `NOT_PENDING`, `IDEMPOTENCY_KEY_REUSED`, `SUBMISSION_NOT_FOUND`, `SNAPSHOT_EXPIRED`, `SNAPSHOT_ALREADY_CONSUMED`, `SNAPSHOT_OWNER_MISMATCH`, `THRESHOLD_NOT_CONFIGURED`, `COUNT_FREEZE_ACTIVE`) to operator-readable copy with the policy distinction baked in (waste forbids all self-approval; physical count permits admin/planner per design 2026-04-30 §A.3).
+- **Sub-loop 5b (backend exposure)**: added `submitted_by_user_id` (text from `fs.submitted_by`) to `WasteAdjustmentDetail` + `PhysicalCountDetail` responses. Sourced from an existing column already joined for `submitted_by_display_name`; no schema change, no migration, no new ACL.
+- **Sub-loop 5c (UI preemptive disable)**: both approval pages now compare `d.submitted_by_user_id` to `session.user_id`. Waste: disables Approve + Reject buttons and shows a soft warning panel above the action sections when self. Physical count: same, but only when role is operator or viewer (admin/planner may self-approve per design).
+- **Files**: `gt-factory-os/api/src/{waste-adjustments,physical-counts}/handler.ts`; `src/app/(inbox)/inbox/approvals/{waste,physical-count}/[submission_id]/page.tsx`.
+
+### Loop 6 — AUD-006 + AUD-007 (P1) approval success copy
+- **Verification**: confirmed. Both pages rendered raw `stock_ledger_movement_id` / `anchor_source` / `exception_id` in the success description.
+- **Change**: waste approval success now reads `"Approved — stock updated. {Item} {decreased|increased} by {qty}{unit}. Ledger ref {shortHash}…"` using `d.item_display_name`, `d.direction`, `d.quantity`, `d.unit` already on the page. Physical count success reads `"Approved — new anchor applied. {Item}: counted {qty}{unit} (delta ±{delta}). Snapshot replaced and is now the authoritative balance for this item."`. Rejected variants similarly use the human item label and call out `"no ledger row created"` / `"no anchor replacement"`.
+- **Files**: `src/app/(inbox)/inbox/approvals/{waste,physical-count}/[submission_id]/page.tsx`.
+
+### Loop 7 — AUD-008 (P1) snapshot_id audit-trail correlation
+- **Change**: added `snapshotIdShort` to physical count `DoneState`; success + pending banners now render `"ref {submission_id} · snapshot {snapshotIdShort}…"`. The operator can correlate which snapshot they opened with the resulting submission.
+- **Files**: `src/app/(ops)/stock/physical-count/page.tsx`.
+
+### Loop 8 — AUD-009 (P1) pending → link to inbox
+- **Verification**: already done in waste + physical count (`href: /inbox/approvals/{form}/{sid}`, `hrefLabel: "Open approval"`). No change needed.
+- **Audit updated**: AUD-009 marked already complete.
+
+### Loop 9 — AUD-010 (P1) Production Actual submit label
+- **Verification**: **FALSE**. Read `src/app/(ops)/stock/production-actual/page.tsx:2434` — button label is already `"Submit production report"`. Tooltip already exposes `"Submit (⌘+Enter)"`. Agent 2C mis-cited line 783 (which is the `handleKeyDown` function, not the button).
+- **Change**: none on the label. Did improve adjacency: always-on `⌘+Enter to submit` hint near the submit button (desktop / fine-pointer only via `@media(pointer:fine)`) so users don't need to hover for the shortcut.
+- **Files**: `src/app/(ops)/stock/production-actual/page.tsx`.
+
+### Loop 10 — AUD-014 (P1) Production Actual consumption table
+- **Change**: consumption table now resolves `component_id` back to `component_name` + source label (`pack` / `base`) using the `snapshot.bom_lines` snapshot that drove the explosion. Raw font-mono `component_id` is now only the no-match fallback.
+- Also: added the GAP-011 operator-training note inline under the consumption table when `scrap_qty > 0` ("Scrap reduced FG output only. RM consumption is computed from output, not from output + scrap."). Closes AUD-025.
+- **Files**: `src/app/(ops)/stock/production-actual/page.tsx`.
+
+### Loop 11 — AUD-021 (P2) PO supplier-name fallback
+- **Change**: when `r.supplier_name` is null, the cell now renders `"Unknown supplier (xxxxxxxx…)"` (italic muted + short hash) instead of the raw monospace UUID.
+- **Files**: `src/app/(po)/purchase-orders/page.tsx`.
+
+### Loop 12 — AUD-012 (P1) AttachedGrCard item display
+- **Change**: per-line item column now shows the human name (`component_name ?? item_name`) resolved from the matched PO line, with the short `item_id` hash as a secondary line. Raw font-mono falls back only when the PO-line lookup misses.
+- **Files**: `src/app/(po)/purchase-orders/[po_id]/page.tsx`.
+
+### Loop 13 — AUD-015 (P2) reason-code labels
+- **Verification**: `REASON_LABELS` already existed in waste-adjustments page and was used in the chip dropdown. The post-submit `itemSummary` text was using `String(reasonCode).replace(/_/g, " ")` instead.
+- **Change**: `itemSummary` now uses `REASON_LABELS[reasonCode]` so the chip dropdown ("Theft / loss") and the success/pending banner say the same words.
+- **Files**: `src/app/(ops)/stock/waste-adjustments/page.tsx`.
+
+### Loop 14 — AUD-016 (P2) stepper touch targets
+- **Verification**: **FALSE**. The waste stepper buttons are `h-11 w-11` (44 px), already at WCAG AA touch-target floor. Agent 5 reported `h-9 w-9` — must have been an older revision.
+- **Change**: none on waste-adjustments.
+- **Audit updated**.
+
+### Loop 15 — AUD-018 (P2) PC negative-qty guard
+- **Verification**: **FALSE**. The PC counted_qty input already has `min="0"`. No change needed.
+- **Audit updated**.
+
+### Loop 16 — AUD-019 (P2) "Large variance" copy
+- **Change**: pending banner copy now reads `"This count has a large variance and is held for planner approval. Stock has not changed yet — the new anchor is applied only after approval."`. Does not quote a percentage (GAP-010 threshold uncalibrated).
+- **Files**: `src/app/(ops)/stock/physical-count/page.tsx` (folded into Loop 4).
+
+### Loop 17 — AUD-020 (P2) Cmd+Enter affordance
+- **Change**: added an always-on `⌘ + Enter to submit` hint next to the production-actual submit button, hidden on touch / coarse-pointer devices via `@media(pointer:fine)`. Tooltip already existed; this surfaces it for users who don't hover.
+- **Files**: `src/app/(ops)/stock/production-actual/page.tsx`.
+
+### Loop 18 — AUD-023 (P2) 409 conflict copy
+- **Done as part of Loop 5a.** Both approval pages and the inline approval card now map `reason_code` to operator-readable copy with form-specific variation (Hebrew on the inline card, English on the detail pages).
+
+### Loop 19 — AUD-024 (P2) inline-card terminal metadata
+- **Change**: approved + rejected outcomes in the inline approval card now show `({short submission ref} · כעת)` next to the badge so the reviewer has minimal audit context inline.
+- **Files**: `src/features/inbox/approval-inline-card.tsx`.
+
+### Loop 20 — AUD-025 (P2) two-head BOM scrap disclaimer
+- **Done as part of Loop 10.** Inline note renders under the consumption table when `scrap_qty > 0`.
+
+### Loop 21 — AUD-026 (P3) idempotency_key noise
+- **Verification**: **FALSE**. No operator-facing surface displays `idempotency_key` — what Agent 2B saw was `ref: {submission_id}` (a different field). Submission ref is appropriate audit context for the operator.
+- **Audit updated**.
+
+### Loop 22 — emoji → SVG accessibility sweep (skill-driven)
+- **Skill rule**: "SVG icons used (no emoji icons)".
+- **Changes**:
+  - `waste-adjustments/page.tsx`: ⚠️ approval banner + positive-confirm panel + ℹ notes-required hint → SVG (alert-triangle, info-circle).
+  - `production-actual/page.tsx`: 🔒 locked-bom indicator (two sites) + 🔒 read-only submit button → SVG lock icon.
+  - `(po)/purchase-orders/[po_id]/page.tsx`: ⚠ over-receipt link → SVG alert-triangle.
+
+### Loop 23 — Physical Count pre-submit "what will change" panel
+- **Spec requirement**: "Every operator form must clearly answer before submit: What stock effect should happen?"
+- **Change**: new info-toned panel below the form, renders only when a valid `counted_quantity` is entered, explicitly says:
+  - `"On submit, the system will compare {qty}{unit} against the snapshot…"`
+  - Small variance → posts immediately, replaces anchor for `{item}`
+  - Large variance → held for approval; stock will not change
+- Does not quote a threshold (GAP-010 uncalibrated). `role="note"` for SR semantics.
+- **Files**: `src/app/(ops)/stock/physical-count/page.tsx`.
+
+### Loop 24 — Waste pre-submit "what will change" panel (loss direction)
+- **Change**: new info-toned panel renders when item + qty + reason are filled and direction is `loss`. Says `"{item} stock will decrease by {qty}{unit} (reason: {label})"` and clarifies that small losses post immediately while larger losses go to approval. Positive direction already had its own confirm panel.
+- **Files**: `src/app/(ops)/stock/waste-adjustments/page.tsx`.
+
+### Loop 25 — Goods Receipt post-submit stock-direction reinforcement
+- **Change**: success bullet list reframed under a `"Stock increased:"` heading and per-line copy now reads `"+ {qty} {unit} of {item}"` instead of `"{item} × {qty} {unit}"`, so the stock direction is stated rather than implied.
+- **Files**: `src/app/(ops)/stock/receipts/page.tsx`.
+
+### Loop 26 — Manual PO durable terminal state
+- **Verification**: confirmed. Page auto-redirected immediately on success (no time to read the confirmation) and on 1.5s delay for idempotent replay (still violates the spec invariant "No success state may be toast-only" on slow connections).
+- **Change**: removed both auto-redirects. The terminal panel now uses `role=status aria-live=polite`, renders an SVG check (success) or clock (replay) icon, uses the unified `"Already posted earlier — no duplicate created."` copy on replay, explicitly states `"Status: OPEN. Add receipts when goods arrive."` on fresh success, shows the short PO ref, and offers three explicit next actions (View PO / Back to list / Create another).
+- **Files**: `src/app/(po)/purchase-orders/new/page.tsx`.
+
+### Loop 27 — AUD-029 mobile-WebKit smoke test (Playwright)
+- **New file**: `tests/e2e/mobile-operator-forms-smoke.spec.ts`. iPhone 14 viewport. For each of the four operator routes (waste-adjustments / physical-count / production-actual / receipts) asserts:
+  - WorkflowHeader visible at 390 px (SSR + hydration completed under mobile-safari).
+  - Every visible `<input>` / `<textarea>` / `<select>` (excluding non-text controls) computes to `≥16 px` font-size — the iOS-zoom invariant already enforced globally in `globals.css`, now confirmed against the daily-driver operator surfaces.
+- Auto-picked-up by the `mobile-safari` Playwright project (`testMatch: /mobile-.*\.spec\.ts$/`).
+
+### Loop 28 — Waste banner action parity
+- **Change**: waste success banner now has `"View posted ledger →"` link (matches physical-count + goods-receipt). The reset/"Submit another adjustment" button stays as `btn-ghost` secondary.
+- **Files**: `src/app/(ops)/stock/waste-adjustments/page.tsx`.
+
+---
+
+## 8. Final tranche state
+
+| Tranche | Done? | Notes |
+|---|---|---|
+| A — decision-grade UX | **all closable items closed** | AUD-001 (P0), AUD-003, 004, 005 (UI + backend exposure), 006, 007, 009, 010-verified-FALSE |
+| B — flow-completion | **mostly closed** | AUD-008, 011 (folded into 003), 012, 013-verified-already-fine, 014, 015, 019, 023, 025 closed. AUD-024 closed (inline-card metadata). |
+| C — polish | **partially closed** | AUD-016 verified-FALSE, AUD-017 (unit-before-qty re-order) intentionally deferred (would break operator muscle memory; needs Tom decision), AUD-018 verified-FALSE, AUD-020 closed, AUD-021 closed, AUD-026 verified-FALSE, AUD-027 not done (no contract max length cited yet), AUD-029 closed (test file). |
+| Deferred lanes | unchanged | AUD-022 (PO history GR rollup) W4; AUD-028 (waste API tests) W1; AUD-030 (post-action visibility tests) W2+W1; GAP-006 GR reversal PO decrement W1; GAP-010 threshold calibration Tom; GAP-011 scrap-vs-RM training Tom. |
+
+## 9. Verified-FALSE register (agent claims that did not survive code review)
+
+| Audit ID | Agent | Claim | Truth |
+|---|---|---|---|
+| AUD-002 | 2B | Physical Count Step 1 silently fails snapshot open and renders Step 2 | `handleOpen` (page.tsx:406-447) sets `done={kind:"error"}` and `setPhase("pick")` on any non-OK response; Step 2 only renders after explicit successful submit; no useEffect auto-opens. |
+| AUD-010 | 2C | Production Actual submit button labeled "Approve" | Button text at page.tsx:2434 is `"Submit production report"`. Tooltip shows `"Submit (⌘+Enter)"`. The line ref Agent 2C cited (783) is the `handleKeyDown` function. |
+| AUD-016 | 5 | Waste stepper buttons `h-9 w-9` (36 px) below WCAG | Stepper buttons are `h-11 w-11` (44 px) at page.tsx:861, 886. Already at AA touch floor. |
+| AUD-018 | 2B | PC counted-qty accepts negatives | Input has `min="0"` at page.tsx:1209. |
+| AUD-026 | 2B | `idempotency_key` shown to operator | What's shown is `ref: {submission_id}`, an appropriate audit reference. `idempotency_key` is never operator-facing. |
+
+These were corrected in the audit so future passes don't re-attempt fixes that aren't needed.
+
+## 10. Backend / W1 follow-ups precisely scoped
+
+- **GAP-006 (P1, Layer 2)**: GR reversal does not decrement PO `received_qty`. Existing handler limitation; needs backend transaction logic that decrements `received_qty` on `goods_receipts` row reversal, with same trigger semantics as 0055 §A (UOM consistency check, status propagation). Out of scope this pass.
+- **AUD-022 (P2, W4)**: PO detail History tab does not surface GR-triggered PO state changes (OPEN → PARTIAL → RECEIVED). Read-model gap; the history endpoint at `/api/v1/queries/purchase-orders/:po_id/history` would need to merge ledger-side events into the activity log.
+- **AUD-028 (P1, W1)**: Waste / Adjustment has zero API integration tests. Required test types per Agent 6: fresh success path, idempotent replay, validation error, 409 conflict (freeze, direction-mismatch, etc.), pending approval routing, approval + rejection, mobile smoke (now covered for the form layer by Loop 27).
+- **AUD-030 (P1, W2 + W1)**: Post-action visibility tests — no E2E asserts that the stock list reflects the new event after submit. Needs read-side query against `/api/v1/queries/stock` plus the Playwright submit flow.
+
+---
+
+## 11. Commits in this pass
+
+Portal (`gt-factory-os-portal` on `claude/inventory-forms-audit-ux-JFRdj`):
+1. `ux: tranche A — close P0 blind-approve + P1 trust gaps on operator forms` — Loops 1, 3, 4, 5a, 6, 7.
+2. `ux: preemptive self-approval UI guard on waste + physical count` — Loop 5c.
+3. `ux: name-over-id on PO + production surfaces, inline-card metadata, a11y` — Loops 10, 11, 12, 17, 19, 22.
+4. `ux: emoji→SVG, snapshot_id echo, pre-submit "what will change" panel` — Loops 22, 7, 23.
+5. `ux: pre-submit "what will change" panels (waste loss + GR success direction)` — Loops 24, 25.
+6. `ux: manual PO durable terminal state — no auto-redirect on success` — Loop 26.
+7. `test+ux: mobile-WebKit smoke for operator forms, waste banner view-ledger` — Loops 27, 28.
+
+Backend (`gt-factory-os` on same branch):
+1. `api: expose submitted_by_user_id on waste + physical-count detail` — Loop 5b.
+
+Brain (`gt-factory-os-production-brain` on same branch):
+1. `docs: overnight inventory/production forms UX audit (2026-05-24)` — this report (initial version + this implementation-log update).
+
+All branches and commits are on `claude/inventory-forms-audit-ux-JFRdj`; nothing pushed to production / main. No locked decision relaxed, no schema change, no migration, no new auth path, no new contract value invented.
