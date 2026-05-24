@@ -56,6 +56,11 @@ dist/
 build/
 .next/
 
+# --- Python artifacts (skills under .claude/skills/ may ship Python scripts) ---
+__pycache__/
+*.pyc
+*.pyo
+
 # --- Defensive: secrets / credentials must never land in PRODUCTION git ---
 # (also enforced by .claude/settings.json deny rules and pre_tool_use.sh hook)
 .env
