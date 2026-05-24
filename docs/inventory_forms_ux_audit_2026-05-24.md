@@ -449,6 +449,22 @@ to the canonical portal repo unless otherwise noted.
 - **Change**: waste success banner now has `"View posted ledger →"` link (matches physical-count + goods-receipt). The reset/"Submit another adjustment" button stays as `btn-ghost` secondary.
 - **Files**: `src/app/(ops)/stock/waste-adjustments/page.tsx`.
 
+### Loop 29 — Physical Count Step 2 auto-focus
+- **Change**: new `countedQtyInputRef` + effect that focuses the counted-quantity input the moment `phase` flips to `counting`. Mirror of the existing Step 1 auto-focus on `searchInputRef`. Operator can type immediately after item selection — important on mobile.
+- **Files**: `src/app/(ops)/stock/physical-count/page.tsx`.
+
+### Loop 30 — Production Actual Step 2 auto-focus
+- **Change**: same pattern applied to PA: `outputQtyInputRef` focused when `phase === "entering"`. Saves a tap per cycle on mobile and reads as more responsive on desktop.
+- **Files**: `src/app/(ops)/stock/production-actual/page.tsx`.
+
+### Loop 31 — Inline approval card aria-live
+- **Change**: approve / reject outcomes now carry `role="status"` + `aria-live="polite"`; conflict / network-error outcome carries `role="alert"` + `aria-live="assertive"`. Brings the inline-card outcomes up to the same SR-announcement contract the operator-form result banners already had.
+- **Files**: `src/features/inbox/approval-inline-card.tsx`.
+
+### Loop 32 — Production Actual pre-submit scrap-vs-RM hint
+- **Change**: inline 3xs muted hint directly under the scrap-quantity input: *"Scrap reduces finished-goods output only. Raw-material consumption stays based on the output quantity above."* The same v1 semantic (GAP-011) was previously only shown post-submit; now it appears at the input that triggers the misunderstanding.
+- **Files**: `src/app/(ops)/stock/production-actual/page.tsx`.
+
 ---
 
 ## 8. Final tranche state
@@ -491,6 +507,10 @@ Portal (`gt-factory-os-portal` on `claude/inventory-forms-audit-ux-JFRdj`):
 5. `ux: pre-submit "what will change" panels (waste loss + GR success direction)` — Loops 24, 25.
 6. `ux: manual PO durable terminal state — no auto-redirect on success` — Loop 26.
 7. `test+ux: mobile-WebKit smoke for operator forms, waste banner view-ledger` — Loops 27, 28.
+8. `ux: auto-focus counted-quantity input on physical-count Step 2` — Loop 29.
+9. `ux: auto-focus output-qty input on production-actual Step 2` — Loop 30.
+10. `ux: explicit role + aria-live on approval inline card outcomes` — Loop 31.
+11. `ux: pre-submit scrap-vs-RM hint on production-actual` — Loop 32.
 
 Backend (`gt-factory-os` on same branch):
 1. `api: expose submitted_by_user_id on waste + physical-count detail` — Loop 5b.
