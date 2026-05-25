@@ -90,3 +90,33 @@ The flag can be cleared per-component (`UPDATE ... SET is_utility_expense_on_con
 ## Forward path
 
 When the next utility appears (CO2 cylinders charged per cocktail batch, kWh per cook), the flag carries it. No new schema, no new handler, no new UI section — just `UPDATE components SET is_utility_expense_on_consumption = true WHERE component_id = '<new-id>'` and a fixture row. The /inventory utilities section grows by one row.
+
+---
+
+## Addendum — 2026-05-25 (later same day)
+
+A CFO + MRP critique exposed that the initial RAW-WATER `std_cost_per_inv_uom = 1.35 ILS/L` was approximately **100× the real Israeli municipal commercial rate**. At that rate the water cost embedded in every cocktail's FG COGS was inflated and silently distorting margins. The first refactor (this document above) correctly excluded water from inventory value but had not addressed the underlying unit-cost error.
+
+### Correction applied
+
+| What | Where | Value |
+|---|---|---|
+| Israeli commercial water tariff (Rashut HaMayim, 1 Jan 2026 update) | https://www.gov.il/he/pages/rates_general1 | 15.26 ILS / m³ incl. VAT |
+| Rounded per-liter rate now in the system | migration 0211 + fixture | **0.015 ILS / L** |
+| Old (erroneous) rate | prior fixture / pre-0211 state | 1.35 ILS / L |
+| Impact on a 0.4 L Muza | water cost in COGS | from 0.54 ILS → 0.006 ILS |
+
+### What was added going beyond the rate fix
+
+1. **`migration 0212` — `v_cogs_breakdown_per_item` view.** Per-FG decomposition of `cogs_per_unit_ils` into seven buckets (utilities, packaging, sweeteners, bases, ingredients, self, other). Replaces the prior single-blob `cogs_per_unit_ils`. Pricing decisions now have a real surface: "this Muza's COGS is X, of which Y is packaging, Z is sweetener, W is water".
+2. **`scripts/audit_water_in_boms.ts` — one-shot water audit.** For every ACTIVE MANUFACTURED FG, reports: beverages with no water (BOM gap), recipes with water > 1.5× pack size (yield error), FGs with incomplete cost rollups, top-20 FG by utility cost share. Read-only, safe to run against production.
+3. **`api/test/cogs_multi_level_utility.test.ts` — 3-level walk test (T7a/b/c).** Asserts that FG → PACK → BASE → SEMI → water flows correctly when a finished good's BASE MIX uses a SEMI component (e.g. cocktails on top of `SEMI-FRE-BASE`). The two-level `fn_explode_bom_to_components` alone would silently swallow water inside SEMI recipes; the test guards the SEMI-rollup path added in migration 0209.
+
+### Acknowledged limitations (NOT fixed here)
+
+The deeper CFO concern — that we have **standard cost absorption without matching credit-side journal entries**, which means the same water can be expensed twice (once as utility bill in P&L, once as part of COGS at FG sale) — is not addressed. That is a separate, larger conversation about whether GT wants accounting-grade or management-grade COGS, and it requires the accountant of record. Until that is decided:
+
+- Water cost in FG COGS = standard-utility-absorbed-cost. **Not a GL-grade material cost.**
+- The 0.015 ILS / L is the bulk-buy rate; it does NOT include losses, cleaning, evaporation, or RO/treatment overhead. Realised absorbed water cost ≈ municipal bill ± variance, with no formal true-up yet.
+- For management decisions (pricing, margin ranking, FOODCOST percentage) the numbers are now correct to a degree that comfortably exceeds the materiality bar.
+- For audited financial statements: see the accountant. Don't reuse `cogs_per_unit_ils` for balance sheet inventory valuation without a sanity overlay.
