@@ -39,6 +39,9 @@ Bridge state: `LIONWHEEL_FG_OUT_BRIDGE_ENABLED=false` — do not flip until Sund
 **4 — AI Brain Run G governance closure**
 Final AI Brain governance closure on branch `run-g-final-brain-closure`. Patching SIGNALS.md (CONFLICT-003 closed), CURRENT_STATE.md, ACTIVE_NOW.md, COMMAND_REGISTRY.md count fix, PRODUCTION-REMOTE-PLAN.md status, FINAL_AI_BRAIN_ACCEPTANCE.md creation. PR pending Tom merge. No product runtime change.
 
+**5 — Loose-shipment ledger integration**
+W3 slice of the `lionwheel-route-invoices` skill expansion. Lanes: backend-db (primary) + integration-boundary (contract doc slice). Scope: additive `event_type` enum values (`LOOSE_SHIPMENT_OUT`, `LOOSE_SHIPMENT_IN`), new `stock_event_idempotency_keys` table, `POST /api/stock-events/loose-shipment` endpoint with Zod validator + pgTAP + Fastify e2e, and `docs/contracts/stock-events.md` covering the approved idempotency formula `sha256(driver_id + delivery_date + task_id + item_id)`, server-enforced app-layer guards, and reversal path. Authorization: `factory-os-governor` PROCEED_WITH_CONSTRAINTS verdict 2026-05-26 + Tom session 2026-05-26. Approval ref: `docs/phase8/decisions/loose-shipment-ledger-integration-approval-2026-05-26.md`. Status: active, awaiting backend-db-executor dispatch. Constraints: 11 (see decision packet).
+
 For the full evidence chain across these corridors, see `archive/historical-state-snapshots/2026-05-08-planning-corridor-detailed-state.md` and `archive/historical-state-snapshots/2026-05-08-phase8-ai-brain-rewrite-snapshot.md`.
 
 ---
@@ -47,10 +50,10 @@ For the full evidence chain across these corridors, see `archive/historical-stat
 
 | Lane | Status | Notes |
 |------|--------|-------|
-| backend-db | quiet | Awaiting Tom decision on next dispatch |
+| backend-db | active | Mission: loose-shipment ledger integration (corridor #5) — awaiting backend-db-executor dispatch |
 | portal | Mode A | No scoped form active; window2-portal-sandbox HEAD `9e2212e` (FLOW-003 closure) |
-| integration | quiet | Shopify v2 Phase 5 readiness work pending Tom approval |
-| docs | active | Phase 8 Run F Wave 4 Hole 2 cleanup in progress (this dispatch) |
+| integration | active | Mission: loose-shipment ledger integration (corridor #5) — contract doc slice queued after migration |
+| docs | active | Decision packet + ACTIVE_NOW edit for loose-shipment mission landed 2026-05-26 |
 | governance | always-on | factory-os-governor read-only |
 | ux-audit | on-demand | Latest: DR-017 (post-Run-C UX release gate recheck) |
 
