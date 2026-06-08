@@ -120,7 +120,7 @@ Architecture map, schema map, portal module map, form definitions, integration c
 
 **Portal mode (authoritative source: `.claude/state/active_mode.json`):** portal current mode = **A** as of 2026-04-27T08:18:00Z. Most recent Mode B exit: Planning-Tranche3-Blockers (commit `e7dce27` on window2-portal-sandbox/main, 2026-04-27). Per `EXECUTION_POLICY.md`, only one form may be in Mode B at a time. Prior Mode B exits are recorded in `.claude/state/active_mode.json`; the snapshot of the prior-exit list is preserved at `archive/historical-state-snapshots/2026-04-25-ralph-loop-snapshot.md`.
 
-**RUNTIME_READY signal count:** 35 (latest: GoodsReceipt-FromPO 2026-05-02T19:30Z). Authoritative source: `.claude/state/runtime_ready.json`.
+**RUNTIME_READY signal count:** 40 (latest: LooseShipmentLedger 2026-05-26). Authoritative source: `.claude/state/runtime_ready.json`.
 
 ### Gate 4 — Operational Mirrors / Forecasting — CLOSED
 

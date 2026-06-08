@@ -14,7 +14,7 @@
 > 5. What must NOT be touched (this cycle)
 > 6. Commit tips
 >
-> **Last refreshed:** 2026-05-08 (Phase 8 Run G — final AI Brain governance closure; Run F.2b pushed PRODUCTION to private remote `gt-factory-os-production-brain` at HEAD `875424b`; Run G closing signals policy, state freshness, registry, and acceptance record on branch `run-g-final-brain-closure`; no product runtime change).
+> **Last refreshed:** 2026-06-08 (factual drift reconciliation only — RUNTIME_READY count 35→40 + corridor #5 status corrected to verified state; corridors 1–4, lane intent, and other sections NOT re-audited this pass and may be stale). Prior refresh 2026-05-08 (Phase 8 Run G — final AI Brain governance closure; Run F.2b pushed PRODUCTION to private remote `gt-factory-os-production-brain` at HEAD `875424b`; Run G closing signals policy, state freshness, registry, and acceptance record on branch `run-g-final-brain-closure`; no product runtime change).
 
 ---
 
@@ -40,7 +40,7 @@ Bridge state: `LIONWHEEL_FG_OUT_BRIDGE_ENABLED=false` — do not flip until Sund
 Final AI Brain governance closure on branch `run-g-final-brain-closure`. Patching SIGNALS.md (CONFLICT-003 closed), CURRENT_STATE.md, ACTIVE_NOW.md, COMMAND_REGISTRY.md count fix, PRODUCTION-REMOTE-PLAN.md status, FINAL_AI_BRAIN_ACCEPTANCE.md creation. PR pending Tom merge. No product runtime change.
 
 **5 — Loose-shipment ledger integration**
-W3 slice of the `lionwheel-route-invoices` skill expansion. Lanes: backend-db (primary) + integration-boundary (contract doc slice). Scope: additive `event_type` enum values (`LOOSE_SHIPMENT_OUT`, `LOOSE_SHIPMENT_IN`), new `stock_event_idempotency_keys` table, `POST /api/stock-events/loose-shipment` endpoint with Zod validator + pgTAP + Fastify e2e, and `docs/contracts/stock-events.md` covering the approved idempotency formula `sha256(driver_id + delivery_date + task_id + item_id)`, server-enforced app-layer guards, and reversal path. Authorization: `factory-os-governor` PROCEED_WITH_CONSTRAINTS verdict 2026-05-26 + Tom session 2026-05-26. Approval ref: `docs/phase8/decisions/loose-shipment-ledger-integration-approval-2026-05-26.md`. Status: active, awaiting backend-db-executor dispatch. Constraints: 11 (see decision packet).
+W3 slice of the `lionwheel-route-invoices` skill expansion. Lanes: backend-db (primary) + integration-boundary (contract doc slice). Scope: additive `event_type` enum values (`LOOSE_SHIPMENT_OUT`, `LOOSE_SHIPMENT_IN`), new `stock_event_idempotency_keys` table, `POST /api/stock-events/loose-shipment` endpoint with Zod validator + pgTAP + Fastify e2e, and `docs/contracts/stock-events.md` covering the approved idempotency formula `sha256(driver_id + delivery_date + task_id + item_id)`, server-enforced app-layer guards, and reversal path. Authorization: `factory-os-governor` PROCEED_WITH_CONSTRAINTS verdict 2026-05-26 + Tom session 2026-05-26. Approval ref: `docs/phase8/decisions/loose-shipment-ledger-integration-approval-2026-05-26.md`. Status (verified 2026-06-08): W3 substrate COMPLETE on branch `mission/loose-shipment-ledger-integration` (pushed to origin; migration `0207_loose_shipment_ledger_integration.sql` + endpoint `api/src/stock-events/` + pgTAP/e2e green; RUNTIME_READY #40 emitted 2026-05-26). NOT merged to main, NOT in production. Next: W3.3 contract doc (integration-boundary) → release-verifier → Tom merge. Constraints: 11 (see decision packet).
 
 For the full evidence chain across these corridors, see `archive/historical-state-snapshots/2026-05-08-planning-corridor-detailed-state.md` and `archive/historical-state-snapshots/2026-05-08-phase8-ai-brain-rewrite-snapshot.md`.
 
@@ -50,9 +50,9 @@ For the full evidence chain across these corridors, see `archive/historical-stat
 
 | Lane | Status | Notes |
 |------|--------|-------|
-| backend-db | active | Mission: loose-shipment ledger integration (corridor #5) — awaiting backend-db-executor dispatch |
+| backend-db | quiet | Loose-shipment (corridor #5) W3 substrate COMPLETE on `mission/loose-shipment-ledger-integration` (not merged); no active dispatch |
 | portal | Mode A | No scoped form active; window2-portal-sandbox HEAD `9e2212e` (FLOW-003 closure) |
-| integration | active | Mission: loose-shipment ledger integration (corridor #5) — contract doc slice queued after migration |
+| integration | ready | Loose-shipment (corridor #5) W3.3 contract doc is the next action (migration 0207 landed on branch) |
 | docs | active | Decision packet + ACTIVE_NOW edit for loose-shipment mission landed 2026-05-26 |
 | governance | always-on | factory-os-governor read-only |
 | ux-audit | on-demand | Latest: DR-017 (post-Run-C UX release gate recheck) |
@@ -65,7 +65,7 @@ Maximum 4 simultaneous executor lanes (backend-db + portal + integration + docs)
 
 | Item | Value | Authoritative source |
 |------|-------|----------------------|
-| RUNTIME_READY signals | 35 (latest: GoodsReceipt-FromPO 2026-05-02T19:30Z) | `.claude/state/runtime_ready.json` |
+| RUNTIME_READY signals | 40 (latest: LooseShipmentLedger 2026-05-26) | `.claude/state/runtime_ready.json` |
 | Portal mode | Mode A (no scoped form) | `.claude/state/active_mode.json` |
 | Portal tip | `9e2212e` (FLOW-003 closure — actionable in-app ticket CTA; Run C 2026-05-08) | window2-portal-sandbox/main |
 | Backend tip | `a6c80ec` (PR #21 structure consolidation; last code commit: `bcb2d0f` GE-D) | gt-factory-os/main |
