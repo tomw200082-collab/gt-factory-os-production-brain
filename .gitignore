@@ -19,13 +19,26 @@
 .lionwheel-prints/
 .superpowers/
 .playwright-mcp/
+.outputs/
 
-# --- Root-level loose screenshots (must be filed under docs/) ---
+# --- Root-level loose outputs (must be filed under .outputs/ or docs/, never root) ---
+# Screenshots:
 /*.png
 /*.jpg
 /*.jpeg
 /*.gif
 /*.webp
+# Office docs / data exports / underscore-scratch generated at root:
+/*.docx
+/*.csv
+/*.xlsx
+/_*
+
+# --- Active working data (raw exports + mid-flight analysis; NOT yet authority) ---
+# Kept on disk, ignored by git until the work lands; then commit the final artifacts
+# explicitly (never `git add -A`). See .outputs/README.md and CURRENT_STATE.md.
+INPUT/
+docs/forecast-brain/
 
 # --- Vendored binaries ---
 .tools/
