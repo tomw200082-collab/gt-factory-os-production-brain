@@ -1,18 +1,37 @@
 {
-  "_doc": "Learned supplier-SKU / description -> internal component map. The schema has NO supplier-SKU column, so this file is the persistent cross-reference. Append a row only when Tom CONFIRMS a mapping during a receipt. Match priority: exact supplier_sku, then normalized description, then price/uom corroboration.",
-  "_fields": "supplier_id, supplier_sku (מק\"ט as printed, or null), description_he, description_norm, component_id, item_type, confidence, confirmed, evidence, first_seen_doc",
+  "_doc": "Learned supplier-SKU / description -> internal component map. The schema has NO supplier-SKU column, so this file is the persistent cross-reference. Append a row only when Tom CONFIRMS a mapping during a receipt (or it auto-posts at high confidence). Match priority: exact supplier_sku, then normalized description, then price/uom corroboration.",
+  "_fields": "supplier_id, supplier_sku (מק\"ט as printed), description_he, description_norm, component_id, item_type, uom, confidence, confirmed, evidence, first_seen_doc",
   "mappings": [
     {
       "supplier_id": "SUP-010",
-      "supplier_sku": "800259",
-      "description_he": "(pending sharper photo)",
+      "supplier_sku": "900259",
+      "description_he": "וודרן סירופ אוכמניות",
       "description_norm": "vedrenne blueberry syrup",
       "component_id": "RAW-BLUEBERRY-SYRUP-VEDRENNE",
       "item_type": "RM",
+      "uom": "L",
       "confidence": "high",
-      "confirmed": false,
-      "evidence": "implied unit price 1200.00/30 = 40.00 ILS/L == component std_cost 40.00; Kill Bill is primary supplier for this component (supplier_items.is_primary=true).",
+      "confirmed": true,
+      "evidence": "Posted on invoice IN264001590: 30 units x 40.00 = 1200.00; unit price 40.00 ILS/L == component std_cost; Kill Bill is primary supplier; description 'וודרן סירופ אוכמניות' = Vedrenne blueberry syrup. Auto-posted (movement c49cd2d8) per Tom autonomy setting.",
       "first_seen_doc": "IN264001590"
+    }
+  ],
+  "_pending_disambiguation": [
+    {
+      "supplier_id": "SUP-010",
+      "supplier_sku": "900710",
+      "qty": 15,
+      "line_total": 1050.00,
+      "implied_unit_price": 70.00,
+      "note": "Reads like a Vedrenne liqueur (amaretto?). No clean catalog match (RAW-AMARETTO std_cost 96.73, -28% gap). Awaiting Tom: existing component + price change, or new component."
+    },
+    {
+      "supplier_id": "SUP-010",
+      "supplier_sku": "001",
+      "qty": 45,
+      "line_total": 11.70,
+      "implied_unit_price": 0.26,
+      "note": "Small line; likely stirring sticks/packaging or a fee. Awaiting Tom: PKG component to receive, or exclude from stock."
     }
   ]
 }
