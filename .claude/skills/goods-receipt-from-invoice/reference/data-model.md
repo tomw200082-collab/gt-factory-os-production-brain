@@ -148,6 +148,38 @@ in `gt-factory-os/api/src/purchase-orders/schemas.ts` before calling. Set
 Then put the returned `po_id` on the GR header and the line `po_line_id`s on the
 matching GR lines so the trigger rolls up `received_qty`.
 
+## Create a new component (round-4 flow — only after Tom approves the draft)
+
+First introspect required columns (don't assume NOT NULLs):
+```sql
+select column_name, data_type, is_nullable, column_default
+from information_schema.columns
+where table_schema='private_core' and table_name='components' order by ordinal_position;
+```
+Then, in one transaction, insert the component and its supplier link:
+```sql
+insert into private_core.components
+  (component_id, component_name, component_class, status, inventory_uom,
+   purchase_uom, purchase_to_inv_factor, primary_supplier_id,
+   std_cost_per_purchase_uom, std_cost_per_inv_uom, planned_flag, notes)
+values
+  (:component_id, :name, :class /* INGREDIENT|PROCESS_SUPPLY|PACKAGING|PACKAGING_SET */,
+   'ACTIVE', :inv_uom, :purchase_uom, :purch_to_inv, :supplier_id,
+   :cost_per_purchase_uom, :cost_per_inv_uom, true,
+   'Created from <supplier> invoice <doc> on <date>');
+
+insert into private_core.supplier_items
+  (supplier_id, component_id, is_primary, order_uom, inventory_uom,
+   pack_conversion, std_cost_per_inv_uom, approval_status, notes)
+values
+  (:supplier_id, :component_id, true, :purchase_uom, :inv_uom,
+   :purch_to_inv, :cost_per_inv_uom, 'approved',
+   'Created from invoice <doc>');
+```
+Component id convention: `RAW-<SHORT-NAME>` for ingredients, mirroring existing
+ids (e.g. `RAW-VODKA`, `RAW-BLUEBERRY-SYRUP-VEDRENNE`). Use UPPER-KEBAB. After
+creating, also append the supplier-SKU mapping to `crossref.json`.
+
 ## Roles
 - Goods Receipt: operator and above.
 - Manual PO create + price update: planner/admin only.

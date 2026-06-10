@@ -18,6 +18,14 @@ You receive a photo (sometimes several) of a supplier document and a short note.
 Your job is to do the full back-office job a careful purchasing clerk would do,
 **without ever guessing on stock truth**, and post it into GT Factory OS.
 
+### Tom's settings (locked via 5-round review, 2026-06-10)
+1. **Autonomy:** auto-post high-confidence lines; ask on everything else.
+2. **Prices:** auto-update ≤10 % moves; ask on >10 % or first-time price.
+3. **No open PO:** post a direct PO-less receipt (`po_id=null`) by default.
+4. **New item:** propose a ready-to-create component draft, wait for approval.
+5. **Receipt date (`event_at`):** the moment the photo is sent (today), unless
+   Tom names an actual arrival date.
+
 This skill operates against the **live production database** `gt-ops-prod`
 (`rvadsozabmxkkrktwgnv`). Reads are free. **Writes to stock truth, prices, POs,
 or master data require Tom's explicit "post it" confirmation on the resolved
@@ -30,11 +38,31 @@ package** (see §6 Governance). Re-sending the same document never double-posts
 
 > **Stock truth is the product.** A wrong receipt corrupts on-hand balances,
 > which corrupts planning, which corrupts purchasing. So: extract precisely,
-> map with evidence, **show Tom the resolved package, get one confirmation,
-> then post.** Never post a line you could not map with confidence.
+> map with evidence. **High-confidence lines post automatically; anything that
+> isn't high-confidence stops and asks Tom.** Never post a line you could not
+> map with confidence.
 
 If the photo is too low-resolution to read a line's description, quantity, or
 price — **say so and ask for a sharper photo of that line.** Do not infer.
+
+### Autonomy model (Tom, round 1): "auto for the certain, ask for the rest"
+A line **auto-posts** only when **every** condition holds:
+1. Supplier resolved by an unambiguous exact match (§2).
+2. The line maps to a component/item via **either** a `confirmed:true` crossref
+   entry **or** an exact `component_name` description match **corroborated** by an
+   implied net unit price within **±1 %** of the known cost.
+3. The unit exists in `uom` and the purchase→inventory conversion is known.
+4. Quantity, unit price and line total were read at high confidence **and** the
+   line arithmetic reconciles.
+5. The line introduces **no** new master data. (A *price* difference does not
+   block the receipt line — price is handled separately in §4: ≤10 % auto-updates,
+   >10 % or first-time is asked, while the receipt line still posts.)
+
+Any line failing 1–5 is **held** and asked about. **Always held, never auto:**
+new supplier/component, price changes **>10 % or first-time** (§4), credit notes
+/ returns, deposit·delivery·fee lines, and anything the photo couldn't render
+cleanly. Auto-posted and held lines may mix in one document — post the certain
+ones, ask about the rest, in a single reply.
 
 ---
 
@@ -91,20 +119,36 @@ Pull the supplier's catalog once to match against (see `reference/data-model.md`
 for the query). Output a **mapping table** with per-line confidence and the
 evidence used. Any line below high confidence is **held for Tom**, not posted.
 
-- **No internal component matches** → propose creating the component (admin) or
-  ask Tom which existing component it is. Never receive into a guessed component.
+- **No internal component matches** (after trying crossref + description + price):
+  first double-check it isn't an existing variant/rename of a component Tom owns;
+  if it's genuinely new, **propose a ready-to-create component draft** (round 4):
+  a suggested `component_id`, `component_name`, `component_class`, `inventory_uom`
+  + `purchase_uom` + `purchase_to_inv_factor` (from the invoice unit),
+  `primary_supplier_id` = this supplier, and `std_cost` from the invoice — plus a
+  `supplier_items` link. Show it filled-in and **wait for Tom's OK**; on approval,
+  create it (template in `reference/data-model.md`) **and** receive the line.
+  Never auto-create and never receive into a guessed component.
 
-### 4. Detect price changes & propose updates
-For each mapped line compute the invoice **net unit price per inventory UOM** and
-compare to the current `supplier_items.std_cost_per_inv_uom` (fallback
-`components.std_cost_per_inv_uom`). If it differs beyond ±1 %:
-- Propose a **SUPPLIER_PRICE_UPDATE** (writes `supplier_items.std_cost_per_inv_uom`
-  + a `price_history` row + a `change_log` row — see `reference/data-model.md`).
-- Show old → new, and the % change. This is a **guarded write** (planner/admin),
-  separate from the receipt; Tom approves it in the same confirmation step but it
-  is listed distinctly.
-- If `supplier_items` has no cost yet (NULL / "Price TBD"), this *sets the first
-  real cost* — call that out, it's high-value.
+### 4. Detect price changes & update (round-2 policy: auto small, ask big)
+For each mapped line compute the invoice **net unit price per inventory UOM**
+(strip VAT, apply purchase→inv conversion) and compare to the current
+`supplier_items.std_cost_per_inv_uom` (fallback `components.std_cost_per_inv_uom`).
+Let `Δ% = (new − old) / old`.
+
+- **|Δ%| ≤ 1 %** → no change; do nothing.
+- **1 % < |Δ%| ≤ 10 %** → **auto-update**: write `supplier_items.std_cost_per_inv_uom`
+  + a `price_history` row + a `change_log` row (`SUPPLIER_PRICE_UPDATE_MANUAL`,
+  see `reference/data-model.md`). Report old → new → Δ% as done, alongside the
+  receipt.
+- **|Δ%| > 10 %** → **ASK** before writing. Big jumps are often a misread line, a
+  UOM/pack mismatch, or a real renegotiation — show old → new → Δ% and the
+  source line, and let Tom approve or correct.
+- **Old cost is NULL / "Price TBD"** → **ASK** (this sets the *first* real cost;
+  high-value, worth a glance). Once set, future moves follow the ≤10 % rule.
+
+The price write is a guarded planner/admin action and is always reported
+distinctly from the receipt, even when auto. The receipt does **not** depend on
+the price update — a held price question never blocks an AUTO receipt line.
 
 ### 5. Reconcile against the purchase order ("was it open?")
 Search open POs for this supplier (`purchase_orders.status = 'OPEN'` + lines).
@@ -112,29 +156,28 @@ Search open POs for this supplier (`purchase_orders.status = 'OPEN'` + lines).
   `po_line_id` on the matching line. The DB triggers roll up `received_qty` and
   advance PO/line status. This is the happy path.
 - **No open PO** (the common real case — *"היא לא הייתה פתוחה"*): a **PO-less
-  receipt is explicitly allowed** (LOCKED_DECISIONS.md §Goods Receipt). Offer Tom
-  two options:
-  - **(a) PO-less GR** — receive with `po_id = null`. Fastest, fully legitimate.
-  - **(b) Back-create a PO then receive** — create a `source_type='manual'` PO
-    (reason: "retroactive — goods/invoice arrived without an open PO"), then GR
-    against it, for a complete paper trail. Recommend (b) when the amount is
-    material or Tom wants the audit chain; (a) otherwise.
+  receipt is explicitly allowed** (LOCKED_DECISIONS.md §Goods Receipt).
+  **Default (Tom, round 3): receive directly with `po_id = null`.** Do not
+  back-create a PO and do not ask about it — just post the PO-less receipt. Only
+  if Tom explicitly asks for a paper-trail PO, back-create a `source_type='manual'`
+  PO (reason: "retroactive — arrived without an open PO") and receive against it.
 
-### 6. Governance gate — STOP and confirm
-Before any write, present **one consolidated package**:
+### 6. Split the document, then act (autonomy model from round 1)
+Sort every line into **AUTO** (meets all 5 conditions in "Autonomy model") or
+**ASK**. Then, in one reply, present **one consolidated package**:
 - supplier (id + name), document no., date;
-- the mapping table (line → component_id, qty in inv UOM, confidence);
-- price updates (old → new), if any;
-- new master data to create (supplier/component), if any;
-- PO decision (attach / PO-less / back-create);
-- the exact stock delta this will cause (component → +qty inv UOM);
-- the idempotency key.
+- **AUTO lines** — the mapping table (line → component_id, qty in inv UOM,
+  evidence) that you are about to post / have posted;
+- **ASK lines** — what's uncertain and the specific question (which component? a
+  sharper photo? approve a price change old→new? create new master data?);
+- PO decision (attach / PO-less / back-create — see §5);
+- the exact stock delta (component → +qty inv UOM) and the idempotency key.
 
-Then ask Tom to confirm. **Only on explicit "post it" / "תקלוט" do you write.**
-- Reads: always allowed. Writes to stock_ledger / prices / POs / masters: only
-  after confirmation.
-- This respects the kernel principle that Claude tooling is not an autonomous
-  runtime path — the human stays in the loop on every stock-truth mutation.
+**Act:** post the AUTO lines immediately (§7) and report them as done; **hold**
+the ASK lines until Tom answers, then post those too. If a document has *only*
+ASK lines, write nothing until he answers. Small price moves (≤10 %) auto-update
+per §4; large/first-time prices and new master data are always ASK — even when
+the receipt line itself is AUTO.
 
 ### 7. Post (idempotent, single transaction)
 Resolve Tom's `app_users.user_id` (by email `tom@gteveryday.com`) for
@@ -142,6 +185,11 @@ Resolve Tom's `app_users.user_id` (by email `tom@gteveryday.com`) for
 idempotency key: **`GRINV:<supplier_id>:<document_no>`** (e.g.
 `GRINV:SUP-010:IN264001590`). Re-running the same document replays, never
 double-posts.
+
+**`event_at` (round 5): the moment Tom sends the photo — i.e. `now()` at
+processing time.** Not the invoice date. (The document date is still captured in
+`raw_payload` and the GR notes for the paper trail.) If Tom states an actual
+arrival date in his note, honour that instead.
 
 Post via the canonical path. From a Claude session that path is a **single SQL
 transaction** that mirrors the production handler
@@ -182,4 +230,6 @@ idempotency UNIQUE constraint is the double-post guard.
 - Receive in **inventory UOM**, after applying the purchase→inv conversion.
 - A credit note (חשבונית זיכוי) is a **return** → negative movement, different
   movement semantics; confirm with Tom before posting.
-- No autonomous write without the §6 confirmation. Idempotency key is mandatory.
+- Auto-post **only** high-confidence lines (all 5 conditions). Everything else
+  waits for Tom. Price changes and new master data are never auto. Idempotency
+  key is mandatory on every post.
