@@ -1,0 +1,18 @@
+{
+  "_doc": "Learned supplier-SKU / description -> internal component map. The schema has NO supplier-SKU column, so this file is the persistent cross-reference. Append a row only when Tom CONFIRMS a mapping during a receipt. Match priority: exact supplier_sku, then normalized description, then price/uom corroboration.",
+  "_fields": "supplier_id, supplier_sku (מק\"ט as printed, or null), description_he, description_norm, component_id, item_type, confidence, confirmed, evidence, first_seen_doc",
+  "mappings": [
+    {
+      "supplier_id": "SUP-010",
+      "supplier_sku": "800259",
+      "description_he": "(pending sharper photo)",
+      "description_norm": "vedrenne blueberry syrup",
+      "component_id": "RAW-BLUEBERRY-SYRUP-VEDRENNE",
+      "item_type": "RM",
+      "confidence": "high",
+      "confirmed": false,
+      "evidence": "implied unit price 1200.00/30 = 40.00 ILS/L == component std_cost 40.00; Kill Bill is primary supplier for this component (supplier_items.is_primary=true).",
+      "first_seen_doc": "IN264001590"
+    }
+  ]
+}
