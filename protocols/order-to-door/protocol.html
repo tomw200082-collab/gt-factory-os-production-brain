@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GT · מהזמנה ועד הדלת — הפרוטוקול התפעולי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=Heebo:wght@300;400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7EE; --ink:#15342A; --ink-soft:#5C6B61;
+    --office:#0E9C8D; --pick:#37A24A; --print:#E78B0B; --ship:#E04B6B; --track:#5B6CF0;
+    --office-bg:#E4F4F1; --pick-bg:#E7F5E7; --print-bg:#FCEFD9; --ship-bg:#FBE6EC; --track-bg:#E8EAFD;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:var(--paper); color:var(--ink); font-family:"Heebo","Segoe UI",sans-serif; -webkit-font-smoothing:antialiased;}
+  body{position:relative; overflow-x:hidden; min-height:100vh;}
+  .blob{position:fixed; border-radius:50%; filter:blur(70px); opacity:.28; z-index:0; pointer-events:none;}
+  .b1{width:460px;height:460px; background:var(--office); top:-160px; left:-120px;}
+  .b2{width:420px;height:420px; background:var(--print); top:32%; right:-160px;}
+  .b3{width:480px;height:480px; background:var(--ship); top:62%; left:-140px;}
+  .b4{width:380px;height:380px; background:var(--track); bottom:-160px; right:-120px; opacity:.22;}
+  .wrap{position:relative; z-index:1; max-width:820px; margin:0 auto; padding:54px 26px 90px;}
+  .brand{display:flex; align-items:center; gap:10px; font-family:"Rubik"; font-weight:800; letter-spacing:.5px; font-size:18px;}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--pick); box-shadow:0 0 0 4px var(--pick-bg);}
+  .brand small{font-weight:500; letter-spacing:4px; color:var(--ink-soft); font-size:11px;}
+  h1{font-family:"Rubik"; font-weight:900; font-size:clamp(38px,8vw,64px); line-height:.98; margin:26px 0 12px; letter-spacing:-1.5px;
+    background:linear-gradient(95deg,var(--office),var(--pick) 35%,var(--print) 60%,var(--ship) 82%,var(--track));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+  .sub{font-size:clamp(16px,3.4vw,21px); font-weight:500; color:var(--ink-soft); max-width:32ch;}
+  .line{position:relative; margin-top:46px; padding-inline-start:6px;}
+  .line::before{content:""; position:absolute; top:8px; bottom:40px; inset-inline-start:33px; width:4px; border-radius:4px;
+    background:linear-gradient(var(--office),var(--office) 15%,var(--pick) 18%,var(--pick) 33%,
+      var(--print) 36%,var(--print) 50%,var(--ship) 53%,var(--ship) 84%,var(--track) 87%,var(--track));}
+  .phase{font-family:"Rubik"; font-weight:700; font-size:13px; letter-spacing:1px; display:inline-flex; align-items:center; gap:8px;
+    padding:6px 14px; border-radius:999px; margin:28px 0 14px 0; position:relative; inset-inline-start:-2px;}
+  .phase span{width:7px;height:7px;border-radius:50%;}
+  .p-office{background:var(--office-bg); color:#0a6b60} .p-office span{background:var(--office)}
+  .p-pick{background:var(--pick-bg); color:#1f7a2c} .p-pick span{background:var(--pick)}
+  .p-print{background:var(--print-bg); color:#a4610a} .p-print span{background:var(--print)}
+  .p-ship{background:var(--ship-bg); color:#b33153} .p-ship span{background:var(--ship)}
+  .p-track{background:var(--track-bg); color:#3f46c9} .p-track span{background:var(--track)}
+  .step{position:relative; display:flex; gap:18px; align-items:flex-start; padding:9px 0;
+    opacity:0; transform:translateY(14px); animation:rise .6s cubic-bezier(.2,.8,.2,1) forwards;}
+  @keyframes rise{to{opacity:1; transform:none}}
+  .badge{flex:0 0 auto; width:56px;height:56px; border-radius:20px; display:grid; place-items:center;
+    font-family:"Rubik"; font-weight:800; font-size:23px; color:#fff; position:relative; z-index:2; box-shadow:0 10px 22px -10px rgba(0,0,0,.35);}
+  .emoji{position:absolute; bottom:-7px; inset-inline-start:-7px; font-size:18px; background:var(--paper); border-radius:50%;
+    width:27px;height:27px; display:grid; place-items:center; box-shadow:0 3px 8px rgba(0,0,0,.12);}
+  .card{flex:1; background:#fff; border-radius:18px; padding:15px 18px; box-shadow:0 14px 30px -18px rgba(20,40,30,.30); border:1px solid rgba(20,52,42,.06);}
+  .card h3{font-family:"Rubik"; font-weight:700; font-size:19px; margin-bottom:3px; letter-spacing:-.3px;}
+  .card p{font-size:14.5px; font-weight:400; color:var(--ink-soft); line-height:1.5;}
+  .card .hl{font-weight:700; color:var(--ink);}
+  .card ul{list-style:none; margin:8px 0 4px; padding:0; display:grid; gap:5px;}
+  .card li{font-size:13.5px; color:var(--ink-soft); padding-inline-start:16px; position:relative;}
+  .card li::before{content:""; position:absolute; inset-inline-start:0; top:8px; width:6px;height:6px; border-radius:50%; background:var(--print);}
+  .card li b{color:var(--ink); font-weight:700;}
+  .card .why{margin-top:9px; font-size:13px; color:var(--ink); font-weight:600;}
+  /* format snippet (step 2) */
+  .fmt{margin-top:11px; background:#F5F2EA; border:1px solid #E7E1D2; border-radius:13px; padding:12px 14px;}
+  .fmt .fl{font-size:12px; color:#7d7768; letter-spacing:.2px; margin-bottom:10px; font-weight:500; line-height:1.5;}
+  .fmt .fl b{color:var(--ink); font-weight:700;}
+  .fmt .fx{font-size:12.5px; direction:rtl; color:#2a2a2a; padding:7px 0;
+    border-top:1px dashed #E2DBC9; display:flex; gap:10px; align-items:baseline; flex-wrap:wrap;}
+  .fmt .fx:first-of-type{border-top:none;}
+  .fmt .fx b{font-family:"Heebo"; font-weight:700; color:var(--print); min-width:86px; flex:0 0 auto;}
+  .fmt .fx code{font-family:"JetBrains Mono",monospace; font-size:12px; color:#2a2a2a;}
+  .fmt .fx i{font-family:"Heebo"; font-style:normal; font-weight:400; color:#9a9382; font-size:11.5px;
+    padding-inline-start:10px; border-inline-start:2px solid #E7E1D2; line-height:1.4;}
+  .bg-office{background:linear-gradient(145deg,#16b6a5,var(--office))}
+  .bg-pick{background:linear-gradient(145deg,#49c05c,var(--pick))}
+  .bg-print{background:linear-gradient(145deg,#fba93a,var(--print))}
+  .bg-ship{background:linear-gradient(145deg,#f1657f,var(--ship))}
+  .bg-track{background:linear-gradient(145deg,#828ff6,var(--track))}
+  .close{margin-top:44px; text-align:center; background:var(--ink); color:#fff; border-radius:24px; padding:30px 24px; position:relative; overflow:hidden;}
+  .close::after{content:""; position:absolute; inset:0;
+    background:radial-gradient(120px 120px at 16% 0%,rgba(55,162,74,.5),transparent),radial-gradient(160px 140px at 86% 100%,rgba(91,108,240,.5),transparent); opacity:.5;}
+  .close .k{position:relative; font-family:"Rubik"; font-weight:800; font-size:clamp(20px,4.4vw,28px); letter-spacing:-.4px;}
+  .close .tags{position:relative; margin-top:12px; display:flex; gap:9px; flex-wrap:wrap; justify-content:center;}
+  .close .tags b{font-weight:500; font-size:13.5px; color:#dff3e6; background:rgba(255,255,255,.10); padding:6px 13px; border-radius:999px;}
+  .foot{margin-top:22px; text-align:center; color:var(--ink-soft); font-size:12px; font-weight:400;}
+  .s1{animation-delay:.03s}.s2{animation-delay:.08s}.s3{animation-delay:.13s}.s4{animation-delay:.18s}.s5{animation-delay:.23s}
+  .s6{animation-delay:.28s}.s7{animation-delay:.33s}.s8{animation-delay:.38s}.s9{animation-delay:.43s}.s10{animation-delay:.48s}
+  .s11{animation-delay:.53s}.s12{animation-delay:.58s}.s13{animation-delay:.63s}
+  @media print{ .blob{display:none} body{background:#fff} .step{opacity:1;transform:none;animation:none} .card,.close{box-shadow:none} }
+</style>
+</head>
+<body>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> GT&nbsp;EVERYDAY <small>הפרוטוקול התפעולי</small></div>
+    <h1>מהזמנה<br>ועד הדלת</h1>
+    <p class="sub">התהליך התפעולי המלא — מהזנת ההזמנה ועד אישור הפערים בסוף היום.</p>
+
+    <div class="line">
+      <div class="phase p-office"><span></span> שלב א' · המשרד (דורין)</div>
+
+      <div class="step s1"><div class="badge bg-office">1<div class="emoji">🛒</div></div>
+        <div class="card"><h3>הזמנה נכנסת</h3>
+          <p>דורין מזינה את ההזמנה ב<span class="hl">שופיפיי</span>; היא עוברת אוטומטית ל‑LionWheel דרך ה‑API ביניהם.</p></div></div>
+
+      <div class="step s2"><div class="badge bg-office">2<div class="emoji">🔁</div></div>
+        <div class="card"><h3>הזנת כל החריגים</h3>
+          <p>כל תנועה שאינה הזמנה רגילה עם חשבונית — החזרה, החלפה, טעימה, מתנה או איסוף צ'ק — דורין כותבת ב<span class="hl">הערת ה‑LionWheel</span> בפורמט קבוע. מהפורמט הזה הסוכן מזהה לבד את תנועת המלאי, בלי לנחש.</p>
+          <div class="fmt">
+            <div class="fl">איך כותבים: מתחילים ב<b>סוג</b>, וממשיכים ב<b>כמות + שם המוצר</b> — בדיוק כמו שכתוב בחשבונית.</div>
+            <div class="fx"><b>החזרה</b><code>6 DETOX 1L</code><i>הלקוח מחזיר 6 — נכנסים למלאי</i></div>
+            <div class="fx"><b>החלפה</b><code>מוסר 3 FRESH 1L | אוסף 3 DETOX 1L</code><i>מוסר = משאיר אצל הלקוח · אוסף = לוקח ממנו</i></div>
+            <div class="fx"><b>טעימה / מתנה</b><code>4 LEMONADE 1L</code><i>יוצא מהמלאי, בלי חשבונית</i></div>
+            <div class="fx"><b>איסוף צ'ק</b><code>צ'ק</code><i>איסוף תשלום בלבד — אין תנועת מלאי</i></div>
+            <div class="fx"><b>כמות חלקית</b><code>4/6 DETOX 1L</code><i>בוצעו 4 מתוך 6</i></div>
+          </div></div></div>
+
+      <div class="step s3"><div class="badge bg-office">3<div class="emoji">⏰</div></div>
+        <div class="card"><h3>סגירת הזמנות למחר — עד 14:30</h3>
+          <p>דורין מסיימת להזין את כל <span class="hl">ההזמנות והחריגים של מחר</span>, ומודיעה לתום שסיימה.</p></div></div>
+
+      <div class="phase p-pick"><span></span> שלב ב' · תכנון וליקוט</div>
+
+      <div class="step s4"><div class="badge bg-pick">4<div class="emoji">🗺️</div></div>
+        <div class="card"><h3>בניית המסלולים</h3>
+          <p>תום בונה את המסלולים <span class="hl">לפי נהגים, אזורים וסדר נסיעה</span>.</p></div></div>
+
+      <div class="step s5"><div class="badge bg-pick">5<div class="emoji">📱</div></div>
+        <div class="card"><h3>ליקוט לפי סדר המסלול</h3>
+          <p>במחסן התוצרת המוגמרת מלקטים <span class="hl">לפי סדר המסלול</span>, ומזינים ב‑LionWheel בדיוק מה לוקט וכמה חבילות בכל הזמנה.</p></div></div>
+
+      <div class="phase p-print"><span></span> שלב ג' · הסוכן וההדפסה</div>
+
+      <div class="step s6"><div class="badge bg-print">6<div class="emoji">🤖</div></div>
+        <div class="card"><h3>הסוכן בונה את הקובץ — בסדר המסלול</h3>
+          <ul>
+            <li><b>סידור עבודה</b> (עמוד 1) — מה להעמיס ובאיזה סדר.</li>
+            <li><b>חשבוניות עם סימוני הליקוט</b> — מה סופק בפועל לכל לקוח.</li>
+            <li><b>תעודות משלוח לחריגים</b> — לפי הפורמט של דורין.</li>
+            <li><b>דף פערי מלאי</b> — חוסרים, וסטיות מול המערכת.</li>
+          </ul></div></div>
+
+      <div class="step s7"><div class="badge bg-print">7<div class="emoji">🖨️</div></div>
+        <div class="card"><h3>הדפסה + טיפול במלאי</h3>
+          <p>תום מדפיס את הקובץ המוכן. <span class="hl">במקביל הסוכן כבר חישב את תמונת המלאי</span> — פערי הליקוט ותנועות החריגים (לפי הפורמט) — והכין אותן כהצעות ל‑Inbox, <span class="hl">בלי לחייב מלאי</span>.</p>
+          <p style="margin-top:7px;">את הסידור המודפס למחר תום שם בניילונית <span class="hl">במקום הייעודי ליד המחשב</span> — שהנהג ידע מאיפה לקחת אותה תמיד.</p></div></div>
+
+      <div class="phase p-ship"><span></span> שלב ד' · הנהג והמשלוח</div>
+
+      <div class="step s8"><div class="badge bg-ship">8<div class="emoji">📋</div></div>
+        <div class="card"><h3>הנהג לוקח את הניילונית</h3>
+          <p>הנהג לוקח את <span class="hl">הניילונית של היום הרלוונטי</span> מהמקום הייעודי שליד המחשב — סידור העבודה והחשבוניות בפנים, כבר <span class="hl">בסדר הנסיעה</span>.</p></div></div>
+
+      <div class="step s9"><div class="badge bg-ship">9<div class="emoji">📦</div></div>
+        <div class="card"><h3>העמסה לפי הסדר</h3>
+          <p>הנהג מעמיס לפי סדר הנסיעה — <span class="hl">החבילה האחרונה במסלול ראשונה</span>, לסדר הוצאה נכון ונוח.</p></div></div>
+
+      <div class="step s10"><div class="badge bg-ship">10<div class="emoji">✅</div></div>
+        <div class="card"><h3>ווידוא כפול</h3>
+          <p>הנהג מוודא שהחשבוניות תואמות ל<span class="hl">סידור העבודה ולמה שהועמס בפועל</span> — והסוכן בדק זאת גם כן.</p></div></div>
+
+      <div class="step s11"><div class="badge bg-ship">11<div class="emoji">🚚</div></div>
+        <div class="card"><h3>יוצאים לדרך</h3>
+          <p>הנהג יוצא למסלול. הכול מדויק, בסדר הנכון ומסונכרן — עד דלת הלקוח.</p></div></div>
+
+      <div class="phase p-track"><span></span> שלב ה' · מעקב ואישור</div>
+
+      <div class="step s12"><div class="badge bg-track">12<div class="emoji">📥</div></div>
+        <div class="card"><h3>אישור ב‑Inbox</h3>
+          <p>תום מקבל ב‑Inbox את <span class="hl">פערי הליקוט</span> ואת <span class="hl">תנועות החריגים</span> שהסוכן הציף. מאשר/דוחה כל אחד עם הסבר — <span class="hl">מעקב מלא על המלאי, כולל החריגים</span>.</p></div></div>
+
+      <div class="step s13"><div class="badge bg-track">13<div class="emoji">📧</div></div>
+        <div class="card"><h3>מייל לדורין — אחרי האישור</h3>
+          <p>רק אחרי שתום מאשר את הפערים, נשלח לדורין <span class="hl">מייל עם קישור לדף המעקב</span> על פערי הליקוט — והיא מחליטה זיכוי או דחייה להזמנה הבאה.</p></div></div>
+    </div>
+
+    <div class="close">
+      <div class="k">מלאי מדויק. ראש שקט.</div>
+      <div class="tags"><b>פחות טעויות</b><b>פחות ויכוחים</b><b>הכול מתועד</b><b>הכול מאושר</b></div>
+    </div>
+    <div class="foot">GT Everyday · פרוטוקול תפעולי — מהזמנה ועד הדלת</div>
+  </div>
+</body>
+</html>
