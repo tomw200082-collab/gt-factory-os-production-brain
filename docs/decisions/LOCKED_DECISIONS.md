@@ -218,7 +218,7 @@ The UX gate runs in parallel with the technical gate; both must pass.
 ### PO workflow
 - Purchase recommendations are produced only by the planning engine. The engine never creates purchase orders autonomously.
 - **Recommendation path (preferred):** Planning run → purchase recommendations → planner reviews → planner approves → convert to PO → PO OPEN → receipts attach. This is the standard daily flow.
-- **Manual path (guarded exception):** A planner or admin may create a PO directly from the PO list without an approved recommendation. Required fields: supplier, line items (component or item), quantities, expected delivery date, and a reason. The PO is created in OPEN status. `source_type = 'manual'` is recorded. No stock is posted at creation. GR may reference the PO normally. Operator and viewer roles cannot create POs via either path.
+- **Manual path (guarded exception):** A planner or admin may create a PO directly from the PO list without an approved recommendation. Required fields: supplier, line items (component or item), quantities, and expected delivery date. A reason is **optional** (Tom-directed 2026-06-15; reason was mandatory before that date) — it is still recorded on the PO for audit when provided. The PO is created in OPEN status. `source_type = 'manual'` is recorded. No stock is posted at creation. GR may reference the PO normally. Operator and viewer roles cannot create POs via either path.
 - **No autonomous ordering** means no engine- or system-created POs without explicit human action. It does not forbid controlled manual PO authoring by planner/admin.
 
 ---
