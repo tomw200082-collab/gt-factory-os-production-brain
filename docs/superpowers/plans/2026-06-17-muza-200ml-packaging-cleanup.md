@@ -92,13 +92,9 @@ node scripts/_ro.mjs "select user_id, display_name, role from private_core.app_u
 ```
 Expected: one row, Tom (admin). If the column names differ, adapt; the point is to confirm the uuid is Tom.
 
-- [ ] **Step 6: Capture rebuild_verifier baseline**
+- [ ] **Step 6: Parity baseline — deferred to apply phase (cannot run read-only)**
 
-Run:
-```bash
-node scripts/_ro.mjs "select private_core.rebuild_verifier() as parity_diff"
-```
-Note: `rebuild_verifier()` writes to the scratch `current_balances_shadow` table only (safe on live). Record the returned number — Task 7 must not exceed it. (Ideal baseline = 0.)
+`rebuild_verifier()` does `TRUNCATE`+`INSERT` on the scratch `current_balances_shadow` table, so it CANNOT run inside the read-only `_ro.mjs` (it errors under `SET TRANSACTION READ ONLY`). It only writes scratch (safe on live), so capture the baseline in a read-write call **immediately before** the apply (Task 6) and compare **after** (Task 7). Do not run it in this read-only pre-flight.
 
 - [ ] **Step 7: No commit** — `_ro.mjs` is a throwaway helper; do not commit it.
 
@@ -154,11 +150,11 @@ Expected: highest is `0253_credit_decision_reason_optional.sql`.
 --   ("Muza Cocktails") onto real packaging suppliers, matching the 1L line:
 --     PKG-BOTTLE-200ML, PKG-CAP-200ML -> SUP-002 (Arizot 2100)
 --     PKG-CARTON-200ML                -> SUP-020 (Eliran Kartonim)
---   Updates components.primary_supplier_id and the single PRIMARY
---   supplier_items row per component. Placeholder est. costs kept (price
---   pass is later). Labels (SUP-022 Miki) and SUP-041's Muza-FG links: untouched.
---   Also marks the carton's dedication via component_name (Tom 2026-06-17);
---   component IDs unchanged (200ML is Muza-exclusive already).
+--   Updates components.primary_supplier_id and the single PRIMARY supplier_items
+--   row per component (supplier_id + source_basis only; `notes` preserved).
+--   Placeholder est. costs kept (price pass is later). Labels (SUP-022 Miki) and
+--   SUP-041's Muza-FG links: untouched. Also marks the carton's dedication via
+--   component_name (Tom 2026-06-17); component IDs unchanged.
 --
 -- Part B — opening-stock anchors (TOUCHES STOCK TRUTH). The AFTER INSERT/UPDATE
 --   trigger anchor_after_insert_projection() (0009) rebases current_balances to
@@ -167,6 +163,7 @@ Expected: highest is `0253_credit_decision_reason_optional.sql`.
 --     5 labels = 1000 each ; bottle/cap/carton = 0 each.
 --   balance_anchors_current has NO notes column — rationale lives in this header.
 --   anchor_at = now() (the count moment, 2026-06-17); approver = Tom.
+--   ON CONFLICT DO NOTHING (one-time seed): a re-run never advances anchor_at.
 -- ===========================================================================
 
 begin;
@@ -191,10 +188,11 @@ update private_core.components
  where component_id = 'PKG-CARTON-200ML'
    and component_name <> 'Cardboard Box for 200ml cocktails (Muza)';
 
+-- supplier_id + source_basis only; `notes` left untouched to preserve the
+-- existing 2026-06-12 cost note (source_basis is NULL on these rows = additive).
 update private_core.supplier_items
    set supplier_id  = 'SUP-002',
-       source_basis = 'Muza 200ML packaging un-bundled 2026-06-17: bottle/cap moved off brand SUP-041 to Arizot 2100 (matches 1L mixer line).',
-       notes        = 'Re-pointed from Muza Cocktails (SUP-041) to Arizot 2100. Est. cost kept as placeholder pending real quote.',
+       source_basis = 'Muza 200ML packaging un-bundled 2026-06-17 (0254): bottle/cap moved off brand SUP-041 to Arizot 2100 (matches 1L mixer line). Est. cost retained as placeholder.',
        updated_at   = now()
  where component_id in ('PKG-BOTTLE-200ML','PKG-CAP-200ML')
    and is_primary = true
@@ -202,8 +200,7 @@ update private_core.supplier_items
 
 update private_core.supplier_items
    set supplier_id  = 'SUP-020',
-       source_basis = 'Muza 200ML packaging un-bundled 2026-06-17: carton moved off brand SUP-041 to Eliran Kartonim (default carton supplier).',
-       notes        = 'Re-pointed from Muza Cocktails (SUP-041) to Eliran Kartonim. Est. cost kept as placeholder pending real quote.',
+       source_basis = 'Muza 200ML packaging un-bundled 2026-06-17 (0254): carton moved off brand SUP-041 to Eliran Kartonim. Est. cost retained as placeholder.',
        updated_at   = now()
  where component_id = 'PKG-CARTON-200ML'
    and is_primary = true
@@ -222,13 +219,12 @@ values
   ('GT-MAIN','PKG','PKG-BOTTLE-200ML','',           0, now(), 'COUNT_APPROVAL', '0db008a9-05e3-4521-8b30-42e5d444818d', now()),
   ('GT-MAIN','PKG','PKG-CAP-200ML','',              0, now(), 'COUNT_APPROVAL', '0db008a9-05e3-4521-8b30-42e5d444818d', now()),
   ('GT-MAIN','PKG','PKG-CARTON-200ML','',           0, now(), 'COUNT_APPROVAL', '0db008a9-05e3-4521-8b30-42e5d444818d', now())
-on conflict (site_id, item_type, item_id, batch_id_or_empty) do update set
-  anchor_qty          = excluded.anchor_qty,
-  anchor_at           = excluded.anchor_at,
-  anchor_source       = excluded.anchor_source,
-  approved_by_user_id = excluded.approved_by_user_id,
-  approved_at         = excluded.approved_at,
-  updated_at          = now();
+-- DO NOTHING (one-time seed): pre-flight confirms zero existing anchors, so first
+-- apply INSERTs all 8 and a re-run is a true no-op. Critically it never advances
+-- anchor_at — a moving anchor_at would, post-go-live, silently exclude a real
+-- ledger event (trigger uses strict event_at > anchor_at, and rebuild_verifier
+-- uses the same strict >, so the loss would even evade the parity gate).
+on conflict (site_id, item_type, item_id, batch_id_or_empty) do nothing;
 
 commit;
 
@@ -298,7 +294,15 @@ Expected: PR created. (Apply-to-prod is manual and separate; merge to main keeps
 
 **Files:** none (executes the migration)
 
-- [ ] **Step 1: Apply with the production guard**
+- [ ] **Step 1: Capture the parity baseline (read-write; scratch shadow only)**
+
+`rebuild_verifier()` needs a read-write tx. Run it once immediately before applying and record the number:
+```bash
+node -e "import('pg').then(async({default:pg})=>{process.env.NODE_TLS_REJECT_UNAUTHORIZED='0';const fs=await import('node:fs');const url=(fs.readFileSync('.env','utf8').match(/^DATABASE_URL_POOLED=(.*)$/m))[1].trim().replace(/^[\"']|[\"']$/g,'');const c=new pg.Client({connectionString:url,ssl:{rejectUnauthorized:false}});await c.connect();const r=await c.query('select private_core.rebuild_verifier() as parity_diff');console.log('BASELINE parity_diff =',r.rows[0].parity_diff);await c.end();})"
+```
+Expected: a number (ideally `0`). Record it as BASELINE for Task 7 Step 5.
+
+- [ ] **Step 2: Apply with the production guard**
 
 From the worktree `../gt-factory-os-muza0254` (so `.env` + script resolve there):
 ```bash
@@ -340,12 +344,12 @@ node scripts/_ro.mjs "select item_id, calculated_on_hand::float8 oh from private
 ```
 Expected: 8 rows; 5 labels `oh=1000`; bottle/cap/carton `oh=0`.
 
-- [ ] **Step 5: Parity gate unchanged**
+- [ ] **Step 5: Parity gate unchanged** (read-write call; `rebuild_verifier` can't run under `_ro.mjs`)
 
 ```bash
-node scripts/_ro.mjs "select private_core.rebuild_verifier() as parity_diff"
+node -e "import('pg').then(async({default:pg})=>{process.env.NODE_TLS_REJECT_UNAUTHORIZED='0';const fs=await import('node:fs');const url=(fs.readFileSync('.env','utf8').match(/^DATABASE_URL_POOLED=(.*)$/m))[1].trim().replace(/^[\"']|[\"']$/g,'');const c=new pg.Client({connectionString:url,ssl:{rejectUnauthorized:false}});await c.connect();const r=await c.query('select private_core.rebuild_verifier() as parity_diff');console.log('parity_diff =',r.rows[0].parity_diff);await c.end();})"
 ```
-Expected: equals the Task-1 baseline (ideally `0`). If it increased, stop and investigate — the seed introduced drift.
+Expected: equals the Task-6 Step-1 BASELINE (ideally `0`). If it increased, stop and investigate — the seed introduced drift.
 
 - [ ] **Step 6: No ledger written**
 

@@ -35,7 +35,7 @@ The 5 cocktails — `FG-MUZ-{HER,JAS,NEG,PSC,QUE}-200ML` — are all ACTIVE with
 
 ## The exact change
 
-**A · Master data — re-point 3 components off `SUP-041`** (update both `components.primary_supplier_id` **and** the existing PRIMARY `supplier_items` row's `supplier_id`; keep the placeholder cost; update `notes`/`source_basis` to record the 2026-06-17 split):
+**A · Master data — re-point 3 components off `SUP-041`** (update `components.primary_supplier_id` **and** the existing PRIMARY `supplier_items` row's `supplier_id` + `source_basis`; keep the placeholder cost; **preserve the existing `notes`** — the 2026-06-12 cost-provenance note is not overwritten):
 
 | Component | `primary_supplier_id`: from → to | placeholder cost kept |
 |---|---|---|
@@ -53,7 +53,7 @@ Plus one `component_name` change marking the carton's dedication: `PKG-CARTON-20
 | `PKG-BOTTLE-200ML`, `PKG-CAP-200ML`, `PKG-CARTON-200ML` (3) | **0** |
 
 ## Execution approach
-A single **numbered SQL migration** in `gt-factory-os/db/migrations`, authored in a **git worktree cut from `origin/main`** (migration number taken from origin/main's highest, not the drifted local ledger). Idempotent: `UPDATE` guards on the supplier re-points; anchors via `INSERT … ON CONFLICT (site_id,item_type,item_id,batch_id_or_empty) DO UPDATE` (pre-checked that the 8 components have no existing anchor). Applied to prod via the documented manual path (`MIGRATION_ALLOW_PRODUCTION=confirmed node scripts/_apply_migration.mjs <file>`). After insert, the **balance projection is rebuilt** (identify the rebuild fn/job; don't rely on the nightly run for verification). **Adversarial review pass** on the migration before the prod apply (append-only respected · anchors not balance-edits · supplier IDs valid/ACTIVE · projection rebuild handled · idempotent on re-run).
+A single **numbered SQL migration** in `gt-factory-os/db/migrations`, authored in a **git worktree cut from `origin/main`** (migration number taken from origin/main's highest, not the drifted local ledger). Idempotent: `UPDATE` guards on the supplier re-points + carton rename; anchors via `INSERT … ON CONFLICT (site_id,item_type,item_id,batch_id_or_empty) DO NOTHING` (one-time seed; pre-flight confirmed the 8 keys have no existing anchor — DO NOTHING so a re-run never advances `anchor_at`, which would otherwise silently drop a post-go-live ledger event past the trigger's strict `>`). Applied to prod via the documented manual path (`MIGRATION_ALLOW_PRODUCTION=confirmed node scripts/_apply_migration.mjs <file>`). After insert, the **balance projection is rebuilt** (identify the rebuild fn/job; don't rely on the nightly run for verification). **Adversarial review pass** on the migration before the prod apply (append-only respected · anchors not balance-edits · supplier IDs valid/ACTIVE · projection rebuild handled · idempotent on re-run).
 
 ## Governance
 Opening-stock anchors are **stock-truth production work** → decision packet → `factory-os-governor` verdict → `release-verifier` before the prod apply (per boot-kernel stop condition: halt on stock-truth-impacting ops, route to governor). The anchor rows themselves encode Tom's approval (`approved_by_user_id`). Master-data re-points are reversible `UPDATE`s. No frozen flags, no external-system writes, no destructive ops. Mission-scoped git/deploy authority applies (commit/push/PR/apply with evidence).
