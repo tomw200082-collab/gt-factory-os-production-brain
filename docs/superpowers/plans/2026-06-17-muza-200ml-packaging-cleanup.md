@@ -12,6 +12,7 @@
 
 **Locked facts (verified read-only this session):**
 - Components (in `private_core.components`): `PKG-BOTTLE-200ML`, `PKG-CAP-200ML`, `PKG-CARTON-200ML` all on `primary_supplier_id='SUP-041'` (each with exactly ONE PRIMARY `supplier_items` row, also `SUP-041`, est. costs 1.10 / 0.25 / 1.40). The 5 labels `PKG-LABEL-MUZ-{HER,JAS,NEG,PSC,QUE}-200ML` already on `SUP-022` (Miki) — untouched.
+- **All three (bottle/cap/carton) are dedicated/unique to Muza 200ML** — each used only by the 5 `FG-MUZ-*-200ML` PACK BOMs, no other product (Tom-confirmed 2026-06-17). IDs kept; carton renamed to mark dedication. Carton is a custom box → inherits Eliran defaults (MOQ 2000 / 37 d) for planning; exact params in the price pass.
 - Target suppliers (both ACTIVE): `SUP-002` Arizot 2100 (bottle+cap), `SUP-020` Eliran Kartonim (carton).
 - Tom's app_user id: `0db008a9-05e3-4521-8b30-42e5d444818d`.
 - None of the 8 components has a `current_balances` row or a `balance_anchors_current` row (untracked).
@@ -156,6 +157,8 @@ Expected: highest is `0253_credit_decision_reason_optional.sql`.
 --   Updates components.primary_supplier_id and the single PRIMARY
 --   supplier_items row per component. Placeholder est. costs kept (price
 --   pass is later). Labels (SUP-022 Miki) and SUP-041's Muza-FG links: untouched.
+--   Also marks the carton's dedication via component_name (Tom 2026-06-17);
+--   component IDs unchanged (200ML is Muza-exclusive already).
 --
 -- Part B — opening-stock anchors (TOUCHES STOCK TRUTH). The AFTER INSERT/UPDATE
 --   trigger anchor_after_insert_projection() (0009) rebases current_balances to
@@ -180,6 +183,13 @@ update private_core.components
    set primary_supplier_id = 'SUP-020', updated_at = now()
  where component_id = 'PKG-CARTON-200ML'
    and primary_supplier_id = 'SUP-041';
+
+-- Mark the carton as the dedicated/unique Muza 200ML box (Tom 2026-06-17).
+-- Independent idempotent guard (not tied to the supplier state above).
+update private_core.components
+   set component_name = 'Cardboard Box for 200ml cocktails (Muza)', updated_at = now()
+ where component_id = 'PKG-CARTON-200ML'
+   and component_name <> 'Cardboard Box for 200ml cocktails (Muza)';
 
 update private_core.supplier_items
    set supplier_id  = 'SUP-002',
@@ -305,9 +315,9 @@ Expected: the script prints the PRODUCTION warning, then `SUCCESS — … commit
 - [ ] **Step 1: Suppliers re-pointed**
 
 ```bash
-node scripts/_ro.mjs "select c.component_id, c.primary_supplier_id, si.supplier_id si_supplier from private_core.components c join private_core.supplier_items si on si.component_id=c.component_id and si.is_primary where c.component_id in ('PKG-BOTTLE-200ML','PKG-CAP-200ML','PKG-CARTON-200ML') order by c.component_id"
+node scripts/_ro.mjs "select c.component_id, c.component_name, c.primary_supplier_id, si.supplier_id si_supplier from private_core.components c join private_core.supplier_items si on si.component_id=c.component_id and si.is_primary where c.component_id in ('PKG-BOTTLE-200ML','PKG-CAP-200ML','PKG-CARTON-200ML') order by c.component_id"
 ```
-Expected: bottle→SUP-002/SUP-002, cap→SUP-002/SUP-002, carton→SUP-020/SUP-020.
+Expected: bottle→SUP-002/SUP-002, cap→SUP-002/SUP-002, carton→SUP-020/SUP-020; carton `component_name` = "Cardboard Box for 200ml cocktails (Muza)".
 
 - [ ] **Step 2: No packaging component left on SUP-041**
 

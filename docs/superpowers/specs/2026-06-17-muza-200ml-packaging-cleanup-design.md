@@ -25,11 +25,12 @@ The 5 cocktails — `FG-MUZ-{HER,JAS,NEG,PSC,QUE}-200ML` — are all ACTIVE with
 | **Labels per bottle** | **One** label component per flavor (current model is right). | Tom confirmed; not a front/back split (unlike Matcha). |
 | **Bottle + cap supplier** | **Arizot 2100 (`SUP-002`)** — both. | Tom-named. Matches the 1L mixer bottle/cap. |
 | **Carton supplier** | **Eliran Kartonim (`SUP-020`)**. | Eliran is "default for ALL cartons"; matches 1L mixer. |
+| **Dedication (Tom add 2026-06-17)** | Bottle, cap **and carton** are all **unique/dedicated to Muza 200ML** — verified each is used by only the 5 `FG-MUZ-*-200ML` BOMs and no other product. Keep them as dedicated components; **keep their IDs** (`PKG-{BOTTLE,CAP,CARTON}-200ML`). | Re-IDing the PK to a `MUZ` convention cascades through 15 BOM lines + supplier links for cosmetic parity only; 200ML is Muza-exclusive already. The carton is a **custom** box → real MOQ/lead-time (inherits Eliran defaults MOQ 2000 / 37 d now; exact values in the params pass). |
 | **Labels supplier** | **No change** — already Miki (`SUP-022`) + Sagol alternate. | Already correct. |
 | **Label opening stock** | **1000 each** (5 labels). | Tom-specified. |
 | **Bottle/cap/carton opening stock** | **0 each** (explicit baseline, real count later). | Tom chose truth-first; planner will recommend buying. |
 | **Stock mechanism** | `balance_anchors_current` row, `anchor_source='COUNT_APPROVAL'`, approved by Tom, `anchor_at`=2026-06-17 — **never a direct `current_balances` edit**. | Matches how the other label anchors were seeded 2026-05-12; `current_balances` is a rebuilt projection. |
-| **Costs & names** | **Deferred** — keep the existing est. supplier_item costs (1.10 / 0.25 / 1.40) as placeholders; no rename. | Tom: "details like price later." Component-level `std_cost` + physical-spec names belong with the price pass. |
+| **Costs & names** | **Deferred** — keep est. supplier_item costs (1.10 / 0.25 / 1.40) as placeholders. One exception: rename the **carton** to mark dedication → "Cardboard Box for 200ml cocktails (Muza)" (mirrors the 1L `PKG-CARTON-MUZ-1L`). Bottle/cap names + all costs stay deferred. | Tom: "details like price later." The carton rename is the responsive marker for Tom's 2026-06-17 "unique to them" note; physical-spec names + component-level `std_cost` belong with the price pass. |
 | **BOM recipe & ledger** | **Untouched.** | Out of scope; append-only ledger gets no fabricated movements. |
 
 ## The exact change
@@ -42,7 +43,9 @@ The 5 cocktails — `FG-MUZ-{HER,JAS,NEG,PSC,QUE}-200ML` — are all ACTIVE with
 | `PKG-CAP-200ML` | `SUP-041` → **`SUP-002`** (Arizot 2100) | 0.25 |
 | `PKG-CARTON-200ML` | `SUP-041` → **`SUP-020`** (Eliran Kartonim) | 1.40 |
 
-**B · Stock — 8 opening anchors** (`site_id='GT-MAIN'`, `item_type='PKG'`, `batch_id_or_empty=''`, `anchor_source='COUNT_APPROVAL'`, `anchor_at='2026-06-17'`, `approved_by_user_id` = Tom `0db008a9-05e3-4521-8b30-42e5d444818d`, note = "opening baseline, Muza 200ML packaging setup 2026-06-17"):
+Plus one `component_name` change marking the carton's dedication: `PKG-CARTON-200ML` → **"Cardboard Box for 200ml cocktails (Muza)"** (mirrors `PKG-CARTON-MUZ-1L`). All three remain dedicated components; **IDs unchanged**.
+
+**B · Stock — 8 opening anchors** (`site_id='GT-MAIN'`, `item_type='PKG'`, `batch_id_or_empty=''`, `anchor_qty` per table below, `anchor_at=now()` (the count moment on 2026-06-17), `anchor_source='COUNT_APPROVAL'`, `approved_by_user_id` = Tom `0db008a9-05e3-4521-8b30-42e5d444818d`, `approved_at=now()`). **`balance_anchors_current` has no `notes` column** — the rationale lives in the migration header, not the row:
 
 | Components | `anchor_qty` |
 |---|---|
@@ -63,7 +66,7 @@ Opening-stock anchors are **stock-truth production work** → decision packet �
 5. A planning dry-run nets the 5 labels against 1000 on-hand and recommends buying bottle/cap/carton (from Arizot 2100 / Eliran).
 
 ## Deliberately NOT touched
-Label supplier (already Miki) · BOM recipe lines · `stock_ledger` · component names · component/supplier costs (placeholders kept) · `label_size_id` (null) · `SUP-041`'s relationships to the Muza FG items.
+Label supplier (already Miki) · BOM recipe lines · component **IDs** · `stock_ledger` · bottle/cap names · component/supplier costs (placeholders kept) · `label_size_id` (null) · `SUP-041`'s relationships to the Muza FG items. (Only the **carton name** changes — see Part A.)
 
 ## Open flags (Tom-Tax — confirm when convenient, not blocking)
 - **Carton ratio** is `1/12` (12 bottles/carton) in the BOM; the 1L is `1/6`. Left as-is — confirm 12-per-carton is physically right.
