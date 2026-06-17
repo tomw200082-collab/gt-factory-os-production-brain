@@ -18,7 +18,9 @@ There is no delete capability anywhere in the system today.
 Two forks, both Tom-decided on 2026-06-17:
 
 1. **Delete semantics = full hard delete.** The record is permanently removed from the database and disappears from the board. There is no undo button. A complete copy (actor + old values) is automatically preserved in the change-log, so the action is traceable and an admin can recover the data if ever needed.
-2. **Deletable scope = any not-yet-produced record.** Both `planned` (live) and `cancelled` records can be deleted directly, in one click, without a cancel-first step. A `done` record (one linked to a real production report / actual) can **never** be deleted.
+2. **Deletable scope = any not-yet-produced record.** Both `planned` (live) and `cancelled` records can be deleted directly, in one click, without a cancel-first step. **Real production can never be deleted** — that means not only a `done` record (linked to a production actual) but also an `in_production` record and a `completed` base-batch record (the tea-tank `close_batch` path sets `status='completed'` with `completed_submission_id` still NULL). Deletable lifecycle states are exactly `draft` / `planned` / `cancelled`.
+
+> **Implementation correction (review-found, 2026-06-17):** the first cut guarded only on `completed_submission_id IS NOT NULL`. A code review caught that closed base-batch (`status='completed'`, NULL submission) and `in_production` rows both derive to `rendered_state='planned'`, appear on the board, and would have been deletable. The guard now keys on lifecycle **status** (`status IN ('in_production','completed') OR completed_submission_id IS NOT NULL → 409`), in both the handler check and the DELETE `WHERE` clause, and the UI hides the button for those states.
 
 Cancel is retained unchanged. Cancel and delete now serve distinct purposes:
 - **Cancel** = "we planned this but decided not to make it" — keeps a visible, reasoned record.
@@ -41,8 +43,8 @@ No database migration is required — the table and its audit trigger already su
   1. Role gate `roleAllowsPlanWrite(session.role)` (planner + admin) → else `403`.
   2. Break-glass active → `503`.
   3. Load the row `FOR UPDATE`; not found → `404`.
-  4. `completed_submission_id IS NOT NULL` (done / linked to an actual) → `409 PLAN_NOT_DELETABLE`.
-  5. `DELETE FROM private_core.production_plan WHERE plan_id = $id AND completed_submission_id IS NULL` (race-safe: a record that becomes linked mid-request is not deleted; 0 rows affected → `409`).
+  4. `completed_submission_id IS NOT NULL` **OR** `status IN ('in_production','completed')` (real / active production — incl. closed base batches) → `409 PLAN_NOT_DELETABLE`.
+  5. `DELETE FROM private_core.production_plan WHERE plan_id = $id AND completed_submission_id IS NULL AND status NOT IN ('in_production','completed')` (race-safe: a record that becomes linked / advances mid-request is not deleted; 0 rows affected → `409`).
   6. Set the audit GUCs (`audit.actor_user_id` / `audit.actor_snapshot`) in the same transaction before the DELETE, exactly as the cancel path does, so the `PRODUCTION_PLAN_DELETED` change-log row records the real actor.
   7. Return `200 { deleted: true, plan_id }`.
 - **Schema** (`schemas.ts`): path-param schema (UUID) + response schema for the delete.
@@ -54,22 +56,23 @@ No database migration is required — the table and its audit trigger already su
 ### 4.3 Portal UI — `window2-portal-sandbox/src/app/(planning)/planning/production-plan/`
 - **`useDeletePlan`** hook (`_lib/usePlans.ts`): clone of `usePatchPlan` — `method: "DELETE"`, same error-status→message mapping, same `qc.invalidateQueries({ queryKey: ["production-plan"] })` on success.
 - **Delete affordance** (Trash2 icon button) on `ProductionJobCard` and `ProductionNoteCard`:
-  - Visible when `canAct` (planner/admin) **and** `rendered_state !== "done"`.
+  - Visible when `canAct` (planner/admin) **and** the row is not produced/active — i.e. `rendered_state !== "done"` **and** `status NOT IN ('in_production','completed')` (a `canDelete` predicate).
   - On **live `planned` cards**: appears alongside the existing Cancel (Ban) button.
   - On **`cancelled` cards**: appears as the card's action (cancelled cards currently expose no actions at all — this is the core gap being closed).
-  - `done` cards never expose it.
+  - `done` / `in_production` / `completed` (base-batch) cards never expose it — they mirror the backend 409.
 - **`DeleteModal`** (mirrors `CancelModal`, but **no reason field** — confirm only): destructive-styled confirm button, because hard delete is irreversible. On success: success toast, modal closes, card disappears via cache invalidation.
 
 ## 5. Error-handling matrix
 
 | Case | Result |
 |---|---|
-| planner/admin deletes a `planned` or `cancelled` record | `200`, row removed, `PRODUCTION_PLAN_DELETED` written to change-log |
+| planner/admin deletes a `planned`/`draft`/`cancelled` record | `200`, row removed, `PRODUCTION_PLAN_DELETED` written to change-log |
 | operator / viewer | `403` |
 | record is `done` (linked to an actual) | `409 PLAN_NOT_DELETABLE` |
+| record is `in_production` or `completed` (closed base batch) | `409 PLAN_NOT_DELETABLE` |
 | record already deleted / unknown id | `404` |
 | break-glass active | `503` |
-| record becomes linked mid-request (race) | `409` (WHERE guard yields 0 rows) |
+| record becomes linked / advances mid-request (race) | `409` (WHERE guard yields 0 rows) |
 
 ## 6. UX copy (English / LTR, per portal standard)
 
@@ -80,10 +83,10 @@ No database migration is required — the table and its audit trigger already su
 - Dismiss button: **"Keep record"**
 - Success toast: **"Record deleted"**
 
-## 7. Testing (correctness-first)
+## 7. Testing (correctness-first) — as built
 
-- **Backend** (mirror existing production-plan test harness): cover every row of the error-handling matrix — planned-delete `200`, cancelled-delete `200`, done-delete `409`, operator/viewer `403`, unknown-id `404`, break-glass `503`, delete-again `404` (idempotency). Assert a `PRODUCTION_PLAN_DELETED` change-log row is written with the correct actor on a successful delete.
-- **Portal**: add `data-testid` to the delete button (`plan-row-delete` / `note-card-delete`) and the delete modal; cover both the planned-card and cancelled-card delete paths.
+- **Backend** `api/test/production_plan_delete.test.ts` — **12/12 green** against the live pooled DB (self-cleaning rows; Tom-approved `TEST_ALLOW_PRODUCTION_DB=confirmed` run): missing-auth `401`, viewer/operator `403`, bad-uuid `422`, unknown-id `404`, planned-delete `200` (+ `PRODUCTION_PLAN_DELETED` change-log row asserts the planner actor), cancelled-delete `200`, done-linked `409`, **in_production `409`**, **real closed base-batch `409`** (read-only borrow — confirmed against a live closed-batch row), second-delete `404`, zero-`stock_ledger` invariant.
+- **Portal** `_components/card-delete.test.tsx` — **9/9 green** (happy-dom + RTL): delete present on planned + cancelled cards (fires `onDelete`), absent on done / `in_production` / `completed` base-batch / non-actor. Plus `tsc` clean, `eslint` clean, `next build` green.
 
 ## 8. Out of scope (YAGNI)
 
@@ -99,8 +102,14 @@ No database migration is required — the table and its audit trigger already su
   - Portal PR (`window2-portal-sandbox` / `gt-factory-os-portal`): proxy `DELETE` + `useDeletePlan` + card buttons + `DeleteModal` + tests. Deploys to Vercel from `main`.
 - No frozen flags touched, no external-system writes, no stock-truth impact, no hard stop gate — fits the mission-scoped git/deploy authority.
 
-## 10. Verification items to confirm during implementation (not design blockers)
+## 10. Verification items — resolved during implementation
 
-- Confirm the `fn_production_plan_audit` trigger's `DELETE` branch reads `audit.actor_user_id` / `audit.actor_snapshot` GUCs the same way the cancel path sets them, so the actor is captured (read migration `0115` lines 385–394 + the handler's GUC-setting pattern).
-- Confirm the exact `reason_code` enum/shape used by the production-plan handler so `PLAN_NOT_DELETABLE` is added consistently (or reuse `PLAN_NOT_EDITABLE` if the schema constrains the set).
-- Confirm the production-plan backend test harness (file + runner) and the portal test harness for the board.
+- ✅ The `fn_production_plan_audit` trigger's `DELETE` branch reads `audit.actor_user_id` / `audit.actor_snapshot` (migration `0115` lines 385–400); the handler calls `setAuditContext` before the DELETE, exactly as the cancel path does. Test D06 asserts the `PRODUCTION_PLAN_DELETED` row carries the planner actor.
+- ✅ `reason_code` is a free-form `string` (`ProductionPlanConflictResponse`), so `PLAN_NOT_DELETABLE` is used (clearer than reusing `PLAN_NOT_EDITABLE`).
+- ✅ Harnesses: backend `node:test` + live pooled DB via `app.inject`; portal vitest + happy-dom + RTL.
+
+## 11. Shipped (2026-06-17)
+
+- Backend PR **gt-factory-os#78** → merged to `main` (`26e9275`); live on Railway (`gt-factory-os-api-production.up.railway.app` — unauth `DELETE` returns `401`, route registered).
+- Portal PR **gt-factory-os-portal#101** → merged to `main` (`684f019`); Vercel production deploy `dpl_52bPim9Rg…` **READY** (`gt-factory-os-portal.vercel.app`).
+- **Follow-up for Tom:** two pre-existing stale branches/worktrees `feat/production-plan-hard-delete` (backend + portal) took a divergent "drop cancel, replace with delete" approach that this work supersedes — safe to delete. Also `production_plan_api.test.ts` has 10 pre-existing failures unrelated to this change (stale POST bodies omit the now-required `plan_type` discriminator from migration 0195).
