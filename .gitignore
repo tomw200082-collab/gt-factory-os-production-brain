@@ -54,6 +54,8 @@ Thumbs.db
 node_modules/
 dist/
 build/
+# cavekit spec-driven-dev skill — tooling, not a build artifact (Tom-approved 2026-06-19)
+!.claude/skills/build/
 .next/
 
 # --- Defensive: secrets / credentials must never land in PRODUCTION git ---
