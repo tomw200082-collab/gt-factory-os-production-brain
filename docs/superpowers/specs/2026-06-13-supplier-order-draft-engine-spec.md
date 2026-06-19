@@ -5,6 +5,44 @@
 > (this is the *operational*-autonomy analogue of that *development*-autonomy ADR).
 > **Date:** 2026-06-13.
 
+## 0½. RECONCILIATION — what already exists (supersedes the "build-fresh" framing of §4, §4½, §10)
+
+A pre-build audit of `gt-factory-os` found that **most of this already exists and
+is mature.** We REUSE it and improve it; we do NOT duplicate it.
+
+| Proposed here | Already exists | Verdict |
+|---|---|---|
+| `fn_generate_supplier_order_draft` (decision engine, §4) | **`fn_generate_purchase_session` v2** (0206/0235): daily-MRP projected-on-hand walk, days-of-cover floor, "need date", lot-sizing, **one PO draft per supplier** | **REUSE — do not build.** |
+| `component_order_policy` table (§4½) | **`planning_policy`** keys `planning.safety.component_cover_days.<component_id>` (default 7) — read by the purchase-session engine; FG per-item `planning.safety.stock_days.<item_id>` wired in `fn_compute_fg_net_requirements_v2` (0108) | **REUSE — do not build a new table.** |
+| the back-office page (§4½) | **`/admin/planning-policy`** page + API + inline-edit already in the portal | **IMPROVE ergonomics — do not build fresh.** |
+| JIT vs Buffer "strategy" | expressible via existing cover/trigger days; `matcha.target_days/trigger_days` is a wired JIT-style precedent | **add a thin preset over existing keys.** |
+| days-of-cover, demand rate | computed throughout (0148/0198 + projections) | **REUSE.** |
+| supplier order **message** (verbatim wording + expected cost + price alert) | **does NOT exist in code** — only described in the goods-receipt skill | **THE one genuinely new brick.** |
+
+### Revised, de-duplicated plan
+
+1. **Decision layer = the existing purchase-session engine + `planning_policy`.**
+   Tom's "3 weeks for X, JIT for Y" is set today via
+   `planning.safety.component_cover_days.<id>` (and trigger/target-days for
+   JIT). The dials and the engine are already live.
+2. **The only new backend brick = the order-message composer:** a read-only
+   function/endpoint that takes a purchase-session's per-supplier PO draft and
+   renders a ready-to-send message in the supplier's **verbatim wording**
+   (`component_procurement_specs.supplier_catalog_wording` + `ordering_notes`),
+   with **expected cost** and **price-change alerts**. This is the goods-receipt
+   skill's named-but-unbuilt payoff. It gets the canary (§5).
+3. **Improve the existing `/admin/planning-policy` page** into the ergonomic
+   "strategy + cover-days + live simulation" surface (§4½) — as an enhancement of
+   the existing page, not a new one. (Portal lane; separate from the backend brick.)
+
+Everything below (§1–§10) is the original design; treat §4/§4½/§10 as
+**superseded by this reconciliation** wherever they describe building a new
+engine or table. The principles (§5 canary, §6 phasing, §7 human-forever, §8
+edge cases) still apply — now to the composer + the policy improvements.
+
+---
+
+
 ## 0. One sentence
 
 Turn "what do I order from this supplier?" from a manual question into a draft
