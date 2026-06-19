@@ -89,6 +89,58 @@ Pure function, **no side effects**, returns a structured draft:
 Output: `{ supplier, order_lines[], held_lines[], expected_total, price_flags[],
 order_message_text, machine_payload }`. Nothing is written.
 
+## 4½. Decision policy — the back-office page (the "smart" core)
+
+What to order, and *when*, is driven by a per-component **ordering policy** that
+Tom tunes from a back-office page. The unifying knob is **days of cover** +
+**strategy**, so the same engine serves both "buy a day before production" and
+"always keep 3 weeks".
+
+**Per-component policy (tunable):**
+
+| Knob | Meaning | Example |
+|---|---|---|
+| `strategy` | `JIT` or `BUFFER` | — |
+| `target_cover_days` | how much stock to aim to have on hand | JIT ⇒ ≈ `lead_time + 1`; critical ⇒ `21` (3 weeks) |
+| `safety_days` | extra cushion against demand spikes / late delivery | 2–5 |
+| `criticality` | `CRITICAL` / `NORMAL` / `LOW` | drives safety + alert loudness + buy-list rank |
+
+`lead_time_days`, `moq`, `order_uom`, `pack_conversion` come from `supplier_items`
+(shown read-only on the page). **Class-level defaults + per-component override:**
+set "all RM = BUFFER 14d" once, then override the critical ones to 21 and the JIT
+ones to `lead+1`.
+
+**The decision math (per component), using the live demand rate from planning:**
+
+```
+daily_demand   = planning forecast units/day over the horizon
+ROP            = daily_demand × (lead_time_days + safety_days)        # reorder point
+order_up_to    = daily_demand × target_cover_days                     # fill level
+                 (JIT ⇒ target_cover_days = lead_time_days + buffer)
+projected      = on_hand + on_open_PO − demand_until_arrival
+flag_to_order  = projected < ROP
+order_qty      = round_to_moq_and_pack(order_up_to − (on_hand + on_open_PO))
+order_by_date  = stockout_date − lead_time_days
+urgency        = f(days_until_stockout, criticality)                  # ranks the buy list
+```
+
+So a JIT component surfaces only inside its lead-time window ("buy ~a day
+before"); a 21-day component surfaces well ahead and is topped up to 3 weeks;
+a CRITICAL breach is ranked urgent and alerts loudly.
+
+**The page itself** (portal admin masters surface):
+- One editable row per component: strategy, target cover (days/weeks), safety
+  days, criticality; read-only lead time, MOQ, **current cover (days)**, demand
+  rate, **order-by date**.
+- Class defaults with per-item override.
+- **Live simulation:** changing any knob instantly re-renders "what would be
+  flagged to order today, in what quantity, and by when" — this is the dial Tom
+  plays with, and it is exactly the input the engine consumes.
+
+**Storage:** a new `private_core.component_order_policy` table (component_id PK +
+the knobs) with class-level defaults, read by `fn_generate_supplier_order_draft`.
+This table *is* "the back page from which the system makes its decisions".
+
 ## 5. The guard / canary (the un-fakeable principle, per Gate A)
 
 Every new autonomy ships with its own canary. `fn_generate_supplier_order_draft`
@@ -107,6 +159,11 @@ seeds a known supplier + components + demand and asserts:
 - **Don't double-order:** an open PO line for the component reduces the drafted
   qty accordingly.
 - **Cost math closes** and a seeded price change is flagged.
+- **The policy dial actually controls the decision** (guards a page that only
+  *looks* connected): a `JIT` component is flagged only inside its lead-time
+  window; a `BUFFER 21d` component is flagged when projected cover < ROP and
+  ordered up to 21 days; **changing `target_cover_days` changes `order_qty`
+  deterministically**; a `CRITICAL` breach is ranked urgent above a `NORMAL` one.
 
 This canary runs in the same blocking CI gate family as Gate A.
 
@@ -114,8 +171,9 @@ This canary runs in the same blocking CI gate family as Gate A.
 
 | Phase | Capability | Side effects | Human role |
 |---|---|---|---|
-| **P0** | `fn_generate_supplier_order_draft` + "what would I order from X" on demand | none (read-only) | reads the draft |
-| **P1** | scheduled morning drafts: an "Orders to place" inbox, one card per supplier | none (drafts persisted, not POs) | reviews each morning |
+| **P0** | `component_order_policy` table (+ class defaults seed) and the read-only `fn_generate_supplier_order_draft` that reads it; "what would I order from X" on demand | none (read-only engine; policy seeded) | sets policy (seed/SQL at first); reads the draft |
+| **P1a** | **the back-office policy page** — editable per-component dials + live "what/when/how-much" simulation | policy rows only | plays with the dials |
+| **P1b** | scheduled morning drafts: an "Orders to place" inbox, one card per supplier, ranked by urgency | none (drafts persisted, not POs) | reviews each morning |
 | **P2** | **one-tap Approve → creates the PO** (`purchase_orders`+lines, status OPEN) | internal, reversible | approves; **sends to supplier manually** (copy the message) |
 | **P3** (later, optional) | assisted send: pre-filled WhatsApp/email with the message | draft only | **the send itself is Tom's tap — never auto-sent** |
 
@@ -161,10 +219,14 @@ ADR-001 L5.
 ## 10. Proposed first slice (when approved)
 
 P0 only, as a bounded backend tranche in `gt-factory-os`:
-1. `fn_generate_supplier_order_draft(supplier_id)` (read-only).
-2. The pgTAP canary (§5) + its blocking CI gate.
-3. A read-only API endpoint `GET /api/v1/queries/supplier-order-draft/:supplier_id`.
-No portal, no PO creation, no send — those are P1/P2, separately approved.
+1. `component_order_policy` table + class-default seed (the decision dials).
+2. `fn_generate_supplier_order_draft(supplier_id)` (read-only) that reads the
+   policy and computes need/timing per §4½.
+3. The pgTAP canary (§5) + its blocking CI gate — including the policy-adherence
+   assertions.
+4. A read-only API endpoint `GET /api/v1/queries/supplier-order-draft/:supplier_id`.
+No portal page, no PO creation, no send — the page is P1a, PO/send are P2,
+each separately approved. (Policy is set by seed/SQL until the P1a page exists.)
 
 ---
 
