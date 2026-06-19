@@ -324,3 +324,50 @@ each separately approved. (Policy is set by seed/SQL until the P1a page exists.)
 **Decision for Tom:** approve the spec and the P0 slice? P0 is read-only and
 safe; it makes the goods-receipt skill's promised "what do I order" instant and
 trustworthy, with the canary guaranteeing it never guesses.
+
+---
+
+## 11. How it could work BETTER — improvement backlog (deep check, 2026-06-19)
+
+Two `ux-flow-architect` passes + a read of the engine body. The unifying theme:
+**trust through explainability + learning from actuals + fewer taps.** The
+engine already triages by tier, consolidates per supplier, rounds to MOQ, and
+records `coverage_trace`/`logic_trace` — but none of that intelligence reaches
+the operator, and nothing learns from what actually happened.
+
+### A. Portal-only quick wins (no backend; deliver a faster, more trusted ritual now)
+- **Urgency at a glance:** session-open banner + summary strip show "1 must order today · 3 due within 3 days" (from `totals.by_tier` / `groupByDecision`).
+- **Countdown chip per supplier row + card:** "2 days left" colour-coded (green ≥7, amber 3–6, red ≤2, overdue) — `daysUntilOrderBy` is already computed, just unshown.
+- **Capture skip reasons:** the skip mutation already accepts `skip_reason` but the UI never sends one; add 4–5 preset chips → auditable "why", summarised in the done screen.
+- **Closing-loop panel:** after a session, show placed POs' live receipt status (placed / partially received / open) — the ritual ends when goods arrive, not at "place".
+
+### B. Engine intelligence (the biggest long-term levers)
+- **Learning loop from actual receipts (headline lever):** the engine uses a STATIC `lead_time_days` (+ default). Measure real PO→GR lead time + variance per supplier and real price vs `price_history`, and feed it back into safety/timing. Turns every dial from a guess into a learned value. Surface a supplier-reliability signal ("usually 2d late") at order time.
+- **Safety from demand variability:** flat cover-days today; widen safety automatically for volatile-demand / critical items.
+- **Consolidation economics:** the engine knows MOQ + can-wait items per supplier; surface "add X now to hit MOQ / save a shipment (+₪340)" with one-tap promote.
+- **Readable explainability:** render `coverage_trace` per line ("covers 18d demand · safety 3d · lead 7d · on-hand 12") so a number can be trusted in 3 seconds instead of cross-checked in Excel.
+
+### C. The composer + the policy "play" loop (already in §0¾ A/B/C)
+- **Order-message composer** (the one real new brick) with **preview-before-approve** and post-place storage on the PO.
+- **Policy simulation:** edit a dial → "simulate with current stock" → see the new buy list read-only before saving (closes the "play with it" loop).
+- **Single-step "Send"** for the common one-owner case (atomic approve+place), with the two-step kept as an advanced toggle.
+
+### Ranked sequencing (recommendation)
+1. **Portal quick wins (A)** — small, no backend, immediately better ritual.
+2. **Order-message composer (§0¾ A)** — the one genuinely-new brick; fills the empty `order_document_text`; canary-guarded.
+3. **Readable explainability + consolidation economics (B)** — convert existing `coverage_trace`/MOQ data into trust + savings.
+4. **Learning loop (B, headline)** — actual lead-time/price → dynamic safety. Biggest payoff, largest effort.
+5. **Policy simulation + per-component reachability (§0¾ B)** — the back-page Tom plays with.
+
+### Success metrics (was missing — added per spec self-critique)
+- **Taps from open-app → all-orders-sent** (target: ≤ 2 per supplier for the routine case).
+- **% of order-message lines with verbatim supplier wording** (today 18/200 components; grows via goods-receipt).
+- **Lead-time forecast error** (predicted vs actual PO→GR days) — should fall as the learning loop matures.
+- **% of recommendations approved without manual qty override** (proxy for trust).
+- **Stockout events on planned components** (should trend to zero).
+
+### Canary additions (per self-critique)
+The composer canary (§5) also asserts: never emits a price when price is
+missing/zero (respect the engine's existing `missing_price` block); uses verbatim
+wording when present AND degrades to a clean component-name fallback when absent
+(only 18/200 covered today).
