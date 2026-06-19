@@ -5,6 +5,59 @@
 > (this is the *operational*-autonomy analogue of that *development*-autonomy ADR).
 > **Date:** 2026-06-13.
 
+## 0¾. LIVE CHECK + UX FLOW AUDIT FINDINGS (2026-06-17/19) — what's real vs. the gap
+
+Read-only check on gt-ops-prod + a `ux-flow-architect` audit of the whole corridor:
+
+**The engine is live and running.** A purchase session ran 2026-06-17 (status
+`open`): **20 supplier PO drafts, 47 lines**, ranked by tier (`urgent`), each with
+`order_by_date`, `earliest_need_date`, `covered_through_date`, and `total_cost`.
+Sessions also ran 06-12 and 05-16. The approve → place → skip workflow,
+per-supplier consolidation, and the PO/GR close-of-loop all exist and work.
+
+**The two precise gaps (everything else already exists):**
+
+1. **`order_document_text` is empty.** The column exists on `purchase_session_po`
+   but `msg_len = null` on every row — the engine never composes the supplier
+   message. **This is the one genuinely-new brick:** fill that column with the
+   verbatim-wording order text + expected cost + price-change alert. Bounded by
+   procurement-spec coverage: **18 of 200 components** have
+   `supplier_catalog_wording` today (grows as the goods-receipt skill runs).
+
+2. **The per-component dial is wired but unreachable.** `cover_day_overrides = 0`
+   — Tom has never set a per-component cover-days value, because the
+   `/admin/planning-policy` page shows only global scalars, has no per-component
+   interface, and is v1-locked against creating new keys (audit FLOW-002 /
+   FLOW-011). The "3 weeks for X, JIT for Y" capability exists in the engine but
+   has no UI path. Defaults today: cover 7d, safety 0d, horizon 56d,
+   consolidation 21d.
+
+**Refined, de-duplicated build (three targeted enhancements — no new engine/table/page):**
+
+- **A. Order-message composer (backend, the real new brick).** Compose into the
+  existing empty `order_document_text`: per line, the supplier's verbatim
+  `supplier_catalog_wording` + `ordering_notes`, qty in order UOM, expected unit
+  cost; per draft, the total + any price-change flags; hold/flag lines with no
+  spec or zero price (never guess). Ships with the §5 canary. Backend-only,
+  read/compose, no send. **Recommended first build.**
+- **B. Make the per-component policy reachable (Tom's "back page").** Backend
+  (ARCH, FLOW-011): a mutation to set `planning.safety.component_cover_days.<id>`
+  (and a JIT/Buffer preset over existing keys). Portal: a per-component section on
+  the policy or component page with human names + a "see what I'd order" link
+  (the live simulation, FLOW-002/003).
+- **C. Surface the message on the PO + "Order message" tab (durability/audit).**
+  Backend exposes `order_document_text` on the PO detail read model (ARCH,
+  FLOW-005); portal adds the tab with copy + "mark as sent" note (FLOW-004).
+
+Other audit findings are polish/standard items (FLOW-001 procurement page is
+Hebrew/RTL vs the English-first contract; FLOW-006 raw `reason_code` in errors;
+FLOW-008 no session-history view; FLOW-007/009/010/012). They are corridor
+quality, not blockers for A–C. Full audit packet retained from the
+`ux-flow-architect` run (2026-06-19).
+
+---
+
+
 ## 0½. RECONCILIATION — what already exists (supersedes the "build-fresh" framing of §4, §4½, §10)
 
 A pre-build audit of `gt-factory-os` found that **most of this already exists and
