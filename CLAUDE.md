@@ -83,6 +83,38 @@ Every dispatch consults `AI_BRAIN_ROUTER.md` to classify input → lane → agen
 - Frozen flags (`LIONWHEEL_FG_OUT_BRIDGE_ENABLED`, `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED`) — `false` until Tom written approval + dry-run + ≥24h soak + RUNTIME_READY signal.
 - `git push`, merge, deploy — Tom only; no autonomous push under any circumstance (Phase 8 Run F, 2026-05-08, supersedes any contradicting memory).
 
+## External-action authorization (Tom-granted in writing, 2026-06-20)
+
+Supersedes the prior blanket prohibition on writing to external systems / being
+in the live operational path. Acting on connected systems is **core to Claude's
+purpose here**, not forbidden.
+
+Claude MAY read, write, and perform real actions through the systems it is
+connected to (Postgres/Supabase, LionWheel, Make, Shopify, Green Invoice,
+GitHub, etc.) — **only when confident the action is correct and matches Tom's
+intent.** Clear boundaries, always:
+
+1. **Understand before you write.** Inspect current state + real API
+   field/endpoint semantics first. Never guess (the LionWheel / Green Invoice
+   no-guess rule stands).
+2. **Confirm-before-acting on high-risk writes.** Anything irreversible,
+   destructive, mass-scale (bulk / many records), or money-/customer-facing —
+   e.g. cancelling or re-assigning live deliveries, mass status changes, placing
+   real supplier/customer orders, customer-visible changes — state exactly what
+   will happen and get Tom's go first. Reversible, single-scope, low-blast-radius
+   writes may proceed when confident.
+3. **Stock truth stays sacred.** `stock_ledger` append-only (corrections via
+   reversal only); no direct ledger/projection mutation. The two named frozen
+   flags above still gate ledger-affecting auto-bridges until their dry-run/soak.
+4. **Code-to-production stays Tom's.** `git push` to protected branches, merge,
+   deploy — unchanged (feature-branch commits + draft PRs are fine).
+5. **Audit + reversibility.** Every external write is logged/traceable and
+   reversible-by-design where possible.
+6. **When unsure — do NOT write. Ask.** Uncertainty discipline still holds.
+
+This is the operating basis for the planned daily-ops skill: Tom queues intent,
+the skill executes via sanctioned APIs under these boundaries.
+
 ## Stop conditions (any agent halts)
 
 1. A frozen flag would be flipped without Tom written approval.
@@ -115,7 +147,7 @@ A new module — CRM, lead intake, sales workflow, marketing automation, finance
 - Do not model FEFO / expiry / location / bin / customer pricing in v1.
 - Do not duplicate `BOUGHT_FINISHED` items into components.
 - Do not guess live API field names for LionWheel or Green Invoice without inspection.
-- MCP is not a runtime input channel; Claude Code tooling must not become part of the live operational path.
+- Claude tooling/skills MAY be part of the live operational path and MAY write to connected systems — per "External-action authorization" above, within its boundaries (confident, audited, reversible, confirm-before-acting on high-risk). Supersedes the prior blanket "MCP is not a runtime input channel" prohibition (Tom, 2026-06-20).
 - Do not add new authority docs without explicit Tom approval. Do not promote dry-runs or proposals to authority.
 
 ## Uncertainty discipline
@@ -129,5 +161,6 @@ Every agent run ends with: STATUS (PASS / FAIL / BLOCKED / HOLD_FOR_TOM), files 
 ---
 
 **Owner:** Tom (sole writer of this file).
+**Last amended:** 2026-06-20 (Tom-directed, in writing this session): added "External-action authorization" + reworded the MCP/operational-path forbidden assumption. Transcribed at Tom's explicit instruction; Tom remains owner.
 **Last rewritten:** 2026-05-08 (Phase 8 Run F Wave 4 — kernel extraction + thin-boot rewrite).
 **Pre-rewrite full text preserved at:** `docs/archive/CLAUDE.md.pre-kernel-rewrite-2026-05-08.md`.
