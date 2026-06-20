@@ -81,7 +81,7 @@ Every dispatch consults `AI_BRAIN_ROUTER.md` to classify input → lane → agen
 - Other authority docs (EXECUTION_POLICY.md, CURRENT_STATE.md, WORKSPACE_MAP.md, ACTIVE_NOW.md, AI_BRAIN_ROUTER.md) — `ops-docs-curator` writes under `factory-os-governor` approval.
 - `.claude/state/*.json` — only emitting executors append; never overwrite.
 - Frozen flags (`LIONWHEEL_FG_OUT_BRIDGE_ENABLED`, `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED`) — `false` until Tom written approval + dry-run + ≥24h soak + RUNTIME_READY signal.
-- `git push`, merge, deploy — Tom only; no autonomous push under any circumstance (Phase 8 Run F, 2026-05-08, supersedes any contradicting memory).
+- `git push` + PR **merge** — Claude MAY do autonomously when required checks are green and the change is verified (Tom-granted in writing 2026-06-20; supersedes the prior Phase 8 Run F "Tom only / no autonomous push"). Do not merge with red/failing required checks or an unverified high-blast-radius change. **Production deploy** and **applying migrations to the production database** remain deliberate, explicitly-flagged steps — never silent.
 
 ## External-action authorization (Tom-granted in writing, 2026-06-20)
 
@@ -106,8 +106,9 @@ intent.** Clear boundaries, always:
 3. **Stock truth stays sacred.** `stock_ledger` append-only (corrections via
    reversal only); no direct ledger/projection mutation. The two named frozen
    flags above still gate ledger-affecting auto-bridges until their dry-run/soak.
-4. **Code-to-production stays Tom's.** `git push` to protected branches, merge,
-   deploy — unchanged (feature-branch commits + draft PRs are fine).
+4. **Merge is Claude's to do** (Tom-granted 2026-06-20) when required checks are
+   green and the change is verified — no waiting for Tom. Production **deploy**
+   and **prod-DB migration apply** stay deliberate, flagged steps — never silent.
 5. **Audit + reversibility.** Every external write is logged/traceable and
    reversible-by-design where possible.
 6. **When unsure — do NOT write. Ask.** Uncertainty discipline still holds.
