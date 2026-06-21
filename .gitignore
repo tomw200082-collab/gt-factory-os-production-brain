@@ -18,6 +18,8 @@
 !.audits/RETENTION_POLICY.md
 .lionwheel-prints/
 .superpowers/
+# graphify knowledge-graph output (regenerate with /graphify)
+graphify-out/
 
 # --- Vendored binaries ---
 .tools/
