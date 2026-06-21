@@ -17,7 +17,11 @@ the PDF to Tom in chat instead.
 """
 import os, sys, json, base64, urllib.request
 
-TO = "production@gteveryday.com"
+# Target recipient. Interim = tom@gteveryday.com (the Resend account owner, the
+# only address deliverable in test mode). Flip to production@gteveryday.com once
+# gteveryday.com is verified at resend.com/domains (and ALERT_EMAIL_FROM is set to
+# a @gteveryday.com sender). Override anytime with ROUTE_PACK_EMAIL_TO.
+TO = os.environ.get("ROUTE_PACK_EMAIL_TO", "tom@gteveryday.com")
 
 
 def main(summary_path):
