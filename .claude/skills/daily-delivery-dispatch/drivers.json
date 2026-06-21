@@ -1,0 +1,8 @@
+{
+  "_comment": "Confirmed driver name -> LionWheel driver_id cache (learning). Authoritative live list is GET /api/v1/drivers.json. Append confirmed matches here. Names may be Hebrew or English.",
+  "drivers": {
+    "מקסים": 28174,
+    "maxim": 28174,
+    "maksim": 28174
+  }
+}
