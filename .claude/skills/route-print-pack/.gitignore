@@ -1,0 +1,5 @@
+# generated run output — contains real customer invoices/route data, never commit
+scripts/route_pack_out/
+route_pack_out/
+__pycache__/
+*.pyc
