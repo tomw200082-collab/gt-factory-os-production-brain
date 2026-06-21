@@ -62,19 +62,19 @@ the **driver name** and the **day**; everything else is default and automatic.
      never written directly here, and never guessed (quantities/items are confirmed
      by Tom at approval).
 5. **Email.** The PDF is compressed on assembly (~3 MB). Send it + a short summary
-   to **production@gteveryday.com**:
+   to **production@gteveryday.com** via the Supabase Edge Function relay
+   `email_route_pack` (the sandbox cannot reach Resend directly — Cloudflare 1010 —
+   but Supabase's network can):
    ```bash
-   python3 send_email.py route_pack_out/summary.json
+   python3 send_email.py route_pack_out/summary.json   # needs SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY
    ```
-   Requirements for delivery to land:
-   - The environment must allow outbound egress to `api.resend.com` (it is
-     currently blocked here — Cloudflare `error 1010`). If blocked, relay through a
-     Supabase Edge Function (Supabase's network reaches Resend), or run where egress
-     is allowed.
-   - To reach an address other than the Resend account owner, a verified
-     `gteveryday.com` sender must exist in Resend; set `ALERT_EMAIL_FROM` to it.
-   If the send fails, deliver the PDF to Tom in chat and tell him which requirement
-   is missing — do not silently drop it.
+   The relay is deployed and proven end-to-end. **One-time prerequisite for
+   production@:** verify the `gteveryday.com` domain at resend.com/domains, then set
+   the edge secret `ALERT_EMAIL_FROM` to a `@gteveryday.com` sender (or redeploy the
+   function with that default). Until the domain is verified, Resend test mode only
+   delivers to the account owner (tom@gteveryday.com); the relay returns the Resend
+   error — when that happens, deliver the PDF to Tom in chat and say the domain
+   still needs verifying. Never silently drop it.
 6. **Deliver** the PDF to Tom in chat as well.
 
 ## Picking discrepancies (credits)

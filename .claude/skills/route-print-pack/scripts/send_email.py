@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 """
-Email the finished route pack to production@gteveryday.com via Resend.
+Email the finished route pack to production@gteveryday.com.
+
+The build sandbox cannot reach api.resend.com (Cloudflare 1010), so we relay
+through the Supabase Edge Function `email_route_pack` (Supabase's network reaches
+Resend). The function attaches the PDF and sends via Resend.
 
 Usage: send_email.py route_pack_out/summary.json
-Reads the summary + attaches summary["file"]. Short Hebrew body.
+Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (to invoke the relay).
 
-Env: RESEND_API_KEY (required), ALERT_EMAIL_FROM (optional; a verified
-gteveryday.com sender is recommended, else falls back to onboarding@resend.dev).
+NOTE: delivery to production@gteveryday.com requires the gteveryday.com domain to
+be verified at resend.com/domains, after which ALERT_EMAIL_FROM (an edge secret)
+must be a @gteveryday.com sender. Until then Resend (test mode) only delivers to
+the account owner; the relay returns the Resend error and the caller should hand
+the PDF to Tom in chat instead.
 """
 import os, sys, json, base64, urllib.request
 
@@ -16,8 +23,8 @@ TO = "production@gteveryday.com"
 def main(summary_path):
     s = json.load(open(summary_path))
     pdf = s["file"]
-    key = os.environ["RESEND_API_KEY"]
-    sender = os.environ.get("ALERT_EMAIL_FROM", "onboarding@resend.dev")
+    base = os.environ["SUPABASE_URL"].rstrip("/")
+    key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 
     disc = s.get("discrepancies", [])
     lines = [
@@ -34,26 +41,25 @@ def main(summary_path):
     if s.get("inventory_proposals"):
         lines.append("")
         lines.append(f"תזוזות מלאי לא-רגילות שממתינות לאישור ב-inbox: {s['inventory_proposals']}")
-    body = "\n".join(lines)
-
-    with open(pdf, "rb") as f:
-        content = base64.b64encode(f.read()).decode()
 
     payload = {
-        "from": f"GT Factory OS <{sender}>",
-        "to": [TO],
+        "pdf_base64": base64.b64encode(open(pdf, "rb").read()).decode(),
+        "filename": os.path.basename(pdf),
         "subject": f"מסלול הפצה {s['driver']} · {s['date']}",
-        "text": body,
-        "attachments": [{"filename": os.path.basename(pdf), "content": content}],
+        "text": "\n".join(lines),
+        "to": TO,
     }
     req = urllib.request.Request(
-        "https://api.resend.com/emails",
+        base + "/functions/v1/email_route_pack",
         data=json.dumps(payload).encode(),
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=90) as r:
-        print(r.status, r.read().decode())
+    with urllib.request.urlopen(req, timeout=120) as r:
+        out = json.loads(r.read().decode())
+    print(json.dumps(out, ensure_ascii=False))
+    if not out.get("ok"):
+        sys.exit("email relay reported failure (see Resend error above) — hand the PDF to Tom in chat")
 
 
 if __name__ == "__main__":
