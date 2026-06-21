@@ -177,6 +177,22 @@ def lw_login_cookies():
             for c in jar]
 
 
+# Compact print CSS for the LionWheel work order ("הדפסת סידור עבודה" =
+# /visits/print_labels). Their print view renders the יעד column so narrow that
+# each Hebrew letter stacks on its own line, blowing the route up to ~13 pages.
+# nowrap + tight cells collapses it back to single-line rows so all stops fit one
+# A4 page. We keep LionWheel's own header/columns/branding — only the layout is
+# tightened, nothing is invented.
+WORKORDER_FIT_CSS = """
+@page { size: A4 portrait; margin: 5mm; }
+* { box-sizing: border-box; }
+table { font-size: 8px !important; width: 100% !important; border-collapse: collapse !important; }
+td, th { white-space: nowrap !important; padding: 1.5px 3px !important;
+         line-height: 1.15 !important; overflow: hidden !important; }
+img { max-height: 46px !important; }
+"""
+
+
 def render_pages(jobs):
     """jobs = [(url, out_pdf, fit_one_page_bool), ...] rendered with the LW session."""
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", "/opt/pw-browsers")
@@ -190,14 +206,21 @@ def render_pages(jobs):
             pg = ctx.new_page()
             pg.goto(url, wait_until="networkidle", timeout=60000)
             opts = dict(format="A4", print_background=True,
-                        margin={"top": "6mm", "bottom": "6mm", "left": "6mm", "right": "6mm"})
+                        margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
             if fit_one:
-                # work order: portrait, scaled so the route table lands on one page
+                # real LionWheel work order, fitted to one A4 page: tighten layout,
+                # then pick the largest scale that still fits (best legibility).
                 try:
-                    pg.add_style_tag(content="@page{size:A4 portrait} body{zoom:.72}")
+                    pg.add_style_tag(content=WORKORDER_FIT_CSS)
+                    pg.wait_for_timeout(600)
+                    sw = pg.evaluate("document.body.scrollWidth") or 800
+                    sh = pg.evaluate("document.body.scrollHeight") or 1000
+                    # usable A4 at 96dpi minus 5mm margins ≈ 756 × 1085 px
+                    scale = min(1.0, 750.0 / sw, 1080.0 / sh)
+                    scale = max(0.4, round(scale, 2))
                 except Exception:
-                    pass
-                opts["scale"] = 0.72
+                    scale = 0.62
+                opts["scale"] = scale
                 opts["page_ranges"] = "1"
             pg.pdf(path=out, **opts)
             pg.close()
@@ -234,62 +257,185 @@ def detect_inventory_moves(stops):
 
 
 # --------------------------------------------------------------------------- #
-# work order (page 1) — clean one-page A4 manifest built from the route data
-# (the LionWheel SPA route view cannot be forced to a clean single page, and its
-#  print_summary is aggregate-only; this reproduces the route, in driving order,
-#  arranged to one optimal portrait page).
+# work order (page 1) — the driving day as a single-page A4 timeline.
+# Signature: a green spine of numbered stop-discs in driving order, time in mono
+# beside each. Structure carries truth: pickup/exchange stops show a terracotta
+# disc + the action word in place of the city; picking-shortfall stops carry an
+# amber dot. The driver reads the day top-to-bottom and sees attention-stops at a
+# glance. (The LionWheel SPA route view can't be forced to one clean page and its
+# print_summary is aggregate-only, so we reproduce the route ourselves.)
+#
+# Palette is brand-aligned to GT Everyday (a green-tea / beverage maker), off the
+# generic corporate navy; type is one family used deliberately — DejaVu Sans for
+# names/structure, DejaVu Sans Mono for times and counts (dispatch-board numerals).
 # --------------------------------------------------------------------------- #
-def build_workorder(driver, date, stops, out_pdf):
+def build_workorder(driver, date, stops, out_pdf, flags=None):
     import fitz
     from bidi.algorithm import get_display
+    flags = flags or {}
     fb = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     fr = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    fm = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
     HB = fitz.Font(fontfile=fb)
     HR = fitz.Font(fontfile=fr)
-    NAVY = (0.16, 0.27, 0.46)
-    GREY = (0.45, 0.48, 0.55)
-    LINE = (0.85, 0.87, 0.91)
+    HM = fitz.Font(fontfile=fm)
+
+    INK   = (0.086, 0.141, 0.110)   # #16241C deep evergreen, primary text
+    GREEN = (0.118, 0.431, 0.282)   # #1E6E48 GT green — header, spine, discs
+    MUTE  = (0.416, 0.455, 0.424)   # #6A746C secondary labels
+    HAIR  = (0.863, 0.886, 0.867)   # #DCE2DD hairline
+    TERRA = (0.741, 0.220, 0.161)   # #BD3829 special-handling (pickup/exchange)
+    AMBER = (0.780, 0.518, 0.122)   # #C7841F picking shortfall
+    PALE  = (0.910, 0.945, 0.922)   # #E8F1EC disc wash on green band
+
     dmy = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%d/%m/%Y")
     pkgs = sum(int(s["packages"] or 0) for s in stops)
+    etas = sorted(s["eta"] for s in stops if s.get("eta"))
+    window = f"{etas[0]}–{etas[-1]}" if etas else ""
 
     doc = fitz.open()
     pg = doc.new_page(width=595, height=842)
     pg.insert_font(fontname="db", fontfile=fb)
     pg.insert_font(fontname="dr", fontfile=fr)
+    pg.insert_font(fontname="dm", fontfile=fm)
 
-    def rt(x_right, y, text, fs, font="dr", color=(0, 0, 0)):
+    def _f(font):
+        return {"db": HB, "dr": HR, "dm": HM}[font]
+
+    def rt(x_right, y, text, fs, font="dr", color=INK):
+        """right-anchored (RTL): text ends at x_right."""
         disp = get_display(str(text))
-        f = HB if font == "db" else HR
-        pg.insert_text((x_right - f.text_length(disp, fs), y), disp,
+        pg.insert_text((x_right - _f(font).text_length(disp, fs), y), disp,
                        fontname=font, fontsize=fs, color=color)
 
-    # header band
-    pg.draw_rect(fitz.Rect(0, 0, 595, 70), fill=NAVY, color=NAVY)
-    rt(575, 34, f"סידור עבודה — {driver}", 20, "db", (1, 1, 1))
-    rt(575, 56, f"{dmy}   ·   {len(stops)} עצירות   ·   {pkgs} חבילות", 11, "dr", (0.85, 0.88, 0.96))
+    def disc(cx, cy, r, num, fill, ring=False, numcolor=(1, 1, 1)):
+        sh = pg.new_shape()
+        sh.draw_circle((cx, cy), r)
+        if ring:
+            sh.finish(color=fill, width=1.8, fill=(1, 1, 1))
+        else:
+            sh.finish(color=fill, width=0, fill=fill)
+        sh.commit()
+        s = str(num)
+        fs = 9.5 if len(s) >= 2 else 10.5
+        w = HB.text_length(s, fs)
+        pg.insert_text((cx - w / 2, cy + fs * 0.36), s,
+                       fontname="db", fontsize=fs,
+                       color=(fill if ring else numcolor))
 
-    # column right-edges (RTL): #, שעה, לקוח, עיר, פריטים, חבילות
-    COLS = [(578, "#", "do"), (548, "שעה", "eta"), (505, "לקוח", "recipient"),
-            (235, "עיר", "city"), (120, "פריטים", "items"), (62, "חב'", "packages")]
-    y = 92
-    for xr, head, _ in COLS:
-        rt(xr, y, head, 9.5, "db", GREY)
-    y += 6
-    pg.draw_line(fitz.Point(20, y), fitz.Point(578, y), color=LINE, width=1)
-    y += 16
-    rowh = (812 - y) / max(len(stops), 1)
-    rowh = min(rowh, 27)
-    for s in stops:
-        for xr, _, key in COLS:
-            val = s.get(key)
-            if key == "recipient":
-                val = (val or "")[:34]
-            rt(xr, y, "" if val is None else val, 9.5,
-               "db" if key == "do" else "dr",
-               NAVY if key == "do" else (0.12, 0.14, 0.18))
-        pg.draw_line(fitz.Point(20, y + 5), fitz.Point(578, y + 5), color=LINE, width=0.5)
-        y += rowh
-    rt(575, 832, "LionWheel · route order", 8, "dr", GREY)
+    # ---- header band -------------------------------------------------------- #
+    pg.draw_rect(fitz.Rect(0, 0, 595, 92), fill=GREEN, color=GREEN)
+    rt(575, 30, "סידור עבודה", 10, "dr", PALE)
+    rt(575, 60, driver, 27, "db", (1, 1, 1))
+    # totals strip, mono numerals on the band
+    rt(575, 80, f"{dmy}", 10.5, "dm", PALE)
+    bits = [(f"{len(stops)}", "עצירות"), (f"{pkgs}", "חבילות")]
+    if window:
+        bits.append((window, "חלון"))
+    x = 360
+    for num, lab in bits:
+        rt(x, 80, lab, 9, "dr", PALE)
+        x -= HR.text_length(get_display(lab), 9) + 5
+        rt(x, 80, num, 10.5, "dm", (1, 1, 1))
+        x -= HM.text_length(num, 10.5) + 16
+
+    # ---- column hints (light, set once) ------------------------------------- #
+    SPINE = 556                     # x of the timeline spine
+    DISC_R = 10
+    TIME_XR = 524                   # right edge of the mono time
+    NAME_XR = 506                   # right edge of customer / action line
+    NAME_XMIN = 150                 # left limit for the name (truncate before)
+    ITEM_XR = 116                   # right edge of items count
+    PKG_XR = 56                     # right edge of packages count
+    yh = 116
+    rt(TIME_XR, yh, "שעה", 8, "db", MUTE)
+    rt(NAME_XR, yh, "יעד", 8, "db", MUTE)
+    rt(ITEM_XR, yh, "פריטים", 8, "db", MUTE)
+    rt(PKG_XR, yh, "חב׳", 8, "db", MUTE)
+    pg.draw_line(fitz.Point(20, yh + 6), fitz.Point(575, yh + 6), color=HAIR, width=1)
+
+    # ---- the timeline ------------------------------------------------------- #
+    y0 = yh + 18
+    bottom = 812
+    n = max(len(stops), 1)
+    rowh = min((bottom - y0) / n, 30)
+    two_line = rowh >= 24
+    disc_r = DISC_R if rowh >= 22 else 8
+
+    # spine behind the discs (first centre -> last centre)
+    first_c = y0 + rowh / 2
+    last_c = y0 + rowh * (len(stops) - 1) + rowh / 2
+    pg.draw_line(fitz.Point(SPINE, first_c), fitz.Point(SPINE, last_c),
+                 color=HAIR, width=2)
+
+    ACTION = {"איסוף": "איסוף סחורה", "החלפה": "החלפת סחורה"}
+
+    def fit(text, font, fs, max_w):
+        disp = str(text)
+        while disp and _f(font).text_length(get_display(disp), fs) > max_w:
+            disp = disp[:-1]
+        return disp
+
+    for i, s in enumerate(stops):
+        cy = y0 + rowh * i + rowh / 2
+        fl = flags.get(s["tid"], {})
+        special = fl.get("special")            # "איסוף" / "החלפה" / None
+        short = fl.get("short")
+        # left attention bar
+        if special:
+            pg.draw_rect(fitz.Rect(20, cy - rowh / 2 + 3, 23, cy + rowh / 2 - 3),
+                         fill=TERRA, color=TERRA)
+        elif short:
+            pg.draw_rect(fitz.Rect(20, cy - rowh / 2 + 3, 23, cy + rowh / 2 - 3),
+                         fill=AMBER, color=AMBER)
+        # stop disc on the spine
+        disc(SPINE, cy, disc_r, s.get("do") if s.get("do") is not None else "·",
+             TERRA if special else GREEN)
+        # time (mono)
+        if s.get("eta"):
+            rt(TIME_XR, cy + 3, s["eta"], 10, "dm", INK)
+        # customer (primary) + secondary line (city, or the action for specials)
+        max_w = NAME_XR - NAME_XMIN
+        name = fit(s.get("recipient") or "", "db", 9.8, max_w)
+        if two_line:
+            rt(NAME_XR, cy - 1, name, 9.8, "db", INK)
+            if special:
+                rt(NAME_XR, cy + 10, ACTION.get(special, special), 8.5, "db", TERRA)
+            else:
+                rt(NAME_XR, cy + 10, fit(s.get("city") or "", "dr", 8.5, max_w),
+                   8.5, "dr", MUTE)
+        else:
+            sec = ACTION.get(special, special) if special else (s.get("city") or "")
+            rt(NAME_XR, cy + 3, fit(f"{name}  ·  {sec}", "db", 9.2, max_w),
+               9.2, "db", INK)
+        # shortfall dot, just right of the spine-side of the name row
+        if short and not special:
+            sh = pg.new_shape()
+            sh.draw_circle((NAME_XR + 8, cy - 2), 2.2)
+            sh.finish(fill=AMBER, color=AMBER)
+            sh.commit()
+        # data columns (mono numerals)
+        if s.get("items") is not None:
+            rt(ITEM_XR, cy + 3, s["items"], 9.5, "dm", MUTE)
+        if s.get("packages") is not None:
+            rt(PKG_XR, cy + 3, s["packages"], 9.5, "dm", INK)
+        # hairline between rows
+        if i < len(stops) - 1:
+            pg.draw_line(fitz.Point(20, cy + rowh / 2),
+                         fitz.Point(575, cy + rowh / 2), color=HAIR, width=0.4)
+
+    # ---- footer legend ------------------------------------------------------ #
+    def dot(x, color):
+        sh = pg.new_shape()
+        sh.draw_circle((x, 828), 3)
+        sh.finish(fill=color, color=color)
+        sh.commit()
+    fx = 575
+    for color, lab in ((GREEN, "מסירה"), (TERRA, "איסוף / החלפה"), (AMBER, "חוסר ליקוט")):
+        dot(fx, color)
+        rt(fx - 8, 831, lab, 8, "dr", MUTE)
+        fx -= HR.text_length(get_display(lab), 8) + 26
+    rt(120, 831, "GT Everyday · LionWheel", 8, "dr", MUTE)
     doc.save(out_pdf)
     doc.close()
 
@@ -329,17 +475,54 @@ def build(driver, date, from_stop=None, copies=2):
     if from_stop:
         stops = [s for s in stops if s["do"] and s["do"] >= from_stop]
 
-    # page 1: clean one-page work order built from the route data
+    # per-stop flags for the work-order timeline: special handling (pickup /
+    # exchange, derived from the same note hints used for the inbox proposals)
+    # and picking shortfalls (any ordered > picked). Structure carries truth.
+    flags = {}
+    for s in stops:
+        t = s["task"]
+        text = f"{s.get('recipient') or ''} {(t.get('notes') or '')}"
+        special = None
+        if not s.get("gi"):
+            if "איסוף" in text:
+                special = "איסוף"
+            elif "החלפ" in text:
+                special = "החלפה"
+        short = False
+        for it in (t.get("order_items") or []):
+            try:
+                if float(it["picked_quantity"]) < float(it["quantity"]):
+                    short = True
+                    break
+            except (TypeError, ValueError, KeyError):
+                continue
+        if special or short:
+            flags[s["tid"]] = {"special": special, "short": short}
+
+    # page 1: the REAL LionWheel work order (daily_route_plan) for this driver/date,
+    # rendered from the web session and fitted to one A4 portrait page. Rendered in
+    # the SAME Playwright session as the waybills (one login). build_workorder() is
+    # kept only as a fallback if LionWheel doesn't return the page.
     wo = None
-    if not from_stop:
+    jobs = []
+    if not from_stop and driver_id:
         wo = f"{OUT}/_workorder.pdf"
-        build_workorder(driver, date, stops, wo)
+        dmy = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%d/%m/%Y")
+        wo_url = (f"{LW_BASE}/visits/print_labels"
+                  f"?date={urllib.parse.quote(dmy)}&driver_id={driver_id}")
+        jobs.append((wo_url, wo, True))
 
     # waybills for stops without an invoice, rendered from the LionWheel session
-    jobs = [(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", f"{OUT}/wb_{s['tid']}.pdf", False)
-            for s in stops if not s["gi"]]
+    jobs += [(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", f"{OUT}/wb_{s['tid']}.pdf", False)
+             for s in stops if not s["gi"]]
     if jobs:
         render_pages(jobs)
+
+    # fallback: if the real LionWheel work order didn't render, generate one so the
+    # pack always has a page 1.
+    if not from_stop and (not wo or not os.path.exists(wo) or os.path.getsize(wo) == 0):
+        wo = f"{OUT}/_workorder.pdf"
+        build_workorder(driver, date, stops, wo, flags)
 
     # invoices: download (link or API) + annotate
     ordered_parts = []
@@ -386,8 +569,57 @@ def build(driver, date, from_stop=None, copies=2):
         "file": final,
     }
     json.dump(summary, open(f"{OUT}/summary.json", "w"), ensure_ascii=False, indent=2)
+
+    # markdown digest of the run — the graphify auto-step (SKILL.md step 7) reads
+    # THIS (graphify can't ingest raw JSON). One queryable record per dispatch:
+    # stops, customers, picking shortfalls, inventory-movement proposals.
+    write_digest(driver, date, stops, disc, proposals, summary,
+                 f"{OUT}/summary.md")
+
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return summary
+
+
+def write_digest(driver, date, stops, disc, proposals, summary, path):
+    L = []
+    L.append(f"# Route pack — {driver} — {date}")
+    L.append("")
+    L.append(f"Driver **{driver}** ran {summary['stops']} stops on {date}: "
+             f"{summary['invoices']} Green Invoices and {summary['waybills']} "
+             f"LionWheel waybills (×{summary['copies']} each).")
+    L.append("")
+    L.append("## Stops (driving order)")
+    for s in stops:
+        recip = (s.get("recipient") or "").strip()
+        city = (s.get("city") or "").strip()
+        tags = []
+        if any(p["lw_task_id"] == s["tid"] for p in proposals):
+            tags.append("special-handling")
+        if any(d["stop"] == s["do"] for d in disc):
+            tags.append("picking-shortfall")
+        tag = f" — {', '.join(tags)}" if tags else ""
+        L.append(f"- Stop {s.get('do')} at {s.get('eta') or '?'}: **{recip}** "
+                 f"({city}) — {s.get('items')} items, {s.get('packages')} "
+                 f"packages{tag}")
+    L.append("")
+    L.append("## Picking shortfalls")
+    if disc:
+        for d in disc:
+            L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
+                     f"picked {d['picked']} of {d['ordered']}")
+    else:
+        L.append("- None.")
+    L.append("")
+    L.append("## Inventory-movement proposals (await inbox approval)")
+    if proposals:
+        for p in proposals:
+            L.append(f"- {p['recipient']} (task {p['lw_task_id']}): "
+                     f"{p.get('note') or 'goods pickup'}")
+    else:
+        L.append("- None.")
+    L.append("")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(L))
 
 
 def main():
