@@ -186,15 +186,21 @@ def lw_login_cookies():
 WORKORDER_FIT_CSS = """
 @page { size: A4 portrait; margin: 5mm; }
 * { box-sizing: border-box; }
-table { font-size: 8px !important; width: 100% !important; border-collapse: collapse !important; }
-td, th { white-space: nowrap !important; padding: 1.5px 3px !important;
-         line-height: 1.15 !important; overflow: hidden !important; }
-img { max-height: 46px !important; }
+table { font-size: 9.5px !important; width: 100% !important; border-collapse: collapse !important; }
+td, th { white-space: nowrap !important; padding: 2px 4px !important;
+         line-height: 1.2 !important; overflow: hidden !important;
+         vertical-align: middle !important; }
+img { max-height: 48px !important; }
 """
 
 
 def render_pages(jobs):
-    """jobs = [(url, out_pdf, fit_one_page_bool), ...] rendered with the LW session."""
+    """jobs = [(url, out_pdf, fit_one_page_bool), ...] rendered with the LW session.
+
+    Each job is isolated: one bad page (a flaky/changed work-order URL, a stalled
+    networkidle) must NOT abort the whole batch. The other waybills still render,
+    and a missing work-order PDF lets build()'s build_workorder() fallback produce
+    page 1 rather than the driver getting no pack at all."""
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", "/opt/pw-browsers")
     from playwright.sync_api import sync_playwright
     cookies = lw_login_cookies()
@@ -204,27 +210,54 @@ def render_pages(jobs):
         ctx.add_cookies(cookies)
         for url, out, fit_one in jobs:
             pg = ctx.new_page()
-            pg.goto(url, wait_until="networkidle", timeout=60000)
-            opts = dict(format="A4", print_background=True,
-                        margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
-            if fit_one:
-                # real LionWheel work order, fitted to one A4 page: tighten layout,
-                # then pick the largest scale that still fits (best legibility).
-                try:
-                    pg.add_style_tag(content=WORKORDER_FIT_CSS)
-                    pg.wait_for_timeout(600)
-                    sw = pg.evaluate("document.body.scrollWidth") or 800
-                    sh = pg.evaluate("document.body.scrollHeight") or 1000
-                    # usable A4 at 96dpi minus 5mm margins ≈ 756 × 1085 px
-                    scale = min(1.0, 750.0 / sw, 1080.0 / sh)
-                    scale = max(0.4, round(scale, 2))
-                except Exception:
-                    scale = 0.62
-                opts["scale"] = scale
-                opts["page_ranges"] = "1"
-            pg.pdf(path=out, **opts)
-            pg.close()
+            try:
+                _render_one(pg, url, out, fit_one)
+            except Exception as e:
+                print(f"render_pages: skipping failed job {url}: {e}")
+            finally:
+                pg.close()
         b.close()
+
+
+def _render_one(pg, url, out, fit_one):
+    pg.goto(url, wait_until="networkidle", timeout=60000)
+    opts = dict(format="A4", print_background=True,
+                margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
+    if fit_one:
+        # Real LionWheel work order, fitted to ONE A4 page AND spread to fill its
+        # full height: tighten layout (nowrap), scale to fit width, then stretch
+        # the route table so its rows distribute the remaining vertical space
+        # (no dead whitespace at the bottom).
+        try:
+            pg.add_style_tag(content=WORKORDER_FIT_CSS)
+            pg.wait_for_timeout(400)
+            usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
+            w = pg.evaluate("document.body.scrollWidth") or 800
+            scale = min(1.0, usable_w / max(w, 1))
+            m = pg.evaluate(
+                "(() => { const ts=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
+                " return { nonTable: document.body.scrollHeight - (t?t.offsetHeight:0),"
+                " tableH: t?t.offsetHeight:0 }; })()"
+            ) or {}
+            non_table = float(m.get("nonTable", 0))
+            table_h0 = float(m.get("tableH", 0))
+            target_table = int(max(table_h0, usable_h / scale - non_table))
+            pg.evaluate(
+                "(h)=>{const ts=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
+                " if(ts[0]) ts[0].style.height=h+'px';}",
+                target_table,
+            )
+            pg.wait_for_timeout(300)
+            h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
+            scale = min(scale, usable_h / max(h, 1))
+            scale = max(0.4, round(scale, 3))
+        except Exception:
+            scale = 0.62
+        opts["scale"] = scale
+        opts["page_ranges"] = "1"
+    pg.pdf(path=out, **opts)
 
 
 # --------------------------------------------------------------------------- #
@@ -232,11 +265,30 @@ def render_pages(jobs):
 # --------------------------------------------------------------------------- #
 MOVE_HINTS = ["החלפ", "החזר", "טעימ", "איסוף סחורה", "קבל", "מתנה", "דגימ"]
 
+# note-text hint → (kind, Hebrew action label for the concise approval summary)
+KIND_HINTS = [
+    ("החלפ", "exchange", "החלפת סחורה"),
+    ("איסוף", "pickup", "איסוף סחורה"),
+    ("החזר", "return", "החזרת סחורה"),
+    ("טעימ", "tasting", "טעימה"),
+    ("דגימ", "tasting", "דגימה"),
+    ("קבל", "goods_receipt", "קבלת סחורה"),
+    ("מתנה", "other", "מתנה"),
+]
+
+
+def classify_move(text):
+    for hint, kind, label in KIND_HINTS:
+        if hint in text:
+            return kind, label
+    return "other", "תזוזת מלאי"
+
 
 def detect_inventory_moves(stops):
     """Conservative: flag stops whose note implies a non-pick stock move.
-    We do NOT guess quantities — the proposal carries the verbatim note for
-    human approval in the inbox before any stock_ledger entry is posted."""
+    We do NOT guess quantities — the proposal carries the verbatim note + a
+    concise summary for human approval in the inbox (as an APPROVAL, not an
+    exception) before any stock_ledger entry is posted."""
     out = []
     for s in stops:
         t = s["task"]
@@ -244,14 +296,19 @@ def detect_inventory_moves(stops):
         recip = s.get("recipient") or ""
         text = f"{recip} {note}"
         if any(h in text for h in MOVE_HINTS) and not s.get("gi"):
+            kind, label = classify_move(text)
+            recip_short = recip.split("(")[0].strip() or recip
+            summary = f"{label} — {recip_short}" if recip_short else label
             out.append({
                 "lw_task_id": s["tid"],
                 "daily_order": s["do"],
                 "recipient": recip,
                 "note": note,
-                "category": "inventory_movement_proposal",
+                "kind": kind,
+                "summary": summary,
+                "form_type": "inventory_movement",
                 "status": "open",
-                "needs": "item_id + qty + direction(+/-) + ledger type; confirm in inbox",
+                "needs": "item_id + qty + direction(+/-) confirmed by the approver in the inbox",
             })
     return out
 
@@ -499,10 +556,25 @@ def build(driver, date, from_stop=None, copies=2):
         if special or short:
             flags[s["tid"]] = {"special": special, "short": short}
 
-    # page 1: the REAL LionWheel work order (daily_route_plan) for this driver/date,
-    # rendered from the web session and fitted to one A4 portrait page. Rendered in
-    # the SAME Playwright session as the waybills (one login). build_workorder() is
-    # kept only as a fallback if LionWheel doesn't return the page.
+    # 1. Resolve each stop to an invoice (download + annotate) or mark it as
+    #    needing a LionWheel waybill. Doing the GI fetch FIRST means we only
+    #    render the waybills we actually use — an invoice stop never pays for a
+    #    waybill render that is then discarded.
+    invoice_part = {}     # tid -> annotated invoice path
+    waybill_stops = []
+    for s in stops:
+        if s["gi"] or s["task"].get("order_items"):   # invoice candidate
+            src = f"{OUT}/inv_{s['tid']}.pdf"
+            if gi_fetch_invoice(s, src):
+                ann = f"{OUT}/ann_{s['tid']}.pdf"
+                annotate.annotate(s["task"], src, ann)
+                invoice_part[s["tid"]] = ann
+                continue
+        waybill_stops.append(s)                       # no invoice → needs waybill
+
+    # 2. ONE Playwright session: the REAL LionWheel work order (page 1, fitted to
+    #    one A4) + a waybill for each stop that has no invoice. build_workorder()
+    #    is kept only as a fallback if LionWheel doesn't return the work order.
     wo = None
     jobs = []
     if not from_stop and driver_id:
@@ -511,30 +583,24 @@ def build(driver, date, from_stop=None, copies=2):
         wo_url = (f"{LW_BASE}/visits/print_labels"
                   f"?date={urllib.parse.quote(dmy)}&driver_id={driver_id}")
         jobs.append((wo_url, wo, True))
-
-    # waybills for stops without an invoice, rendered from the LionWheel session
     jobs += [(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", f"{OUT}/wb_{s['tid']}.pdf", False)
-             for s in stops if not s["gi"]]
+             for s in waybill_stops]
     if jobs:
         render_pages(jobs)
 
-    # fallback: if the real LionWheel work order didn't render, generate one so the
-    # pack always has a page 1.
+    # 3. fallback: if the real LionWheel work order didn't render, generate one so
+    #    the pack always has a page 1.
     if not from_stop and (not wo or not os.path.exists(wo) or os.path.getsize(wo) == 0):
         wo = f"{OUT}/_workorder.pdf"
         build_workorder(driver, date, stops, wo, flags)
 
-    # invoices: download (link or API) + annotate
+    # 4. assemble in driving order: invoice if present, else its waybill.
     ordered_parts = []
     for s in stops:
-        if s["gi"] or (s["task"].get("order_items")):  # invoice stop
-            src = f"{OUT}/inv_{s['tid']}.pdf"
-            if gi_fetch_invoice(s, src):
-                ann = f"{OUT}/ann_{s['tid']}.pdf"
-                annotate.annotate(s["task"], src, ann)
-                ordered_parts.append((ann, copies))
-                continue
-        # otherwise: waybill stop
+        ann = invoice_part.get(s["tid"])
+        if ann:
+            ordered_parts.append((ann, copies))
+            continue
         wb = f"{OUT}/wb_{s['tid']}.pdf"
         if os.path.exists(wb):
             ordered_parts.append((wb, copies))
