@@ -195,7 +195,12 @@ img { max-height: 48px !important; }
 
 
 def render_pages(jobs):
-    """jobs = [(url, out_pdf, fit_one_page_bool), ...] rendered with the LW session."""
+    """jobs = [(url, out_pdf, fit_one_page_bool), ...] rendered with the LW session.
+
+    Each job is isolated: one bad page (a flaky/changed work-order URL, a stalled
+    networkidle) must NOT abort the whole batch. The other waybills still render,
+    and a missing work-order PDF lets build()'s build_workorder() fallback produce
+    page 1 rather than the driver getting no pack at all."""
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", "/opt/pw-browsers")
     from playwright.sync_api import sync_playwright
     cookies = lw_login_cookies()
@@ -205,46 +210,54 @@ def render_pages(jobs):
         ctx.add_cookies(cookies)
         for url, out, fit_one in jobs:
             pg = ctx.new_page()
-            pg.goto(url, wait_until="networkidle", timeout=60000)
-            opts = dict(format="A4", print_background=True,
-                        margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
-            if fit_one:
-                # Real LionWheel work order, fitted to ONE A4 page AND spread to
-                # fill its full height: tighten layout (nowrap), scale to fit
-                # width, then stretch the route table so its rows distribute the
-                # remaining vertical space (no dead whitespace at the bottom).
-                try:
-                    pg.add_style_tag(content=WORKORDER_FIT_CSS)
-                    pg.wait_for_timeout(400)
-                    usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
-                    w = pg.evaluate("document.body.scrollWidth") or 800
-                    scale = min(1.0, usable_w / max(w, 1))
-                    m = pg.evaluate(
-                        "(() => { const ts=[...document.querySelectorAll('table')]"
-                        ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
-                        " return { nonTable: document.body.scrollHeight - (t?t.offsetHeight:0),"
-                        " tableH: t?t.offsetHeight:0 }; })()"
-                    ) or {}
-                    non_table = float(m.get("nonTable", 0))
-                    table_h0 = float(m.get("tableH", 0))
-                    target_table = int(max(table_h0, usable_h / scale - non_table))
-                    pg.evaluate(
-                        "(h)=>{const ts=[...document.querySelectorAll('table')]"
-                        ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
-                        " if(ts[0]) ts[0].style.height=h+'px';}",
-                        target_table,
-                    )
-                    pg.wait_for_timeout(300)
-                    h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
-                    scale = min(scale, usable_h / max(h, 1))
-                    scale = max(0.4, round(scale, 3))
-                except Exception:
-                    scale = 0.62
-                opts["scale"] = scale
-                opts["page_ranges"] = "1"
-            pg.pdf(path=out, **opts)
-            pg.close()
+            try:
+                _render_one(pg, url, out, fit_one)
+            except Exception as e:
+                print(f"render_pages: skipping failed job {url}: {e}")
+            finally:
+                pg.close()
         b.close()
+
+
+def _render_one(pg, url, out, fit_one):
+    pg.goto(url, wait_until="networkidle", timeout=60000)
+    opts = dict(format="A4", print_background=True,
+                margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
+    if fit_one:
+        # Real LionWheel work order, fitted to ONE A4 page AND spread to fill its
+        # full height: tighten layout (nowrap), scale to fit width, then stretch
+        # the route table so its rows distribute the remaining vertical space
+        # (no dead whitespace at the bottom).
+        try:
+            pg.add_style_tag(content=WORKORDER_FIT_CSS)
+            pg.wait_for_timeout(400)
+            usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
+            w = pg.evaluate("document.body.scrollWidth") or 800
+            scale = min(1.0, usable_w / max(w, 1))
+            m = pg.evaluate(
+                "(() => { const ts=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
+                " return { nonTable: document.body.scrollHeight - (t?t.offsetHeight:0),"
+                " tableH: t?t.offsetHeight:0 }; })()"
+            ) or {}
+            non_table = float(m.get("nonTable", 0))
+            table_h0 = float(m.get("tableH", 0))
+            target_table = int(max(table_h0, usable_h / scale - non_table))
+            pg.evaluate(
+                "(h)=>{const ts=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
+                " if(ts[0]) ts[0].style.height=h+'px';}",
+                target_table,
+            )
+            pg.wait_for_timeout(300)
+            h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
+            scale = min(scale, usable_h / max(h, 1))
+            scale = max(0.4, round(scale, 3))
+        except Exception:
+            scale = 0.62
+        opts["scale"] = scale
+        opts["page_ranges"] = "1"
+    pg.pdf(path=out, **opts)
 
 
 # --------------------------------------------------------------------------- #
