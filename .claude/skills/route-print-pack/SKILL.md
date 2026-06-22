@@ -63,16 +63,34 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    ```
    Writes `route_pack_out/route_<driver>_<date>.pdf`, `summary.json`, and
    `inventory_proposals.json`. Sanity-check by rendering a page to PNG with PyMuPDF.
-4. **Inventory inbox.** For each item in `inventory_proposals.json` (returns,
-   exchanges, tastings, goods received — anything that moves stock outside normal
-   picking), INSERT an **open** row into `private_core.exceptions` via the Supabase
-   MCP (`category='inventory_movement_proposal'`, `status='open'`, the proposal in
-   `raw_payload`, a clear `recommended_action`). Surface them to Tom.
+4. **Inventory inbox — submit as an APPROVAL (not a plain exception).** For each
+   item in `inventory_proposals.json` (returns, exchanges, tastings, goods received
+   — anything that moves stock outside normal picking), create a **pending
+   inventory-movement approval** so it renders in the inbox with **Approve / Reject**
+   (like physical count), not Acknowledge / Resolve. Preferred path: POST to the
+   backend `POST /api/v1/mutations/inventory-movements`
+   (`{idempotency_key, event_at, kind, source_ref:<lw_task_id>, recipient, note,
+   summary}`). If the skill has no backend session, write the same rows directly via
+   the Supabase MCP, mirroring the submit handler
+   (`api/src/inventory-movements/handler.ts`):
+   1. `form_submissions` (`form_type='inventory_movement'`, `status='pending'`,
+      `submitted_by=<Tom's app_users.user_id>`, unique `idempotency_key`,
+      `raw_payload`=the proposal incl. `summary`).
+   2. `inventory_movements` (`submission_id`, `kind`, `source_ref`, `recipient`, `note`).
+   3. `exceptions` (`category='inventory_movement_pending'`, `status='open'`,
+      `source='form.inventory_movement'`, `title`=the concise `summary`,
+      `related_entity_type='form_submission'`, `related_entity_id=<submission_id>`,
+      `recommended_action`). The portal maps this category to
+      `approval:inventory_movement` → `/inbox/approvals/inventory-movement/<id>`.
+   Surface the concise summaries to Tom.
+   - **Depends on migration `0259_inventory_movements.sql`** being applied (adds the
+     `inventory_movement` form_type + `INVENTORY_MOVEMENT` ledger type + the two
+     tables). Until applied, fall back to the prior plain-exception insert.
    - **Stock truth is sacred (CLAUDE.md).** This skill only **proposes**. The stock
-     move (add or subtract, RM or FG) is posted to `stock_ledger` **only after Tom
-     approves in the inbox**, through the system's sanctioned adjustment path —
-     never written directly here, and never guessed (quantities/items are confirmed
-     by Tom at approval).
+     move (add/subtract, RM/FG) posts to `stock_ledger` **only when the approver
+     enters the confirmed line(s) and approves** in the inbox, through the
+     inventory-movement approve mutation (the sanctioned append path) — never written
+     directly here, and never guessed.
 5. **Email.** The PDF is compressed on assembly (~3 MB). Send it + a short summary
    to **production@gteveryday.com** via the Supabase Edge Function relay
    `email_route_pack` (the sandbox cannot reach Resend directly — Cloudflare 1010 —

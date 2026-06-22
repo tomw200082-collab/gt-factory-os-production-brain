@@ -232,11 +232,30 @@ def render_pages(jobs):
 # --------------------------------------------------------------------------- #
 MOVE_HINTS = ["החלפ", "החזר", "טעימ", "איסוף סחורה", "קבל", "מתנה", "דגימ"]
 
+# note-text hint → (kind, Hebrew action label for the concise approval summary)
+KIND_HINTS = [
+    ("החלפ", "exchange", "החלפת סחורה"),
+    ("איסוף", "pickup", "איסוף סחורה"),
+    ("החזר", "return", "החזרת סחורה"),
+    ("טעימ", "tasting", "טעימה"),
+    ("דגימ", "tasting", "דגימה"),
+    ("קבל", "goods_receipt", "קבלת סחורה"),
+    ("מתנה", "other", "מתנה"),
+]
+
+
+def classify_move(text):
+    for hint, kind, label in KIND_HINTS:
+        if hint in text:
+            return kind, label
+    return "other", "תזוזת מלאי"
+
 
 def detect_inventory_moves(stops):
     """Conservative: flag stops whose note implies a non-pick stock move.
-    We do NOT guess quantities — the proposal carries the verbatim note for
-    human approval in the inbox before any stock_ledger entry is posted."""
+    We do NOT guess quantities — the proposal carries the verbatim note + a
+    concise summary for human approval in the inbox (as an APPROVAL, not an
+    exception) before any stock_ledger entry is posted."""
     out = []
     for s in stops:
         t = s["task"]
@@ -244,14 +263,19 @@ def detect_inventory_moves(stops):
         recip = s.get("recipient") or ""
         text = f"{recip} {note}"
         if any(h in text for h in MOVE_HINTS) and not s.get("gi"):
+            kind, label = classify_move(text)
+            recip_short = recip.split("(")[0].strip() or recip
+            summary = f"{label} — {recip_short}" if recip_short else label
             out.append({
                 "lw_task_id": s["tid"],
                 "daily_order": s["do"],
                 "recipient": recip,
                 "note": note,
-                "category": "inventory_movement_proposal",
+                "kind": kind,
+                "summary": summary,
+                "form_type": "inventory_movement",
                 "status": "open",
-                "needs": "item_id + qty + direction(+/-) + ledger type; confirm in inbox",
+                "needs": "item_id + qty + direction(+/-) confirmed by the approver in the inbox",
             })
     return out
 
