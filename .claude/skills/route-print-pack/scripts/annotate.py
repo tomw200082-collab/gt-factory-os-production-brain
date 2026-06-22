@@ -4,15 +4,16 @@ Invoice annotation for the route-print-pack skill.
 Takes a real Green Invoice PDF + a LionWheel task (with order_items carrying
 ordered vs picked quantities) and stamps, per the locked design:
 
-  * elegant vector picking marks at the right margin, precise to each line:
-      - V  -> green check  (picked in full)
-      - X  -> terracotta cross (not picked)
-      - 9/12 -> amber fraction (partially picked)
-  * package count (black, no box) centered under the word "מקור"
-  * last 3 digits of the order id, top-right, first page only
+  * elegant vector picking marks at the right margin, precise to each line —
+    each an open line glyph (no fill, never a filled triangle):
+      - V  -> green line check inside a green ring (picked in full)
+      - X  -> terracotta cross inside a terracotta ring (not picked)
+      - 9/12 -> amber outlined pill carrying the picked/ordered fraction
+  * package count centered under the word "מקור" (round outlined badge)
+  * last 3 digits of the order id, top-right, first page only (outlined pill)
 
 Design rationale follows the frontend-design skill: minimal direction =
-precision in spacing/type/detail, one quiet system, no templated defaults.
+precision in spacing/type/detail, one quiet outlined system, no fills.
 """
 import fitz
 from bidi.algorithm import get_display
@@ -22,18 +23,14 @@ FONTR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 HEB = fitz.Font(fontfile=FONTB)
 HEBR = fitz.Font(fontfile=FONTR)
 
-# Status palette — two-tone (saturated glyph on a pale fill, thin same-hue ring).
-# Reads as a formal, rounded status badge rather than a loose pen-stroke.
-GREEN      = (0.106, 0.451, 0.290)   # picked in full
-GREEN_FILL = (0.898, 0.953, 0.918)
-RED        = (0.741, 0.220, 0.161)   # not picked
-RED_FILL   = (0.973, 0.914, 0.898)
-AMBER      = (0.706, 0.478, 0.094)   # partial
-AMBER_FILL = (0.992, 0.953, 0.851)
-GTGREEN    = (0.118, 0.431, 0.282)   # order pill / package badge — GT brand green
-INK        = (0.086, 0.141, 0.110)
-MUTE       = (0.416, 0.455, 0.424)
-HAIR       = (0.80, 0.83, 0.89)
+# Status palette — saturated stroke colours; the marks are ring + open glyph
+# (no fills), so only the line colours are used.
+GREEN   = (0.106, 0.451, 0.290)   # picked in full
+RED     = (0.741, 0.220, 0.161)   # not picked
+AMBER   = (0.706, 0.478, 0.094)   # partial
+GTGREEN = (0.118, 0.431, 0.282)   # order pill / package badge — GT brand green
+INK     = (0.086, 0.141, 0.110)
+MUTE    = (0.416, 0.455, 0.424)
 
 
 def _reg(pg):

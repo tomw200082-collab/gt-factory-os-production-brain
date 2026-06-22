@@ -70,9 +70,11 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    (like physical count), not Acknowledge / Resolve. Preferred path: POST to the
    backend `POST /api/v1/mutations/inventory-movements`
    (`{idempotency_key, event_at, kind, source_ref:<lw_task_id>, recipient, note,
-   summary}`). If the skill has no backend session, write the same rows directly via
-   the Supabase MCP, mirroring the submit handler
-   (`api/src/inventory-movements/handler.ts`):
+   summary}`). **Prefer this endpoint** — it owns the contract (idempotency, category,
+   exception wiring). Only as a **last-resort fallback** (no backend session
+   reachable), write the same rows directly via the Supabase MCP, mirroring the
+   submit handler (`api/src/inventory-movements/handler.ts`) — and keep them in sync
+   with it, or the portal's `inventory_movement_pending` filter won't pick them up:
    1. `form_submissions` (`form_type='inventory_movement'`, `status='pending'`,
       `submitted_by=<Tom's app_users.user_id>`, unique `idempotency_key`,
       `raw_payload`=the proposal incl. `summary`).

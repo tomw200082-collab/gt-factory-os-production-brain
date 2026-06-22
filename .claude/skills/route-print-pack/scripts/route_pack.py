@@ -556,10 +556,25 @@ def build(driver, date, from_stop=None, copies=2):
         if special or short:
             flags[s["tid"]] = {"special": special, "short": short}
 
-    # page 1: the REAL LionWheel work order (daily_route_plan) for this driver/date,
-    # rendered from the web session and fitted to one A4 portrait page. Rendered in
-    # the SAME Playwright session as the waybills (one login). build_workorder() is
-    # kept only as a fallback if LionWheel doesn't return the page.
+    # 1. Resolve each stop to an invoice (download + annotate) or mark it as
+    #    needing a LionWheel waybill. Doing the GI fetch FIRST means we only
+    #    render the waybills we actually use — an invoice stop never pays for a
+    #    waybill render that is then discarded.
+    invoice_part = {}     # tid -> annotated invoice path
+    waybill_stops = []
+    for s in stops:
+        if s["gi"] or s["task"].get("order_items"):   # invoice candidate
+            src = f"{OUT}/inv_{s['tid']}.pdf"
+            if gi_fetch_invoice(s, src):
+                ann = f"{OUT}/ann_{s['tid']}.pdf"
+                annotate.annotate(s["task"], src, ann)
+                invoice_part[s["tid"]] = ann
+                continue
+        waybill_stops.append(s)                       # no invoice → needs waybill
+
+    # 2. ONE Playwright session: the REAL LionWheel work order (page 1, fitted to
+    #    one A4) + a waybill for each stop that has no invoice. build_workorder()
+    #    is kept only as a fallback if LionWheel doesn't return the work order.
     wo = None
     jobs = []
     if not from_stop and driver_id:
@@ -568,30 +583,24 @@ def build(driver, date, from_stop=None, copies=2):
         wo_url = (f"{LW_BASE}/visits/print_labels"
                   f"?date={urllib.parse.quote(dmy)}&driver_id={driver_id}")
         jobs.append((wo_url, wo, True))
-
-    # waybills for stops without an invoice, rendered from the LionWheel session
     jobs += [(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", f"{OUT}/wb_{s['tid']}.pdf", False)
-             for s in stops if not s["gi"]]
+             for s in waybill_stops]
     if jobs:
         render_pages(jobs)
 
-    # fallback: if the real LionWheel work order didn't render, generate one so the
-    # pack always has a page 1.
+    # 3. fallback: if the real LionWheel work order didn't render, generate one so
+    #    the pack always has a page 1.
     if not from_stop and (not wo or not os.path.exists(wo) or os.path.getsize(wo) == 0):
         wo = f"{OUT}/_workorder.pdf"
         build_workorder(driver, date, stops, wo, flags)
 
-    # invoices: download (link or API) + annotate
+    # 4. assemble in driving order: invoice if present, else its waybill.
     ordered_parts = []
     for s in stops:
-        if s["gi"] or (s["task"].get("order_items")):  # invoice stop
-            src = f"{OUT}/inv_{s['tid']}.pdf"
-            if gi_fetch_invoice(s, src):
-                ann = f"{OUT}/ann_{s['tid']}.pdf"
-                annotate.annotate(s["task"], src, ann)
-                ordered_parts.append((ann, copies))
-                continue
-        # otherwise: waybill stop
+        ann = invoice_part.get(s["tid"])
+        if ann:
+            ordered_parts.append((ann, copies))
+            continue
         wb = f"{OUT}/wb_{s['tid']}.pdf"
         if os.path.exists(wb):
             ordered_parts.append((wb, copies))
