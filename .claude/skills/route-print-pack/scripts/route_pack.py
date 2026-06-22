@@ -186,10 +186,11 @@ def lw_login_cookies():
 WORKORDER_FIT_CSS = """
 @page { size: A4 portrait; margin: 5mm; }
 * { box-sizing: border-box; }
-table { font-size: 8px !important; width: 100% !important; border-collapse: collapse !important; }
-td, th { white-space: nowrap !important; padding: 1.5px 3px !important;
-         line-height: 1.15 !important; overflow: hidden !important; }
-img { max-height: 46px !important; }
+table { font-size: 9.5px !important; width: 100% !important; border-collapse: collapse !important; }
+td, th { white-space: nowrap !important; padding: 2px 4px !important;
+         line-height: 1.2 !important; overflow: hidden !important;
+         vertical-align: middle !important; }
+img { max-height: 48px !important; }
 """
 
 
@@ -208,16 +209,35 @@ def render_pages(jobs):
             opts = dict(format="A4", print_background=True,
                         margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
             if fit_one:
-                # real LionWheel work order, fitted to one A4 page: tighten layout,
-                # then pick the largest scale that still fits (best legibility).
+                # Real LionWheel work order, fitted to ONE A4 page AND spread to
+                # fill its full height: tighten layout (nowrap), scale to fit
+                # width, then stretch the route table so its rows distribute the
+                # remaining vertical space (no dead whitespace at the bottom).
                 try:
                     pg.add_style_tag(content=WORKORDER_FIT_CSS)
-                    pg.wait_for_timeout(600)
-                    sw = pg.evaluate("document.body.scrollWidth") or 800
-                    sh = pg.evaluate("document.body.scrollHeight") or 1000
-                    # usable A4 at 96dpi minus 5mm margins ≈ 756 × 1085 px
-                    scale = min(1.0, 750.0 / sw, 1080.0 / sh)
-                    scale = max(0.4, round(scale, 2))
+                    pg.wait_for_timeout(400)
+                    usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
+                    w = pg.evaluate("document.body.scrollWidth") or 800
+                    scale = min(1.0, usable_w / max(w, 1))
+                    m = pg.evaluate(
+                        "(() => { const ts=[...document.querySelectorAll('table')]"
+                        ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
+                        " return { nonTable: document.body.scrollHeight - (t?t.offsetHeight:0),"
+                        " tableH: t?t.offsetHeight:0 }; })()"
+                    ) or {}
+                    non_table = float(m.get("nonTable", 0))
+                    table_h0 = float(m.get("tableH", 0))
+                    target_table = int(max(table_h0, usable_h / scale - non_table))
+                    pg.evaluate(
+                        "(h)=>{const ts=[...document.querySelectorAll('table')]"
+                        ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
+                        " if(ts[0]) ts[0].style.height=h+'px';}",
+                        target_table,
+                    )
+                    pg.wait_for_timeout(300)
+                    h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
+                    scale = min(scale, usable_h / max(h, 1))
+                    scale = max(0.4, round(scale, 3))
                 except Exception:
                     scale = 0.62
                 opts["scale"] = scale

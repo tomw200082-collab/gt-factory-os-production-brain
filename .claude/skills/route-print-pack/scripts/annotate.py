@@ -41,19 +41,20 @@ def _reg(pg):
     pg.insert_font(fontname="djvr", fontfile=FONTR)
 
 
-def _disc(pg, cx, cy, r, fill, ring):
+def _ring(pg, cx, cy, r, color, width=0.8):
+    """A clean hairline ring — no fill. The elegant, airy base for a status mark."""
     sh = pg.new_shape()
     sh.draw_circle((cx, cy), r)
-    sh.finish(color=ring, fill=fill, width=1.1)
+    sh.finish(color=color, width=width)
     sh.commit()
 
 
 def _check(pg, cx, cy, g, color):
     sh = pg.new_shape()
-    sh.draw_polyline([(cx - g * 0.52, cy + g * 0.04),
-                      (cx - g * 0.14, cy + g * 0.42),
-                      (cx + g * 0.56, cy - g * 0.44)])
-    sh.finish(color=color, width=1.5, lineCap=1, lineJoin=1)
+    sh.draw_polyline([(cx - g * 0.54, cy + g * 0.06),
+                      (cx - g * 0.16, cy + g * 0.44),
+                      (cx + g * 0.58, cy - g * 0.46)])
+    sh.finish(color=color, width=1.05, lineCap=1, lineJoin=1)
     sh.commit()
 
 
@@ -61,46 +62,49 @@ def _cross(pg, cx, cy, g, color):
     sh = pg.new_shape()
     sh.draw_line((cx - g * 0.46, cy - g * 0.46), (cx + g * 0.46, cy + g * 0.46))
     sh.draw_line((cx - g * 0.46, cy + g * 0.46), (cx + g * 0.46, cy - g * 0.46))
-    sh.finish(color=color, width=1.5, lineCap=1)
+    sh.finish(color=color, width=1.05, lineCap=1)
     sh.commit()
 
 
 def _line_mark(pg, ycen, kind, label):
-    """Formal rounded status badge at the right margin, precise to the line."""
-    cx, r = 568, 7.2
+    """Elegant status mark at the right margin, precise to the line: a hairline
+    ring + a finely drawn glyph. One quiet, airy system — no ink-heavy fills."""
+    cx, r = 568, 6.6
     if kind == "V":
-        _disc(pg, cx, ycen, r, GREEN_FILL, GREEN)
-        _check(pg, cx, ycen, r * 0.78, GREEN)
+        _ring(pg, cx, ycen, r, GREEN, 0.8)
+        _check(pg, cx, ycen, r * 0.66, GREEN)
     elif kind == "X":
-        _disc(pg, cx, ycen, r, RED_FILL, RED)
-        _cross(pg, cx, ycen, r * 0.78, RED)
-    else:  # partial — rounded pill sized to the fraction
-        fs = 7.5
+        _ring(pg, cx, ycen, r, RED, 0.8)
+        _cross(pg, cx, ycen, r * 0.58, RED)
+    else:  # partial — a slim outlined pill carries the picked/ordered fraction
+        fs = 6.8
         tw = HEBR.text_length(label, fs)
-        pad = 4.5
-        w = tw + pad * 2
-        box = fitz.Rect(cx - w / 2, ycen - 7, cx + w / 2, ycen + 7)
-        pg.draw_rect(box, color=AMBER, fill=AMBER_FILL, width=1.1, radius=0.5)
+        pad = 4.0
+        w = max(tw + pad * 2, 2 * r)
+        box = fitz.Rect(cx - w / 2, ycen - r, cx + w / 2, ycen + r)
+        pg.draw_rect(box, color=AMBER, fill=None, width=0.8, radius=0.5)
         pg.insert_text((cx - tw / 2, ycen + fs * 0.36), label,
-                       fontname="djv", fontsize=fs, color=AMBER)
+                       fontname="djvr", fontsize=fs, color=AMBER)
 
 
 def _order_id_chip(pg, last3):
-    """Formal labeled order badge, top-right: a rounded GT-green pill with a small
-    'מס׳ הזמנה' eyebrow over the last-three digits in white."""
+    """Elegant order badge, top-right: an OUTLINED pill (no ink fill) — a thin
+    GT-green hairline, a small 'מס׳ הזמנה' eyebrow, and the last-three digits in
+    GT green. Round, clean, light."""
     W = pg.rect.width
-    box = fitz.Rect(W - 122, 26, W - 28, 80)
-    pg.draw_rect(box, color=GTGREEN, fill=GTGREEN, width=0, radius=0.32)
+    box = fitz.Rect(W - 120, 27, W - 30, 75)
+    # outline-only pill: thin border, transparent interior (radius 0.5 = full pill)
+    pg.draw_rect(box, color=GTGREEN, fill=None, width=0.9, radius=0.5)
     cx = (box.x0 + box.x1) / 2
     lab = get_display("מס׳ הזמנה")
-    lf = 8
+    lf = 7.5
     lw = HEBR.text_length(lab, lf)
-    pg.insert_text((cx - lw / 2, box.y0 + 15), lab,
-                   fontname="djvr", fontsize=lf, color=(0.86, 0.93, 0.88))
-    nf = 27
+    pg.insert_text((cx - lw / 2, box.y0 + 14), lab,
+                   fontname="djvr", fontsize=lf, color=GTGREEN)
+    nf = 25
     nw = HEB.text_length(last3, nf)
     pg.insert_text((cx - nw / 2, box.y1 - 11), last3,
-                   fontname="djv", fontsize=nf, color=(1, 1, 1))
+                   fontname="djv", fontsize=nf, color=GTGREEN)
 
 
 def _package_count(doc, pkg):
