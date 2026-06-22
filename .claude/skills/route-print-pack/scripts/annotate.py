@@ -50,11 +50,13 @@ def _ring(pg, cx, cy, r, color, width=0.8):
 
 
 def _check(pg, cx, cy, g, color):
+    """Teacher's exam tick (✓ 'correct'): a short tail on the LEFT, then a long
+    sweeping arm up to the RIGHT. Pen-weight stroke, rounded caps."""
     sh = pg.new_shape()
-    sh.draw_polyline([(cx - g * 0.54, cy + g * 0.06),
-                      (cx - g * 0.16, cy + g * 0.44),
-                      (cx + g * 0.58, cy - g * 0.46)])
-    sh.finish(color=color, width=1.05, lineCap=1, lineJoin=1)
+    sh.draw_polyline([(cx - g * 0.48, cy + g * 0.12),
+                      (cx - g * 0.10, cy + g * 0.54),
+                      (cx + g * 0.82, cy - g * 0.95)])
+    sh.finish(color=color, width=1.7, lineCap=1, lineJoin=1)
     sh.commit()
 
 
@@ -71,8 +73,8 @@ def _line_mark(pg, ycen, kind, label):
     ring + a finely drawn glyph. One quiet, airy system — no ink-heavy fills."""
     cx, r = 568, 6.6
     if kind == "V":
-        _ring(pg, cx, ycen, r, GREEN, 0.8)
-        _check(pg, cx, ycen, r * 0.66, GREEN)
+        # exam-style tick — free pen mark, no ring (X/partial keep their rings)
+        _check(pg, cx, ycen, 8.4, GREEN)
     elif kind == "X":
         _ring(pg, cx, ycen, r, RED, 0.8)
         _cross(pg, cx, ycen, r * 0.58, RED)
