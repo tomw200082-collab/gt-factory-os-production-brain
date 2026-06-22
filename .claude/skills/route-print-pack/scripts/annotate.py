@@ -18,62 +18,95 @@ import fitz
 from bidi.algorithm import get_display
 
 FONTB = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+FONTR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 HEB = fitz.Font(fontfile=FONTB)
+HEBR = fitz.Font(fontfile=FONTR)
 
-# muted, intentional palette (not garish)
-GREEN = (0.14, 0.47, 0.36)   # teal-green check
-RED   = (0.74, 0.22, 0.16)   # terracotta cross
-AMBER = (0.78, 0.52, 0.12)   # partial fraction
-NAVY  = (0.20, 0.28, 0.46)   # order-id chip
-HAIR  = (0.80, 0.83, 0.89)   # hairline
+# Status palette — two-tone (saturated glyph on a pale fill, thin same-hue ring).
+# Reads as a formal, rounded status badge rather than a loose pen-stroke.
+GREEN      = (0.106, 0.451, 0.290)   # picked in full
+GREEN_FILL = (0.898, 0.953, 0.918)
+RED        = (0.741, 0.220, 0.161)   # not picked
+RED_FILL   = (0.973, 0.914, 0.898)
+AMBER      = (0.706, 0.478, 0.094)   # partial
+AMBER_FILL = (0.992, 0.953, 0.851)
+GTGREEN    = (0.118, 0.431, 0.282)   # order pill / package badge — GT brand green
+INK        = (0.086, 0.141, 0.110)
+MUTE       = (0.416, 0.455, 0.424)
+HAIR       = (0.80, 0.83, 0.89)
 
 
 def _reg(pg):
     pg.insert_font(fontname="djv", fontfile=FONTB)
+    pg.insert_font(fontname="djvr", fontfile=FONTR)
 
 
-def _check(pg, cx, cy, s, color):
+def _disc(pg, cx, cy, r, fill, ring):
     sh = pg.new_shape()
-    sh.draw_polyline([(cx - s * 0.55, cy + s * 0.02),
-                      (cx - s * 0.14, cy + s * 0.44),
-                      (cx + s * 0.60, cy - s * 0.50)])
-    sh.finish(color=color, width=1.7, lineCap=1, lineJoin=1)
+    sh.draw_circle((cx, cy), r)
+    sh.finish(color=ring, fill=fill, width=1.1)
     sh.commit()
 
 
-def _cross(pg, cx, cy, s, color):
+def _check(pg, cx, cy, g, color):
     sh = pg.new_shape()
-    sh.draw_line((cx - s * 0.5, cy - s * 0.5), (cx + s * 0.5, cy + s * 0.5))
-    sh.draw_line((cx - s * 0.5, cy + s * 0.5), (cx + s * 0.5, cy - s * 0.5))
-    sh.finish(color=color, width=1.6, lineCap=1)
+    sh.draw_polyline([(cx - g * 0.52, cy + g * 0.04),
+                      (cx - g * 0.14, cy + g * 0.42),
+                      (cx + g * 0.56, cy - g * 0.44)])
+    sh.finish(color=color, width=1.5, lineCap=1, lineJoin=1)
+    sh.commit()
+
+
+def _cross(pg, cx, cy, g, color):
+    sh = pg.new_shape()
+    sh.draw_line((cx - g * 0.46, cy - g * 0.46), (cx + g * 0.46, cy + g * 0.46))
+    sh.draw_line((cx - g * 0.46, cy + g * 0.46), (cx + g * 0.46, cy - g * 0.46))
+    sh.finish(color=color, width=1.5, lineCap=1)
     sh.commit()
 
 
 def _line_mark(pg, ycen, kind, label):
-    cx, s = 569, 6.5
+    """Formal rounded status badge at the right margin, precise to the line."""
+    cx, r = 568, 7.2
     if kind == "V":
-        _check(pg, cx, ycen, s, GREEN)
+        _disc(pg, cx, ycen, r, GREEN_FILL, GREEN)
+        _check(pg, cx, ycen, r * 0.78, GREEN)
     elif kind == "X":
-        _cross(pg, cx, ycen, s, RED)
-    else:  # partial
-        fs = 8.5
-        w = HEB.text_length(label, fs)
-        pg.insert_text((cx - w / 2 - 3, ycen + fs * 0.34), label,
+        _disc(pg, cx, ycen, r, RED_FILL, RED)
+        _cross(pg, cx, ycen, r * 0.78, RED)
+    else:  # partial — rounded pill sized to the fraction
+        fs = 7.5
+        tw = HEBR.text_length(label, fs)
+        pad = 4.5
+        w = tw + pad * 2
+        box = fitz.Rect(cx - w / 2, ycen - 7, cx + w / 2, ycen + 7)
+        pg.draw_rect(box, color=AMBER, fill=AMBER_FILL, width=1.1, radius=0.5)
+        pg.insert_text((cx - tw / 2, ycen + fs * 0.36), label,
                        fontname="djv", fontsize=fs, color=AMBER)
 
 
 def _order_id_chip(pg, last3):
+    """Formal labeled order badge, top-right: a rounded GT-green pill with a small
+    'מס׳ הזמנה' eyebrow over the last-three digits in white."""
     W = pg.rect.width
-    box = fitz.Rect(W - 116, 24, W - 28, 72)
-    pg.draw_rect(box, color=HAIR, fill=None, width=1, radius=0.18)
-    fs = 32
-    w = HEB.text_length(last3, fs)
-    pg.insert_text((box.x0 + (box.width - w) / 2, 59), last3,
-                   fontname="djv", fontsize=fs, color=NAVY)
+    box = fitz.Rect(W - 122, 26, W - 28, 80)
+    pg.draw_rect(box, color=GTGREEN, fill=GTGREEN, width=0, radius=0.32)
+    cx = (box.x0 + box.x1) / 2
+    lab = get_display("מס׳ הזמנה")
+    lf = 8
+    lw = HEBR.text_length(lab, lf)
+    pg.insert_text((cx - lw / 2, box.y0 + 15), lab,
+                   fontname="djvr", fontsize=lf, color=(0.86, 0.93, 0.88))
+    nf = 27
+    nw = HEB.text_length(last3, nf)
+    pg.insert_text((cx - nw / 2, box.y1 - 11), last3,
+                   fontname="djv", fontsize=nf, color=(1, 1, 1))
 
 
 def _package_count(doc, pkg):
-    """Black, no colour/box, centered directly under the word 'מקור'."""
+    """Round, formal package badge centered directly under the word 'מקור':
+    a white disc with a GT-green ring (+ thin inner ring), the count inside, and
+    a 'חבילות' label beneath."""
     pg = doc[0]
     W = pg.rect.width
     rs = pg.search_for("מקור")
@@ -82,14 +115,25 @@ def _package_count(doc, pkg):
         cx = sum((r.x0 + r.x1) / 2 for r in rs) / len(rs)
     else:
         ybot, cx = 205, W / 2
+    cy = ybot + 12 + 24
+    R = 24
+    sh = pg.new_shape()
+    sh.draw_circle((cx, cy), R)
+    sh.finish(color=GTGREEN, fill=(1, 1, 1), width=1.6)
+    sh.commit()
+    sh = pg.new_shape()
+    sh.draw_circle((cx, cy), R - 3)
+    sh.finish(color=GTGREEN, width=0.5)
+    sh.commit()
     s = str(pkg)
-    fs = 38
+    fs = 26 if len(s) <= 2 else 20
     w = HEB.text_length(s, fs)
-    ny = ybot + 12 + fs
-    pg.insert_text((cx - w / 2, ny), s, fontname="djv", fontsize=fs, color=(0, 0, 0))
+    pg.insert_text((cx - w / 2, cy + fs * 0.36), s,
+                   fontname="djv", fontsize=fs, color=INK)
     lab = get_display("חבילות")
-    lw = HEB.text_length(lab, 10)
-    pg.insert_text((cx - lw / 2, ny + 15), lab, fontname="djv", fontsize=10, color=(0.4, 0.4, 0.4))
+    lw = HEBR.text_length(lab, 9.5)
+    pg.insert_text((cx - lw / 2, cy + R + 11), lab,
+                   fontname="djvr", fontsize=9.5, color=MUTE)
 
 
 def mark_kind(ordered, picked):

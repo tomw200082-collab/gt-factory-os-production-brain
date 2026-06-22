@@ -23,13 +23,25 @@ the **driver name** and the **day**; everything else is default and automatic.
    - stop **without** an invoice (pickup / exchange) → the **official LionWheel
      waybill** (`print_waybill`), **×2 copies**.
 
-## Locked design (per the frontend-design skill — minimal, precise, no defaults)
-- Per product line, at the **right margin, precise to the line**:
-  **✓ green check** (picked in full) · **✗ terracotta cross** (not picked) ·
-  **amber `picked/ordered`** (partial). Vector marks, never letters.
-- **Package count** — black, no colour, no box — centered **directly under "מקור"**,
-  on the invoice's own page.
-- **Last 3 digits** of the order id — top-right, **first page only**.
+## Page 1 — the REAL LionWheel work order (Tom, 2026-06-21)
+Page 1 is LionWheel's own "סידור עבודה" print (the **הדפסת סידור עבודה** button =
+`GET /visits/print_labels?date=DD/MM/YYYY&driver_id={id}`), **not** a page we
+generate. It carries LionWheel's header/branding and full columns. LionWheel's
+print view stacks the `יעד` column one Hebrew letter per line (~13 pages); we inject
+compact print CSS (`white-space:nowrap`, tight cells) and pick the largest scale
+that still fits, so all stops land on **one A4 portrait page** — layout tightened
+only, nothing invented. `build_workorder()` stays as a fallback if LionWheel does
+not return the page.
+
+## Invoice annotation design (formal, rounded — Tom, 2026-06-21)
+Per product line, at the **right margin, precise to the line**, a formal rounded
+status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
+- **✓ green disc** (picked in full) · **✗ terracotta disc** (not picked) ·
+  **amber `picked/ordered` pill** (partial). Vector marks, never bare letters.
+- **Order id** — top-right, **first page only**: a rounded GT-green pill with a
+  `מס׳ הזמנה` eyebrow over the **last 3 digits** in white.
+- **Package count** — centered **directly under "מקור"**: a round GT-green
+  double-ring badge with the count and a `חבילות` label.
 - Touch **only the named driver's route**. Ignore every other stop.
 
 ## How to run
@@ -76,6 +88,19 @@ the **driver name** and the **day**; everything else is default and automatic.
    error — when that happens, deliver the PDF to Tom in chat and say the domain
    still needs verifying. Never silently drop it.
 6. **Deliver** the PDF to Tom in chat as well.
+7. **Knowledge-graph capture (auto — Tom, 2026-06-21).** Every time this skill runs,
+   `route_pack.py` also writes a markdown digest `route_pack_out/summary.md` (stops,
+   customers, picking shortfalls, inventory-movement proposals). Feed **that digest**
+   to `/graphify` so each dispatch becomes queryable history.
+   - graphify reads `.md`, **not** raw JSON, so the digest is the input (never the
+     PDF or the repo) — fast and additive.
+   - **Run graphify in a local-only corpus dir OUTSIDE this repo** (e.g.
+     `~/.route_pack_graph/`), copying the digest in as `route_<driver>_<date>.md` and
+     using `graphify <dir> --update` to accumulate days. `route_pack_out/` is
+     `.gitignore`d on purpose (real customer data) — graphify honors `.gitignore`, so
+     it sees nothing there, **and the route graph must likewise never be committed.**
+   - (`/caveman` was considered and rejected: it compresses spec/prose writes, of
+     which a route-pack run has none. Tom chose graphify, 2026-06-21.)
 
 ## Picking discrepancies (credits)
 Picking shortfalls are marked on the invoices and listed in the email summary.
@@ -97,7 +122,10 @@ terminal LionWheel status.)
     `order_items[].quantity` vs `.picked_quantity`, `packages_quantity`,
     `wp_order_id`, and the GI link in `driver_note` or `notes`.
 - LionWheel web (session login at `/users/sign_in`, field `user[username]`):
-  work order `GET /drivers/{driver_id}/daily_route_plan?date=DD/MM/YYYY`;
+  **work order print** (the "הדפסת סידור עבודה" button) =
+  `GET /visits/print_labels?date=DD/MM/YYYY&driver_id={id}` — this is the printable
+  סידור עבודה (use this for page 1; the `/drivers/{id}/daily_route_plan` SPA renders
+  app chrome + only the on-screen rows, do not print it directly);
   waybill `GET /tasks/{id}/print_waybill`.
 - Green Invoice: token `POST /account/token {id,secret}`; fallback document match
   `POST /documents/search` then `GET /documents/{id}` for the PDF link.
