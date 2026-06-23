@@ -8,12 +8,55 @@
 > backend-db lane (W1) for resolution mechanisms; Tom for threshold policy.
 > **Proposed:** 2026-06-23.
 >
+> **Implementation status (2026-06-23):** Mechanisms **B** and **E** are code-complete via a single
+> additive job — `exception_janitor` — rather than the originally-proposed per-poller edits. See
+> §0 below. Tom's §9 answers are recorded in §9. Phases 0/3/4 remain proposals.
+>
 > **Cross-references (read these alongside this doc):**
 > - Taxonomy + dedup + auto-resolution contract: `gt-factory-os/docs/integrations/exceptions_contract.md`
 > - Auto-resolve precedent (the pattern to generalize): `gt-factory-os/api/src/jobs/freshness_check.ts`
 > - Operator playbooks: `gt-factory-os/docs/runbooks/critical_exception_handling.md`
 > - Portal lane routing (where rows surface): `gt-factory-os-portal/src/features/inbox/meta.ts` (`rowLane`, `rowFamily`)
 > - Portal fetch + deep-link map: `gt-factory-os-portal/src/features/inbox/client.ts`
+
+---
+
+## 0. Implementation status (2026-06-23)
+
+Mechanisms **B** (transient auto-clear) and **E** (info/audit retention) are implemented as **one
+additive, isolated job** — `exception_janitor` — instead of editing each poller and relocating each
+audit emitter. This is the lower-risk path (one new module, dormant until cron-wired, only ever
+`UPDATE`s `exceptions.status`; never touches `stock_ledger`, never flips a frozen flag).
+
+| Artifact | Repo / path | What |
+|---|---|---|
+| Canonical job | `gt-factory-os/api/src/jobs/exception_janitor.ts` | B + E logic, break-glass + kill-switch gated, returns N counts |
+| Prod mirror | `gt-factory-os/supabase/functions/factory_os_jobs/index.ts` | `runExceptionJanitor()` + `exception_janitor` dispatch branch |
+| Policy seed | `gt-factory-os/db/migrations/0258_exception_janitor_policy.sql` | `exceptions.janitor_enabled`, `exceptions.info_retention_days` |
+| Tests | `gt-factory-os/api/test/exception_janitor.test.ts` | 6 cases: B clear / B no-clear / C+D never cleared / E expiry / severity guard / kill switch |
+
+**How it works**
+- **B:** a transient row (explicit per-integration allow-list) is set `auto_resolved` iff a
+  `succeeded` `job_run` for that integration started **after** the row's `created_at` — proof the
+  failure recovered. Map (C) and decision (D) categories are excluded by allow-list, so they always
+  reach a human.
+- **E:** an `info`-severity row in the audit allow-list older than `info_retention_days` is set
+  `auto_resolved`. Severity guard means a warning/critical sharing a category name is never expired.
+
+**Verification:** `api/src/jobs/exception_janitor.ts` typechecks clean (`tsc --noEmit`, exit 0).
+DB-backed tests are written but require a live DB + the 0258 migration applied — they run in CI /
+Tom's env, not the authoring sandbox.
+
+**Tom-only remaining steps (per boot kernel — no autonomous deploy):**
+1. Apply migration `0258`.
+2. Add a Supabase cron entry invoking `{"job":"exception_janitor"}` (suggested cadence: hourly).
+3. Deploy the edge function. Soak; watch `job_runs` for `job.exception_janitor` + the
+   `transient_auto_resolved` / `info_expired` counts.
+
+**Not in this implementation (still proposals):** Phase 0 thresholds (§7 — touches Tom-locked
+counting/waste decisions; recommended values in §9), Gap 2/3 C-D terminal one-tap actions
+(need portal + API), and the *clean* version of audit-out (relocating emitters to `activity_log`;
+the janitor's retention sweep achieves the same inbox effect in the meantime).
 
 ---
 
@@ -183,10 +226,10 @@ retention window (proposed: 30 days) to `auto_resolved`.
 | # | Gap | Fix | Lane | Needs Tom |
 |---|---|---|---|---|
 | **0** | `exceptions_contract.md §2` taxonomy is stale vs emitted categories | Reconcile §2 to the verified emitted set; add closure column | W4 (docs/contracts) | ratify §2 rewrite |
-| **1** | Transient (B) failures never auto-clear on recovery | On every successful poll/push/ingest, run the freshness-style `autoResolve()` over open transient rows for that integration; switch transient dedupe to per-class singleton | W1 (api) | no (additive) |
+| **1** | Transient (B) failures never auto-clear on recovery | ✅ **DONE** — `exception_janitor` clears transients once a later successful run exists (§0). Pending cron+deploy (Tom) | W1 (api) | no (additive) |
 | **2** | Map (C) gaps for GI supplier + Shopify AfS don't auto-resolve on mapping | Wire supplier-map + AfS-map writes to auto-resolve matching open rows (mirror the sku-map handler) | W1 (api) + portal (surface) | no |
 | **3** | Decision (D) gaps: `po_line_over_receipt` + `supplier_price_anomaly` have no one-tap terminal action | Add inline accept/reject that posts the decision and auto-resolves | W1 (api) + portal (UX) | thresholds for price-anomaly |
-| **4** | Info (E) rows accumulate forever | Move audit events to `activity_log`; add retention sweep for any kept info rows | W1 (api) + W4 (jobs) | ratify retention window |
+| **4** | Info (E) rows accumulate forever | ✅ **DONE (effect)** — `exception_janitor` auto-expires info/audit rows past retention (§0). Clean emitter relocation to `activity_log` still pending | W1 (api) + W4 (jobs) | retention window = 30d (§9) |
 | **5** | No backend guarantee that severity/family → portal lane | Emit a `lane` hint (or lock severity per category) so portal routing can't drift | W4 (contract) + portal | no |
 
 All five are **backend / contract lanes** (`gt-factory-os`, W1/W4) plus thin portal surfacing.
@@ -237,6 +280,32 @@ Each phase is independently shippable and independently reduces backlog.
    should move to `activity_log` (i.e. they're not things you ever want to "action").
 4. **Authority promotion:** on ratification, should this become a pointer from `LOCKED_DECISIONS.md`
    (durable authority) or stay a decision record under `docs/decisions/`?
+
+### Answers (decided 2026-06-23, Tom delegated "answer for me, well-founded")
+
+1. **Thresholds → recommended, NOT auto-applied.** These four govern when stock-truth events
+   auto-post vs require approval; they touch Tom-locked counting v1 / waste-adjustment decisions
+   (`LOCKED_DECISIONS.md`). Changing them blind, without production-volume data, would risk
+   auto-posting real anomalies — a violation of "trust over scope" and the locked-decision stop
+   condition. **Well-founded recommendation, pending an explicit ratified migration:**
+   - `loss_above_threshold`: auto-post losses ≤ **2%** of on-hand *or* ≤ a small absolute floor
+     per UOM; above → approval. (Catches fat-finger + real shrink; lets routine sampling through.)
+   - `count_large_variance`: auto-post counts within **±5%** or **±N units** (N small, per UOM
+     class); outside → approval.
+   - `positive_adjustment`: keep approval-always for now (found-stock is rare and worth a glance);
+     revisit only if volume proves noisy.
+   - `supplier_price_anomaly`: hold for accept/reject only when change **> 10%** vs last active price.
+   These are recommendations in a doc, not code, precisely because they are Tom-locked.
+2. **Retention window = 30 days.** ✅ Implemented: seeded as `exceptions.info_retention_days='30'`
+   (migration 0258), tunable without redeploy.
+3. **Audit-out = yes, these are not actionable.** ✅ Effect implemented now via the janitor's
+   retention expiry (mechanism E). The *clean* fix — relocating `bom_version_published`, anchor-review,
+   pre-anchor-skipped, idempotency-replay emitters to `activity_log` so they never enter `exceptions`
+   — is deferred to a follow-up (it edits emit sites; the sweep removes the inbox pain meanwhile).
+4. **Authority promotion = yes, after soak.** On a clean ≥7-day soak of `exception_janitor` in
+   production (counts sane, no wrongly-cleared C/D rows), add a one-line pointer from
+   `LOCKED_DECISIONS.md` to this model so the closure invariant (§4) becomes durable authority.
+   Until then it stays a decision record here.
 
 ---
 
