@@ -53,9 +53,15 @@ Tom's env, not the authoring sandbox.
 3. Deploy the edge function. Soak; watch `job_runs` for `job.exception_janitor` + the
    `transient_auto_resolved` / `info_expired` counts.
 
+**Also done (2026-06-23, portal tranche 083, PR #114):** Gap 3 — supplier price-change decisions
+are now surfaced in the unified inbox as one-tap approve/reject rows, reusing the existing tested
+cost-draft decision endpoints (no new backend). Investigation found `supplier_price_anomaly` is not
+emitted; the real substrate is `supplier_cost_drafts` (0188/0227/0228). PO over-receipt was already
+a working pinned inbox decision.
+
 **Not in this implementation (still proposals):** Phase 0 thresholds (§7 — touches Tom-locked
-counting/waste decisions; recommended values in §9), Gap 2/3 C-D terminal one-tap actions
-(need portal + API), and the *clean* version of audit-out (relocating emitters to `activity_log`;
+counting/waste decisions; recommended values in §9), Gap 2 (GI-supplier + Shopify-AfS map → auto-
+resolve on mapping), and the *clean* version of audit-out (relocating emitters to `activity_log`;
 the janitor's retention sweep achieves the same inbox effect in the meantime).
 
 ---
@@ -228,7 +234,7 @@ retention window (proposed: 30 days) to `auto_resolved`.
 | **0** | `exceptions_contract.md §2` taxonomy is stale vs emitted categories | Reconcile §2 to the verified emitted set; add closure column | W4 (docs/contracts) | ratify §2 rewrite |
 | **1** | Transient (B) failures never auto-clear on recovery | ✅ **DONE** — `exception_janitor` clears transients once a later successful run exists (§0). Pending cron+deploy (Tom) | W1 (api) | no (additive) |
 | **2** | Map (C) gaps for GI supplier + Shopify AfS don't auto-resolve on mapping | Wire supplier-map + AfS-map writes to auto-resolve matching open rows (mirror the sku-map handler) | W1 (api) + portal (surface) | no |
-| **3** | Decision (D) gaps: `po_line_over_receipt` + `supplier_price_anomaly` have no one-tap terminal action | Add inline accept/reject that posts the decision and auto-resolves | W1 (api) + portal (UX) | thresholds for price-anomaly |
+| **3** | Decision (D) gaps: `po_line_over_receipt` + price have no one-tap terminal action | ✅ **DONE** — price surfaced in the inbox as one-tap approve/reject via the existing cost-draft substrate (portal tranche 083, PR #114). `po_line_over_receipt` was already a pinned inbox decision with inline resolve (ledger receipt is append-only). | portal | no |
 | **4** | Info (E) rows accumulate forever | ✅ **DONE (effect)** — `exception_janitor` auto-expires info/audit rows past retention (§0). Clean emitter relocation to `activity_log` still pending | W1 (api) + W4 (jobs) | retention window = 30d (§9) |
 | **5** | No backend guarantee that severity/family → portal lane | Emit a `lane` hint (or lock severity per category) so portal routing can't drift | W4 (contract) + portal | no |
 
