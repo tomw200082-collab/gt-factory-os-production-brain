@@ -27,7 +27,8 @@ achieves today, and **zero wrong-branch / wrong-price / wrong-product orders aut
 | Decision | Choice |
 |---|---|
 | WhatsApp channel | Migrate the existing Business-app number to **Meta WhatsApp Cloud API** (precondition; same number, catalog carries over) |
-| Customers | **B2B known accounts only.** Number → Shopify customer, price by last-paid |
+| Customers | **B2B known accounts only.** Cafes text for themselves. Identity = the **saved WhatsApp contact** (incoming number → `wa_customer_map`, seeded from GT's saved WhatsApp contacts × Shopify). Unrecognised number → hold + alert **Doreen** to map → resume |
+| Branch model | **One number = one branch** (confirmed — no shared chain numbers). No branch-selection step |
 | Commit model | **Hybrid by confidence:** clean → auto-commit; any flag → human checkpoint |
 | Human checkpoint surface | **Shopify itself** (flagged order = Shopify draft tagged `needs-review`); **no Telegram** |
 | Payment | **Per-customer flag:** `terms` (Green Invoice on terms) or `pay_now` (GI payment link in chat) |
@@ -84,9 +85,16 @@ decide auto-vs-human.
 ## 5. Front gate (the explicit requirement)
 
 **A. Known customer? (deterministic)** — sender E.164 → `wa_customer_map` → exact Shopify customer +
-branch + flags. No fuzzy match. **One number = one branch** (solves the multi-branch trap directly).
-`bot_enabled` per customer → only opted-in customers get replies (staged rollout). Unmapped / disabled
-number → bot does nothing except an optional one-time enroll ping to Tom. Never an auto-order.
+branch + flags. The map mirrors GT's **saved WhatsApp contacts** (GT already keeps every customer saved
+as number→name) cross-referenced to Shopify customers. No fuzzy match. **One number = one branch**
+(confirmed — solves the multi-branch trap directly). `bot_enabled` per customer → only opted-in
+customers get replies (staged rollout).
+
+**Unrecognised number → the bot does NOT process the order.** It **holds the session** and alerts
+**Doreen** (the enrollment human): "מספר לא מזוהה ביקש להזמין — למפות?". Doreen maps the number → Shopify
+customer; the **held session then resumes automatically** from where it paused. Never an auto-order for
+an unmapped number. (This is the explicit requirement: identify the customer via the chat, else stop
+and let Doreen map.)
 
 **B. Order intent? (Claude)** — ORDER (product names + quantities) → parse. NOT_ORDER (logistics,
 thanks, complaint) → silent / human inbox. AMBIGUOUS → one clarifier or human. Never guesses.
@@ -157,8 +165,9 @@ here too.
 **Catalog**: read live from Shopify (no copy). **Lexicon** (phrasing→variant): single versioned repo
 config shared by bot + skill (optional config table later).
 
-**Seeding:** (1) bootstrap from Shopify customers with a phone (`bot_enabled=false`); (2) enroll
-unmapped known businesses via a one-time Tom link; (3) flip `bot_enabled` per cafe to roll out.
+**Seeding:** (1) bootstrap by importing **GT's saved WhatsApp contacts** (number→name) and matching
+them to Shopify customers (`bot_enabled=false`); (2) any unrecognised number at order time → hold +
+**Doreen maps it**, held session resumes; (3) flip `bot_enabled` per cafe to roll out.
 
 ## 10. Error handling & invariants
 
@@ -210,18 +219,17 @@ clean orders once accuracy proven. Hard stops never auto.
 Tom acts at: MODULE_TEMPLATE approval · Meta migration · secrets · pilot pick · go-live per step.
 Phases 0–2 are offline and reuse today's work — buildable while Meta verification runs.
 
-## 13. Open questions (to resolve before/while planning)
+## 13. Open questions
 
-1. **Doreen relay vs cafe self-order.** Today Doreen relays many customers from one number. The
-   "number = customer" gate assumes the **cafe texts for itself**. Does the bot serve (a) cafes
-   self-ordering, (b) Doreen relaying (her number maps to many customers; she'd name the customer per
-   message like today), or (c) both? (c) means a special "relayer" identity path.
-2. **One number, many branches.** Do any chains (e.g. Babka's 5 branches) order all branches from a
-   single WhatsApp number? If so, "one number = one branch" needs a branch-selection step.
+**Resolved (Tom, 2026-06-24):**
+- ~~Q1 Doreen relay vs self-order~~ → **Cafes text for themselves**; identity via the saved WhatsApp
+  contact (number → customer). Unrecognised number → hold + **Doreen maps** → resume.
+- ~~Q2 One number, many branches~~ → **No** — one number per branch. No branch-selection step.
+- ~~Q4 New-number verification~~ → **Doreen** maps/verifies the held session; no code flow.
+
+**Still open (for spec review / planning):**
 3. **Green Invoice payment links.** Does the GI account support payment-request links (אשראי/bit) for
    `pay_now`? If not → fall back to Shopify `invoiceUrl`.
-4. **New-number identity verification.** When a known business texts from an unmapped number, how do
-   we confirm it's really them before enrolling — Tom manually links, or a confirmation code?
 5. **Delivery date / scheduling.** Should the cart capture a requested delivery date (today's Babka PO
    had a supply date; LionWheel routing downstream)? Affects cart UX (one extra question).
 6. **Bot hours.** 24/7, or business hours with after-hours orders queued for next day?
