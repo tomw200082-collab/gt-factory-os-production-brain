@@ -227,10 +227,20 @@ Phases 0–2 are offline and reuse today's work — buildable while Meta verific
 - ~~Q2 One number, many branches~~ → **No** — one number per branch. No branch-selection step.
 - ~~Q4 New-number verification~~ → **Doreen** maps/verifies the held session; no code flow.
 
-**Still open (for spec review / planning):**
-3. **Green Invoice payment links.** Does the GI account support payment-request links (אשראי/bit) for
-   `pay_now`? If not → fall back to Shopify `invoiceUrl`.
-5. **Delivery date / scheduling.** Should the cart capture a requested delivery date (today's Babka PO
-   had a supply date; LionWheel routing downstream)? Affects cart UX (one extra question).
-6. **Bot hours.** 24/7, or business hours with after-hours orders queued for next day?
+**Resolved (Tom, 2026-06-24 round 2):**
+- ~~Q5 Delivery date~~ → **No** — cart does not ask; delivery/routing handled downstream (LionWheel) as today.
+- ~~Q6 Bot hours~~ → **24/7**; orders placed after hours are tagged for the next working day. Customer never hits a wall.
+- Q3 Green Invoice payment links → Tom: **verify via the GI API directly** (read-only capability probe, no real document). Finding recorded below.
+
+**Q3 finding (GI payment-link capability), 2026-06-24:**
+- **API capability: YES.** Morning/Green Invoice advertises "סליקה ותשלומים דיגיטליים — אשראי, ביט
+  וארנקים דיגיטליים" and its API exposes a payment-request / payment-form endpoint that returns a
+  payable URL — exactly what `pay_now` needs.
+- **Account dependency:** it works **only if a clearing provider (סליקה) is connected** to GT's Morning
+  account. Could not confirm that live here — a direct probe needs the account secret (correctly blocked
+  by the secrets guard) and the apidocs host refused. **Tom to confirm in Morning → settings → סליקה.**
+- **Repo gap:** today's `greeninvoice/client.ts` only creates type-305 invoices (no payment link wired).
+  The client must be **extended** with a `createPaymentLink` method for `pay_now` (Phase 2 work).
+- **Fallback stands:** if clearing isn't enabled, `pay_now` uses Shopify's `invoiceUrl` checkout; `terms`
+  customers are unaffected (invoice-only, already wired).
 ```
