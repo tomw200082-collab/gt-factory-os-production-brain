@@ -23,7 +23,7 @@
 | `/operator-task-simulation` | `.claude/commands/operator-task-simulation.md` | `ux-flow-architect` | `interaction-design-specialist` | UX audit | FLOW-NNN, ARCH_REQUIRED, BLOCKED | optional dry-run | Trace operator task end-to-end; identify process gaps |
 | `/screen-scorecard` | `.claude/commands/screen-scorecard.md` | UX agents (all 5) | (aggregator) | UX audit | P0/P1/P2/P3 counts; SHIP_READY / NEEDS_WORK / BLOCKED | optional save | Aggregate UX findings into per-route scorecard |
 | `/ux-flow-audit` | `.claude/commands/ux-flow-audit.md` | `ux-flow-architect` | `ux-content-state-designer`, `accessibility-usability-auditor`, `interaction-design-specialist` | UX audit | DECISION_GRADE, FLOW_COMPLETION, POLISH_ACCELERATION, ARCH_REQUIRED | dry-run + handoff packet | Audit end-to-end operational flow on portal route |
-| `/ux-release-gate` | `.claude/commands/ux-release-gate.md` | UX agents (all 5) | `factory-os-governor` (verdict) | UX gate | SHIP, CONDITIONAL_SHIP, HOLD | dry-run; formal record after Tom approval | Full UX gate check before portal release |
+| `/ux-release-gate` | `.claude/commands/ux-release-gate.md` | UX agents (all 5) | `factory-os-governor` (verdict) | UX gate | SHIP, CONDITIONAL_SHIP, HOLD | dry-run; formal record after Tom approval | Full UX gate check before portal release; render-grade (dev-shim screenshots) + severity×effort ranked single report; 3 doors (manual + per-PR `portal-ux-gate.yml` + weekly cron) |
 
 ## Governance & audit commands (3)
 

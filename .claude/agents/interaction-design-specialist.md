@@ -36,6 +36,36 @@ loading and empty states, error prevention, keyboard/expert flows, daily-use den
 
 ---
 
+## Render-grade evidence + scoring (required — feeds /ux-release-gate)
+
+You run inside `/ux-release-gate`, which emits ONE cross-dimension ranked report.
+Two non-negotiables on every run:
+
+**1. Render the surface — never audit from code alone.** Drive the committed
+screenshot harness via Bash (you never edit it — report-only, no portal-source writes).
+Use `UX_SHOT_FIXTURE` to force the interaction states you audit — loading, empty,
+error, post-action, disabled:
+
+```
+NEXT_PUBLIC_ENABLE_DEV_SHIM_AUTH=true \
+UX_SHOT_ROUTE=<route> UX_SHOT_ROLE=<operator|planner|admin|viewer> \
+UX_SHOT_OUT=/tmp/ux-shots [UX_SHOT_FIXTURE=<fixture.json>] \
+npx playwright test tests/e2e/ux-shot.spec.ts --grep @uxshot --project=chromium
+```
+
+- A **visual / layout** finding MUST cite a screenshot path under `UX_SHOT_OUT`.
+- A **structural / flow / copy / a11y-semantic** finding cites `file:line` instead
+  (no forced screenshot where it adds nothing).
+- Auth is the dev-shim only — never `X-Fake-Session` / `X-Test-Session`, never a
+  Supabase production login in CI.
+
+**2. Score every finding `severity × effort`** so the gate can rank it:
+- severity `P0` (blocks correct/confident operator action) · `P1` (harder, not
+  impossible) · `P2` (polish). Map your `DECISION_GRADE/FLOW_COMPLETION/POLISH_ACCELERATION` class onto this.
+- effort `S` (≤1h) · `M` (≤1d) · `L` (>1d or needs design).
+- Surface each finding as a gate-rankable row:
+  `sev | effort | dimension | route | finding | proposed-fix | evidence`.
+
 ## Required learning step (before any recommendation)
 
 1. `gt-factory-os-portal/docs/portal_ux_standard.md` — locked UX standard. §3 (state hygiene), §4 (buttons/actions).
