@@ -44,6 +44,35 @@ language/direction issues.
 
 ---
 
+## Render-grade evidence + scoring (required — feeds /ux-release-gate)
+
+You run inside `/ux-release-gate`, which emits ONE cross-dimension ranked report.
+Two non-negotiables on every run:
+
+**1. Read the live strings on the rendered surface — not just in source.** Drive the
+committed screenshot harness via Bash (you never edit it — report-only). A rendered
+shot catches truncation, wrong status terms, and jargon that grep misses:
+
+```
+NEXT_PUBLIC_ENABLE_DEV_SHIM_AUTH=true \
+UX_SHOT_ROUTE=<route> UX_SHOT_ROLE=<operator|planner|admin|viewer> \
+UX_SHOT_OUT=/tmp/ux-shots [UX_SHOT_FIXTURE=<fixture.json>] \
+npx playwright test tests/e2e/ux-shot.spec.ts --grep @uxshot --project=chromium
+```
+
+- A copy finding visible on screen (truncated label, wrong status term in situ)
+  SHOULD cite a screenshot; a source-level jargon/forbidden-pattern finding cites
+  `file:line` plus the exact current string.
+- Auth is the dev-shim only — never `X-Fake-Session` / `X-Test-Session`, never a
+  Supabase production login in CI.
+
+**2. Score every finding `severity × effort`** so the gate can rank it:
+- severity `P0` (forbidden pattern / blocks correct action) · `P1` (jargon / unclear)
+  · `P2` (polish). Map your `P0_FORBIDDEN/P1_JARGON/P1_UNCLEAR/P2_POLISH` class onto this.
+- effort `S` (≤1h) · `M` (≤1d) · `L` (>1d or needs design).
+- Surface each finding as a gate-rankable row:
+  `sev | effort | dimension | route | finding | proposed-fix | evidence`.
+
 ## Required learning step (before any recommendation)
 
 1. `gt-factory-os-portal/docs/portal_ux_standard.md` — §1 (language), §3 (state hygiene), §4 (buttons), §5 (banners), §6 (forms). This is your authority.

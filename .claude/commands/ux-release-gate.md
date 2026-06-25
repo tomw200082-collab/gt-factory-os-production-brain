@@ -30,6 +30,48 @@ All five UX agents:
 
 Supporting: `factory-os-governor` — issues formal SHIP / HOLD verdict
 
+## Visual evidence (required)
+
+This gate is **render-grade**, not code-read-only. Every run renders the surfaces
+under audit and attaches screenshots. Auth is the sanctioned dev-shim — never a
+fake-session header.
+
+Render recipe (the UX agents drive this via Bash; they never edit it — report-only):
+
+```
+NEXT_PUBLIC_ENABLE_DEV_SHIM_AUTH=true \
+UX_SHOT_ROUTE=<route> UX_SHOT_ROLE=<operator|planner|admin|viewer> \
+UX_SHOT_OUT=/tmp/ux-shots [UX_SHOT_FIXTURE=<fixture.json>] \
+npx playwright test tests/e2e/ux-shot.spec.ts --grep @uxshot --project=chromium
+```
+
+- Harness: `gt-factory-os-portal/tests/e2e/ux-shot.spec.ts` (committed, parameterized).
+- Per-surface API responses are supplied by a JSON fixture file (`UX_SHOT_FIXTURE`),
+  not by editing the spec — so producing a screenshot never touches portal source.
+- Evidence rule: a **visual / layout** finding MUST cite a screenshot path. A
+  **structural / flow / copy / accessibility-semantic** finding cites `file:line`
+  (a screenshot is not forced where it adds nothing).
+- Forbidden: `X-Fake-Session` / `X-Test-Session`; Supabase production login in CI.
+
+## Severity × effort + single ranked report
+
+The gate emits **one** report, not five. The per-dimension sections feed a single
+cross-dimension **Top-N ranked action list** — that ranked list is the
+operator-facing deliverable.
+
+- Every finding carries `severity` (P0 | P1 | P2) **×** `effort` (S | M | L).
+- Rank by severity first, then ascending effort (a P0/S is the #1 action).
+- The per-dimension tables below remain as the audit trail beneath the ranked list.
+
+## How it is invoked (three doors → one gate)
+
+All three call this same command — no forked logic:
+
+1. **Manual** — `/ux-release-gate [--scope <routes>]` in an interactive session.
+2. **Per-PR** — `gt-factory-os-portal/.github/workflows/portal-ux-gate.yml` (label-gated;
+   checks out both repos so the agents resolve from `PRODUCTION/.claude`).
+3. **Weekly** — a step in `portal-drift-weekly.yml` runs the full-portal sweep.
+
 ## Required outputs
 
 ```
@@ -37,6 +79,13 @@ Supporting: `factory-os-governor` — issues formal SHIP / HOLD verdict
 
 ### Scope
 <routes audited>
+
+### Top-N ranked actions (the deliverable — one list, all dimensions)
+| # | Sev | Effort | Dimension | Route | Finding | Proposed fix | Evidence |
+|---|-----|--------|-----------|-------|---------|--------------|----------|
+| 1 | P0 | S | Visual | /dashboard | <one line> | <plain-English fix> | shot:`<path>` |
+| 2 | P0 | M | Flow | /planning/procurement | <one line> | <fix> | `file:line` |
+| ... | ... | ... | ... | ... | ... | ... | ... |
 
 ### P0 findings (all dimensions) — block ship if any present
 | ID | Dimension | Route | Description |
