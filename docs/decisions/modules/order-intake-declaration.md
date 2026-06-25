@@ -1,9 +1,9 @@
 # GT Factory OS — Module Declaration: `order-intake`
 
-> **STATUS: DRAFT — awaiting Tom's written approval.** Until Tom approves this declaration, no
-> `order-intake` code, schema, agents, commands, or UX surfaces may be built (per `CLAUDE.md` Future
-> module rule + `MODULE_TEMPLATE.md` hard rule). On approval, `factory-os-governor` updates
-> `AI_BRAIN_ROUTER.md` §3 and the module's lane-scoped agents become dispatchable.
+> **STATUS: APPROVED by Tom — 2026-06-25 (in chat: "אני מאשר, תתחיל לבנות").** G1 closed. The
+> `order-intake` module may now be built (engine first, per the plan; bot stays OFF until staged
+> go-live). Brain lives in gt-factory-os; transport via Coexistence + Dualhook (see runbooks). Router
+> §3 / agent-registry updates by `factory-os-governor` to follow.
 >
 > **Design spec:** `docs/superpowers/specs/2026-06-24-whatsapp-order-intake-design.md`
 > **First plan:** `docs/superpowers/plans/2026-06-24-order-intake-engine.md`
@@ -194,4 +194,4 @@ Tracked in `docs/decisions/modules/order-intake-decisions.md`:
 ---
 
 **Owner:** `factory-os-governor` (governs declarations). **Approver:** Tom.
-**Drafted:** 2026-06-24 (by Claude, from the approved design spec). **Approved:** _pending Tom._
+**Drafted:** 2026-06-24 (by Claude, from the approved design spec). **Approved:** Tom, 2026-06-25.
