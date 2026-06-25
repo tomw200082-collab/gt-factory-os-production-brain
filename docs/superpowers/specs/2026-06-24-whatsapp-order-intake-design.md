@@ -26,7 +26,7 @@ achieves today, and **zero wrong-branch / wrong-price / wrong-product orders aut
 
 | Decision | Choice |
 |---|---|
-| WhatsApp channel | Migrate the existing Business-app number to **Meta WhatsApp Cloud API** (precondition; same number, catalog carries over) |
+| WhatsApp channel | **Coexistence** — connect the existing number to the **Cloud API alongside** the WhatsApp Business app (NOT a migration). The app keeps working; the bot runs in parallel on the same number. **Hard constraint (Tom 2026-06-25): the number must never be disconnected, not for a second** — migration/mode-A is permanently off the table |
 | Customers | **B2B known accounts only.** Cafes text for themselves. Identity = the **saved WhatsApp contact** (incoming number → `wa_customer_map`, seeded from GT's saved WhatsApp contacts × Shopify). Unrecognised number → hold + alert **Doreen** to map → resume |
 | Branch model | **One number = one branch** (confirmed — no shared chain numbers). No branch-selection step |
 | Commit model | **Hybrid by confidence:** clean → auto-commit; any flag → human checkpoint |
@@ -101,6 +101,20 @@ thanks, complaint) → silent / human inbox. AMBIGUOUS → one clarifier or huma
 
 **Burst aggregation:** orders arrive in fragments. Session buffers for a ~10–15s quiet window (or an
 explicit "סיימתי"/אישור) before parsing the whole thing — one cart per order, not per message.
+
+**C. Coexistence — defer to humans (NEW, from the Coexistence decision).** The bot shares the number
+with Doreen/staff who still use the WhatsApp Business app. Coexistence mirrors **both** sides to the
+webhook: customer messages arrive normally, and **anything a human sends from the app arrives as an
+`smb_message_echoes` event**. The bot uses this to stay out of a human's way:
+- If a staff member has already replied to this customer from the app (an `smb_message_echoes` seen in
+  the session window), the bot treats the conversation as **human-handled** and does **not** send a
+  cart — no double-replies.
+- A human can take over mid-flow at any time; their first app-message closes the bot's session for that
+  chat. The bot is always the *fallback*, never competing with a person.
+- Throughput on a coexistence number is capped by Meta at **5 messages/second** — irrelevant at GT's
+  volume, noted so we never design around higher.
+- Onboarding caveat: existing 1:1 chats stay in the app; only messages from Coexistence-enablement
+  onward are mirrored. The bot only ever acts on messages it actually receives.
 
 ## 6. Confidence gate + human handoff (via Shopify)
 
@@ -200,7 +214,9 @@ signal before live.
 **Finish design:** write this spec → Tom review → writing-plans.
 
 **Gates before build:** G1 module approval (`MODULE_TEMPLATE.md` filled + Tom written OK). G2 Tom
-starts Cloud API migration (parallel, ~1–2 days, Tom-only).
+enables **Coexistence** for the number (Cloud API alongside the Business app — never a disconnect;
+the app-side link is a QR Tom scans in the WhatsApp Business app; ~1–2 days incl. business
+verification; Tom-only). Mode-A migration is forbidden (hard constraint).
 
 **Staged build (Claude writes code/tests):**
 | Phase | What | External dep |
