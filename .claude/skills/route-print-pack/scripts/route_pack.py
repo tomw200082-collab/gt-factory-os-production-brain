@@ -102,6 +102,11 @@ def fetch_route(driver, date):
         if t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
+        # Skip stops the driver has ALREADY completed: LionWheel marks the visit
+        # done via is_done / delivered_at (task.status stays ASSIGNED all day, so it
+        # cannot be the signal). Only stops still pending belong on the new route.
+        if v.get("is_done") or v.get("delivered_at"):
+            continue
         driver_id = driver_id or t.get("driver_id")
         eta = (v.get("eta_at") or "")[11:16]
         stops.append({
@@ -205,8 +210,13 @@ def render_pages(jobs):
     from playwright.sync_api import sync_playwright
     cookies = lw_login_cookies()
     with sync_playwright() as p:
-        b = p.chromium.launch(args=["--no-sandbox", "--disable-dev-shm-usage"])
-        ctx = b.new_context(ignore_https_errors=True)
+        import glob as _glob
+        _cands = sorted(_glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"))
+        _exe = os.environ.get("PW_CHROMIUM_EXE") or (_cands[-1] if _cands else None)
+        _proxy_url = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
+        _proxy = {"server": _proxy_url} if _proxy_url else None
+        b = p.chromium.launch(executable_path=_exe, proxy=_proxy, args=["--no-sandbox", "--disable-dev-shm-usage"])
+        ctx = b.new_context(ignore_https_errors=True, proxy=_proxy)
         ctx.add_cookies(cookies)
         for url, out, fit_one in jobs:
             pg = ctx.new_page()
@@ -585,6 +595,15 @@ def build(driver, date, from_stop=None, copies=2):
         jobs.append((wo_url, wo, True))
     jobs += [(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", f"{OUT}/wb_{s['tid']}.pdf", False)
              for s in waybill_stops]
+    # Remove any stale target files from a prior run BEFORE rendering: a failed live
+    # render must leave the target ABSENT so the fallback (page 1) / a real gap (waybill)
+    # is detected, never a leftover from a different date silently reused.
+    for _url, _out, _fit in jobs:
+        try:
+            if os.path.exists(_out):
+                os.remove(_out)
+        except OSError:
+            pass
     if jobs:
         render_pages(jobs)
 
