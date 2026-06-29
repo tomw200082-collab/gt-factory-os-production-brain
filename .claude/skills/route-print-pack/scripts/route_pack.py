@@ -152,7 +152,7 @@ def gi_fetch_invoice(stop, out_path):
         blob = json.dumps(doc, ensure_ascii=False)
         if wp and wp in blob:                       # order id stamped on the doc
             did = doc.get("id")
-            meta = _get_json(GI_BASE.rstrip("/") + f"/documents/{did}")
+            meta = json.loads(_get(GI_BASE.rstrip("/") + f"/documents/{did}", hdr).decode("utf-8"))
             pdf = (((meta.get("url") or {}).get("origin"))
                    or ((meta.get("files") or {}).get("origin")))
             if pdf:
@@ -575,7 +575,12 @@ def build(driver, date, from_stop=None, copies=2):
     for s in stops:
         if s["gi"] or s["task"].get("order_items"):   # invoice candidate
             src = f"{OUT}/inv_{s['tid']}.pdf"
-            if gi_fetch_invoice(s, src):
+            try:
+                ok = gi_fetch_invoice(s, src)
+            except Exception as e:                    # one bad GI lookup must not
+                print(f"gi_fetch_invoice: stop {s['tid']} failed: {e}")
+                ok = False                            # abort the whole pack
+            if ok:
                 ann = f"{OUT}/ann_{s['tid']}.pdf"
                 annotate.annotate(s["task"], src, ann)
                 invoice_part[s["tid"]] = ann
