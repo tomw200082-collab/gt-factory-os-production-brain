@@ -165,7 +165,11 @@ def gi_fetch_invoice(stop, out_path):
 # --------------------------------------------------------------------------- #
 # LionWheel web (Playwright) — waybills + work-order, rendered to PDF
 # --------------------------------------------------------------------------- #
-def lw_login_cookies():
+def lw_web_opener():
+    """Authenticated urllib opener for LionWheel's web UI (session cookie).
+    urllib honours HTTPS_PROXY and reaches members.lionwheel.com fine; the
+    sandboxed Chromium does NOT (ERR_CONNECTION_CLOSED), so we fetch every LW web
+    page through this opener and hand Chromium self-contained HTML to render."""
     jar = http.cookiejar.CookieJar()
     op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
     op.addheaders = [("User-Agent", UA)]
@@ -178,8 +182,45 @@ def lw_login_cookies():
         "user[remember_me]": "1",
     }).encode()
     op.open(urllib.request.Request(f"{LW_BASE}/users/sign_in", data=body), timeout=60).read()
-    return [{"name": c.name, "value": c.value, "domain": "members.lionwheel.com", "path": "/"}
-            for c in jar]
+    return op
+
+
+def lw_fetch_inlined(url, opener):
+    """Fetch a LionWheel web page and return a self-contained HTML string:
+    linked stylesheets inlined, <script> stripped, <img> inlined as data URIs.
+    Chromium then renders it via set_content with NO network — the real LionWheel
+    page (its own header/columns/branding), not a page we invent."""
+    import base64
+    html = opener.open(url, timeout=60).read().decode("utf-8", "ignore")
+    html = re.sub(r"<script\b[^>]*>.*?</script>", "", html, flags=re.I | re.S)
+
+    def _abs(href):
+        return href if href.startswith("http") else LW_BASE + "/" + href.lstrip("/")
+
+    for link in re.findall(r'<link\b[^>]*rel=["\']stylesheet["\'][^>]*>', html, flags=re.I):
+        hm = re.search(r'href=["\']([^"\']+)["\']', link)
+        if not hm:
+            continue
+        try:
+            css = opener.open(_abs(hm.group(1)), timeout=60).read().decode("utf-8", "ignore")
+        except Exception:
+            css = ""
+        html = html.replace(link, f"<style>{css}</style>")
+
+    for img in re.findall(r'<img\b[^>]*>', html, flags=re.I):
+        sm = re.search(r'src=["\']([^"\']+)["\']', img)
+        if not sm or sm.group(1).startswith("data:"):
+            continue
+        try:
+            raw = opener.open(_abs(sm.group(1)), timeout=60).read()
+            ext = sm.group(1).rsplit(".", 1)[-1].split("?")[0].lower()
+            mime = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg",
+                    "gif": "image/gif", "svg": "image/svg+xml", "webp": "image/webp"}.get(ext, "image/png")
+            uri = "data:%s;base64,%s" % (mime, base64.b64encode(raw).decode())
+            html = html.replace(img, img.replace(sm.group(1), uri))
+        except Exception:
+            pass
+    return html
 
 
 # Compact print CSS for the LionWheel work order ("הדפסת סידור עבודה" =
@@ -200,37 +241,36 @@ img { max-height: 48px !important; }
 
 
 def render_pages(jobs):
-    """jobs = [(url, out_pdf, fit_one_page_bool), ...] rendered with the LW session.
+    """jobs = [(html, out_pdf, fit_one_page_bool), ...]. Each `html` is already a
+    self-contained LionWheel page (lw_fetch_inlined): CSS inlined, scripts gone,
+    images data-URI'd. We render it via set_content so Chromium needs NO network
+    (it cannot reach members.lionwheel.com in this sandbox).
 
-    Each job is isolated: one bad page (a flaky/changed work-order URL, a stalled
-    networkidle) must NOT abort the whole batch. The other waybills still render,
-    and a missing work-order PDF lets build()'s build_workorder() fallback produce
-    page 1 rather than the driver getting no pack at all."""
+    Each job is isolated: one bad page must NOT abort the batch — the other
+    waybills still render, and a missing work-order PDF lets build()'s
+    build_workorder() fallback produce page 1 rather than the driver getting none."""
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", "/opt/pw-browsers")
     from playwright.sync_api import sync_playwright
-    cookies = lw_login_cookies()
     with sync_playwright() as p:
         import glob as _glob
         _cands = sorted(_glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"))
         _exe = os.environ.get("PW_CHROMIUM_EXE") or (_cands[-1] if _cands else None)
-        _proxy_url = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
-        _proxy = {"server": _proxy_url} if _proxy_url else None
-        b = p.chromium.launch(executable_path=_exe, proxy=_proxy, args=["--no-sandbox", "--disable-dev-shm-usage"])
-        ctx = b.new_context(ignore_https_errors=True, proxy=_proxy)
-        ctx.add_cookies(cookies)
-        for url, out, fit_one in jobs:
+        b = p.chromium.launch(executable_path=_exe, args=["--no-sandbox", "--disable-dev-shm-usage"])
+        ctx = b.new_context()
+        for html, out, fit_one in jobs:
             pg = ctx.new_page()
             try:
-                _render_one(pg, url, out, fit_one)
+                _render_one(pg, html, out, fit_one)
             except Exception as e:
-                print(f"render_pages: skipping failed job {url}: {e}")
+                print(f"render_pages: skipping failed job -> {out}: {e}")
             finally:
                 pg.close()
         b.close()
 
 
-def _render_one(pg, url, out, fit_one):
-    pg.goto(url, wait_until="networkidle", timeout=60000)
+def _render_one(pg, html, out, fit_one):
+    pg.set_content(html, wait_until="domcontentloaded", timeout=60000)
+    pg.wait_for_timeout(200)
     opts = dict(format="A4", print_background=True,
                 margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
     if fit_one:
@@ -242,8 +282,19 @@ def _render_one(pg, url, out, fit_one):
             pg.add_style_tag(content=WORKORDER_FIT_CSS)
             pg.wait_for_timeout(400)
             usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
-            w = pg.evaluate("document.body.scrollWidth") or 800
-            scale = min(1.0, usable_w / max(w, 1))
+
+            def _dims():
+                return (pg.evaluate("document.body.scrollWidth") or 800,
+                        pg.evaluate("document.body.scrollHeight") or 1100)
+
+            # 1. scale to fit BOTH width AND natural height — guarantees every row
+            #    is on the page before we stretch anything (no clipped stops).
+            w, h = _dims()
+            scale = max(0.3, min(1.0, round(min(usable_w / max(w, 1),
+                                                usable_h / max(h, 1)), 3)))
+            # 2. spread the route table to fill the page height at that scale, so
+            #    rows distribute the remaining vertical space (no dead bottom gap).
+            avail = usable_h / scale
             m = pg.evaluate(
                 "(() => { const ts=[...document.querySelectorAll('table')]"
                 ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
@@ -252,7 +303,7 @@ def _render_one(pg, url, out, fit_one):
             ) or {}
             non_table = float(m.get("nonTable", 0))
             table_h0 = float(m.get("tableH", 0))
-            target_table = int(max(table_h0, usable_h / scale - non_table))
+            target_table = int(max(table_h0, avail - non_table))
             pg.evaluate(
                 "(h)=>{const ts=[...document.querySelectorAll('table')]"
                 ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
@@ -260,11 +311,13 @@ def _render_one(pg, url, out, fit_one):
                 target_table,
             )
             pg.wait_for_timeout(300)
-            h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
-            scale = min(scale, usable_h / max(h, 1))
-            scale = max(0.4, round(scale, 3))
+            # 3. FINAL guard: re-measure and re-scale so the (possibly taller after
+            #    reflow) content still fits exactly one page — never clip a stop.
+            w2, h2 = _dims()
+            scale = max(0.3, min(scale, round(usable_h / max(h2, 1), 3),
+                                 round(usable_w / max(w2, 1), 3)))
         except Exception:
-            scale = 0.62
+            scale = 0.6
         opts["scale"] = scale
         opts["page_ranges"] = "1"
     pg.pdf(path=out, **opts)
@@ -320,6 +373,49 @@ def detect_inventory_moves(stops):
                 "status": "open",
                 "needs": "item_id + qty + direction(+/-) confirmed by the approver in the inbox",
             })
+    return out
+
+
+# A LionWheel delivery-note stop carries 0 order_items but ships real goods that
+# are billed on a Green Invoice document — the order went out without the
+# Shopify/LW line link, so stock was never decremented. We detect the bound GI
+# doc number from the stop title/note ("תעודת משלוח NNNNN" / "חשבונית NNNNN") and
+# emit an FG-OUT proposal. We deliberately do NOT resolve barcode->FG/case_pack
+# here (that needs the item master / DB): the SKILL.md filing step (Claude via the
+# Supabase MCP) fetches the GI lines, maps them deterministically, and files the
+# pending inbox approval keyed on the GI doc id. v1 NARROW: only 0-item stops with
+# a bound doc number; credits/quotes are excluded at the filing step by doc type.
+GI_DOC_RE = re.compile(
+    r"(?:תעוד[הת]\s*(?:משלוח|תשלוח|שילוח)|חשבונית(?:\s*מס)?)\s*#?\s*(\d{3,})")
+
+
+def detect_fg_out_stops(stops):
+    out = []
+    for s in stops:
+        if s.get("items"):                       # has LW order_items → normal pick
+            continue
+        t = s["task"]
+        text = " ".join(str(t.get(k) or "") for k in ("notes", "driver_note"))
+        text = f"{s.get('recipient') or ''} {text}"
+        if "איסוף" in text or "החזר" in text:    # pickup/return → not an FG-OUT
+            continue
+        m = GI_DOC_RE.search(text)
+        if not m:
+            continue
+        recip = (s.get("recipient") or "").strip()
+        doc = m.group(1)
+        out.append({
+            "lw_task_id": s["tid"],
+            "daily_order": s["do"],
+            "recipient": recip,
+            "kind": "fg_out",
+            "gi_doc_number": doc,
+            "summary": f"הורדת מלאי FG — {recip.split('-')[0].strip()} (מסמך {doc})",
+            "form_type": "inventory_movement",
+            "status": "open",
+            "needs": ("resolve GI doc lines barcode->FG with case_pack/UOM, then "
+                      "file a pending FG-OUT inbox approval; idempotency = gi_doc_number"),
+        })
     return out
 
 
@@ -591,19 +687,33 @@ def build(driver, date, from_stop=None, copies=2):
     #    one A4) + a waybill for each stop that has no invoice. build_workorder()
     #    is kept only as a fallback if LionWheel doesn't return the work order.
     wo = None
-    jobs = []
-    if not from_stop and driver_id:
+    jobs = []          # [(inlined_html, out_pdf, fit_one)]
+    opener = None
+    if (not from_stop and driver_id) or waybill_stops:
+        try:
+            opener = lw_web_opener()
+        except Exception as e:
+            print(f"lw_web_opener failed: {e}")
+    if not from_stop and driver_id and opener:
         wo = f"{OUT}/_workorder.pdf"
         dmy = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%d/%m/%Y")
         wo_url = (f"{LW_BASE}/visits/print_labels"
                   f"?date={urllib.parse.quote(dmy)}&driver_id={driver_id}")
-        jobs.append((wo_url, wo, True))
-    jobs += [(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", f"{OUT}/wb_{s['tid']}.pdf", False)
-             for s in waybill_stops]
-    # Remove any stale target files from a prior run BEFORE rendering: a failed live
-    # render must leave the target ABSENT so the fallback (page 1) / a real gap (waybill)
-    # is detected, never a leftover from a different date silently reused.
-    for _url, _out, _fit in jobs:
+        try:
+            jobs.append((lw_fetch_inlined(wo_url, opener), wo, True))
+        except Exception as e:
+            print(f"work-order fetch failed: {e}")
+    if opener:
+        for s in waybill_stops:
+            try:
+                html = lw_fetch_inlined(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", opener)
+                jobs.append((html, f"{OUT}/wb_{s['tid']}.pdf", False))
+            except Exception as e:
+                print(f"waybill fetch failed for {s['tid']}: {e}")
+    # Remove any stale target files from a prior run BEFORE rendering: a failed
+    # render must leave the target ABSENT so the fallback (page 1) / a real gap
+    # (waybill) is detected, never a leftover from a different date silently reused.
+    for _html, _out, _fit in jobs:
         try:
             if os.path.exists(_out):
                 os.remove(_out)
@@ -632,7 +742,18 @@ def build(driver, date, from_stop=None, copies=2):
     final = f"{OUT}/route_{driver}_{date}.pdf".replace(" ", "_")
     assemble(wo, ordered_parts, final)
 
-    proposals = detect_inventory_moves(stops)
+    # inbox proposals: non-pick stock moves (returns/exchanges/tastings/pickups →
+    # RM goods-receipt) + delivery-note FG-OUT stops (0 items but a bound GI doc).
+    # Dedupe by (task, kind) so a stop is never proposed twice.
+    proposals = detect_inventory_moves(stops) + detect_fg_out_stops(stops)
+    seen, deduped = set(), []
+    for p in proposals:
+        k = (p["lw_task_id"], p["kind"])
+        if k in seen:
+            continue
+        seen.add(k)
+        deduped.append(p)
+    proposals = deduped
     json.dump(proposals, open(f"{OUT}/inventory_proposals.json", "w"),
               ensure_ascii=False, indent=2)
 
@@ -703,8 +824,9 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
     L.append("## Inventory-movement proposals (await inbox approval)")
     if proposals:
         for p in proposals:
-            L.append(f"- {p['recipient']} (task {p['lw_task_id']}): "
-                     f"{p.get('note') or 'goods pickup'}")
+            what = p.get("summary") or p.get("note") or "goods pickup"
+            L.append(f"- [{p.get('kind','move')}] {p['recipient']} "
+                     f"(task {p['lw_task_id']}): {what}")
     else:
         L.append("- None.")
     L.append("")

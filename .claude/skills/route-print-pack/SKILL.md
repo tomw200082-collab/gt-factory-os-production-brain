@@ -28,10 +28,19 @@ Page 1 is LionWheel's own "סידור עבודה" print (the **הדפסת סיד
 `GET /visits/print_labels?date=DD/MM/YYYY&driver_id={id}`), **not** a page we
 generate. It carries LionWheel's header/branding and full columns. LionWheel's
 print view stacks the `יעד` column one Hebrew letter per line (~13 pages); we inject
-compact print CSS (`white-space:nowrap`, tight cells) and pick the largest scale
-that still fits, so all stops land on **one A4 portrait page** — layout tightened
-only, nothing invented. `build_workorder()` stays as a fallback if LionWheel does
-not return the page.
+compact print CSS (`white-space:nowrap`, tight cells), scale to fit **both** width
+and natural height (so no stop is ever clipped), then stretch the route table to
+fill the full page height, so all stops land on **one A4 portrait page**, spread
+optimally — layout tightened only, nothing invented. `build_workorder()` stays as a
+last-resort fallback if LionWheel does not return the page.
+
+**Sandbox rendering (2026-06-29).** Chromium in the execution sandbox cannot reach
+`members.lionwheel.com` (ERR_CONNECTION_CLOSED), but `urllib` (proxy-aware) can. So
+`lw_fetch_inlined()` pulls the real LW page over `urllib` with the web-login
+cookies, inlines its stylesheets, strips `<script>`, and inlines `<img>` as data
+URIs; Chromium then renders that self-contained HTML via `set_content` with **no
+network**. The same path renders the waybills. Output = the genuine LionWheel page
+(header/columns/branding), rendered locally.
 
 ## Invoice annotation design (formal, rounded — Tom, 2026-06-21)
 Per product line, at the **right margin, precise to the line**, a formal rounded
@@ -67,7 +76,30 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    item in `inventory_proposals.json` (returns, exchanges, tastings, goods received
    — anything that moves stock outside normal picking), create a **pending
    inventory-movement approval** so it renders in the inbox with **Approve / Reject**
-   (like physical count), not Acknowledge / Resolve. Preferred path: POST to the
+   (like physical count), not Acknowledge / Resolve.
+
+   `inventory_proposals.json` now carries three `kind`s:
+   - **pickup / exchange / return / tasting** — supplier/customer non-pick moves. A
+     supplier goods pickup ("איסוף סחורה") is an **RM goods-receipt** candidate:
+     anchor on the **component** (RM item), supplier is secondary; component + qty
+     are confirmed by the approver in the inbox (never invented).
+   - **`fg_out`** — a delivery-note stop with **0 LW order_items** bound to an
+     outbound Green Invoice doc (`gi_doc_number`): goods shipped without the
+     Shopify/LW link, so FG was never decremented. **At filing**: fetch the GI doc
+     lines, map each barcode → FG `item_id` and convert qty **deterministically**
+     from the item master (`case_pack`/`sales_uom` — e.g. matcha 50 cases × 22 =
+     1100 bags), then file the FG-OUT approval with the lines pre-filled.
+     **Idempotency = `gi_doc_number`** (never double-post vs a future LW FG-out
+     bridge). Exclude credit/quote GI doc types. Any barcode that doesn't map, or a
+     GI-vs-master pack conflict → render that line as **needs-decision** inside the
+     same approval, never silently dropped, never guessed. (Filed exactly as the
+     2026-06-29 GI-20269 approval: `form_submissions` + `inventory_movements` +
+     `inventory_movement_lines` + `exceptions(category=inventory_movement_pending)`
+     in `private_core`, via the Supabase MCP.)
+   - **HARD LAW:** the skill only proposes; the stock move posts to `stock_ledger`
+     **only** when the human approves in the inbox. Never write the ledger directly.
+
+   The shared mechanics below apply to every kind: Preferred path: POST to the
    backend `POST /api/v1/mutations/inventory-movements`
    (`{idempotency_key, event_at, kind, source_ref:<lw_task_id>, recipient, note,
    summary}`). **Prefer this endpoint** — it owns the contract (idempotency, category,

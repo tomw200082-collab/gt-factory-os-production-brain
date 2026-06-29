@@ -54,20 +54,23 @@
 
 | id | task | dep | status |
 |----|------|-----|--------|
-| T1 | `classify_stop` + outbound-doc/pickup discrimination (C1.2,C1.6,C2.2) | - | todo |
-| T2 | `resolve_lines` deterministic master convert + conflict/unmapped tagging (C1.3) | T1 | todo |
-| T3 | GI binding tiered + doc# parse from stop title (C1.4) | T1 | todo |
-| T4 | `propose_fg_out` → inbox pending approval, idempotent on GI doc id (C1.1,C1.5) | T2,T3 | todo |
-| T5 | component-centric `propose_gr` + tiered component id (C2.1,C2.3) | T1 | todo |
-| T6 | channel-agnostic GR model + cross-channel dedup key (C2.4,C2.5) | T5 | todo |
-| T7 | summary/email surfacing of both proposal kinds | T4,T5 | todo |
+| T1 | `classify_stop` + outbound-doc/pickup discrimination (C1.2,C1.6,C2.2) | - | done (detect_fg_out_stops + detect_inventory_moves) |
+| T2 | `resolve_lines` deterministic master convert + conflict/unmapped tagging (C1.3) | T1 | done@filing (SKILL MCP step; proven GI-20269 case_pack×22) |
+| T3 | GI binding tiered + doc# parse from stop title (C1.4) | T1 | done (doc# parse in script; GI-link/wp fallback at filing) |
+| T4 | `propose_fg_out` → inbox pending approval, idempotent on GI doc id (C1.1,C1.5) | T2,T3 | done (emit in script; file via MCP, proven 20269) |
+| T5 | component-centric `propose_gr` + tiered component id (C2.1,C2.3) | T1 | partial (pickup detected+emitted; component pick+file at inbox) |
+| T6 | channel-agnostic GR model + cross-channel dedup key (C2.4,C2.5) | T5 | todo (LW channel only; invoice/manual channels + dedup key pending) |
+| T7 | summary/email surfacing of both proposal kinds | T4,T5 | done (digest tags kind; summary counts) |
 | T8 | tests: V1–V6, incl. 2026-06-29 live fixtures (20269 FG-OUT, י.ש.ר אריזות RM pickup) | T4,T6 | todo |
+| T9 | page-1 = real LW work order via lw_fetch_inlined+set_content, one portrait page full-height, no clipped stops | - | done (verified Maxim 30/06: 15/15 stops on 1 page) |
 
 ## §B bug
 
 | id | cause | fix | §V added |
 |----|-------|-----|----------|
-| (none yet) | | | |
+| B1 | page-1 fit stretched rows past one page → stops 11–15 clipped (page_ranges=1) | scale to fit BOTH width+natural-height first, then stretch+re-measure+re-scale | V-page1: all N stops present on page 1 |
+| B2 | Chromium ERR_CONNECTION_CLOSED on members.lionwheel.com → page-1/waybills failed | fetch via urllib (proxy-aware) + inline CSS/img + strip JS → set_content | V1 (no goto; render offline) |
+| B3 | GI `/documents/{id}` fallback called w/o bearer token (401) crashed whole build | add auth header + wrap per-stop fetch (degrade, don't abort) | — |
 
 ## §? unknown (parked — never guessed)
 
