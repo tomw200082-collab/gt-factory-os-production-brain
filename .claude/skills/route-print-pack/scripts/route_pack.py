@@ -230,13 +230,13 @@ def lw_fetch_inlined(url, opener):
 # A4 page. We keep LionWheel's own header/columns/branding — only the layout is
 # tightened, nothing is invented.
 WORKORDER_FIT_CSS = """
-@page { size: A4 portrait; margin: 5mm; }
+@page { size: A4 portrait; margin: 3mm; }
 * { box-sizing: border-box; }
-table { font-size: 9.5px !important; width: 100% !important; border-collapse: collapse !important; }
-td, th { white-space: nowrap !important; padding: 2px 4px !important;
+table { width: 100% !important; border-collapse: collapse !important; }
+td, th { white-space: nowrap !important; padding: 1px 3px !important;
          line-height: 1.2 !important; overflow: hidden !important;
          vertical-align: middle !important; }
-img { max-height: 48px !important; }
+img { max-height: 44px !important; }
 """
 
 
@@ -281,7 +281,7 @@ def _render_one(pg, html, out, fit_one):
         try:
             pg.add_style_tag(content=WORKORDER_FIT_CSS)
             pg.wait_for_timeout(400)
-            usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
+            usable_w, usable_h = 771.0, 1100.0  # A4 @96dpi minus 3mm margins
 
             def _dims():
                 return (pg.evaluate("document.body.scrollWidth") or 800,
