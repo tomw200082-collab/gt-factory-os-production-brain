@@ -147,7 +147,7 @@ def gi_fetch_invoice(stop, out_path):
         blob = json.dumps(doc, ensure_ascii=False)
         if wp and wp in blob:                       # order id stamped on the doc
             did = doc.get("id")
-            meta = _get_json(GI_BASE.rstrip("/") + f"/documents/{did}")
+            meta = json.loads(_get(GI_BASE.rstrip("/") + f"/documents/{did}", hdr).decode("utf-8"))
             pdf = (((meta.get("url") or {}).get("origin"))
                    or ((meta.get("files") or {}).get("origin")))
             if pdf:
@@ -205,7 +205,8 @@ def render_pages(jobs):
     from playwright.sync_api import sync_playwright
     cookies = lw_login_cookies()
     with sync_playwright() as p:
-        b = p.chromium.launch(args=["--no-sandbox", "--disable-dev-shm-usage"])
+        chromium_exe = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+        b = p.chromium.launch(executable_path=chromium_exe, args=["--no-sandbox", "--disable-dev-shm-usage"])
         ctx = b.new_context(ignore_https_errors=True)
         ctx.add_cookies(cookies)
         for url, out, fit_one in jobs:
@@ -501,25 +502,17 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
 # assemble
 # --------------------------------------------------------------------------- #
 def assemble(workorder_pdf, ordered_parts, out_pdf):
-    from pypdf import PdfReader, PdfWriter
-    w = PdfWriter()
-    if workorder_pdf and os.path.exists(workorder_pdf):
-        for p in PdfReader(workorder_pdf).pages:
-            w.add_page(p)
-    for path, copies in ordered_parts:
-        rd = PdfReader(path)
-        for _ in range(copies):
-            for p in rd.pages:
-                w.add_page(p)
-    tmp = out_pdf + ".tmp"
-    with open(tmp, "wb") as f:
-        w.write(f)
-    # compress (the x2 duplication + embedded GI PDFs balloon the file ~10x)
     import fitz
-    d = fitz.open(tmp)
-    d.save(out_pdf, garbage=4, deflate=True, deflate_images=True, deflate_fonts=True)
-    d.close()
-    os.remove(tmp)
+    merged = fitz.open()
+    if workorder_pdf and os.path.exists(workorder_pdf):
+        with fitz.open(workorder_pdf) as src:
+            merged.insert_pdf(src)
+    for path, copies in ordered_parts:
+        with fitz.open(path) as src:
+            for _ in range(copies):
+                merged.insert_pdf(src)
+    merged.save(out_pdf, garbage=4, deflate=True, deflate_images=True, deflate_fonts=True)
+    merged.close()
 
 
 def build(driver, date, from_stop=None, copies=2):
