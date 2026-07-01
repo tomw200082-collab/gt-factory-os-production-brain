@@ -144,8 +144,10 @@ def _package_count(doc, pkg):
 
 
 def mark_kind(ordered, picked):
-    """Return ('V'|'X'|'P', label) from ordered vs picked quantities."""
-    if picked >= ordered:
+    """Return ('V'|'X'|'P', label) from ordered vs picked quantities.
+    Over-pick (picked > ordered) is NOT a ✓ — goods left uninvoiced. It gets the
+    amber fraction pill (e.g. 6/5) so the driver/bookkeeper sees it on paper."""
+    if picked == ordered:
         return "V", "V"
     if picked <= 0:
         return "X", "X"

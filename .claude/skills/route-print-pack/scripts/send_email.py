@@ -39,9 +39,16 @@ def main(summary_path):
     if disc:
         lines.append(f"הפרשי ליקוט ({len(disc)}):")
         for d in disc:
-            lines.append(f"  עצירה {d['stop']} · {d['recipient']} · {d['item']} · לוקט {d['picked']}/{d['ordered']}")
+            word = "לוקט ביתר" if d.get("kind") == "over" else "לוקט"
+            lines.append(f"  עצירה {d['stop']} · {d['recipient']} · {d['item']} · {word} {d['picked']}/{d['ordered']}")
     else:
         lines.append("אין הפרשי ליקוט.")
+    mp = s.get("missing_paper") or []
+    if mp:
+        lines.append("")
+        lines.append(f"!! עצירות ללא מסמך מודפס ({len(mp)}) — חסרות בחבילה:")
+        for m in mp:
+            lines.append(f"  עצירה {m['stop']} · {m['recipient']} (משימה {m['lw_task_id']})")
     if s.get("inventory_proposals"):
         lines.append("")
         lines.append(f"תזוזות מלאי לא-רגילות שממתינות לאישור ב-inbox: {s['inventory_proposals']}")

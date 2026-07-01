@@ -25,7 +25,8 @@ GREENINVOICE_KEY_ID, GREENINVOICE_SECRET, LIONWHEEL_WEB_USER, LIONWHEEL_WEB_PASS
 RESEND_API_KEY. The two LIONWHEEL_WEB_* must be stored as environment secrets
 (needed for waybills + work order). Never hard-code them.
 """
-import os, re, sys, json, argparse, datetime, http.cookiejar, urllib.request, urllib.parse
+import os, re, sys, json, glob, argparse, datetime, http.cookiejar, urllib.request, urllib.parse
+from concurrent.futures import ThreadPoolExecutor
 
 OUT = "route_pack_out"
 LW_BASE = os.environ.get("LIONWHEEL_BASE_URL", "https://members.lionwheel.com").rstrip("/")
@@ -89,10 +90,14 @@ def gi_link(task):
 
 
 def fetch_route(driver, date):
-    """Return (driver_id, [stop,...]) sorted by daily_order for driver+date."""
+    """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
+    The list payload carries no driver/date, so every ASSIGNED task needs a
+    per-task show — parallelized (the sequential N+1 dominated the whole run)."""
     stops, driver_id = [], None
-    for tid in lw_list_assigned():
-        t = lw_task(tid)
+    tids = lw_list_assigned()
+    with ThreadPoolExecutor(max_workers=12) as ex:
+        tasks = list(ex.map(lw_task, tids))
+    for t in tasks:
         if not t:
             continue
         if t.get("driver_str") != driver:
@@ -128,39 +133,65 @@ def gi_token():
                       {"id": GI_ID, "secret": GI_SECRET}).get("token")
 
 
-def gi_fetch_invoice(stop, out_path):
+_GI_HDR = None          # cached bearer header for the run
+
+
+def _gi_hdr():
+    global _GI_HDR
+    if _GI_HDR is None:
+        _GI_HDR = {"Authorization": f"Bearer {gi_token()}"}
+    return _GI_HDR
+
+
+def gi_fetch_invoice(stop, out_path, date=None):
     """Download the real GI invoice for a stop. Returns True on success."""
     link = stop.get("gi")
     if link:
         with open(out_path, "wb") as f:
             f.write(_get(link))
         return True
-    # fallback: locate the document in Green Invoice that matches the order 100%
+    # Fallback: locate the document whose `remarks` carries EXACTLY this order
+    # number ("מספר הזמנה באתר: #GT13521" — inspected live 2026-07-01). Substring
+    # matching over the whole doc JSON is forbidden: order 452 would also hit
+    # 1452. Search is date-windowed (invoice issued on/just before delivery) and
+    # paginated so an older invoice can't fall off a single latest-50 page.
     wp = (stop.get("wp") or "").lstrip("#")
     if not wp:
         return False
-    tok = gi_token()
-    hdr = {"Authorization": f"Bearer {tok}"}
-    res = _post_json(GI_BASE.rstrip("/") + "/documents/search",
-                     {"pageSize": 50, "page": 1, "sort": "documentDate"}, hdr)
-    for doc in res.get("items", []):
-        blob = json.dumps(doc, ensure_ascii=False)
-        if wp and wp in blob:                       # order id stamped on the doc
+    hdr = _gi_hdr()
+    pat = re.compile(r"#" + re.escape(wp) + r"\b")
+    q = {"pageSize": 100, "page": 1, "sort": "documentDate"}
+    if date:
+        d = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+        q["fromDate"] = (d - datetime.timedelta(days=21)).isoformat()
+        q["toDate"] = d.isoformat()
+    for page in range(1, 6):
+        q["page"] = page
+        res = _post_json(GI_BASE.rstrip("/") + "/documents/search", q, hdr)
+        items = res.get("items") or []
+        for doc in items:
+            if not pat.search(doc.get("remarks") or ""):
+                continue
             did = doc.get("id")
-            meta = json.loads(_get(GI_BASE.rstrip("/") + f"/documents/{did}", hdr).decode("utf-8"))
+            meta = json.loads(_get(GI_BASE.rstrip("/") + f"/documents/{did}",
+                                   hdr).decode("utf-8"))
             pdf = (((meta.get("url") or {}).get("origin"))
                    or ((meta.get("files") or {}).get("origin")))
             if pdf:
                 with open(out_path, "wb") as f:
                     f.write(_get(pdf))
                 return True
+        if len(items) < q["pageSize"]:
+            break
     return False
 
 
 # --------------------------------------------------------------------------- #
 # LionWheel web (Playwright) — waybills + work-order, rendered to PDF
 # --------------------------------------------------------------------------- #
-def lw_login_cookies():
+def lw_login_jar():
+    """Log in to LionWheel web; return the cookie jar (used by the urllib
+    fetcher that feeds Chromium via request interception)."""
     jar = http.cookiejar.CookieJar()
     op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
     op.addheaders = [("User-Agent", UA)]
@@ -173,8 +204,7 @@ def lw_login_cookies():
         "user[remember_me]": "1",
     }).encode()
     op.open(urllib.request.Request(f"{LW_BASE}/users/sign_in", data=body), timeout=60).read()
-    return [{"name": c.name, "value": c.value, "domain": "members.lionwheel.com", "path": "/"}
-            for c in jar]
+    return jar
 
 
 # Compact print CSS for the LionWheel work order ("הדפסת סידור עבודה" =
@@ -203,12 +233,37 @@ def render_pages(jobs):
     page 1 rather than the driver getting no pack at all."""
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", "/opt/pw-browsers")
     from playwright.sync_api import sync_playwright
-    cookies = lw_login_cookies()
+    jar = lw_login_jar()
+
+    # Chromium cannot reach the network in this sandbox (its CONNECT through the
+    # agent proxy is closed for EVERY host — verified 2026-07-01 against
+    # example.com / GI / LionWheel alike, with and without an explicit proxy).
+    # urllib DOES work through the proxy. So the browser never touches the
+    # network: Playwright intercepts every request and Python fetches it with
+    # the logged-in LionWheel session, then fulfills the response. Chromium is
+    # only the layout/PDF engine.
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    op.addheaders = [("User-Agent", UA)]
+
+    def _fulfill(route):
+        try:
+            with op.open(route.request.url, timeout=60) as r:
+                body = r.read()
+                ctype = r.headers.get("Content-Type", "application/octet-stream")
+            route.fulfill(status=200, body=body, content_type=ctype)
+        except Exception:
+            route.abort()
+
+    # Resolve the installed chromium by glob — the versioned dir name
+    # (chromium-1194, -1228, ...) changes with image bumps; never hard-code it.
+    launch = {"args": ["--no-sandbox", "--disable-dev-shm-usage"]}
+    exes = sorted(glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"))
+    if exes:
+        launch["executable_path"] = exes[-1]
     with sync_playwright() as p:
-        chromium_exe = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
-        b = p.chromium.launch(executable_path=chromium_exe, args=["--no-sandbox", "--disable-dev-shm-usage"])
+        b = p.chromium.launch(**launch)
         ctx = b.new_context(ignore_https_errors=True)
-        ctx.add_cookies(cookies)
+        ctx.route("**/*", _fulfill)
         for url, out, fit_one in jobs:
             pg = ctx.new_page()
             try:
@@ -400,9 +455,9 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
     # ---- column hints (light, set once) ------------------------------------- #
     SPINE = 556                     # x of the timeline spine
     DISC_R = 10
-    TIME_XR = 524                   # right edge of the mono time
-    NAME_XR = 506                   # right edge of customer / action line
-    NAME_XMIN = 150                 # left limit for the name (truncate before)
+    TIME_XR = 526                   # right edge of the mono time ("06:30" @10pt mono ≈ 30pt wide)
+    NAME_XR = 486                   # right edge of names — MUST clear TIME_XR minus the time width
+    NAME_XMIN = 140                 # left limit for the name (truncate before)
     ITEM_XR = 116                   # right edge of items count
     PKG_XR = 56                     # right edge of packages count
     yh = 116
@@ -466,12 +521,8 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
             sec = ACTION.get(special, special) if special else (s.get("city") or "")
             rt(NAME_XR, cy + 3, fit(f"{name}  ·  {sec}", "db", 9.2, max_w),
                9.2, "db", INK)
-        # shortfall dot, just right of the spine-side of the name row
-        if short and not special:
-            sh = pg.new_shape()
-            sh.draw_circle((NAME_XR + 8, cy - 2), 2.2)
-            sh.finish(fill=AMBER, color=AMBER)
-            sh.commit()
+        # (shortfall is carried by the amber left-edge bar alone — the extra dot
+        #  sat inside the time column and collided with it)
         # data columns (mono numerals)
         if s.get("items") is not None:
             rt(ITEM_XR, cy + 3, s["items"], 9.5, "dm", MUTE)
@@ -519,6 +570,13 @@ def build(driver, date, from_stop=None, copies=2):
     os.makedirs(OUT, exist_ok=True)
     import annotate
 
+    # Kill any stale work order from a previous run: the file isn't keyed by
+    # driver/date, so if today's render fails, yesterday's page 1 (possibly a
+    # different driver) would silently pass the exists() check below.
+    stale = f"{OUT}/_workorder.pdf"
+    if os.path.exists(stale):
+        os.remove(stale)
+
     driver_id, stops = fetch_route(driver, date)
     if not stops:
         raise SystemExit(f"No ASSIGNED stops for driver={driver!r} date={date}")
@@ -541,7 +599,7 @@ def build(driver, date, from_stop=None, copies=2):
         short = False
         for it in (t.get("order_items") or []):
             try:
-                if float(it["picked_quantity"]) < float(it["quantity"]):
+                if float(it["picked_quantity"]) != float(it["quantity"]):
                     short = True
                     break
             except (TypeError, ValueError, KeyError):
@@ -558,7 +616,7 @@ def build(driver, date, from_stop=None, copies=2):
     for s in stops:
         if s["gi"] or s["task"].get("order_items"):   # invoice candidate
             src = f"{OUT}/inv_{s['tid']}.pdf"
-            if gi_fetch_invoice(s, src):
+            if gi_fetch_invoice(s, src, date):
                 ann = f"{OUT}/ann_{s['tid']}.pdf"
                 annotate.annotate(s["task"], src, ann)
                 invoice_part[s["tid"]] = ann
@@ -588,15 +646,23 @@ def build(driver, date, from_stop=None, copies=2):
         build_workorder(driver, date, stops, wo, flags)
 
     # 4. assemble in driving order: invoice if present, else its waybill.
-    ordered_parts = []
+    #    A stop with NEITHER (GI missed + waybill render failed) must never
+    #    vanish silently — the driver would reach the customer with no paper.
+    #    It's counted, listed in the summary/email, and shouted on stderr.
+    ordered_parts, missing_paper = [], []
     for s in stops:
         ann = invoice_part.get(s["tid"])
         if ann:
             ordered_parts.append((ann, copies))
             continue
         wb = f"{OUT}/wb_{s['tid']}.pdf"
-        if os.path.exists(wb):
+        if os.path.exists(wb) and os.path.getsize(wb) > 0:
             ordered_parts.append((wb, copies))
+            continue
+        missing_paper.append({"stop": s["do"], "recipient": s["recipient"],
+                              "lw_task_id": s["tid"]})
+        print(f"WARNING: stop {s['do']} ({s['recipient']}) has NO invoice and "
+              f"NO waybill — it is MISSING from the pack", file=sys.stderr)
 
     final = f"{OUT}/route_{driver}_{date}.pdf".replace(" ", "_")
     assemble(wo, ordered_parts, final)
@@ -605,7 +671,9 @@ def build(driver, date, from_stop=None, copies=2):
     json.dump(proposals, open(f"{OUT}/inventory_proposals.json", "w"),
               ensure_ascii=False, indent=2)
 
-    # discrepancy summary (for the email body / cover-of-record)
+    # discrepancy summary (for the email body / cover-of-record).
+    # BOTH directions: under-pick (customer shorted → credit) AND over-pick
+    # (goods left uninvoiced → silent money leak). pq == q only is clean.
     disc = []
     for s in stops:
         for it in (s["task"].get("order_items") or []):
@@ -613,9 +681,10 @@ def build(driver, date, from_stop=None, copies=2):
                 q, pq = float(it["quantity"]), float(it["picked_quantity"])
             except (TypeError, ValueError, KeyError):
                 continue
-            if pq < q:
+            if pq != q:
                 disc.append({"stop": s["do"], "recipient": s["recipient"],
-                             "item": it["name"], "ordered": int(q), "picked": int(pq)})
+                             "item": it["name"], "ordered": int(q), "picked": int(pq),
+                             "kind": "over" if pq > q else "under"})
 
     summary = {
         "driver": driver, "date": date,
@@ -624,6 +693,7 @@ def build(driver, date, from_stop=None, copies=2):
         "waybills": sum(1 for p, _ in ordered_parts if "wb_" in p),
         "copies": copies,
         "discrepancies": disc,
+        "missing_paper": missing_paper,
         "inventory_proposals": len(proposals),
         "file": final,
     }
@@ -661,13 +731,20 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
                  f"({city}) — {s.get('items')} items, {s.get('packages')} "
                  f"packages{tag}")
     L.append("")
-    L.append("## Picking shortfalls")
+    L.append("## Picking discrepancies")
     if disc:
         for d in disc:
+            word = "OVER-picked" if d.get("kind") == "over" else "picked"
             L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
-                     f"picked {d['picked']} of {d['ordered']}")
+                     f"{word} {d['picked']} of {d['ordered']}")
     else:
         L.append("- None.")
+    mp = summary.get("missing_paper") or []
+    if mp:
+        L.append("")
+        L.append("## MISSING PAPER (stop has no invoice AND no waybill)")
+        for m in mp:
+            L.append(f"- Stop {m['stop']} **{m['recipient']}** (task {m['lw_task_id']})")
     L.append("")
     L.append("## Inventory-movement proposals (await inbox approval)")
     if proposals:
