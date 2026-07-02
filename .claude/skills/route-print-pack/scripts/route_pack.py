@@ -216,12 +216,106 @@ def lw_login_jar():
 WORKORDER_FIT_CSS = """
 @page { size: A4 portrait; margin: 5mm; }
 * { box-sizing: border-box; }
-table { font-size: 9.5px !important; width: 100% !important; border-collapse: collapse !important; }
+table { width: 100% !important; border-collapse: collapse !important;
+        font-size: var(--wo-font, 9.5px) !important; }
 td, th { white-space: nowrap !important; padding: 2px 4px !important;
          line-height: 1.2 !important; overflow: hidden !important;
          vertical-align: middle !important; }
 img { max-height: 48px !important; }
 """
+_FONT_MIN, _FONT_MAX = 8.0, 20.0
+
+# Columns LionWheel always prints even when unused for this driver/date (COD
+# flags, apartment number, a second notes column, ...). nowrap forces the
+# browser to reserve their full label width regardless of content, so a
+# column that is empty on EVERY row of THIS page is pure dead width — hiding
+# it is layout-tightening, not inventing data (a column with any real value
+# on any row stays, exactly as LionWheel rendered it).
+_HIDE_EMPTY_COLS_JS = """
+() => {
+    const ts = [...document.querySelectorAll('table')]
+        .sort((a,b) => b.offsetHeight - a.offsetHeight);
+    const t = ts[0];
+    if (!t) return [];
+    const rows = [...t.querySelectorAll('tr')];
+    if (rows.length < 2) return [];
+    const nCols = Math.max(...rows.map(r => r.children.length));
+    const nonEmpty = new Array(nCols).fill(false);
+    for (const r of rows.slice(1)) {
+        [...r.children].forEach((c, i) => {
+            if (c.textContent.trim().length > 0) nonEmpty[i] = true;
+        });
+    }
+    const hidden = [];
+    nonEmpty.forEach((ne, i) => { if (!ne) hidden.push(i); });
+    hidden.forEach(i => rows.forEach(r => {
+        const c = r.children[i];
+        if (c) c.style.display = 'none';
+    }));
+    return hidden;
+}
+"""
+
+_MEASURE_JS = """
+() => {
+    const ts = [...document.querySelectorAll('table')]
+        .sort((a,b) => b.offsetHeight - a.offsetHeight);
+    const t = ts[0];
+    return { w: document.body.scrollWidth, h: document.body.scrollHeight };
+}
+"""
+
+# Natural (nowrap) width per still-visible column, at whatever font is active
+# when this runs. Real free-text columns (recipient/address/delivery notes)
+# are naturally far wider than structured columns (time, order-id, package
+# count) — that's the actual width driver, not font size (see _render_one).
+_COL_WIDTHS_JS = """
+() => {
+    const ts = [...document.querySelectorAll('table')]
+        .sort((a,b) => b.offsetHeight - a.offsetHeight);
+    const t = ts[0];
+    if (!t) return {};
+    const rows = [...t.querySelectorAll('tr')];
+    if (!rows.length) return {};
+    const nCols = rows[0].children.length;
+    const widths = {};
+    for (let i = 0; i < nCols; i++) {
+        let mx = 0;
+        for (const r of rows) {
+            const c = r.children[i];
+            if (c && c.style.display !== 'none') mx = Math.max(mx, c.scrollWidth);
+        }
+        if (mx > 0) widths[i] = mx;
+    }
+    return widths;
+}
+"""
+
+_APPLY_WRAP_JS = """
+(caps) => {
+    const ts = [...document.querySelectorAll('table')]
+        .sort((a,b) => b.offsetHeight - a.offsetHeight);
+    const t = ts[0];
+    if (!t) return;
+    const rows = [...t.querySelectorAll('tr')];
+    for (const [idx, maxW] of Object.entries(caps)) {
+        const i = Number(idx);
+        rows.forEach(r => {
+            const c = r.children[i];
+            if (!c) return;
+            // WORKORDER_FIT_CSS sets nowrap with !important (needed so it
+            // beats LionWheel's own stylesheet); an inline style without
+            // !important can never win against that, so these three must
+            // carry it too, or the wrap silently no-ops.
+            c.style.setProperty('white-space', 'normal', 'important');
+            c.style.setProperty('max-width', maxW + 'px', 'important');
+            c.style.setProperty('word-break', 'break-word', 'important');
+        });
+    }
+}
+"""
+
+_WRAP_THRESHOLD_PX = 75.0     # a structured (time/id/count) column never gets this wide
 
 
 def render_pages(jobs):
@@ -262,7 +356,15 @@ def render_pages(jobs):
         launch["executable_path"] = exes[-1]
     with sync_playwright() as p:
         b = p.chromium.launch(**launch)
-        ctx = b.new_context(ignore_https_errors=True)
+        # A4 @ 96 CSS dpi (210mm x 297mm). Without this, Playwright's default
+        # 1280x720 viewport is what `table { width: 100% }` resolves against
+        # on screen — the work-order table would fill ~1280px regardless of
+        # any per-column hide/wrap/font logic, since 100% of a 1280px
+        # container is 1280px no matter what. All the fit-to-page math in
+        # _render_one assumes it's measuring in the same box it will print
+        # into, so the on-screen viewport has to actually BE that box.
+        ctx = b.new_context(ignore_https_errors=True,
+                            viewport={"width": 794, "height": 1123})
         ctx.route("**/*", _fulfill)
         for url, out, fit_one in jobs:
             pg = ctx.new_page()
@@ -276,38 +378,101 @@ def render_pages(jobs):
 
 
 def _render_one(pg, url, out, fit_one):
+    # page.pdf() renders under the "print" media type, which can carry its own
+    # @media print rules distinct from the screen styles we've been measuring
+    # and mutating — without this, every add_style_tag/evaluate call happens
+    # in a different cascade than the one that actually gets printed, so the
+    # whole fit-to-page routine below silently has no effect on the output.
+    pg.emulate_media(media="print")
     pg.goto(url, wait_until="networkidle", timeout=60000)
     opts = dict(format="A4", print_background=True,
                 margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
     if fit_one:
-        # Real LionWheel work order, fitted to ONE A4 page AND spread to fill its
-        # full height: tighten layout (nowrap), scale to fit width, then stretch
-        # the route table so its rows distribute the remaining vertical space
-        # (no dead whitespace at the bottom).
+        # Real LionWheel work order, fitted to ONE A4 page AND as legible as
+        # that page allows. Two earlier approaches both failed to actually
+        # grow the text:
+        #  1. Stretching the <table> CSS height to fill leftover vertical
+        #     space just inflates blank space BETWEEN rows (a stretched HTML
+        #     table distributes extra height to row gaps, not glyph size).
+        #  2. Solving the font size from row-height alone ignored that the
+        #     table is usually WIDTH-bound first: LionWheel always prints a
+        #     handful of columns (COD flags, a second notes column, apartment
+        #     number, ...) that are entirely empty on most routes, and nowrap
+        #     still reserves their full label width — the resulting overflow
+        #     forced a large page-level scale-DOWN that undid the font gain.
+        # Fix, two parts:
+        #  a. Hide columns that are empty on every row of THIS print (dead
+        #     width, not real data).
+        #  b. The remaining columns split into structured ones (time,
+        #     order-id, package count — genuinely short at any font) and
+        #     free-text ones (recipient/address/notes — the actual width
+        #     driver). Forcing nowrap on the free-text columns is what was
+        #     capping the whole table at an unreadably small font even at the
+        #     floor: no font size makes "אליטה אופק בע"מ (ג'אפן ג'אפן אופקים)"
+        #     fit on one line within budget. Letting ONLY those columns wrap
+        #     (capped to a fair width share) trades a couple of extra lines
+        #     on the odd long address for a font that's actually legible.
+        # Then binary-search the largest font-size that fits both the width
+        # and height budget directly — a closed-form estimate isn't reliable
+        # here because column width doesn't scale linearly with font size
+        # once mixed Hebrew/Latin/digit content and wrapping are involved.
         try:
             pg.add_style_tag(content=WORKORDER_FIT_CSS)
-            pg.wait_for_timeout(400)
-            usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
-            w = pg.evaluate("document.body.scrollWidth") or 800
-            scale = min(1.0, usable_w / max(w, 1))
-            m = pg.evaluate(
-                "(() => { const ts=[...document.querySelectorAll('table')]"
-                ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
-                " return { nonTable: document.body.scrollHeight - (t?t.offsetHeight:0),"
-                " tableH: t?t.offsetHeight:0 }; })()"
-            ) or {}
-            non_table = float(m.get("nonTable", 0))
-            table_h0 = float(m.get("tableH", 0))
-            target_table = int(max(table_h0, usable_h / scale - non_table))
-            pg.evaluate(
-                "(h)=>{const ts=[...document.querySelectorAll('table')]"
-                ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
-                " if(ts[0]) ts[0].style.height=h+'px';}",
-                target_table,
-            )
             pg.wait_for_timeout(300)
-            h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
-            scale = min(scale, usable_h / max(h, 1))
+            usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
+
+            pg.evaluate(_HIDE_EMPTY_COLS_JS)
+            pg.wait_for_timeout(150)
+
+            col_w = pg.evaluate(_COL_WIDTHS_JS) or {}
+            short_total = sum(w for w in col_w.values() if w <= _WRAP_THRESHOLD_PX)
+            wide = {i: w for i, w in col_w.items() if w > _WRAP_THRESHOLD_PX}
+            if wide:
+                budget = max(usable_w - short_total - 8.0, 60.0 * len(wide))
+                wide_total = sum(wide.values())
+                caps = {i: max(60.0, round(budget * w / wide_total, 1))
+                        for i, w in wide.items()}
+                pg.evaluate(_APPLY_WRAP_JS, caps)
+                pg.wait_for_timeout(150)
+
+            def _set_font(px):
+                pg.evaluate(
+                    "(px) => document.documentElement.style"
+                    ".setProperty('--wo-font', px + 'px')", px)
+                return pg.evaluate(_MEASURE_JS)
+
+            # Width is pre-budgeted by the wrap caps above and, once set,
+            # barely moves with font size (text absorbs extra size as more
+            # wrapped lines, not more column width) — so it typically settles
+            # a few percent over `usable_w` from rounding/border-collapse, not
+            # from the font search itself. Height is what should actually
+            # drive font choice here. Treat width as failing the search only
+            # if it's grossly over (wrap budgeting genuinely didn't work);
+            # the final page-level `scale` below absorbs the normal small
+            # overshoot instead of forcing the font down to the floor for a
+            # 3% width miss.
+            def _fits(px):
+                m = _set_font(px)
+                return m["h"] <= usable_h and m["w"] <= usable_w * 1.15
+
+            lo, hi = _FONT_MIN, _FONT_MAX
+            if _fits(hi):
+                font_px = hi
+            elif not _fits(lo):
+                font_px = lo          # smallest we allow still overflows; use it anyway
+            else:
+                for _ in range(7):    # ~7 steps resolves better than 0.1px on this range
+                    mid = round((lo + hi) / 2, 2)
+                    if _fits(mid):
+                        lo = mid
+                    else:
+                        hi = mid
+                font_px = lo
+            m = _set_font(font_px)
+
+            # Safety net only: the binary search already targets a fit: this
+            # just catches any residual sub-pixel overflow from the last step.
+            scale = min(1.0, usable_w / max(m["w"], 1), usable_h / max(m["h"], 1))
             scale = max(0.4, round(scale, 3))
         except Exception:
             scale = 0.62
