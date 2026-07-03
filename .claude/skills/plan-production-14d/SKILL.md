@@ -6,7 +6,8 @@ description: >-
   to review last week's production vs plan and lock the next two weeks. One batched flow: retrospective →
   tune incoming (firmed) week → plan week+2 → write drafts to production_plan → Tom fine-tunes in portal →
   firm → purchase-session drafts → quantity interview → chat approval moves POs to Doreen's placement
-  queue. Reuses live engines only; hands the buying interview to the procurement-planning skill.
+  queue. Objective: every tank goes where it saves the most contribution margin (₪), committed orders
+  first. Reuses live engines only; hands the buying interview to the procurement-planning skill.
 ---
 
 # plan-production-14d — Thursday 14-day production cockpit
@@ -14,6 +15,34 @@ description: >-
 Role: GT head of production planning. Engine = hypothesis; Tom = final word. Converse Hebrew; SQL/internal English. Live DB: Supabase MCP, project `rvadsozabmxkkrktwgnv`, schema `private_core`, site `GT-MAIN`.
 
 Created per Tom written request 2026-07-03 (satisfies STEP4-SKILLS-DECISION threshold: Tom approval in writing).
+
+## Guiding objective (§G — Tom-locked 2026-07-03)
+
+**! כל טנק הולך למקום שבו הוא מציל הכי הרבה שקלים של תרומה בשבועיים הקרובים.**
+
+1. **Committed > forecast.** Open LionWheel orders missed = certain loss + customer trust; forecast missed = probabilistic. Committed always wins, no math.
+2. **Between two fires → money decides, ⊥ "who is at zero".** Score = `margin_risk_ils_day` × shortage-days prevented in window. On-hand only shifts WHEN loss starts, not its rate. Zero-stock + tiny demand → waits; that is the honest business answer.
+3. **Constraints, not goals:** full 500 L tanks, ≤1/day, ⊥ overproduce past forecast+buffer (shelf life).
+
+Per-base score (verified live 2026-07-03; margin data complete ∀ 10 tea bases):
+
+```sql
+-- ₪ contribution at risk per day of shortage, per base
+with fg_daily as (
+  select item_id, sum(forecast_qty)/14.0 as units_per_day
+  from private_core.fn_forecast_daily_demand(now()::date, now()::date+13)
+  group by item_id)
+select i.base_bom_head_id,
+       round(sum(fd.units_per_day * coalesce(e.material_margin_ils,0)),0) as margin_risk_ils_day,
+       count(*) filter (where e.material_margin_ils is null or not e.cogs_complete) as fgs_no_margin_data
+from fg_daily fd
+join private_core.items i on i.item_id = fd.item_id
+join private_core.bom_head bh on bh.bom_head_id = i.base_bom_head_id and bh.production_track='tea_tank'
+left join private_core.v_fg_economics e on e.item_id = fd.item_id
+group by i.base_bom_head_id order by margin_risk_ils_day desc;
+```
+
+`fgs_no_margin_data` > 0 → flag, fall back to `avg_sale_price_ils`, tell Tom. Strategic overrides (key account / delisting risk) = not in data → ask Tom, ⊥ decide.
 
 ## Locked flow — 7 stages, in order
 
@@ -47,22 +76,24 @@ Actor: resolve from `app_users` (role admin/planner, active). ⊥ hardcode UUIDs
 
 | metric | source |
 |---|---|
+| **₪ margin lost** (headline) | Σ per stocked-out FG: shortage-days × units/day × `material_margin_ils` — same unit as the planning score |
 | plan vs actual per batch | `production_plan` rows last week: `planned_qty`, `status`, `completed_submission_id`; actual via `stock_ledger` `PRODUCTION_OUTPUT` |
 | stockouts that happened | FG `qty_delta` events driving `current_balances`<0 during week; list item+date |
 | tank utilization | actual output liters per batch (units × `items.base_fill_qty_per_unit`) vs `batch_size_l` 500 |
 | forecast accuracy | `fn_forecast_daily_demand(week_start, week_end)` vs actual `FG_OUT_PICK` per top FG |
 
-Conclusion format: "<base> אזל ב-<date> כי <cause>; בתכנון הבא: <fix>". ⊥ invented KPI/score.
+Headline sentence: "הפסדנו השבוע ~₪<X> תרומה בגלל <bases>". Conclusion per miss: "<base> אזל ב-<date> כי <cause>; בתכנון הבא: <fix>". ⊥ other invented KPI/score.
 
 ### Stage 2 — tune incoming week (already `planned`)
 
-Recompute per-base days-of-cover: on-hand liters (Σ `calculated_on_hand` × `base_fill_qty_per_unit`) + scheduled receipts vs `fn_tea_base_daily_demand_l(today, today+13)`. Flag: batch too late vs projected stockout day | base with no batch & <5d cover | batch no longer needed.
-Propose exact moves/adds/cancels → **explicit Tom approval → apply** (update `production_plan` planned rows / insert; single-scope, reversible). ⊥ apply unapproved.
+Per base compute BOTH: stockout date (on-hand liters + scheduled receipts vs `fn_tea_base_daily_demand_l(today, today+13)`) AND `margin_risk_ils_day` (§G query). Rank dilemmas by §G: committed orders first, then ₪/day × shortage-days-prevented. Flag: batch too late vs stockout day | slot conflict resolved against the money | batch no longer needed.
+Propose exact moves/adds/cancels **with the ₪ math shown** → explicit Tom approval → apply (update `production_plan` planned rows / insert; single-scope, reversible). ⊥ apply unapproved.
 
 ### Stage 3 — plan week+2 (drafts)
 
 Confirm once → `POST /api/planning/generate-drafts` semantics = `fn_plan_tea_production(actor)` (56d EDD, 500L tank, 1/day Sun–Thu, IL holidays) + `fn_plan_matcha_repack(actor)`. Deletes only its own prior `TEAEDD:%` drafts; `planned`/`in_production` respected as supply.
-Present W2 board: day × base × 500L + pack split. Saturation NOTICE (>5 tanks/wk needed) → surface starved bases, ask (raise `planning.production.max_batches_per_day` for that week / add workday / accept) — ⊥ change policy silently.
+Engine sequences by EDD (lowest days-of-cover) — ⊥ margin-aware. ∴ after drafts land, run the **§G re-rank pass**: score each drafted batch + each starved base by `margin_risk_ils_day`; where scarce slots collide, propose swaps so tanks follow the money (draft edits, cheap). Present W2 board: day × base × 500L + pack split + ₪/day per base.
+Saturation NOTICE (>5 tanks/wk needed) → surface starved bases **ranked by ₪/day**, ask (raise `planning.production.max_batches_per_day` for that week / add workday / accept the cheapest loss) — ⊥ change policy silently.
 Sanity vs capacity: Σ tanks needed ≤ 10 per 2 weeks.
 
 ### Stage 4 — ⏸ Tom's portal pass
