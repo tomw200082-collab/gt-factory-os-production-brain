@@ -6,7 +6,8 @@ description: >-
   whether stock/plan/procurement are OK after a new large order. One read-mostly loop: integrity gate →
   FG sell-coverage vs committed+forecast → RM/PKG coverage vs firmed plan → committed-first plan
   recheck → draft re-plans + purchase-session drafts (never firm/place) → forecast findings log →
-  short Hebrew chat report + push. Weekly (Thursday) findings feed plan-production-14d retro; monthly
+  HTML email report (Hebrew, branded, action buttons) + short chat/push. Weekly (Thursday) findings
+  feed plan-production-14d retro; monthly
   a two-month forecast proposal (growth, seasonality, product trends). Reuses live engines only.
 ---
 
@@ -30,7 +31,7 @@ Created per Tom written request 2026-07-03 (grill session; satisfies STEP4-SKILL
 
 - C1: **draft-writes only.** May write: `production_plan` drafts, purchase-session drafts, forecast proposals, findings log. ⊥ firm, ⊥ `fn_place_purchase_order`, ⊥ ledger/projection writes, ⊥ external systems (LionWheel/Shopify/GI) — read-only mirrors.
 - C2: auto-run 06:30 IL daily (scheduled trigger, fresh session) + manual fire anytime.
-- C3: output = short Hebrew chat report + push notification; drafts wait in portal at their native surfaces.
+- C3: output = **HTML email** to Tom (Hebrew, `references/email_template.html`, branded, deep-link buttons to the exact portal surface) + short chat/push as backup notice; drafts wait in portal at their native surfaces. (Tom-amended 2026-07-04.)
 - C4: re-plan rule = committed-first, the locked plan-production-14d objective (`margin_risk_ils_day`, committed always wins, no math). ⊥ new thresholds.
 - C5: forecast cadence — daily: log findings only; weekly (Thursday): consolidated update proposals into plan-production-14d retro; monthly: two-month forecast proposal.
 
@@ -70,7 +71,10 @@ Append to `data/forecast-findings-log.md` (this repo, commit): date | item | for
 
 ### Stage 5 — report
 
-Short Hebrew chat message + push: ✓/⚠️/🔴 per G1-G3, what drafts were written + where in portal, top 3 actions for Tom. ⊥ wall of numbers — decisions, not data.
+Fill `references/email_template.html` with this run's live numbers (V4 — every figure from stages 0-3, never remembered/stale): verdict headline, 3 gauges (G1/G2/G3 color+fill from worst status found), one exception row per finding (color dot + item + one-line detail + button deep-linking to the exact portal surface — `https://gt-factory-os-portal.vercel.app/...`), 3 numbered action rows (real priority order, each with its own link). No image assets, no external JS — inline-styled table HTML only (Outlook-safe).
+
+Delivery: **`create_draft`** (Gmail MCP) to Tom with the filled HTML as the message body, subject `GT Factory OS · בדיקת בוקר · {{DATE}}`. ⚠️ Known limitation: this Gmail connector only drafts, it cannot send — the draft lands in Tom's inbox and he taps Send (one tap, not zero). If true zero-touch send is wanted later, revisit via a Make.com email-send scenario or a transactional-email API; not built now (scope not requested).
+Also send the short Hebrew chat message + push (unchanged from before) as an in-session backup notice, since the email requires Tom's one tap and push is what actually wakes him.
 
 ## Weekly — Thursday handoff
 

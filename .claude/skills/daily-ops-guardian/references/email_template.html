@@ -1,0 +1,240 @@
+<!--
+  daily-ops-guardian — daily report email template
+  Fill {{TOKEN}} placeholders per run. Repeatable blocks are marked
+  <!-- REPEAT:name --> ... <!-- /REPEAT:name --> — duplicate the inner
+  block once per row, then strip the markers. Keep everything table-based
+  and inline-styled: this renders in Outlook desktop (Word engine), which
+  ignores <style> blocks and flexbox/grid entirely.
+
+  Known degradations (acceptable, documented — not bugs):
+  - Buttons get square corners in Outlook desktop (no VML fallback here;
+    add one only if Tom reports it looks broken on his machine).
+  - Gauge strip stacks to 1 column on narrow clients without media-query
+    support (Outlook desktop) — still legible, just taller.
+-->
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>GT Factory OS — בדיקת בוקר</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!--[if mso]>
+<style type="text/css">
+  table, td { font-family: Tahoma, Arial, sans-serif !important; }
+</style>
+<![endif]-->
+<style>
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+  img { border: 0; line-height: 100%; outline: none; text-decoration: none; }
+  body { margin: 0; padding: 0; width: 100% !important; background: #EDEAE4; }
+  .mono { font-family: 'Roboto Mono', 'Consolas', 'Courier New', monospace; }
+  .ltr { direction: ltr; unicode-bidi: embed; display: inline-block; }
+  @media only screen and (max-width: 600px) {
+    .container { width: 100% !important; }
+    .gauge-cell { display: block !important; width: 100% !important; padding: 0 0 10px 0 !important; }
+    .px-mobile { padding-left: 18px !important; padding-right: 18px !important; }
+  }
+</style>
+</head>
+<body style="margin:0; padding:0; background:#EDEAE4;">
+  <!-- preheader (inbox preview line, hidden in body) -->
+  <div style="display:none; max-height:0; overflow:hidden; opacity:0;">
+    {{PREHEADER}}
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#EDEAE4;">
+    <tr>
+      <td align="center" style="padding: 28px 12px;">
+        <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background:#FFFFFF; border-radius:16px; overflow:hidden; box-shadow: 0 1px 3px rgba(27,26,24,0.08);">
+
+          <!-- header band -->
+          <tr>
+            <td style="background:#1B1A18; padding: 22px 28px;" class="px-mobile">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="right" style="font-family:'Rubik',Tahoma,Arial,sans-serif; color:#B5652D; font-size:13px; font-weight:700; letter-spacing:0.08em;">
+                    GT FACTORY OS · שומר יומי
+                  </td>
+                  <td align="left" style="font-family:'Roboto Mono','Consolas',monospace; color:#9A968F; font-size:12px;">
+                    <span class="ltr">{{DATE}}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- verdict -->
+          <tr>
+            <td style="padding: 32px 28px 8px 28px;" class="px-mobile">
+              <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; color:#6B6660; font-size:13px; font-weight:500; letter-spacing:0.02em;">
+                בדיקת בוקר · {{DATE}}
+              </div>
+              <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; color:#1B1A18; font-size:26px; font-weight:900; line-height:1.3; padding-top:6px;">
+                {{VERDICT_HEADLINE}}
+              </div>
+            </td>
+          </tr>
+
+          <!-- gauge strip (signature element) -->
+          <tr>
+            <td style="padding: 18px 28px 8px 28px;" class="px-mobile">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <!-- G1: FG coverage -->
+                  <td class="gauge-cell" width="33%" style="padding:0 5px;" valign="top">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F7F5F1; border-radius:12px;">
+                      <tr><td style="padding:14px 16px;">
+                        <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:12px; color:#6B6660; font-weight:500;">מלאי למכירה</div>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:8px;">
+                          <tr>
+                            <td style="background:#E3DFD7; border-radius:6px; height:8px;" width="100%">
+                              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="{{G1_FILL_PCT}}%"><tr><td style="background:{{G1_COLOR}}; height:8px; border-radius:6px; font-size:1px; line-height:8px;">&nbsp;</td></tr></table>
+                            </td>
+                          </tr>
+                        </table>
+                        <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:15px; font-weight:700; color:#1B1A18; padding-top:8px;">{{G1_STATUS_EMOJI}} {{G1_LABEL}}</div>
+                      </td></tr>
+                    </table>
+                  </td>
+                  <!-- G2: RM/PKG coverage -->
+                  <td class="gauge-cell" width="33%" style="padding:0 5px;" valign="top">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F7F5F1; border-radius:12px;">
+                      <tr><td style="padding:14px 16px;">
+                        <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:12px; color:#6B6660; font-weight:500;">חומ״ג ואריזה</div>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:8px;">
+                          <tr>
+                            <td style="background:#E3DFD7; border-radius:6px; height:8px;" width="100%">
+                              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="{{G2_FILL_PCT}}%"><tr><td style="background:{{G2_COLOR}}; height:8px; border-radius:6px; font-size:1px; line-height:8px;">&nbsp;</td></tr></table>
+                            </td>
+                          </tr>
+                        </table>
+                        <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:15px; font-weight:700; color:#1B1A18; padding-top:8px;">{{G2_STATUS_EMOJI}} {{G2_LABEL}}</div>
+                      </td></tr>
+                    </table>
+                  </td>
+                  <!-- G3: plan matches reality -->
+                  <td class="gauge-cell" width="33%" style="padding:0 5px;" valign="top">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F7F5F1; border-radius:12px;">
+                      <tr><td style="padding:14px 16px;">
+                        <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:12px; color:#6B6660; font-weight:500;">תכנון מול שטח</div>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:8px;">
+                          <tr>
+                            <td style="background:#E3DFD7; border-radius:6px; height:8px;" width="100%">
+                              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="{{G3_FILL_PCT}}%"><tr><td style="background:{{G3_COLOR}}; height:8px; border-radius:6px; font-size:1px; line-height:8px;">&nbsp;</td></tr></table>
+                            </td>
+                          </tr>
+                        </table>
+                        <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:15px; font-weight:700; color:#1B1A18; padding-top:8px;">{{G3_STATUS_EMOJI}} {{G3_LABEL}}</div>
+                      </td></tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- exceptions -->
+          <tr>
+            <td style="padding: 26px 28px 4px 28px;" class="px-mobile">
+              <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:12px; font-weight:700; color:#6B6660; letter-spacing:0.08em; border-bottom:1px solid #EDEAE4; padding-bottom:8px;">
+                חריגות היום
+              </div>
+            </td>
+          </tr>
+
+          <!-- REPEAT:exception_row -->
+          <tr>
+            <td style="padding: 14px 28px;" class="px-mobile">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td valign="top" style="padding-left:12px; width:28px;">
+                    <div style="width:10px; height:10px; border-radius:50%; background:{{EXC_COLOR}}; margin-top:6px;">&nbsp;</div>
+                  </td>
+                  <td valign="top">
+                    <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:14px; font-weight:700; color:#1B1A18;">
+                      <span class="ltr mono">{{EXC_ITEM_ID}}</span> — {{EXC_TITLE}}
+                    </div>
+                    <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:13px; color:#6B6660; padding-top:2px;">
+                      {{EXC_DETAIL}}
+                    </div>
+                    <div style="padding-top:10px;">
+                      <!-- bulletproof-enough button: table+td with bg color, degrades to square corners in Outlook desktop -->
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td style="background:#1B1A18; border-radius:8px;">
+                            <a href="{{EXC_LINK}}" target="_blank" style="display:inline-block; padding:8px 16px; font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:13px; font-weight:700; color:#FFFFFF; text-decoration:none;">
+                              {{EXC_CTA_LABEL}} ←
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- /REPEAT:exception_row -->
+
+          <!-- top actions -->
+          <tr>
+            <td style="padding: 22px 28px 4px 28px;" class="px-mobile">
+              <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:12px; font-weight:700; color:#6B6660; letter-spacing:0.08em; border-bottom:1px solid #EDEAE4; padding-bottom:8px;">
+                3 פעולות להיום
+              </div>
+            </td>
+          </tr>
+
+          <!-- REPEAT:action_row -->
+          <tr>
+            <td style="padding: 12px 28px;" class="px-mobile">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td valign="top" style="width:30px;">
+                    <div class="mono" style="width:22px; height:22px; border-radius:50%; background:#B5652D; color:#FFFFFF; font-size:12px; font-weight:700; text-align:center; line-height:22px;">
+                      {{ACTION_NUM}}
+                    </div>
+                  </td>
+                  <td valign="top">
+                    <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:14px; color:#1B1A18; font-weight:500; padding-top:1px;">
+                      {{ACTION_TEXT}}
+                    </div>
+                  </td>
+                  <td valign="middle" align="left" style="width:110px;">
+                    <a href="{{ACTION_LINK}}" target="_blank" style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:13px; font-weight:700; color:#B5652D; text-decoration:none;">
+                      {{ACTION_CTA_LABEL}} ←
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- /REPEAT:action_row -->
+
+          <!-- footer band -->
+          <tr>
+            <td style="background:#1B1A18; padding: 20px 28px; margin-top: 20px;" class="px-mobile">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="right" style="font-family:'Roboto Mono','Consolas',monospace; font-size:11px; color:#9A968F;">
+                    נוצר מ-SQL חי · <span class="ltr">{{RUN_TIME}}</span> · rebuild_verifier=<span class="ltr">{{VERIFIER_DRIFT}}</span>
+                  </td>
+                  <td align="left">
+                    <a href="{{DASHBOARD_LINK}}" target="_blank" style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:12px; font-weight:700; color:#B5652D; text-decoration:none;">
+                      לוח הבקרה המלא ←
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
