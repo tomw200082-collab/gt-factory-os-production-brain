@@ -6,7 +6,8 @@ description: >-
   whether stock/plan/procurement are OK after a new large order. One read-mostly loop: integrity gate →
   FG sell-coverage vs committed+forecast → RM/PKG coverage vs firmed plan → committed-first plan
   recheck → draft re-plans + purchase-session drafts (never firm/place) → forecast findings log →
-  HTML email report (Hebrew, branded, action buttons) + short chat/push. Weekly (Thursday) findings
+  HTML email report (Hebrew, branded, action buttons), sent for real via a Make.com webhook →
+  Gmail send (no draft tap needed), + short chat/push backup. Weekly (Thursday) findings
   feed plan-production-14d retro; monthly
   a two-month forecast proposal (growth, seasonality, product trends). Reuses live engines only.
 ---
@@ -73,8 +74,8 @@ Append to `data/forecast-findings-log.md` (this repo, commit): date | item | for
 
 Fill `references/email_template.html` with this run's live numbers (V4 — every figure from stages 0-3, never remembered/stale): verdict headline, 3 gauges (G1/G2/G3 color+fill from worst status found), one exception row per finding (color dot + item + one-line detail + button deep-linking to the exact portal surface — `https://gt-factory-os-portal.vercel.app/...`), 3 numbered action rows (real priority order, each with its own link). No image assets, no external JS — inline-styled table HTML only (Outlook-safe).
 
-Delivery: **`create_draft`** (Gmail MCP) to Tom with the filled HTML as the message body, subject `GT Factory OS · בדיקת בוקר · {{DATE}}`. ⚠️ Known limitation: this Gmail connector only drafts, it cannot send — the draft lands in Tom's inbox and he taps Send (one tap, not zero). If true zero-touch send is wanted later, revisit via a Make.com email-send scenario or a transactional-email API; not built now (scope not requested).
-Also send the short Hebrew chat message + push (unchanged from before) as an in-session backup notice, since the email requires Tom's one tap and push is what actually wakes him.
+Delivery: **real send**, no tap required (Tom-verified 2026-07-04). `Bash: curl -sS -X POST "https://hook.eu1.make.com/8yie1tl89bxsq8qqp6o47qydfr8cguji" -H "Content-Type: application/json" -d '{"subject":"GT Factory OS · בדיקת בוקר · <date>","html":"<filled template>"}'` — this triggers Make scenario `GT Guardian — Daily Email` (id 6439326, active), which calls Gmail `sendAnEmail` (app `google-email` v4, connection `new leads` id 6308857, scope `gmail.send`) and delivers straight to tom@gteveryday.com. Confirm HTTP 200 from curl; if non-200 or curl error, do not skip — say so explicitly in the summary and fall back to `mcp__Gmail__create_draft` (Gmail MCP, draft-only, one-tap) so Tom still gets something.
+Also send the short Hebrew chat message + push (unchanged from before) as an in-session backup notice.
 
 ## Weekly — Thursday handoff
 
