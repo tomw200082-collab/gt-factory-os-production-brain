@@ -76,6 +76,20 @@ Append to `data/forecast-findings-log.md` (this repo, commit): date | item | for
 
 Fill `references/email_template.html` with this run's live numbers (V4 — every figure from stages 0-3, never remembered/stale): verdict headline, 3 gauges (G1/G2/G3 color+fill from worst status found), one exception row per finding (color dot + item + one-line detail + button deep-linking to the exact portal surface — `https://gt-factory-os-portal.vercel.app/...`), 3 numbered action rows (real priority order, each with its own link). No image assets, no external JS — inline-styled table HTML only (Outlook-safe).
 
+**Fixed severity palette (2026-07 v2 design) — always look up, never invent a color:**
+
+| Severity | `*_COLOR` | `*_WASH` | `VERDICT_BADGE_HE` | `VERDICT_BADGE_EN` |
+|---|---|---|---|---|
+| 🔴 urgent | `#DC2626` | `#FEEBEA` | דחוף | URGENT |
+| 🟡 warning | `#F59E0B` | `#FEF2DA` | לעקוב | WATCH |
+| 🟢 good | `#16A34A` | `#E7F8ED` | תקין | CLEAR |
+
+Apply this table to every `{{G1_COLOR}}/{{G1_WASH}}`, `{{G2_COLOR}}/{{G2_WASH}}`, `{{G3_COLOR}}/{{G3_WASH}}`, and per-row `{{EXC_COLOR}}/{{EXC_WASH}}` pair. `{{VERDICT_COLOR}}` + `{{VERDICT_BADGE_HE}}` + `{{VERDICT_BADGE_EN}}` (the hero badge) = the worst severity found across G1/G2/G3 that run.
+
+**Bidi hygiene:** when writing free-text tokens (`{{VERDICT_HEADLINE}}`, `{{EXC_TITLE}}`, `{{EXC_DETAIL}}`, `{{ACTION_TEXT}}`), wrap any bare Latin word (e.g. product/batch terms), standalone date, or number bridged directly to Hebrew text in `<span class="ltr">...</span>` — matching the convention already used for `{{DATE}}`, `{{RUN_TIME}}`, and `{{EXC_ITEM_ID}}` in the template. A prior run shipped bare English mid-sentence ("batch", "bulk", a bare date) and it renders wrong in Outlook's RTL bidi handling — don't repeat that.
+
+**`{{VERIFIER_DRIFT}}`** stays a live number in the footer ("בדיקת תקינות: X") — never replace it with static "all clear" text, since a non-zero value here is exactly the Stage 0 integrity signal Tom needs to see even when the rest of the report reads fine.
+
 Delivery: **real send**, no tap required (Tom-verified 2026-07-04). `Bash: curl -sS -X POST "https://hook.eu1.make.com/8yie1tl89bxsq8qqp6o47qydfr8cguji" -H "Content-Type: application/json" -d '{"subject":"GT Factory OS · בדיקת בוקר · <date>","html":"<filled template>"}'` — this triggers Make scenario `GT Guardian — Daily Email` (id 6439326, active), which calls Gmail `sendAnEmail` (app `google-email` v4, connection `new leads` id 6308857, scope `gmail.send`) and delivers straight to tom@gteveryday.com. Confirm HTTP 200 from curl; if non-200 or curl error, do not skip — say so explicitly in the summary and fall back to `mcp__Gmail__create_draft` (Gmail MCP, draft-only, one-tap) so Tom still gets something.
 Also send the short Hebrew chat message + push (unchanged from before) as an in-session backup notice.
 
