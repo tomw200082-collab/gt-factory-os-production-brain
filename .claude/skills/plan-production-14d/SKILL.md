@@ -23,6 +23,8 @@ Created per Tom written request 2026-07-03 (satisfies STEP4-SKILLS-DECISION thre
 1. **Committed > forecast.** Open LionWheel orders missed = certain loss + customer trust; forecast missed = probabilistic. Committed always wins, no math.
 2. **Between two fires → money decides, ⊥ "who is at zero".** Score = `margin_risk_ils_day` × shortage-days prevented in window. On-hand only shifts WHEN loss starts, not its rate. Zero-stock + tiny demand → waits; that is the honest business answer.
 3. **Constraints, not goals:** full 500 L tanks, ≤1/day, ⊥ overproduce past forecast+buffer (shelf life).
+4. **Bottling coexistence (Tom-locked 2026-07-04):** tank MAY run alongside item-level bottling, EXCEPT day with Muza-200ml bottling > 200 bottles (engine-enforced, migration 0278, policy key `planning.production.muza_200ml_tank_block_threshold`). Muza 200ml: **one variety per day, ≤200 bottles when tank runs**, most-urgent-by-committed-orders first. ⊥ stack 3-4 varieties on one day.
+5. **Dateless committed = staged backlog (Tom 2026-07-04):** open LionWheel orders w/o `pickup_at` invisible to engine demand (projection = GREATEST(dated-committed, forecast)) — by design; Tom supplies in tranches (e.g. DET-STR 1,250: 400 supplied, next tranche following week). ! ∀ Thursday → review dateless backlog, schedule next tranche explicitly. ⊥ panic-produce full backlog at once.
 
 Per-base score (verified live 2026-07-03; margin data complete ∀ 10 tea bases):
 

@@ -58,6 +58,8 @@ select private_core.rebuild_verifier();  -- ! = 0, else report 🔴 + HALT draft
 
 ∀ sellable FG: `current_balances` + incoming firmed production − committed open orders (LionWheel mirror) − forecast demand over horizon (14d). Output: shortage list ranked by `margin_risk_ils_day` (reuse plan-production-14d §G SQL). Committed-shortage ≠ forecast-shortage — separate columns, committed first.
 
+**+ dateless-backlog line (Tom 2026-07-04):** open orders w/o `pickup_at` = staged backlog, supplied in tranches, invisible to engine demand by design. Report per item: backlog units, orders, oldest date. ⊥ treat as immediate shortage — surface so next tranche isn't forgotten (Thursday schedules it).
+
 ### Stage 2 — RM/PKG coverage
 
 Explode firmed `production_plan` (existing BOM explosion — `fn_explode_bom_to_components_v2` path) vs `current_balances` + open PO lines (expected receipts). Output: components short for planned production, with first-blocked production date. Reuse procurement-planning `sql_library.md` queries; ⊥ new SQL where a library query exists.
