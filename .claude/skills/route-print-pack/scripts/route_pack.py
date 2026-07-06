@@ -147,7 +147,8 @@ def gi_fetch_invoice(stop, out_path):
         blob = json.dumps(doc, ensure_ascii=False)
         if wp and wp in blob:                       # order id stamped on the doc
             did = doc.get("id")
-            meta = _get_json(GI_BASE.rstrip("/") + f"/documents/{did}")
+            meta = json.loads(_get(GI_BASE.rstrip("/") + f"/documents/{did}", hdr)
+                              .decode("utf-8"))
             pdf = (((meta.get("url") or {}).get("origin"))
                    or ((meta.get("files") or {}).get("origin")))
             if pdf:
@@ -204,12 +205,42 @@ def render_pages(jobs):
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", "/opt/pw-browsers")
     from playwright.sync_api import sync_playwright
     cookies = lw_login_cookies()
+    # Egress-restricted sandboxes (Claude Code on the web) route outbound HTTPS
+    # through a re-terminating proxy that headless Chromium's TLS stack cannot
+    # complete (ERR_CONNECTION_RESET) — but urllib CAN (same path the API/login
+    # calls already use). So Chromium makes ZERO direct network calls: every
+    # request is intercepted and fulfilled from urllib. Same-origin LionWheel
+    # assets (HTML, CSS, fonts, logo) are fetched with the session cookies;
+    # third-party beacons (rollbar, analytics) are aborted — irrelevant to print.
+    # This yields the REAL LionWheel work order + waybills, not a fallback.
+    ck = "; ".join(f"{c['name']}={c['value']}" for c in cookies)
+
+    def _urlfetch(u):
+        req = urllib.request.Request(u, headers={"User-Agent": UA, "Cookie": ck})
+        r = urllib.request.urlopen(req, timeout=60)
+        return r.read(), r.headers.get("Content-Type", "application/octet-stream")
+
+    def _route(route):
+        u = route.request.url
+        try:
+            if "lionwheel.com" in urllib.parse.urlparse(u).netloc:
+                body, ctype = _urlfetch(u)
+                route.fulfill(status=200, body=body, headers={"Content-Type": ctype})
+            else:
+                route.abort()
+        except Exception:
+            try:
+                route.abort()
+            except Exception:
+                pass
+
     with sync_playwright() as p:
         b = p.chromium.launch(args=["--no-sandbox", "--disable-dev-shm-usage"])
         ctx = b.new_context(ignore_https_errors=True)
         ctx.add_cookies(cookies)
         for url, out, fit_one in jobs:
             pg = ctx.new_page()
+            pg.route("**/*", _route)
             try:
                 _render_one(pg, url, out, fit_one)
             except Exception as e:
