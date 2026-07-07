@@ -20,8 +20,14 @@ the **driver name** and the **day**; everything else is default and automatic.
    fitted to a single A4 portrait page.
 2. **Then, every stop in driving order** (`visits.daily_order`):
    - stop **with** a Green Invoice → the **real GI invoice**, annotated, **×2 copies**.
-   - stop **without** an invoice (pickup / exchange) → the **official LionWheel
-     waybill** (`print_waybill`), **×2 copies**.
+   - **Invoices are the rule — a waybill is a genuine last resort.** Every stop
+     that has *any* Green Invoice document gets that invoice, even when the order
+     is days/weeks old: the GI match scans the **full document history** (paginated,
+     newest-first), not just the most recent page, and matches the exact `#GT…`
+     order id stamped in the document `remarks`. A stop only falls back to the
+     **official LionWheel waybill** (`print_waybill`, ×2) when the order genuinely
+     has **no** Green Invoice document (true pickup / exchange). Never let a stock
+     order that *does* have an invoice degrade to a waybill.
 
 ## Page 1 — the REAL LionWheel work order (Tom, 2026-06-21)
 Page 1 is LionWheel's own "סידור עבודה" print (the **הדפסת סידור עבודה** button =
@@ -148,4 +154,7 @@ terminal LionWheel status.)
   app chrome + only the on-screen rows, do not print it directly);
   waybill `GET /tasks/{id}/print_waybill`.
 - Green Invoice: token `POST /account/token {id,secret}`; fallback document match
-  `POST /documents/search` then `GET /documents/{id}` for the PDF link.
+  `POST /documents/search` (paginate newest-first through the **full** history —
+  ~12k+ docs — until the `#GT…` order id in `remarks` matches; do NOT stop at the
+  first page or the order goes to a waybill by mistake) then `GET /documents/{id}`
+  for the PDF link.
