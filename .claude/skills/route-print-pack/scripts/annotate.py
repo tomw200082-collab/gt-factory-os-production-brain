@@ -152,6 +152,19 @@ def mark_kind(ordered, picked):
     return "P", f"{int(picked)}/{int(ordered)}"
 
 
+def _drop_trailing_blank_pages(doc):
+    """Green Invoice sometimes spills a last page that carries nothing essential —
+    empty, or just a repeated header + a "חתימה:" signature label. Those waste two
+    printed sheets per stop (×2 copies), so drop them. A trailing page is KEPT only
+    when it carries real content: a ₪ amount, VAT ('מע"מ'), or a GT- SKU (line-item
+    or totals spilled over). The first page is never dropped."""
+    while doc.page_count > 1:
+        text = doc[doc.page_count - 1].get_text()
+        if ("₪" in text) or ('מע"מ' in text) or ("GT-" in text):
+            break
+        doc.delete_page(doc.page_count - 1)
+
+
 def annotate(task, src_pdf, out_pdf):
     """Stamp marks onto a real GI invoice PDF. Lines matched by product name."""
     doc = fitz.open(src_pdf)
@@ -177,5 +190,6 @@ def annotate(task, src_pdf, out_pdf):
         _order_id_chip(doc[0], last3)
     if task.get("packages_quantity"):
         _package_count(doc, task["packages_quantity"])
+    _drop_trailing_blank_pages(doc)   # save paper: no signature-only / empty tail pages
     doc.save(out_pdf)
     doc.close()
