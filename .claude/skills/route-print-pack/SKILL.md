@@ -28,6 +28,13 @@ the **driver name** and the **day**; everything else is default and automatic.
      **official LionWheel waybill** (`print_waybill`, ×2) when the order genuinely
      has **no** Green Invoice document (true pickup / exchange). Never let a stock
      order that *does* have an invoice degrade to a waybill.
+   - **Save paper — trim blank tail pages.** Green Invoice sometimes spills a last
+     page that carries nothing essential (empty, or just a repeated header + a
+     `חתימה:` signature label). `annotate.py` drops any such trailing page before
+     the invoice enters the pack — a trailing page is **kept only** when it carries
+     real content (a `₪` amount, `מע"מ`, or a `GT-` SKU: line items or totals that
+     spilled over); the first page is never dropped. Saves two printed sheets per
+     affected stop (×2 copies).
 
 ## Page 1 — the REAL LionWheel work order (Tom, 2026-06-21)
 Page 1 is LionWheel's own "סידור עבודה" print (the **הדפסת סידור עבודה** button =
