@@ -123,38 +123,64 @@ def fetch_route(driver, date):
 # --------------------------------------------------------------------------- #
 # Green Invoice — primary = link on the task; fallback = API match on the order
 # --------------------------------------------------------------------------- #
+_GI_TOK = None
+_GI_PAGE_CACHE = {}
+
+
 def gi_token():
-    return _post_json(GI_BASE.rstrip("/") + "/account/token",
-                      {"id": GI_ID, "secret": GI_SECRET}).get("token")
+    global _GI_TOK
+    if _GI_TOK is None:
+        _GI_TOK = _post_json(GI_BASE.rstrip("/") + "/account/token",
+                             {"id": GI_ID, "secret": GI_SECRET}).get("token")
+    return _GI_TOK
 
 
-def gi_fetch_invoice(stop, out_path):
-    """Download the real GI invoice for a stop. Returns True on success."""
+def _gi_page(page, hdr, page_size=100):
+    """One page of the most-recent GI documents (newest first), cached module-wide
+    so a whole route shares a single paginated scan instead of re-fetching."""
+    if page not in _GI_PAGE_CACHE:
+        res = _post_json(GI_BASE.rstrip("/") + "/documents/search",
+                         {"pageSize": page_size, "page": page, "sort": "documentDate"}, hdr)
+        _GI_PAGE_CACHE[page] = res.get("items", [])
+    return _GI_PAGE_CACHE[page]
+
+
+def gi_fetch_invoice(stop, out_path, max_pages=30):
+    """Download the real GI invoice for a stop. Returns True on success.
+
+    Primary: the direct greeninvoice link stamped on the LionWheel task.
+    Fallback: match the order id against the GI document list. A route can carry
+    orders days-to-weeks old, and Green Invoice holds >12k documents, so the
+    newest page alone misses them (the old 50-row window silently dropped older
+    orders to waybills). The order id is stamped in each document's `remarks`
+    ("מספר הזמנה באתר: #GT…"); scan deeper — pages cached — and match the exact
+    `#GT…` token so GT13483 never collides with GT134830."""
     link = stop.get("gi")
     if link:
         with open(out_path, "wb") as f:
             f.write(_get(link))
         return True
-    # fallback: locate the document in Green Invoice that matches the order 100%
     wp = (stop.get("wp") or "").lstrip("#")
     if not wp:
         return False
-    tok = gi_token()
-    hdr = {"Authorization": f"Bearer {tok}"}
-    res = _post_json(GI_BASE.rstrip("/") + "/documents/search",
-                     {"pageSize": 50, "page": 1, "sort": "documentDate"}, hdr)
-    for doc in res.get("items", []):
-        blob = json.dumps(doc, ensure_ascii=False)
-        if wp and wp in blob:                       # order id stamped on the doc
-            did = doc.get("id")
-            meta = json.loads(_get(GI_BASE.rstrip("/") + f"/documents/{did}", hdr)
-                              .decode("utf-8"))
-            pdf = (((meta.get("url") or {}).get("origin"))
-                   or ((meta.get("files") or {}).get("origin")))
-            if pdf:
-                with open(out_path, "wb") as f:
-                    f.write(_get(pdf))
-                return True
+    base = GI_BASE.rstrip("/")
+    hdr = {"Authorization": f"Bearer {gi_token()}"}
+    needle = "#" + wp
+    for page in range(1, max_pages + 1):
+        items = _gi_page(page, hdr)
+        if not items:
+            break
+        for doc in items:
+            if needle in json.dumps(doc, ensure_ascii=False):   # order id on the doc
+                did = doc.get("id")
+                meta = json.loads(_get(base + f"/documents/{did}", hdr).decode("utf-8"))
+                pdf = (((meta.get("url") or {}).get("origin"))
+                       or ((meta.get("files") or {}).get("origin")))
+                if pdf:
+                    with open(out_path, "wb") as f:
+                        f.write(_get(pdf))
+                    return True
+                return False
     return False
 
 
