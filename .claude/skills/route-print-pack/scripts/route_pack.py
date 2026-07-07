@@ -123,37 +123,64 @@ def fetch_route(driver, date):
 # --------------------------------------------------------------------------- #
 # Green Invoice — primary = link on the task; fallback = API match on the order
 # --------------------------------------------------------------------------- #
+_GI_TOK = None
+_GI_PAGE_CACHE = {}
+
+
 def gi_token():
-    return _post_json(GI_BASE.rstrip("/") + "/account/token",
-                      {"id": GI_ID, "secret": GI_SECRET}).get("token")
+    global _GI_TOK
+    if _GI_TOK is None:
+        _GI_TOK = _post_json(GI_BASE.rstrip("/") + "/account/token",
+                             {"id": GI_ID, "secret": GI_SECRET}).get("token")
+    return _GI_TOK
 
 
-def gi_fetch_invoice(stop, out_path):
-    """Download the real GI invoice for a stop. Returns True on success."""
+def _gi_page(page, hdr, page_size=100):
+    """One page of the most-recent GI documents (newest first), cached module-wide
+    so a whole route shares a single paginated scan instead of re-fetching."""
+    if page not in _GI_PAGE_CACHE:
+        res = _post_json(GI_BASE.rstrip("/") + "/documents/search",
+                         {"pageSize": page_size, "page": page, "sort": "documentDate"}, hdr)
+        _GI_PAGE_CACHE[page] = res.get("items", [])
+    return _GI_PAGE_CACHE[page]
+
+
+def gi_fetch_invoice(stop, out_path, max_pages=30):
+    """Download the real GI invoice for a stop. Returns True on success.
+
+    Primary: the direct greeninvoice link stamped on the LionWheel task.
+    Fallback: match the order id against the GI document list. A route can carry
+    orders days-to-weeks old, and Green Invoice holds >12k documents, so the
+    newest page alone misses them (the old 50-row window silently dropped older
+    orders to waybills). The order id is stamped in each document's `remarks`
+    ("מספר הזמנה באתר: #GT…"); scan deeper — pages cached — and match the exact
+    `#GT…` token so GT13483 never collides with GT134830."""
     link = stop.get("gi")
     if link:
         with open(out_path, "wb") as f:
             f.write(_get(link))
         return True
-    # fallback: locate the document in Green Invoice that matches the order 100%
     wp = (stop.get("wp") or "").lstrip("#")
     if not wp:
         return False
-    tok = gi_token()
-    hdr = {"Authorization": f"Bearer {tok}"}
-    res = _post_json(GI_BASE.rstrip("/") + "/documents/search",
-                     {"pageSize": 50, "page": 1, "sort": "documentDate"}, hdr)
-    for doc in res.get("items", []):
-        blob = json.dumps(doc, ensure_ascii=False)
-        if wp and wp in blob:                       # order id stamped on the doc
-            did = doc.get("id")
-            meta = _get_json(GI_BASE.rstrip("/") + f"/documents/{did}")
-            pdf = (((meta.get("url") or {}).get("origin"))
-                   or ((meta.get("files") or {}).get("origin")))
-            if pdf:
-                with open(out_path, "wb") as f:
-                    f.write(_get(pdf))
-                return True
+    base = GI_BASE.rstrip("/")
+    hdr = {"Authorization": f"Bearer {gi_token()}"}
+    needle = "#" + wp
+    for page in range(1, max_pages + 1):
+        items = _gi_page(page, hdr)
+        if not items:
+            break
+        for doc in items:
+            if needle in json.dumps(doc, ensure_ascii=False):   # order id on the doc
+                did = doc.get("id")
+                meta = json.loads(_get(base + f"/documents/{did}", hdr).decode("utf-8"))
+                pdf = (((meta.get("url") or {}).get("origin"))
+                       or ((meta.get("files") or {}).get("origin")))
+                if pdf:
+                    with open(out_path, "wb") as f:
+                        f.write(_get(pdf))
+                    return True
+                return False
     return False
 
 
@@ -204,12 +231,42 @@ def render_pages(jobs):
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", "/opt/pw-browsers")
     from playwright.sync_api import sync_playwright
     cookies = lw_login_cookies()
+    # Egress-restricted sandboxes (Claude Code on the web) route outbound HTTPS
+    # through a re-terminating proxy that headless Chromium's TLS stack cannot
+    # complete (ERR_CONNECTION_RESET) — but urllib CAN (same path the API/login
+    # calls already use). So Chromium makes ZERO direct network calls: every
+    # request is intercepted and fulfilled from urllib. Same-origin LionWheel
+    # assets (HTML, CSS, fonts, logo) are fetched with the session cookies;
+    # third-party beacons (rollbar, analytics) are aborted — irrelevant to print.
+    # This yields the REAL LionWheel work order + waybills, not a fallback.
+    ck = "; ".join(f"{c['name']}={c['value']}" for c in cookies)
+
+    def _urlfetch(u):
+        req = urllib.request.Request(u, headers={"User-Agent": UA, "Cookie": ck})
+        r = urllib.request.urlopen(req, timeout=60)
+        return r.read(), r.headers.get("Content-Type", "application/octet-stream")
+
+    def _route(route):
+        u = route.request.url
+        try:
+            if "lionwheel.com" in urllib.parse.urlparse(u).netloc:
+                body, ctype = _urlfetch(u)
+                route.fulfill(status=200, body=body, headers={"Content-Type": ctype})
+            else:
+                route.abort()
+        except Exception:
+            try:
+                route.abort()
+            except Exception:
+                pass
+
     with sync_playwright() as p:
         b = p.chromium.launch(args=["--no-sandbox", "--disable-dev-shm-usage"])
         ctx = b.new_context(ignore_https_errors=True)
         ctx.add_cookies(cookies)
         for url, out, fit_one in jobs:
             pg = ctx.new_page()
+            pg.route("**/*", _route)
             try:
                 _render_one(pg, url, out, fit_one)
             except Exception as e:
