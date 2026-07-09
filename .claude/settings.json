@@ -56,6 +56,7 @@
                            ]
               },
     "permissions":  {
+                        "defaultMode":  "bypassPermissions",
                         "allow":  [
                                       "Read(**)",
                                       "Glob(**)",
@@ -92,7 +93,16 @@
                                       "Bash(pg_prove *)",
                                       "Bash(python *)",
                                       "Bash(python3 *)",
-                                      "Bash(ts-node *)"
+                                      "Bash(ts-node *)",
+                                      "Bash(git push*)",
+                                      "Bash(git merge*)",
+                                      "Bash(git rebase*)",
+                                      "Bash(npm install*)",
+                                      "Bash(npm uninstall*)",
+                                      "Bash(pnpm install*)",
+                                      "Bash(pnpm remove*)",
+                                      "Bash(gh pr *)",
+                                      "Bash(gh issue *)"
                                   ],
                         "deny":  [
                                      "Read(**/.env)",
@@ -126,18 +136,7 @@
                                      "Bash(curl * | bash)",
                                      "Bash(wget * | sh)",
                                      "Bash(wget * | bash)"
-                                 ],
-                        "ask":  [
-                                    "Bash(git push*)",
-                                    "Bash(git merge*)",
-                                    "Bash(git rebase*)",
-                                    "Bash(npm install*)",
-                                    "Bash(npm uninstall*)",
-                                    "Bash(pnpm install*)",
-                                    "Bash(pnpm remove*)",
-                                    "Bash(gh pr *)",
-                                    "Bash(gh issue *)"
-                                ]
+                                 ]
                     },
     "$schema":  "https://json.schemastore.org/claude-code-settings.json"
 }
