@@ -1,8 +1,9 @@
 # GT Factory OS — Procurement System Map
 
 Exact reference for everything the procurement-planning skill reads or calls. Verified live against
-`gt-ops-prod` on 2026-06-25. If a query errors on a column, the schema has evolved — re-introspect with
-`information_schema.columns` and update, rather than guessing.
+`gt-ops-prod` on 2026-06-25; re-verified + corrected 2026-07-16 (item_type taxonomy, fn signatures,
+tier ADR §7b, 0284/0285 engine additions §7c). If a query errors on a column, the schema has evolved —
+re-introspect with `information_schema.columns` and update, rather than guessing.
 
 ## Table of contents
 1. Connection constants & actor resolution
@@ -88,8 +89,13 @@ Note: component (RM/PKG) buffers are tuned via `planning_policy` keys (§6), not
 - `movement_type`, `item_type`, `item_id`, `batch_id`, `qty_delta` (sign = direction), `uom`
 - `event_at`, `posted_at`, `post_status` (use `POSTED`), `reason_code`, `source_tab`
 - `related_po_line_id`, `related_bom_version_id`, `related_movement_id` (reversal pointer)
-- Consumption rows have `qty_delta < 0`. Verify the exact `movement_type` taxonomy at runtime
-  (`select distinct movement_type, sign(qty_delta) from stock_ledger where item_type='COMPONENT'`).
+- Consumption rows have `qty_delta < 0`.
+- **item_type taxonomy (verified live 2026-07-16): `'RM' | 'PKG' | 'FG'` — in
+  `stock_ledger`, `current_balances` AND `physical_counts` alike. There is NO
+  `'COMPONENT'` value; components are RM + PKG. Filtering on
+  `item_type='COMPONENT'` returns zero rows and silently produces an
+  empty/green result (this bug lived in an earlier revision of
+  `sql_library.md` §1b/§2/§3/§9 — fixed 2026-07-16).**
 
 ### `physical_counts` — last count per item (staleness check; `stale_count_days`=7)
 Verified columns (2026-06-25): `submission_id` (uuid), `item_type`, `item_id`, `counted_quantity`, `unit`,
@@ -144,6 +150,8 @@ Read/write as key-value text rows. The buyer-relevant levers:
 | `planning.purchase.consolidation_window_days` | 21 | **Lot size**: when a component crosses reorder, order covers this many days forward (period-order-quantity). Bigger = fewer/larger orders. |
 | `planning.purchase.demand_rate_window_days` | 28 | Forward window used to derive each component's avg daily demand for the days-of-cover floor. |
 | `planning.purchase.session_day_of_week` | 0 (Sun) | Weekly session day; drives the must-order-now release fence. |
+| `planning.purchase.session_horizon_visible_days` | 56 | Read by API/portal surfaces for display windows (not by the engine itself). |
+| `stale_count_days` | 7 | Physical-count staleness threshold; also read by the 0284 session input-integrity snapshot. |
 | `planning.purchase.po_overdue_warning_days` | 7 | Open-PO line flagged `po_overdue_receipt` after N days past expected. |
 | `planning.safety.component_cover_days_default` | 7 | **Global component buffer** (days of avg daily demand, applied as on-hand floor). Override per component → see below. This is THE highest-leverage lever and is currently flat for all 184 components. |
 | `planning.safety.stock_days_default` | 0 | FG safety buffer (days). |
@@ -184,9 +192,61 @@ Production-side per-base overrides also exist: `planning.production.safety_stock
   `fn_plan_tea_production(p_actor, p_horizon_days)`, `fn_plan_matcha_repack(p_actor, p_horizon_days)`.
 
 **COMMITTING — gated, requires explicit Tom approval (real PO, real cash):**
-- `fn_place_purchase_order(p_po_id text, p_actor_user_id uuid, p_actor_snapshot text, p_payment_terms text, p_payment_terms_net_days integer, p_payment_terms_eom boolean, p_line_prices jsonb, p_confirm_price_update boolean)`
+- `fn_place_purchase_order(p_po_id text, p_actor_user_id uuid, p_actor_snapshot text, p_payment_terms text, p_payment_terms_net_days integer, p_payment_terms_eom boolean, p_line_prices jsonb, p_confirm_price_update boolean, p_expected_receive_date date, p_line_qty_overrides jsonb)`
+  (signature re-verified 2026-07-16 — two params were added since the 2026-06-25 snapshot: the expected receive date, which closes the double-order trap at placement time, and per-line qty overrides)
 
 Rule of thumb: **drafts may be generated after a quick confirmation; placement is never automatic.**
+
+### 7b. Session tier logic — ADR (documented as-found 2026-07-16, unchanged by 0284)
+
+`purchase_session_po.tier` is computed inside `fn_generate_purchase_session`
+(SQL only — the API just reads the column). Exact semantics:
+
+```
+per line:      is_urgent = (need_date − lead_time_days < p_session_date)   -- release date already passed
+                           OR (projected_on_hand_at_need < 0)              -- projected to go negative
+per supplier:  urgent      = bool_or(line is_urgent) OR min(release_date) < p_session_date
+               must        = min(release_date) < release_fence             -- next session day (Sunday)
+               recommended = otherwise
+```
+
+Properties that follow (all verified live):
+- **Dates/projection only** — no ₪ exposure, criticality or spend weighting.
+- `need_date` is the first day projected stock dips below the **safety floor**
+  (cover-days × ADU), not below zero — so "urgent" fires on floor breaches.
+- One late line paints its **entire supplier PO** urgent (`bool_or`).
+- With demand visible only ~2–3 firmed weeks ahead, a flat 7d buffer and
+  7–14d lead times, release dates are chronically in the past → since May
+  2026 the live distribution has been ~97% `urgent` (e.g. 16/16 on
+  2026-07-16), 0–2 `must`, 0–1 `recommended`. Items whose lead time exceeds
+  the 56d horizon (e.g. 127d matcha/bottles) can never be "on time".
+- `p_session_date` matters: the portal start API passes `current_date`; the
+  plan-production-14d ritual passes next Sunday — the fence and the
+  `urgent` cutoffs shift accordingly.
+
+Portal note (tranche 132): `/planning/procurement` no longer buckets by this
+tier — it classifies each PO from the per-line `coverage_trace` (estimated
+zero-stock date vs. arrival-if-ordered-today) and shows quantified expected
+shortage instead. The tier column remains for API consumers and the calendar
+view. Changing the SQL tier itself is a separate, Tom-gated decision.
+
+### 7c. 0284/0285 additions (2026-07-16)
+
+- `purchase_session.input_integrity` (jsonb): forecast `{age_days,
+  coverage_end, horizon_end, uncovered_days}`, counts `{targets, fresh,
+  stale, never_counted, threshold_days, oldest_age_days}` over the buy-list
+  targets, `verifier_drift`. Read this instead of recomputing §1 when a
+  fresh session exists.
+- `coverage_trace` now carries `trace_version: 3`, `lt_source`
+  (`component_master | supplier_item | supplier_default | global_default`),
+  `criticality`, `last_count_age_days` (null = never counted), `moq`,
+  `order_multiple`, `qty_purchase_before_rounding`.
+- Lead-time resolution now follows the documented waterfall for components
+  (previously: component master → global 14d, silently skipping
+  supplier_items / suppliers defaults).
+- `items.item_type='SYSTEM'` placeholders (EXCLUDED-NONSTOCK) are excluded
+  from BF demand; SEMI-FRE/CAL/NAM-BASE are `planned_flag=false` (0285) —
+  in-house brewed bases, never purchasable.
 
 ---
 
@@ -207,25 +267,41 @@ Rule of thumb: **drafts may be generated after a quick confirmation; placement i
    `PO-2026-00253` (PKG-BAG-MAT-500G, 5000). (Re-verified 2026-06-25: the live list is broader — **4**
    open lines lack an ETA: `PO-2026-00216` (PKG-BOTTLE-1L, 32999), `PO-2026-00252`, `PO-2026-00253`,
    `PO-2026-00255` (RAW-LIME-PUREE, 20).) **Always resolve these dates before placing.**
-2. **Flat buffers.** All 184 planned components share the global 7-day cover and 21-day consolidation;
+2. **Flat buffers.** All 187 planned components share the global 7-day cover and 21-day consolidation;
    there are 0 per-component overrides. A flat buffer over-stocks stable items and under-protects volatile
-   ones — the single biggest tuning opportunity (see methodology §Buffer mapping).
-3. **Master-data gaps fill silently with fallbacks.** Missing lead time → 14d global; missing MOQ → no
-   rounding; missing cost → order can't be valued. See §10. Gaps among the components *in this run's scope*
-   matter most — scope the data-health check to them.
+   ones — the single biggest tuning opportunity (see methodology §Buffer mapping, incl. the 2026-07-16
+   reality check: the naive daily-σ formula over-buffers here; use plan-aware/weekly variability).
+3. **Master-data gaps fill silently with fallbacks.** Missing lead time → the
+   0284 waterfall (supplier mapping → supplier default → global 14d, with
+   `lt_source` recorded per line); missing MOQ → no rounding; missing cost →
+   order can't be valued (line carries a `missing_price` blocking flag and
+   costs 0 — understating session ₪). See §10. Gaps among the components *in
+   this run's scope* matter most — scope the data-health check to them.
+   **MOQ reality check (2026-07-16): MOQ is 0/NULL on all 187 planned
+   components AND on all 269 approved supplier mappings — the entire
+   MOQ/rounding mechanism is currently a no-op, and the min-trigger +
+   90d-over-buy guards live only in the diagnostic planning-run path, not in
+   the live session path.**
 4. **Stale counts / verifier drift.** If `rebuild_verifier_drift_at_run` ≠ 0 or a scoped component's last
    physical count is older than `stale_count_days` (7), on-hand is suspect → netting is suspect.
 
 ---
 
-## 10. Master-data quality baseline (2026-06-25 snapshot)
+## 10. Master-data quality baseline (2026-07-16 snapshot; count MOQ/multiple **zeros as missing** — 0 disables the mechanism exactly like NULL)
 
-Across **184 planned, active components** and **298 supplier links**:
-- 16 components (9%) missing lead time; 60 (33%) missing MOQ; 60 (33%) missing order multiple;
-  32 (17%) missing std cost; 13 (7%) missing primary supplier; 30 (16%) missing criticality.
-- **11 components have NO supplier mapping** → un-orderable through the engine.
-- supplier_items: 74 (25%) missing lead time; **136 (46%) missing MOQ**; 61 (20%) missing std cost.
-- 43 active suppliers; 11 missing a default lead time.
-- **0** per-component buffer overrides; **0** `planning_item_config` rows.
+Across **187 planned, active components** and **269 approved component mappings**:
+- 23 components (12%) missing lead time — of which 12 have a real value available
+  today in supplier_items/suppliers (the 0284 waterfall now picks those up);
+  **187 (100%) missing/zero MOQ; 187 (100%) missing/zero order multiple**;
+  38 (20%) missing std cost; 15 (8%) missing primary supplier; 33 (18%) missing criticality.
+- **10 components have NO approved supplier mapping** → un-orderable through the engine.
+- supplier_items (approved, component-linked): 212/269 carry a lead time; **0/269 carry an MOQ**.
+  Item mappings: 13/31 carry a lead time (BF items lean hardest on the global default).
+- **0** per-component buffer overrides; **0** `planning_item_config` rows — the flat 7d
+  cover is still universal.
+- Catalog hygiene fixed 2026-07-16: SEMI-FRE/CAL/NAM-BASE `planned_flag=false` (0285);
+  `EXCLUDED-NONSTOCK` (item_type=SYSTEM) filtered out of BF demand (0284).
 
-Treat these as a moving baseline; the skill recomputes the scoped subset live each run.
+Treat these as a moving baseline; the skill recomputes the scoped subset live each run —
+and since 0284 the freshest per-session picture is already on
+`purchase_session.input_integrity` + each line's `coverage_trace`.

@@ -78,6 +78,19 @@ Reorder Point (ROP)  = ADU × DLT  +  Safety Stock
 - Keep all terms on one time unit (days) and one UOM.
 - Moving from 95%→99% raises Z from 1.645→2.33 and roughly +40% safety stock: diminishing returns.
 
+> **GT reality check (validated live, 2026-07-16).** Applying this formula
+> naively over GT's *daily* ledger consumption inflates every buffer: RM/PKG
+> consumption happens in production batches (many zero days + big spikes), so
+> σ_D is huge relative to ADU (CoV 1.5–5.8) and the formula suggested >7 days
+> for **81 of 81** components with history — up to 96–107 days for long-lead
+> items. GT's component demand is largely *plan-driven* (the engine already
+> knows the firmed plan): the buffer should cover *uncertainty around the
+> plan* (plan slippage, yield variance, LT variance, forecast error), not raw
+> daily consumption noise. Before proposing overrides: aggregate to weekly
+> buckets at minimum, prefer variability of demand-over-lead-time windows,
+> fix lead-time truth first (127d items dominate the math), and differentiate
+> by criticality/spend — never batch-apply the raw daily-σ output.
+
 **Service-level → Z:**
 
 | Cycle service level | Z |

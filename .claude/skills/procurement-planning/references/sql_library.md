@@ -57,6 +57,11 @@ from private_core.planning_runs order by executed_at desc limit 1;
 -- Components whose last physical count is older than the staleness threshold:
 -- NOTE (verified 2026-06-25): private_core.physical_counts has NO site_id / created_at.
 -- The count timestamp is `snapshot_at`; the dimension is (item_type, item_id). Joined accordingly.
+-- TAXONOMY (verified live 2026-07-16): item_type in current_balances,
+-- physical_counts AND stock_ledger is 'RM' / 'PKG' / 'FG' — there is NO
+-- 'COMPONENT' value anywhere. A previous revision of this file filtered
+-- item_type='COMPONENT', which returns ZERO rows and silently passes the
+-- staleness gate green. Components = RM + PKG.
 with thr as (select (value)::int as d from private_core.planning_policy where key='stale_count_days')
 select cb.item_id,
        max(pc.snapshot_at) as last_count_at,
@@ -64,11 +69,14 @@ select cb.item_id,
 from private_core.current_balances cb
 left join private_core.physical_counts pc
        on pc.item_id = cb.item_id and pc.item_type = cb.item_type
-where cb.item_type='COMPONENT'
+where cb.item_type in ('RM','PKG')
 group by cb.item_id
 having max(pc.snapshot_at) is null
     or (now()::date - max(pc.snapshot_at)::date) > (select d from thr)
 order by age_days desc nulls first;
+-- Since backend 0284 the session itself snapshots this: read
+-- purchase_session.input_integrity (forecast age/coverage + counts summary)
+-- instead of recomputing when a fresh session exists.
 ```
 
 ### 1c. Open-PO supply not netted (the double-order trap)
@@ -96,7 +104,8 @@ with usage as (
   select sl.item_id,
          -1.0 * sum(sl.qty_delta) as used_28d
   from private_core.stock_ledger sl
-  where sl.item_type='COMPONENT' and sl.post_status='POSTED'
+  where sl.item_type in ('RM','PKG')   -- components; ledger has no 'COMPONENT' value
+    and sl.post_status='POSTED'
     and sl.qty_delta < 0
     and sl.event_at >= now() - interval '28 days'
   group by sl.item_id
@@ -126,7 +135,7 @@ with days as (
 daily as (
   select date(sl.event_at) as d, -1.0*sum(sl.qty_delta) as used
   from private_core.stock_ledger sl
-  where sl.item_type='COMPONENT' and sl.item_id = :COMPONENT_ID
+  where sl.item_type in ('RM','PKG') and sl.item_id = :COMPONENT_ID
     and sl.post_status='POSTED' and sl.qty_delta < 0
     and sl.event_at >= now() - (:WINDOW_DAYS||' days')::interval
   group by 1
@@ -281,7 +290,7 @@ days as (select generate_series((now()::date - interval '56 days')::date, now():
 daily as (
   select sl.item_id, date(sl.event_at) d, -1.0*sum(sl.qty_delta) used
   from private_core.stock_ledger sl
-  where sl.item_type='COMPONENT' and sl.post_status='POSTED' and sl.qty_delta<0
+  where sl.item_type in ('RM','PKG') and sl.post_status='POSTED' and sl.qty_delta<0
     and sl.event_at >= now() - interval '56 days'
   group by 1,2),
 series as (
