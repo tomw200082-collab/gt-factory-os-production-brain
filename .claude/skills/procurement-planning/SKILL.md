@@ -74,12 +74,19 @@ Open by establishing what this run is. Ask at most a small cluster:
 Record the answers; they shape demand, buffers, and the cash lens later.
 
 ### Stage 1 — Pre-flight integrity gate (read-only; `sql_library.md` §1)
-Before any number is trusted, validate the inputs. Run and summarise:
-- **Forecast freshness** (§1a) — is there a *published* version covering the horizon? how old?
-- **Stock truth** (§1b) — `rebuild_verifier_drift_at_run` = 0? any scoped component counted older than
-  `stale_count_days` (7)?
-- **Open-PO supply** (§1c) — any open PO lines with no `expected_receive_date` (the **double-order trap**),
-  and read the latest `purchase_session.warnings`.
+Before any number is trusted, validate the inputs.
+- **Fast path (backend 0284+):** the engine snapshots the whole gate onto every session —
+  read `input_integrity` (forecast age + horizon-coverage gap, physical-count freshness across
+  the buy list, verifier drift) plus `warnings` from the latest session (§1-fast). A fresh
+  session covering this run's scope → skip the manual queries entirely; chat and the portal's
+  freshness strip then speak the exact same numbers.
+- **Manual path** (no fresh session, or state moved since it was generated) — run and summarise:
+  **forecast freshness** (§1a); **stock truth** (§1b) — drift = 0? scoped counts older than
+  `stale_count_days` (7)?; **open-PO supply** (§1c) — lines with no `expected_receive_date`
+  (the **double-order trap**).
+- **Empty ≠ green.** A gate query returning zero rows proves nothing until a control query
+  shows it actually saw data (§1b carries one). Hard-learned 2026-07-16: the staleness gate
+  silently passed green for weeks on a wrong `item_type` filter.
 Present a short **integrity scorecard** (green / caution / blocked per input). If something material is
 wrong, recommend fixing first (e.g. set the missing receive dates) and ask Tom whether to proceed,
 proceed-with-caveats, or pause. Do not paper over a stale input.
@@ -94,6 +101,12 @@ Decide where judgment is worth spending, and pressure-test demand:
   Tom which to trust and why (this is a high-value question — the forecast may be missing a real signal).
 
 ### Stage 3 — Buffer review & tuning (the highest-leverage step; `methodology.md` §4–§6, `sql_library.md` §9)
+> Validated 2026-07-16: the raw daily-σ formula proposed >7d for **81/81** components with
+> history (batch consumption inflates σ; demand here is plan-driven). Per methodology §4's
+> caveat: weekly/plan-aware variability, criticality tiers, verify lead-time truth first
+> (127d outliers dominate the math) — and never batch-apply. A handful of A/HIGH items per
+> session, each with its own rationale.
+
 For the in-scope A/Z components (and any Tom flags), compute a **suggested `component_cover_days`** from
 the statistical safety-stock formula (or the DDMRP-factor shortcut when data is thin), choose the **service
 level by criticality tier**, and compare to the flat current value.
@@ -114,6 +127,26 @@ regenerating — say which you're doing.
 
 ### Stage 5 — Professional triage + the quantity interview (`sql_library.md` §7–§8, `methodology.md` §8–§10)
 Read back the recommendations and per-supplier draft POs, then apply the buyer's lens line by line.
+Four post-0284 rules govern the triage itself:
+- **Rank by shortage math, never by `tier`.** The SQL tier is date-only and collapsed
+  (~97% 'urgent' since May 2026 — ADR in `system_map.md` §7b). Per line, from trace v3:
+  `zero_date ≈ need_date + max(0, projected_on_hand_at_need)/avg_daily`;
+  `last_safe_order = zero_date − lead_time`; gap-if-ordered-today = `(today+LT) − zero_date`.
+  Must-today ⇔ `last_safe_order ≤ today`. Same math as the portal's action list at
+  `/planning/procurement` — for visual triage send Tom there; keep chat for the interview.
+- **Trust flags drive the questions** (trace v3): `last_count_age_days` null or >14 → offer a
+  quick physical count *before* committing cash; `lt_source='global_default'` → the urgency
+  date is a guess — confirm the real lead time (and store it); `missing_price` blocking →
+  the session's ₪ total is understated.
+- **Stale-session trap.** Traces freeze at generation. Any count / receipt / plan change
+  mid-session → regenerate the session (confirm the supersede with Tom) and re-read.
+  Never reason over frozen numbers.
+- **Harvest MOQs.** MOQ / order-multiple is 0/NULL across the entire catalog — the engine's
+  rounding is currently a no-op. Whenever Tom or a supplier states a real MOQ, multiple or
+  pack size, offer the gated master-data write (`components.moq_purchase_uom` /
+  `order_multiple_purchase_uom`, or `supplier_items.moq`) so the next run rounds correctly.
+  Every session should leave master data smarter than it found it.
+
 For each supplier / line, check and, where it needs a human, **ask Tom one sharp question**:
 - **Quantity sanity** — does `recommended_qty` follow from demand + buffer? Is MOQ inflating it? Does it
   cover an unreasonable horizon (> the 90-day over-buy guard)? Is it a sliver below MOQ-trigger and better
@@ -189,7 +222,8 @@ Channel a sharp procurement manager reviewing a planner's work, not a form.
 - **Confirm once, then proceed**: `fn_execute_planning_run`, `fn_generate_purchase_session`, production
   proposal functions (they create drafts, order nothing).
 - **Explicit approval, present diff first**: buffer overrides (`planning_policy` writes), session line edits
-  (`final_qty` / drop / add).
+  (`final_qty` / drop / add), master-data capture from the interview (MOQ / order multiple /
+  lead time — present the exact field + value before writing).
 - **Hard stop, per-PO approval**: `fn_place_purchase_order` — the only committing action.
 - Resolve the actor from `app_users` (never hardcode). Default `site_id='GT-MAIN'`.
 - If a query errors on a column, the schema evolved — re-introspect and adjust; don't guess.

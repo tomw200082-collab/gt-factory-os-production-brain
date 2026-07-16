@@ -37,6 +37,22 @@ order by role;
 
 ## 1. Pre-flight integrity gates
 
+### 1-fast. Read the gate off the session itself (backend 0284+)
+```sql
+select session_id, session_type, session_date, status, created_at,
+       rebuild_verifier_drift, input_integrity, warnings
+from private_core.purchase_session
+where session_type = 'weekly'   -- match the run's scope (verified live 2026-07-16:
+                                -- a bare LIMIT 1 returned an off_cycle check session)
+order by created_at desc limit 1;
+-- input_integrity = forecast{age_days, coverage_end, horizon_end, uncovered_days}
+--                  · counts{targets, fresh, stale, never_counted, threshold_days, oldest_age_days}
+--                  · verifier_drift — the whole gate, computed at generation time.
+-- A fresh session covering this run's scope → §1a–§1c below are redundant.
+-- Traces freeze at generation: if a count/receipt/plan change landed since
+-- created_at, regenerate before trusting quantities.
+```
+
 ### 1a. Forecast freshness — is there a published forecast covering the horizon?
 ```sql
 select version_id, cadence, horizon_start_at, horizon_weeks, status,
@@ -76,7 +92,13 @@ having max(pc.snapshot_at) is null
 order by age_days desc nulls first;
 -- Since backend 0284 the session itself snapshots this: read
 -- purchase_session.input_integrity (forecast age/coverage + counts summary)
--- instead of recomputing when a fresh session exists.
+-- instead of recomputing when a fresh session exists (§1-fast).
+
+-- CONTROL — empty ≠ green. Zero rows above proves nothing until this shows
+-- the query actually saw components; 0 here means the filter/taxonomy is
+-- wrong, NOT that every count is fresh:
+select count(*) as components_seen
+from private_core.current_balances where item_type in ('RM','PKG');
 ```
 
 ### 1c. Open-PO supply not netted (the double-order trap)
@@ -261,10 +283,17 @@ from private_core.purchase_session_po po, s
 where po.session_id = s.session_id
 order by po.order_by_date nulls last, po.total_cost desc;
 
--- 8c. Lines for one draft PO (recommended vs final, coverage trace):
+-- 8c. Lines for one draft PO (recommended vs final, coverage trace).
+-- Trace v3 (0284) also carries: lt_source, criticality, last_count_age_days
+-- (null = never counted), moq, order_multiple, qty_purchase_before_rounding —
+-- the trust flags Stage 5's interview triggers read.
 select l.session_po_line_id, l.line_label, l.component_id, l.item_id,
        l.recommended_qty, l.final_qty, l.uom, l.unit_cost, l.line_cost,
-       l.earliest_need_date, l.is_user_added, l.is_dropped, l.coverage_trace
+       l.earliest_need_date, l.is_user_added, l.is_dropped,
+       l.coverage_trace->>'lt_source'           as lt_source,
+       l.coverage_trace->>'last_count_age_days' as count_age_days,
+       l.coverage_trace->>'trace_version'       as trace_v,
+       l.coverage_trace
 from private_core.purchase_session_po_line l
 where l.session_po_id = :SESSION_PO_ID
 order by l.line_label;

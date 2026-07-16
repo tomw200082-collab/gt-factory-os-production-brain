@@ -117,6 +117,8 @@ select warnings from private_core.purchase_session
 order by created_at desc limit 1;                                -- stale warnings possible: re-verify PO status before repeating them
 ```
 
+0284: latest `purchase_session.input_integrity` = gate pre-computed (forecast age+coverage-gap, count freshness, drift) → read first; run the 4 queries only when no fresh session ∨ state moved since `created_at`. Empty gate result ⊥ green — control-count first (procurement sql_library §1b).
+
 Actor: resolve from `app_users` (role admin/planner, active). ⊥ hardcode UUIDs.
 🔴 on gate → report, ask proceed/fix-first. ⊥ paper over.
 
