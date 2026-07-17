@@ -10,23 +10,20 @@
 
 ---
 
-## Phase 8 Run F / F.2b / G — state
+## Phase 8 Run F / F.2b / G — CLOSED (historical)
 
-**Run F landed (2026-05-08):** AI Brain kernel rewrite — CLAUDE.md 355 → 133 lines; 6 scaffolding files in PRODUCTION root; 2 extraction files in docs/; 6 commits on main.
-
-**Run F.2b completed (2026-05-08):** PRODUCTION remote established — `https://github.com/tomw200082-collab/gt-factory-os-production-brain.git` (private), HEAD `875424b`. No product code touched.
-
-**Run G in progress (2026-05-08):** patching SIGNALS.md (CONFLICT-003 closed), CURRENT_STATE.md, ACTIVE_NOW.md, COMMAND_REGISTRY.md count fix, PRODUCTION-REMOTE-PLAN.md status, FINAL_AI_BRAIN_ACCEPTANCE.md creation. Branch `run-g-final-brain-closure`. PR pending Tom merge.
+Runs F, F.2b, and G all completed 2026-05-08 (kernel rewrite, remote established, SIGNALS/CURRENT_STATE/ACTIVE_NOW/COMMAND_REGISTRY patches). Branch `run-g-final-brain-closure` merged — re-verified 2026-07-17, no pending PR. Brain HEAD has advanced through many subsequent cycles since (see git log; most recent as of 2026-07-17: procurement-corridor work, `CURRENT_STATE.md` top section). No open Run F/G items remain.
 
 ---
 
 ## Two active corridors
 
-**1 — Shopify External Boundary v2**
-Phase 0+1+2+3+4 landed. Gate E (Option C — SKU allowlist guard) in execution.
-Hard stop: no live GraphQL inventory mutation until Phase 5 readiness + Tom approval.
+**1 — Shopify External Boundary v2 — STALLED (no commits since 2026-05-08)**
+Phase 0+1+2+3+4 landed. Gate E (Option C — SKU allowlist guard) decided 2026-05-23 but never executed — zero corridor commits since `bcb2d0f`.
+Hard stop still intact and re-verified 2026-07-17: `SHOPIFY_FG_SYNC_LIVE_ADAPTER_WIRED = false` hardcoded in the Edge Function, tested as unbypassable; zero live GraphQL writes in the last 7 days of `shopify_fg_sync_history` (all `disabled_pending_v2`/`skipped_unmapped`/`network_fail`).
+**Governance anomaly flagged 2026-07-17 — needs Tom ruling:** live DB `feature_flags.shopify_fg_sync_v2_live` was set `enabled=true, allowlist="*"` by `claude-session-2026-06-20`, no migration, contradicts the approved `ADD-GAR-ANISE`-only scope. Not currently dangerous (code sentinel above is the real gate and doesn't read this flag) but untracked. Full detail: `CURRENT_STATE.md` §Shopify Gate E.
 Bridge state: `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED=false` — do not flip.
-Latest backend commit: `bcb2d0f` (GE-D bridge starvation fix).
+Latest backend commit touching this corridor: `bcb2d0f` (GE-D bridge starvation fix, 2026-05-08).
 
 **2 — Planning Corridor v1 (Tranche 3 CLOSED 2026-04-27)**
 Tranches 1+2+3 DONE end-to-end. RUNTIME_READY(Planning-Tranche3-Blockers) emitted as signal #17.
@@ -40,7 +37,7 @@ Tranche 4+ (Forecast Workspace) queued; later cycles (cycles 7–8 closure incl.
 
 | Item | Value |
 |------|-------|
-| RUNTIME_READY signals | 35 on file as of 2026-05-08; post-cutover re-count pending against `.claude/state/runtime_ready.json` |
+| RUNTIME_READY signals | 36, re-verified 2026-07-17 direct from `.claude/state/runtime_ready.json`. Newest: #36 `UnitEconomics` (2026-07-15T08:04:02Z, backend-db-executor). |
 | W2 portal tip | `5dfb549` (2026-05-18 — production-simulation date-range plan mode PR #36) |
 | Backend tip | `bc2d34d` (2026-05-18 — Railway redeploy; last code commit `d81af0f` 2026-05-18 PR #38) |
 | Railway | healthy |
@@ -54,7 +51,7 @@ Tranche 4+ (Forecast Workspace) queued; later cycles (cycles 7–8 closure incl.
 
 - **Read-only verify** exact Railway env-var literal for `LIONWHEEL_FG_OUT_BRIDGE_ENABLED` (Tom decision 2026-05-23: `NEEDS_READONLY_VERIFICATION`; not changed in this docs cycle).
 - **Shopify Gate E — Tom decided 2026-05-23:** GE-1 test SKU = `ADD-GAR-ANISE`; GE-2 sentinel strategy = Option C (SKU-allowlist). Corridor execution still open against these inputs.
-- **Tom manual patch required before brain PR merge:** `docs/decisions/LOCKED_DECISIONS.md` §LionWheel — ratify second reversal class (count-freeze interaction) + ratify `LIONWHEEL_PICK_ADJUSTMENT` as Tom-approved-manual-only (any future use requires Tom approval). Patch text in `TEST-GT-START/docs/ruflo/26_LIONWHEEL_POST_CUTOVER_GOVERNANCE_PATCH_PACKET.md` §4.C.
+- **LionWheel reversal-class ratification — CLOSED, re-verified 2026-07-17.** Both classes confirmed present in `docs/decisions/LOCKED_DECISIONS.md` §LionWheel lines 140/144 (Tom direct edit, 2026-05-23 PR). No action outstanding.
 - `JOB_RUNNER_TOKEN` provisioning + Python audit-skill container deployment (closes `audit_runs` cron blind-spot; tracked P1, not P0).
 - Telegram bot token + chat_id for monitoring alerts (runbook §10).
 - app_users uuid for count import.
