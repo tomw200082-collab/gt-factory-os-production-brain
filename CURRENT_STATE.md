@@ -14,6 +14,39 @@
 
 ---
 
+## Procurement corridor — audit + rebuild (2026-07-16/17)
+
+**Landed, verified, merged.** Tom-directed end-to-end pass on the procurement corridor: from the SQL recommendation engine through the `/planning/procurement` weekly-meeting triage screen, plus the operating skill that runs it. Scope was explicitly bounded to trigger→triage (post-triage actions — approve/skip/cancel/placement queue — were already live via portal tranches 130-131 and untouched here).
+
+**Backend (`gt-factory-os`), applied to prod (`rvadsozabmxkkrktwgnv`) and live-verified, not just committed:**
+- **0284** — `fn_generate_purchase_session` rebuilt to v3: adds `input_integrity` (forecast age/coverage-gap, physical-count freshness, verifier drift, computed once per session) and per-line `coverage_trace` v3 fields (`trace_version`, `lt_source` lead-time-waterfall provenance, `criticality`, `last_count_age_days`, `moq`, `order_multiple`, pre-rounding qty). Fixed a live bug caught during this work: `item_type <> 'SYSTEM'` used plain `<>` against a mostly-NULL column — NULL <> 'SYSTEM' is NULL in three-valued logic, so the filter silently dropped 7 real sellable BOUGHT_FINISHED lines from every session; changed to `IS DISTINCT FROM`.
+- **0285** — the three in-house tea-base SEMI components (brewed via `fn_plan_tea_production`, never bought) stop being offered as purchase-session lines (`planned_flag=false`).
+- **0286** — the `components_without_supplier` warning now carries `is_item` (additive; `_ps_orders` already had the column, the warning's query just omitted it) so the portal can route a fix-link to the right master-data page (component vs. bought-finished item) without guessing.
+- PRs #170 (0284/0285) and #171 (0286) — both merged.
+
+**Portal (`gt-factory-os-portal`) — tranches 132-133, PRs #172/#173 merged** (stacked on already-shipped 130-131):
+- **132** — triage rebuilt around the planner's three real decisions (send today / can wait / count first) after the audit found ~97% of live sessions had collapsed into one SQL `urgent` tier since May (floor-breach-by-release-date semantics, not a ranking signal at that collapse rate). New client-side decision engine (`_lib/decision.ts` v2) classifies by real per-line shortage math from `coverage_trace` (zero-date, last-safe-order-date, quantified shortage) instead of the SQL tier; new `IntegrityStrip` (stock-verification drift, count freshness, forecast age/coverage, firmed-plan window, engine warnings — replacing a full-width banner stack); the engine's machine-readable warning payload is now mapped inline onto the exact affected row (caught and surfaced a live double-buy case).
+- **133** — Tom asked four follow-up questions about the same screen ("must never have a problem with no solution shown") and approved running with the recommendation on each: a "רענון המלצות" (refresh) action that reruns the session after a physical count, closing the recount loop; every warning chip resolves an actual fix link (not just a tooltip) — PO detail page or the correct master-data record via 0286's `is_item`; the freshness strip collapses to a one-line tap-to-expand summary on mobile; `--fg-faint` contrast raised from 2.0:1/2.9:1 to 4.9:1/4.7:1 (light/dark) against the page background, computed via script not eyeballed.
+- Portal evidence: `npx tsc --noEmit` clean, `npx vitest run` 926/926, real dev-server + Playwright screenshots (both themes, both viewports, collapsed/expanded) confirming the new links/actions actually work — not unit-test-only.
+
+**Skill (`procurement-planning`, this repo) — PR #41 then #42, both merged:**
+- #41 fixed a skill-side SQL bug (the skill's own staleness-gate query used `item_type='COMPONENT'`, which never matches the live taxonomy `RM`/`PKG`/`FG` — the gate was reading silently green for weeks) and documented the tier-collapse finding as an ADR in `references/`.
+- #42 distilled this session's operating lessons into the skill itself: an "empty ≠ green" rule + control query (grounded in the #41 bug); a Stage-1 fast path that reads 0284's `input_integrity` before running manual gate queries; "rank by shortage math, never by tier" with the actual zero-date formulas; trust flags (count age, `lt_source`, missing price) that drive the interview instead of being silently absorbed; a stale-session regenerate rule; and a gated MOQ-harvest write-back (baseline: MOQ is 0/NULL on 187/187 components today, so rounding is currently a no-op).
+
+**Deliberately NOT done — needs a Tom decision, not a bug:**
+- SQL `tier` semantics unchanged (ADR'd in the skill references, not touched — the portal now classifies from trace math and no longer leans on the collapsed tier, but the underlying SQL tier assignment itself is still the old floor-breach logic).
+- Buffer / `cover_days` formula over-buffers 81/81 components sampled (naive statistical formula ignores that demand is plan-driven, not a rolling average) — needs a plan-aware formula, not a blanket tuning pass.
+- ₪-at-risk trend vs. previous session — needs a "previous session" definition (sessions supersede intra-day, so "previous" is ambiguous).
+- `--fg-subtle`'s own light-theme contrast (3.09:1, found as a byproduct of the `--fg-faint` fix) — unaudited, may be fine at its actual use sites, not touched.
+- Pre-existing `/ux-release-gate` P1/P2 leftovers unrelated to this batch: A11Y-003 (reduced-motion global token), A11Y-004 (alertdialog focus), A11Y-010 (single Tooltip.Provider hoist).
+
+**Current tips (fetched 2026-07-17):**
+- `gt-factory-os-production-brain`/main: `148ea88`
+- `gt-factory-os`/main: `20a50fb`
+- `gt-factory-os-portal`/main: `1d18166`
+
+**Coverage note — this section is scoped to the procurement corridor only.** Portal-side tranche-by-tranche history (090 through 133, spanning 2026-06/07) is tracked live and in full detail at `gt-factory-os-portal/docs/portal-os/registry.md` + `docs/portal-os/scorecard.md` — current as of tranche 133, not duplicated here. Everything else in this file below this section — Shopify Gate E corridor status, LionWheel bridge state, `audit_runs` cron, the `~80-90%` completion range, all gate-by-gate detail — was last verified **2026-05-23** and has **not** been re-audited in this pass. Treat anything below this section as potentially ~2 months stale until a dedicated calibration confirms otherwise (`source-of-truth-auditor` is the right tool for that pass).
+
 ## Phase 8 Run B + Run C status (2026-05-08)
 
 **Run B landed:** controlled production execution layer + active surface reduction plan.

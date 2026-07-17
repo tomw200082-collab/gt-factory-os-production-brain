@@ -2,7 +2,11 @@
 
 > **Authority:** ephemeral operator context. **Not authoritative on anything.** `CURRENT_STATE.md` is the sole authority on gate status, completion range, critical path, and open gaps. On any disagreement, defer to `CURRENT_STATE.md`.
 
-**Last refreshed:** 2026-05-23 (post-cutover reconciliation). Sunday 2026-05-10 LionWheel FG_OUT bridge cutover EXECUTED. Bridge in continuous production use through 2026-05-21+. Backend tip `bc2d34d` 2026-05-18; portal tip `5dfb549` 2026-05-18 (both ~10 days past Run G). `rebuild_verifier() = 0` confirmed 2026-05-23 via Supabase MCP read-only audit. Brain authority docs patched to record post-cutover truth and ratify reversal-class semantics — see `CURRENT_STATE.md` §"Post-cutover state (2026-05-10..2026-05-23)" and the `LOCKED_DECISIONS.md` §LionWheel amendments (Tom direct edit, same PR).
+**Last refreshed:** 2026-07-17 (procurement corridor audit + rebuild). See `CURRENT_STATE.md` §"Procurement corridor — audit + rebuild (2026-07-16/17)" for full detail: backend migrations 0284-0286 (`gt-factory-os` PRs #170/#171), portal tranches 132-133 (`gt-factory-os-portal` PRs #172/#173), procurement-planning skill upgrades (this repo, PRs #41/#42) — all merged and live-verified. Current tips: brain `148ea88`, backend `20a50fb`, portal `1d18166`.
+
+**Prior refresh (2026-05-23, post-cutover reconciliation, preserved as history):** Sunday 2026-05-10 LionWheel FG_OUT bridge cutover EXECUTED. Bridge in continuous production use through 2026-05-21+. Backend tip `bc2d34d` 2026-05-18; portal tip `5dfb549` 2026-05-18 (both ~10 days past Run G). `rebuild_verifier() = 0` confirmed 2026-05-23 via Supabase MCP read-only audit. Brain authority docs patched to record post-cutover truth and ratify reversal-class semantics — see `CURRENT_STATE.md` §"Post-cutover state (2026-05-10..2026-05-23)" and the `LOCKED_DECISIONS.md` §LionWheel amendments (Tom direct edit, same PR).
+
+**Everything between 2026-05-23 and 2026-07-16 not named above (Shopify Gate E, LionWheel monitoring follow-ups, the ~11 portal tranches 090/119-131 shipped in that window, etc.) has not been re-verified in this refresh** — see the coverage note at the top of the new `CURRENT_STATE.md` section.
 
 ---
 
