@@ -98,7 +98,23 @@ panic-schedule it into one day; if tranche pacing is unclear, ask Tom, ⊥ guess
 0 gate → 1 retro → 1b forecast correction → 2 tune W1 → 3 plan W2 (drafts) → 4 ⏸ Tom tweaks → 5 firm + session → 6 procurement relay
 ```
 
-! Never skip 0. ⊥ re-run generate-drafts after stage 4 begins (wipes `TEAEDD:%` drafts incl. Tom's edits on them).
+! Never skip 0.
+
+**Representation contract (locked 2026-07-18) — ONE shape per track forward:**
+- **Tea-tank bases → tank rows only** (`item_id=NULL`, `base_bom_head_id` set, `pack_manifest[]` = the
+  bottle split, `uom='L'`) — the shape `fn_plan_tea_production` writes. ⊥ author FG rows for a tea base;
+  they double-count the base RM (both the tank AND the FG explode the same base) and split one tank
+  across two representations. Lock Gate G5 (Stage 5b) rejects a day carrying both.
+- **Non-tank tracks (Muza 200ml, matcha repack, sangria) → FG rows** (`item_id` set), as their engines write.
+- Every forward `production_plan` row is **engine-authored** — has a non-null `proposal_id` + idempotency
+  key. Lock Gate G4 rejects hand-inserted rows.
+
+**Re-plan after stage 4 (relaxed 2026-07-18 — the old blanket ⊥ caused the 2026-07-16 workaround):**
+re-planning W2 is allowed, but **only through the engine** (`generate-drafts` → portal → `firm`), never by
+hand-INSERT into `production_plan`. `generate-drafts` deletes only its own `TEAEDD:%` drafts and respects
+`planned`/`in_production` as supply — so to preserve Tom's stage-4 edits, **firm them first** (they become
+`planned`, immune to the draft wipe), then re-plan around them. A manual `production_plan` INSERT as a
+shortcut creates `proposal_id`-null rows the Lock Gate rejects and demand it can't audit — ⊥, even "just this once".
 
 ### Stage 0 — integrity gate (once, read-only; shared with procurement side)
 
@@ -121,6 +137,19 @@ order by created_at desc limit 1;                                -- stale warnin
 
 Actor: resolve from `app_users` (role admin/planner, active). ⊥ hardcode UUIDs.
 🔴 on gate → report, ask proceed/fix-first. ⊥ paper over.
+
+**Stale-plan sweep (0-hygiene, added 2026-07-18):** overdue rows still `planned` distort both retro
+(§1) AND the demand window (they still count as demand in the §11 canonical query). Surface, resolve
+with Tom — ⊥ leave silently.
+
+```sql
+select plan_date, coalesce(item_id, base_bom_head_id) as target, planned_qty, uom, created_by_snapshot
+from private_core.production_plan
+where plan_type='production' and status='planned'
+  and completed_submission_id is null and closed_at is null and cancelled_at is null
+  and plan_date < current_date
+order by plan_date;   -- each row = overdue, never produced, still counts as demand → close/re-date w/ Tom
+```
 
 ### Stage 1 — retrospective (last week, read-only). 4 metrics, one table, one conclusion line per miss
 
@@ -281,6 +310,73 @@ Tom fine-tunes drafts at `/planning/production-plan`. Wait for "סיימתי". �
 On "סיימתי": `fn_firm_production_week(actor, week_start_W2)` (promotes drafts in [week_start, +6] → `planned`). Verify count promoted.
 Then `fn_generate_purchase_session(actor, next_sunday, 'weekly')` — reads ONLY firmed plan + BF demand; read back `purchase_session.warnings` immediately.
 
+### Stage 5b — Lock Gate (after firm, before relay; added 2026-07-18). 🟢 = W2 locked; 🔴 = meeting not done
+
+The whole point of Thursday: the next 14 days leave **locked** — complete, engine-authored,
+single-representation, clean of stragglers. Then only the incoming (firmed) week gets fine-tuned next
+Thursday (Stage 2). A board that fails these was never really locked. 5 checks, one scorecard; any 🔴 →
+fix before Stage 6. ⊥ relay a broken board to the buyer — a wrong plan silently produces a wrong buy list.
+
+```sql
+-- G1: tank rows well-formed — pack_manifest present AND Σ(bottles×fill) ≈ planned liters (±3%).
+--     A tank with no/incoherent manifest mis-explodes in the §11 canonical demand query.
+select pp.plan_date, pp.base_bom_head_id, pp.planned_qty,
+       (select round(sum((m->>'qty')::numeric * coalesce(i.base_fill_qty_per_unit,0)),1)
+          from jsonb_array_elements(pp.pack_manifest) m
+          join private_core.items i on i.item_id = m->>'item_id') as manifest_l
+from private_core.production_plan pp
+where pp.plan_type='production' and pp.status in ('planned','in_production')
+  and pp.item_id is null and pp.plan_date between current_date and current_date+13
+  and (pp.pack_manifest is null or jsonb_array_length(pp.pack_manifest)=0
+       or abs(coalesce((select sum((m->>'qty')::numeric * coalesce(i.base_fill_qty_per_unit,0))
+                          from jsonb_array_elements(pp.pack_manifest) m
+                          join private_core.items i on i.item_id = m->>'item_id'),0) - pp.planned_qty)
+           > 0.03 * pp.planned_qty);                                    -- 🔴 any row
+
+-- G2: no drafts left in the firmed window — firm must have promoted them.
+select count(*) as drafts_in_window from private_core.production_plan
+where plan_type='production' and status='draft' and plan_date between current_date and current_date+6;  -- 🔴 >0
+
+-- G3: no overdue open planned rows (= Stage 0 sweep must be resolved).
+select count(*) as overdue_open from private_core.production_plan
+where plan_type='production' and status='planned'
+  and completed_submission_id is null and closed_at is null and cancelled_at is null
+  and plan_date < current_date;                                        -- 🔴 >0
+
+-- G4a (🔴 hard): tank rows can ONLY come from fn_plan_tea_production → firm, which preserves proposal_id
+--     (verified: fn_firm_production_week flips status only). A tank row with null proposal_id, or a
+--     'rebuild'-tagged snapshot, is a hand-INSERT bypassing the engine (the 2026-07-16 rebuild-v2 case).
+select plan_date, base_bom_head_id, created_by_snapshot
+from private_core.production_plan
+where plan_type='production' and status in ('planned','in_production')
+  and plan_date >= current_date and item_id is null
+  and (proposal_id is null or created_by_snapshot ilike '%rebuild%');  -- 🔴 any row
+
+-- G4b (🟡 advisory): FG rows w/ no engine lineage. Manual FG planning is legit (engine = hypothesis,
+--     Tom = final word) — but no proposal_id ⇒ no audit link to netting/session. Report the ratio, don't block.
+select count(*) filter (where proposal_id is null) as manual_fg_rows, count(*) as total_fg_rows
+from private_core.production_plan
+where plan_type='production' and status in ('planned','in_production')
+  and plan_date >= current_date and item_id is not null;              -- 🟡 high ratio = ritual chain unused
+
+-- G5: no representation collision — a tea base with BOTH a tank row and its FG rows on the same day.
+select pp.plan_date, pp.base_bom_head_id
+from private_core.production_plan pp
+where pp.plan_type='production' and pp.status in ('planned','in_production')
+  and pp.item_id is null and pp.plan_date between current_date and current_date+13
+  and exists (
+    select 1 from private_core.production_plan f
+    join private_core.bom_head bh on bh.parent_ref_id = f.item_id
+                                  and bh.linked_base_bom_head_id = pp.base_bom_head_id
+    where f.plan_date = pp.plan_date and f.status in ('planned','in_production'));  -- 🔴 double-counts base RM
+```
+
+G4a 🔴 = a tank was hand-inserted (the 2026-07-16 "rebuild v2" case: `proposal_id` null,
+`TEAEDD:w2-rebuild-v2-*` key, snapshot `…rebuild v2`) → re-author through drafts→firm (Representation
+contract above) so the audit chain + `proposal_id` exist. G4b is advisory: a high manual-FG ratio means
+the generate-drafts → firm chain is being bypassed — not a blocker, but flag it so the ritual is actually
+used and demand stays auditable. Present the scorecard (G1–G5, G4a/G4b split); ⊥ proceed to Stage 6 on any 🔴.
+
 ### Stage 6 — procurement relay
 
 Invoke **procurement-planning** skill, entering at its Stage 5 (quantity interview). Pass: session_id, stage-0 scorecard, firmed weeks summary. Its stages 0/1/4 = already satisfied; 2–3 (ABC/buffers) monthly or when flagged, not weekly.
@@ -298,6 +394,9 @@ Sunday residue: placement only (+quick delta check if asked).
 | `correction_factor` insert/update/delete (`planning_policy`) | explicit per-item Tom approval in chat, present exact key/value first; ⊥ bulk, ⊥ auto-apply |
 | session PO → APPROVED_TO_ORDER | per-PO Tom approval in chat |
 | `fn_place_purchase_order`, other `planning_policy` writes | ⊥ (Doreen / separate Tom-gated action) |
+| **manual `production_plan` INSERT/UPDATE** (bypassing drafts→firm) | ⊥ by default. Only w/ explicit Tom approval AND the row sets `proposal_id` + (tank ⇒ `pack_manifest`) AND passes Lock Gate (Stage 5b). Prefer re-plan through the engine. |
+| **Stage 5b Lock Gate** | ! run every Thursday after firm, before Stage 6; any 🔴 → fix first, ⊥ relay |
+| **component demand for the buyer** | ! §11 canonical query or live session lines only; ⊥ hand-rolled BOM walk |
 
 Immutability: ⊥ UPDATE/DELETE `stock_ledger`, `purchase_orders`, audit tables. Schema drift → re-introspect, ⊥ guess. `current_balances.item_type` ∈ {RM,PKG,FG}.
 
