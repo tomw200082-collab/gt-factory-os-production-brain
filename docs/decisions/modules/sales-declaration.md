@@ -118,6 +118,14 @@ approval, the primary owner lane is a single **cross-module owner**: **Tom is th
 account owner**; module agents are scoped builders, not account managers. No tiered KAM
 headcount (explicitly out of scope — enterprise over-engineering for ~7-branch chains).
 
+**Amendment 2026-07-18 (Tom decision, in writing this session):** the module's
+knowledge / doctrine / agent-declaration layer lives in the dedicated **`Sales-Machine`**
+repo (`tomw200082-collab/Sales-Machine`) — the sales brain, parallel to PRODUCTION for
+factory-os. Its boot kernel (truth constitution) and decisions log govern that layer;
+agent declarations are authored in `Sales-Machine/agents/`. Lane isolation unchanged:
+nothing in Sales-Machine touches factory-os core, and this declaration remains the
+module's governance gate.
+
 ## 4. Source of truth
 
 | Entity | PK | Storage (authority) | Tiebreaker when sources disagree |
@@ -296,7 +304,9 @@ New commands require `factory-os-governor` PROCEED + Tom approval before creatio
 1. **Platform path** (money/vendor): stay on Shopify-plan workaround (tags/metafields)
    vs. a B2B/wholesale app vs. upgrade to **Shopify Plus** (native Companies, per-company
    price lists, B2B login). Current plan = "Shopify", `companiesCount = 0`. Pivotal for
-   how the chain hierarchy is stored long-term.
+   how the chain hierarchy is stored long-term. *(Partially resolved 2026-07-18: Tom
+   opened the dedicated `Sales-Machine` brain repo for the knowledge/agents layer. The
+   Shopify-plan question itself remains open.)*
 2. **Customer-outreach automation**: approve/deny flipping
    `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` (with dry-run + soak). Until then: brief-only,
    Tom sends manually.
@@ -330,7 +340,9 @@ Tracked in `docs/decisions/modules/sales-decisions.md` (to open on approval).
 ## Appendix A — How it manifests in practice (the phased build / small-wins ladder)
 
 Each rung delivers standalone value (Weick small-wins); nothing here builds a new
-platform or a new repo.
+**runtime** platform. *(Amended 2026-07-18: the knowledge/agents brain lives in the
+dedicated `Sales-Machine` repo per Tom's decision — see §3. Runtime code placement, if
+ever needed, is decided at its own gate.)*
 
 1. **Win 1 — Sleeping radar (weeks).** A skill in the `daily-ops-guardian` mold reads
    Shopify order history, computes each account's own cadence, and lists off-pace/missing
