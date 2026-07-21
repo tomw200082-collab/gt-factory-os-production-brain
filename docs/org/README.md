@@ -1,0 +1,57 @@
+# docs/org/ — GT Everyday Org Layer ("חוזה הפעלה חי")
+
+> **Status: DRAFT — pending Tom written approval (= merge). Not authority until merged.**
+> On approval this corridor becomes the single source of truth for **who is
+> accountable for what** across GT Everyday — people, roles, personas, processes,
+> protocols — bound to the live system (portal routes, DB state machines, skills).
+> Subordinate to `CLAUDE.md` locked decisions; sibling to other `docs/` corridors.
+
+## Files
+
+| File | What | Who edits |
+|---|---|---|
+| `SPEC.md` | Goal, constraints, invariants, task list (caveman-encoded) | spec flow only |
+| `org_map.yaml` | **The machine core.** Everything binds here | Claude proposes PR → Tom approves |
+| `views/*.md` | Derived Hebrew views for the team (roster, matrix, per-person SOP) | Generated from map — never hand-edited |
+
+## Why this exists
+
+Tom directive (2026-07-21): redo the responsibility split, boundaries, interfaces
+and roles — bound to the system so **nothing falls between the chairs**. Before
+this corridor, org truth was scattered: one Hebrew playbook here, a stale
+ownership matrix in the backend repo, a DRAFT role doc, skills each carrying
+their own ritual, and empty gt-axis registries. Known live contradiction at time
+of harvest: Doreen = office-manager persona on `planner` system role (OD-1).
+
+## Update protocol (default; Tom ratifies via OD-6)
+
+1. Any change (new hire, process change, system change, drift finding) → Claude
+   authors a PR touching `org_map.yaml` (+ regenerated views).
+2. Tom approves in writing = merge. No direct-to-main. No agent self-approval.
+3. Drift check on every PR + weekly: every route / role / enum / skill / person
+   reference in the map must resolve against the live system; divergences become
+   `open_decisions` entries — never silent fixes (SPEC §V7).
+4. **Add-person:** new `people` entry (name, position, role binding, personas,
+   external systems) + every process whose `accountable`/`handoff` changes, in
+   one PR. No HR-sensitive data, ever (SPEC §V5).
+
+## Consumers
+
+- **Brain agents** — org/responsibility questions route here (boot step 6+).
+- **Operating skills** — `daily-ops-guardian`, `procurement-planning`,
+  `plan-production-14d`, `daily-delivery-dispatch`, `goods-receipt-from-invoice`,
+  `route-print-pack` read accountable/handoff bindings from the map.
+- **Tom** — `open_decisions` is the standing interview list; `decision_log` is history.
+- **The team** — via derived Hebrew views only (distribution channel: OD-8).
+
+## Relation to existing docs (on approval)
+
+| Doc | Becomes |
+|---|---|
+| `docs/playbook/operator-playbook-he.md` | Derived view (regenerated from map; history preserved) |
+| `docs/phase8/ux/USER_ROLES_AND_CONTEXTS.md` | Points here for the human side; keeps UX context |
+| `gt-factory-os/docs/integrations/downstream_ownership_matrix.md` §Human responsibilities | Points here (its "Alex (planner)" row is stale) |
+| `gt-axis-*` skill registries (empty) | OD-7 — recommended: point-to-map, retire scaffold |
+
+---
+**Owner:** Tom. **Born:** 2026-07-21, branch `claude/roles-responsibilities-mapping-yck6ph`.
