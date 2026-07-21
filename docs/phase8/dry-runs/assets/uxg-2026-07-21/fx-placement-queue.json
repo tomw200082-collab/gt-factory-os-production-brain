@@ -1,0 +1,77 @@
+{
+  "**/api/purchase-orders?status=APPROVED_TO_ORDER**": {
+    "rows": [
+      {
+        "po_id": "PQ1",
+        "po_number": "PO-2026-00231",
+        "supplier_id": "SUP-GALIL",
+        "supplier_name": "תבליני הגליל",
+        "status": "APPROVED_TO_ORDER",
+        "expected_receive_date": null,
+        "currency": "ILS",
+        "total_net": "2140.00",
+        "order_by_date": "2026-07-10",
+        "tier": "urgent",
+        "order_document_text": "הזמנה: 8 ק\"ג נענע מיובשת + 40 ל' מיץ לימון",
+        "approved_at": "2026-07-08T09:12:00Z"
+      },
+      {
+        "po_id": "PQ2",
+        "po_number": "PO-2026-00232",
+        "supplier_id": "SUP-SUGAR",
+        "supplier_name": "סוכר תעשיות",
+        "status": "APPROVED_TO_ORDER",
+        "expected_receive_date": "2026-07-27",
+        "currency": "ILS",
+        "total_net": "2200.00",
+        "order_by_date": "2026-07-24",
+        "tier": "must",
+        "order_document_text": "הזמנה: 500 ק\"ג סוכר לבן",
+        "approved_at": "2026-07-20T14:02:00Z"
+      },
+      {
+        "po_id": "PQ3",
+        "po_number": "PO-2026-00233",
+        "supplier_id": "SUP-MERKAZ",
+        "supplier_name": "אריזות המרכז",
+        "status": "APPROVED_TO_ORDER",
+        "expected_receive_date": null,
+        "currency": "ILS",
+        "total_net": "3900.00",
+        "order_by_date": "2026-07-22",
+        "tier": "must",
+        "order_document_text": null,
+        "approved_at": "2026-07-21T06:40:00Z"
+      }
+    ],
+    "count": 3
+  },
+  "**/api/purchase-order-lines**": {
+    "rows": [
+      {
+        "po_line_id": "PL1",
+        "line_number": 1,
+        "component_name": "נענע מיובשת",
+        "item_name": null,
+        "component_id": "C-NANA",
+        "item_id": null,
+        "ordered_qty": "8",
+        "uom": "KG",
+        "line_status": "OPEN",
+        "unit_price_net": null
+      },
+      {
+        "po_line_id": "PL2",
+        "line_number": 2,
+        "component_name": "מיץ לימון סחוט",
+        "item_name": null,
+        "component_id": "C-LEMON",
+        "item_id": null,
+        "ordered_qty": "40",
+        "uom": "L",
+        "line_status": "OPEN",
+        "unit_price_net": "17.50"
+      }
+    ]
+  }
+}

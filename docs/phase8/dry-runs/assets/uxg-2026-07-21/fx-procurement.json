@@ -1,0 +1,426 @@
+{
+  "**/api/purchase-session/current": {
+    "session": {
+      "session_id": "S-2026-07-21",
+      "session_type": "weekly",
+      "session_date": "2026-07-21",
+      "status": "open",
+      "horizon_days": 14,
+      "consolidation_window_days": 7,
+      "rebuild_verifier_drift": 0,
+      "demand_model_version": "v3",
+      "firmed_window": {
+        "firmed_weeks_iso_monday": ["2026-07-20", "2026-07-27"],
+        "window_end": "2026-08-03",
+        "firmed_plan_rows": 25
+      },
+      "input_integrity": {
+        "forecast": {
+          "age_days": 36,
+          "coverage_end": "2026-07-30",
+          "horizon_end": "2026-08-04",
+          "uncovered_days": 5
+        },
+        "counts": {
+          "targets": 12,
+          "fresh": 7,
+          "stale": 3,
+          "never_counted": 2,
+          "threshold_days": 7,
+          "oldest_age_days": 44
+        },
+        "verifier_drift": 0
+      },
+      "warnings": [
+        {
+          "code": "po_missing_expected_delivery",
+          "message": "שורות רכש פתוחות ללא תאריך אספקה צפוי",
+          "lines": [
+            { "target_id": "C-NANA", "po_id": "PO-77", "open_qty": 5 }
+          ]
+        },
+        {
+          "code": "components_without_supplier",
+          "message": "רכיבים נדרשים ללא ספק",
+          "lines": [
+            {
+              "target_id": "C-KIWI",
+              "is_item": false,
+              "label": "פירה קיווי",
+              "qty_purchase": 12,
+              "uom": "KG",
+              "need_date": "2026-07-28"
+            }
+          ]
+        }
+      ],
+      "release_fence": null,
+      "created_at": "2026-07-21T05:30:00Z",
+      "completed_at": null,
+      "totals": {
+        "po_count": 7,
+        "line_count": 9,
+        "total_cost": 11840,
+        "by_tier": { "urgent": 2, "must": 4, "recommended": 1 },
+        "by_status": { "proposed": 4, "approved": 1, "placed": 1, "skipped": 1 }
+      },
+      "pos": [
+        {
+          "session_po_id": "SPO-A",
+          "supplier_id": "SUP-GALIL",
+          "supplier_snapshot": "תבליני הגליל",
+          "tier": "urgent",
+          "status": "proposed",
+          "order_by_date": "2026-07-15",
+          "earliest_need_date": "2026-07-19",
+          "covered_through_date": null,
+          "currency": "ILS",
+          "total_cost": 2140,
+          "order_document_text": null,
+          "po_id": null,
+          "blocking_issues": [],
+          "lines": [
+            {
+              "session_po_line_id": "L-A1",
+              "component_id": "C-NANA",
+              "item_id": null,
+              "line_label": "נענע מיובשת",
+              "recommended_qty": 8,
+              "final_qty": 8,
+              "uom": "KG",
+              "unit_cost": 180,
+              "line_cost": 1440,
+              "earliest_need_date": "2026-07-19",
+              "is_user_added": false,
+              "is_dropped": false,
+              "coverage_trace": {
+                "trace_version": 3,
+                "on_hand_inv": 3,
+                "total_horizon_demand_inv": 35,
+                "avg_daily_demand_inv": 2.5,
+                "cover_days": 14,
+                "safety_floor_inv": 5,
+                "need_date": "2026-07-19",
+                "projected_on_hand_at_need_inv": -4,
+                "consolidation_window_days": 7,
+                "window_demand_inv": 17.5,
+                "window_open_po_receipts_inv": 5,
+                "order_qty_inventory_uom": 8,
+                "purchase_to_inv_factor": 1,
+                "lead_time_days": 5,
+                "demand_model_version": "v3",
+                "lt_source": "component_master",
+                "criticality": "high",
+                "last_count_age_days": 2,
+                "moq": 0,
+                "order_multiple": 1,
+                "qty_purchase_before_rounding": 8,
+                "blocking": []
+              }
+            },
+            {
+              "session_po_line_id": "L-A2",
+              "component_id": "C-LEMON",
+              "item_id": null,
+              "line_label": "מיץ לימון סחוט",
+              "recommended_qty": 40,
+              "final_qty": 40,
+              "uom": "L",
+              "unit_cost": 17.5,
+              "line_cost": 700,
+              "earliest_need_date": "2026-07-24",
+              "is_user_added": false,
+              "is_dropped": false,
+              "coverage_trace": {
+                "trace_version": 3,
+                "on_hand_inv": 60,
+                "total_horizon_demand_inv": 120,
+                "avg_daily_demand_inv": 8,
+                "cover_days": 14,
+                "safety_floor_inv": 20,
+                "need_date": "2026-07-24",
+                "projected_on_hand_at_need_inv": 16,
+                "consolidation_window_days": 7,
+                "window_demand_inv": 56,
+                "window_open_po_receipts_inv": 0,
+                "order_qty_inventory_uom": 40,
+                "purchase_to_inv_factor": 1,
+                "lead_time_days": 2,
+                "demand_model_version": "v3",
+                "lt_source": "supplier_item",
+                "criticality": "medium",
+                "last_count_age_days": 4,
+                "moq": 0,
+                "order_multiple": 1,
+                "qty_purchase_before_rounding": 40,
+                "blocking": []
+              }
+            }
+          ]
+        },
+        {
+          "session_po_id": "SPO-B",
+          "supplier_id": "SUP-MERKAZ",
+          "supplier_snapshot": "אריזות המרכז",
+          "tier": "must",
+          "status": "proposed",
+          "order_by_date": "2026-07-22",
+          "earliest_need_date": "2026-07-23",
+          "covered_through_date": null,
+          "currency": "ILS",
+          "total_cost": 3900,
+          "order_document_text": null,
+          "po_id": null,
+          "blocking_issues": [],
+          "lines": [
+            {
+              "session_po_line_id": "L-B1",
+              "component_id": "C-BOTTLE-1L",
+              "item_id": null,
+              "line_label": "בקבוק 1 ליטר",
+              "recommended_qty": 1200,
+              "final_qty": 1200,
+              "uom": "UNIT",
+              "unit_cost": 3.25,
+              "line_cost": 3900,
+              "earliest_need_date": "2026-07-23",
+              "is_user_added": false,
+              "is_dropped": false,
+              "coverage_trace": {
+                "trace_version": 3,
+                "on_hand_inv": 350,
+                "total_horizon_demand_inv": 1500,
+                "avg_daily_demand_inv": 2,
+                "cover_days": 14,
+                "safety_floor_inv": 100,
+                "need_date": "2026-07-23",
+                "projected_on_hand_at_need_inv": 4,
+                "consolidation_window_days": 7,
+                "window_demand_inv": 700,
+                "window_open_po_receipts_inv": 0,
+                "order_qty_inventory_uom": 1200,
+                "purchase_to_inv_factor": 1,
+                "lead_time_days": 4,
+                "demand_model_version": "v3",
+                "lt_source": "supplier_default",
+                "criticality": "high",
+                "last_count_age_days": 21,
+                "moq": 500,
+                "order_multiple": 100,
+                "qty_purchase_before_rounding": 1180,
+                "blocking": [{ "code": "missing_price", "detail": "אין מחיר פעיל" }]
+              }
+            }
+          ]
+        },
+        {
+          "session_po_id": "SPO-C",
+          "supplier_id": "SUP-EMEK",
+          "supplier_snapshot": "חקלאי העמק",
+          "tier": "must",
+          "status": "proposed",
+          "order_by_date": "2026-07-28",
+          "earliest_need_date": "2026-07-27",
+          "covered_through_date": "2026-08-04",
+          "currency": "ILS",
+          "total_cost": 1650,
+          "order_document_text": null,
+          "po_id": null,
+          "blocking_issues": [],
+          "lines": [
+            {
+              "session_po_line_id": "L-C1",
+              "component_id": "C-APPLE-DRY",
+              "item_id": null,
+              "line_label": "תפוח מיובש",
+              "recommended_qty": 30,
+              "final_qty": 30,
+              "uom": "KG",
+              "unit_cost": 55,
+              "line_cost": 1650,
+              "earliest_need_date": "2026-07-27",
+              "is_user_added": false,
+              "is_dropped": false,
+              "coverage_trace": {
+                "trace_version": 3,
+                "on_hand_inv": 20,
+                "total_horizon_demand_inv": 42,
+                "avg_daily_demand_inv": 1.5,
+                "cover_days": 14,
+                "safety_floor_inv": 6,
+                "need_date": "2026-07-27",
+                "projected_on_hand_at_need_inv": 12,
+                "consolidation_window_days": 7,
+                "window_demand_inv": 21,
+                "window_open_po_receipts_inv": 0,
+                "order_qty_inventory_uom": 30,
+                "purchase_to_inv_factor": 1,
+                "lead_time_days": 4,
+                "demand_model_version": "v3",
+                "lt_source": "component_master",
+                "criticality": "medium",
+                "last_count_age_days": 5,
+                "moq": 0,
+                "order_multiple": 1,
+                "qty_purchase_before_rounding": 30,
+                "blocking": []
+              }
+            }
+          ]
+        },
+        {
+          "session_po_id": "SPO-D",
+          "supplier_id": "SUP-ADHOC",
+          "supplier_snapshot": "יבוא ישיר בע\"מ",
+          "tier": "recommended",
+          "status": "proposed",
+          "order_by_date": "2026-07-29",
+          "earliest_need_date": "2026-08-01",
+          "covered_through_date": null,
+          "currency": "ILS",
+          "total_cost": 950,
+          "order_document_text": null,
+          "po_id": null,
+          "blocking_issues": [],
+          "lines": [
+            {
+              "session_po_line_id": "L-D1",
+              "component_id": "C-LYCHEE",
+              "item_id": null,
+              "line_label": "פירה ליצ'י",
+              "recommended_qty": 10,
+              "final_qty": 10,
+              "uom": "KG",
+              "unit_cost": 95,
+              "line_cost": 950,
+              "earliest_need_date": "2026-08-01",
+              "coverage_trace": null,
+              "is_user_added": true,
+              "is_dropped": false
+            }
+          ]
+        },
+        {
+          "session_po_id": "SPO-E",
+          "supplier_id": "SUP-SUGAR",
+          "supplier_snapshot": "סוכר תעשיות",
+          "tier": "must",
+          "status": "approved",
+          "order_by_date": "2026-07-24",
+          "earliest_need_date": "2026-07-26",
+          "covered_through_date": null,
+          "currency": "ILS",
+          "total_cost": 2200,
+          "order_document_text": "הזמנה: 500 ק\"ג סוכר לבן",
+          "po_id": null,
+          "blocking_issues": [],
+          "lines": [
+            {
+              "session_po_line_id": "L-E1",
+              "component_id": "C-SUGAR",
+              "item_id": null,
+              "line_label": "סוכר לבן",
+              "recommended_qty": 500,
+              "final_qty": 500,
+              "uom": "KG",
+              "unit_cost": 4.4,
+              "line_cost": 2200,
+              "earliest_need_date": "2026-07-26",
+              "is_user_added": false,
+              "is_dropped": false,
+              "coverage_trace": {
+                "trace_version": 3,
+                "on_hand_inv": 260,
+                "total_horizon_demand_inv": 700,
+                "avg_daily_demand_inv": 50,
+                "cover_days": 14,
+                "safety_floor_inv": 100,
+                "need_date": "2026-07-26",
+                "projected_on_hand_at_need_inv": 150,
+                "consolidation_window_days": 7,
+                "window_demand_inv": 350,
+                "window_open_po_receipts_inv": 0,
+                "order_qty_inventory_uom": 500,
+                "purchase_to_inv_factor": 1,
+                "lead_time_days": 3,
+                "demand_model_version": "v3",
+                "lt_source": "component_master",
+                "criticality": "high",
+                "last_count_age_days": 1,
+                "moq": 0,
+                "order_multiple": 25,
+                "qty_purchase_before_rounding": 490,
+                "blocking": []
+              }
+            }
+          ]
+        },
+        {
+          "session_po_id": "SPO-F",
+          "supplier_id": "SUP-LABELS",
+          "supplier_snapshot": "דפוס אתיקות הצפון",
+          "tier": "must",
+          "status": "placed",
+          "order_by_date": "2026-07-20",
+          "earliest_need_date": "2026-07-25",
+          "covered_through_date": null,
+          "currency": "ILS",
+          "total_cost": 800,
+          "order_document_text": "הזמנה: 2000 אתיקות",
+          "po_id": "9f3c2a10-5b77-4e21-a4d9-0c8e6f1b2d34",
+          "blocking_issues": [],
+          "lines": [
+            {
+              "session_po_line_id": "L-F1",
+              "component_id": "C-LABEL-MUZA",
+              "item_id": null,
+              "line_label": "אתיקת מוזה 1 ליטר",
+              "recommended_qty": 2000,
+              "final_qty": 2000,
+              "uom": "UNIT",
+              "unit_cost": 0.4,
+              "line_cost": 800,
+              "earliest_need_date": "2026-07-25",
+              "coverage_trace": null,
+              "is_user_added": false,
+              "is_dropped": false
+            }
+          ]
+        },
+        {
+          "session_po_id": "SPO-G",
+          "supplier_id": "SUP-GLASS",
+          "supplier_snapshot": "זכוכית דרום",
+          "tier": "recommended",
+          "status": "skipped",
+          "skip_reason": "הוזמן בערוץ אחר",
+          "order_by_date": "2026-07-30",
+          "earliest_need_date": "2026-08-02",
+          "covered_through_date": null,
+          "currency": "ILS",
+          "total_cost": 200,
+          "order_document_text": null,
+          "po_id": null,
+          "blocking_issues": [],
+          "lines": [
+            {
+              "session_po_line_id": "L-G1",
+              "component_id": "C-JAR",
+              "item_id": null,
+              "line_label": "צנצנת 250 מ\"ל",
+              "recommended_qty": 100,
+              "final_qty": 100,
+              "uom": "UNIT",
+              "unit_cost": 2,
+              "line_cost": 200,
+              "earliest_need_date": "2026-08-02",
+              "coverage_trace": null,
+              "is_user_added": false,
+              "is_dropped": false
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "**/api/purchase-orders?**": {
+    "rows": [
+      {
+        "po_id": "PQ1",
+        "po_number": "PO-2026-00231",
+        "supplier_id": "SUP-GALIL",
+        "supplier_name": "תבליני הגליל",
+        "status": "APPROVED_TO_ORDER",
+        "expected_receive_date": null,
+        "currency": "ILS",
+        "total_net": "2140.00",
+        "order_by_date": "2026-07-10",
+        "created_at": "2026-07-08T09:12:00Z",
+        "notes": null
+      },
+      {
+        "po_id": "PQ4",
+        "po_number": "PO-2026-00216",
+        "supplier_id": "SUP-MERKAZ",
+        "supplier_name": "אריזות המרכז",
+        "status": "OPEN",
+        "expected_receive_date": "2026-07-17",
+        "currency": "ILS",
+        "total_net": "5200.00",
+        "order_by_date": "2026-07-05",
+        "created_at": "2026-07-05T08:00:00Z",
+        "notes": null
+      },
+      {
+        "po_id": "PQ5",
+        "po_number": "PO-2026-00212",
+        "supplier_id": "SUP-UNKNOWN",
+        "supplier_name": null,
+        "status": "PARTIAL",
+        "expected_receive_date": "2026-07-23",
+        "currency": "ILS",
+        "total_net": "1830.00",
+        "order_by_date": "2026-07-01",
+        "created_at": "2026-07-01T10:30:00Z",
+        "notes": "קבלה חלקית 12/07"
+      },
+      {
+        "po_id": "PQ6",
+        "po_number": "PO-2026-00198",
+        "supplier_id": "SUP-EMEK",
+        "supplier_name": "חקלאי העמק",
+        "status": "RECEIVED",
+        "expected_receive_date": "2026-07-10",
+        "currency": "ILS",
+        "total_net": "990.00",
+        "order_by_date": "2026-06-28",
+        "created_at": "2026-06-28T11:00:00Z",
+        "notes": null
+      },
+      {
+        "po_id": "PQ7",
+        "po_number": "PO-2026-00190",
+        "supplier_id": "SUP-GLASS",
+        "supplier_name": "זכוכית דרום",
+        "status": "CANCELLED",
+        "expected_receive_date": null,
+        "currency": "ILS",
+        "total_net": "200.00",
+        "order_by_date": "2026-06-25",
+        "created_at": "2026-06-25T09:00:00Z",
+        "notes": "בוטל — הוזמן בערוץ אחר"
+      }
+    ],
+    "count": 5
+  }
+}
