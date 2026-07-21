@@ -37,6 +37,23 @@ NEW responsibility split defined here → system realigns to map. ⊥ reverse.
 - check: drift check v1 = `source-of-truth-auditor` dispatch over map vs live inventories (`gt-factory-os-portal/docs/portal-os/route-manifest.json`, `app_users` roles, migration enums, `.claude/skills/`). Script only if skill threshold met (`docs/phase8/decisions/STEP4-SKILLS-DECISION.md`).
 - consumers: brain agents (boot step 6+ when routed to org questions), operating skills (`daily-ops-guardian`, `procurement-planning`, `plan-production-14d`, `daily-delivery-dispatch`, `goods-receipt-from-invoice`, `route-print-pack`), Tom, team via views.
 
+## §R — research log (2026-07-21, Tom-requested: owner-bottleneck / Alex transition)
+
+R1: EOS Accountability Chart — seats-first; exactly 1 accountable per seat; person MAY hold 2 seats, seat ⊥ 2 owners; fit = GWC (gets/wants/capacity). [Wickman, *Traction* 2011; eosworldwide.com/glossary]
+R2: Visionary seat = big ideas/R&D, creative problem-solving, major external relationships, culture, selling big deals. Integrator seat = LMA, P&L/plan execution, integrating functions, removing obstacles, day-to-day tie-breaking. Maps 1:1 → Alex=Visionary, Tom=Integrator. [Wickman & Winters, *Rocket Fuel* 2015; eosworldwide.com/visionary-vs-integrator]
+R3: Visionary failure mode = "in the weeds", follow-through weak, growth caps at his capacity; cure = "let go of the vine". Exactly Tom's problem statement on Alex. [eosworldwide.com/blog/let-go-of-the-vine]
+R4: 5 V/I rules: monthly Same Page Meeting · no end runs (team ⊥ bypass to Visionary) · Integrator breaks day-to-day ties · Visionary ON not IN · mutual domain respect. [eosworldwide.com/the-5-rules]
+R5: Monkey mechanism: ∀ "leave it with me" → next-move jumps to boss's back → boss = bottleneck, work stalls. = "אחריות שהוא לוקח לא מתבצעת". Cure: ∀ monkey → named owner; degrees-of-initiative ladder (act-then-advise). [Oncken & Wass, HBR 1974/1999]
+R6: E-Myth: positions chart first, position contract per seat, staff seats out from under owner over time — valid even when 1 person temporarily holds several seats. [Gerber, *E-Myth Revisited* 1995]
+R7: Greiner: delegation works only when top "manages by exception based on periodic reports". [HBR 1972/1998]
+R8: Adizes Founder's Trap: "tasks are delegated rather than responsibilities"; cure = delegate responsibility WITH authority, judge on outputs. [Adizes, *Managing Corporate Lifecycles*]
+R9: Single-A: shared accountability disappears; RACI exactly-1-A; Apple DRI ("never any confusion who is responsible"); RAPID one Decide per decision. [Atlassian RACI; Lashinsky *Inside Apple* 2012; Rogers & Blenko "Who Has the D?" HBR 2006]
+R10: Transition instruments: Delegate-and-Elevate 4-quadrant audit of everything Alex touches, ≥1 handoff / 90d, target ≥80% time top-quadrants; weekly scorecard 5-15 owned numbers + L10-style meeting → Alex "plays from above" by exception. [eosworldwide.com/delegate-and-elevate, /level-10-meeting]
+R11: Food-factory legitimacy: BRCGS-class standards REQUIRE documented org chart + 1 accountable + named deputy per function → present redesign to team as compliance-grade professionalization, not sidelining anyone. [brcgs.com guidance doc 63857]
+R12: ⊥ established seat layout for ~7-person beverage plant — derive seats from GT's own processes (this corridor). Flags: EOS "3% of population" = vendor claim; term "visionary-dependence" UNSOURCED (McKeown concept verified).
+
+→ feeds: questionnaire ch.5 structure (done), OD-9 resolution frame, T9 presentation skeleton (seats chart, V/I split, monkey rule, scorecard).
+
 ## §V
 
 V1: ∀ transition ∈ org_map.processes → exactly 1 `accountable` (person-id | role-id) & named `handoff`. 0 orphans.
