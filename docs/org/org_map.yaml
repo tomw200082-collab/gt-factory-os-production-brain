@@ -137,6 +137,22 @@ external_systems:
   - { id: bizibox,       role_he: הנהלת חשבונות,              truth: none }
 
 # -----------------------------------------------------------------------------
+zones:  # physical zones — blueprint 04399025 (הלהב 15 חולון, חנות B-9, "GREENTEA"; AutoCAD plot 2025-10-27; Tom upload 2026-07-21)
+  source: "uploads/04399025-HALAEV_15_HOLON.pdf — sanitation plan 1:50, floor 1 + gallery"
+  flow_he: "כניסת ספקים (חזית) -> מעבר אורכי -> מחסן חו\"ג בעורף -> חדר בישול (עורף) -> חדר ייצור (מרכז) -> מחסן תוצרת מוגמרת (חזית) -> יציאת הוצאת סחורה (חזית). חו\"ג נוסע את כל אורך המבנה בקבלה; תוצרת יושבת צמוד לדלת היציאה."
+  list:
+    - { id: cooking_room,    name_he: "חדר בישול — מיכלי בישול/ערבוב, עמדת הרכבת קוקטיילים, שטיפת כלים, קומפרסור", owner: denis }
+    - { id: production_room, name_he: "חדר ייצור — הכנסת בקבוקים, מיכל מילוי, איטום בקבוקים, אריזת קרטונים, עמדת בדיקת BRX+PH", owner: denis }
+    - { id: rm_warehouse,    name_he: "מחסן חומרי גלם — תה, סוכר, מדפים, עמדת שקילה + מקפיא מחית לימון (-18°C)", owner: denis }
+    - { id: pkg_stores,      name_he: "מחסני בקבוקים / קרטונים / אריזות / אלכוהול לאורך המעבר", owner: denis }
+    - { id: fg_warehouse,    name_he: "מחסן סחורה מוגמרת — עגלות תה, מדפי תוצרת ומוצרים נלווים (בחזית)", owner: maxim }
+    - { id: goods_out_door,  name_he: "יציאת הוצאת סחורה (חזית)", owner: maxim }
+    - { id: suppliers_door,  name_he: "כניסת ספקים (חזית) — מסלול הקבלה חוצה את כל המבנה עד העורף", owner: OPEN(OD-3) }
+    - { id: corridor,        name_he: "מעבר אורכי — ציר הזרימה; חציית זרמים חו\"ג/תוצרת באמצע", owner: OPEN(OD-5) }
+    - { id: gallery_team,    name_he: "גלריה — חדר צוות, פינת אוכל, מטבחון (מעל חלל הקרקע)", owner: "OPEN(Q: מי יושב שם ביומיום?)" }
+    - { id: changing_room,   name_he: "חדר הלבשה + שירותים/מקלחת", owner: "OPEN(Q: נוהל היגיינה בכניסה לייצור)" }
+
+# -----------------------------------------------------------------------------
 # PROCESSES — accountable per transition + handoff. ids/routes/enums verbatim.
 # -----------------------------------------------------------------------------
 processes:
