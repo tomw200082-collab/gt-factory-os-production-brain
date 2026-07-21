@@ -52,6 +52,14 @@ R10: Transition instruments: Delegate-and-Elevate 4-quadrant audit of everything
 R11: Food-factory legitimacy: BRCGS-class standards REQUIRE documented org chart + 1 accountable + named deputy per function → present redesign to team as compliance-grade professionalization, not sidelining anyone. [brcgs.com guidance doc 63857]
 R12: ⊥ established seat layout for ~7-person beverage plant — derive seats from GT's own processes (this corridor). Flags: EOS "3% of population" = vendor claim; term "visionary-dependence" UNSOURCED (McKeown concept verified).
 
+(research pass 2 — SoD / TPM / 5S / leads / checklists, 2026-07-21:)
+
+R13: SoD triad authorize|custody|record — ⊥ one person holds 2 of 3. AICPA/CIMA publish a 4-person SoD chart (workable at GT scale). Small-entity compensating controls = owner review + dual sign-off thresholds (COSO smaller-companies guidance). ACFE 2024: orgs <100 employees median fraud loss $141K; missing controls most-cited weakness. → Adi records+reconciles; Tom approves+releases payments + reads bank feed independently; stock counter ≠ adjustment approver (matches count_freezes flow). [AICPA/CIMA 4-person chart; COSO; ACFE RTTN 2024]
+R14: TPM autonomous maintenance (jishu hozen) — production operator owns first-line care (clean, inspect, lubricate, tighten), escalates beyond; JIPM 7-step. → Denis owns machine first-line. [Nakajima, *Introduction to TPM*, 1988]
+R15: 5S named-owner-per-zone + Sustain audit cadence (Toyota daily/weekly/monthly audits). → Denis owns RM+filling zones; Maxim owns FG zone; Tom monthly walk-through. [Hirano, *5 Pillars of the Visual Workplace*, 1995; lean.org lexicon]
+R16: Lead response: contact within 1h → ~7x qualification odds vs 1h later, >60x vs 24h+ (1.25M-lead dataset; HBR **March** 2011 — not Dec); 2007 LRM study: contact odds 100x at 5min vs 30min. ⊥ cite "quality drops 80% after 5min" (untraceable). → Doreen lead SLA: first response within the hour when possible; same-day hard ceiling. [Oldroyd et al., HBR 2011/03; leadresponsemanagement.org]
+R17: Short killer-item checklists beat long SOPs: WHO 19-item surgical checklist → deaths 1.5%→0.8% (~-47% rel), complications 11%→7% (NEJM 2009, 8 hospitals); aviation read-do cards. → per-person "3 iron rules" format; full SOPs = training only. [Gawande, *Checklist Manifesto* 2009; Haynes et al., NEJM 360:491]
+
 → feeds: questionnaire ch.5 structure (done), OD-9 resolution frame, T9 presentation skeleton (seats chart, V/I split, monkey rule, scorecard).
 
 ## §V
@@ -78,8 +86,8 @@ T7|.|consumer wiring: propose CLAUDE.md pointer (Tom sole writer) + skill read-p
 T8|.|realignment backlog: ∀ resolved OD → tranche/lane routing per AI_BRAIN_ROUTER.md|V7
 T9|.|deep presentation → Tom: RTL Hebrew artifact — domain map, role card per person, handoff diagram, escalation ladder, before/after|V5
 T10|.|employee version: per-person one-pagers + team deck; rollout Doreen/Denis/Maxim/Adi|V5,V6
-T11|~|world-research (Tom-requested): owner-bottleneck, EOS visionary/integrator, single-point accountability → §R; grounds OD-9 + presentation|—
-T12|~|intake questionnaire v2 (deepen pass): person-centric, PRE-FILLED from Tom brief, seams chapter, Tom↔Alex chapter, system-gaps chapter|V5
+T11|x|world-research ×2 (Tom-requested): owner-bottleneck/EOS pass 1 → R1-R12; SoD/TPM/5S/leads/checklists pass 2 → R13-R17|—
+T12|x|intake questionnaire v2+v3 (deepen ×2): person-centric, PRE-FILLED, then full proposal layer — every field ships a cited recommendation w/ accept/edit; given/suggested/confirmed states; iron-rules + V/I commitments|V5
 
 order (recalibrated 2026-07-21): T1→T2→T3→**T9→T10**, then T4→T8 (system-realignment wave).
 
