@@ -14,6 +14,7 @@ NEW responsibility split defined here → system realigns to map. ⊥ reverse.
 
 ## §C
 
+- PRIORITY (Tom recalibration 2026-07-21): factory floor runs TODAY w/o clear role separation — human-level order FIRST ("מחוץ למערכת"). Deliverable #1 = deep presentation → Tom (order in his head), then employee version. System linkage / drift / realignment = substrate, AFTER. Interview must also cover no-screen physical work (⊥ system-biased harvest).
 - home: `docs/org/` (this repo). Authority only after Tom merge (CLAUDE.md: "no new authority docs w/o Tom approval").
 - single source: on approval supersedes scattered org facts — `docs/playbook/operator-playbook-he.md` → derived view; `gt-factory-os/docs/integrations/downstream_ownership_matrix.md` §Human responsibilities + `docs/phase8/ux/USER_ROLES_AND_CONTEXTS.md` → point here. ⊥ second writable org source.
 - scope: whole company — factory-ops, office/bookkeeping, planning/procurement, delivery, marketing-sales, finance, tech/AI. Deep system-linkage only where system exists (routes / enums / skills). ⊥ invent links to systems that do not exist. `sales` module = declared DRAFT (`docs/decisions/modules/sales-declaration.md`) — map references it, ⊥ duplicates it.
@@ -52,12 +53,16 @@ V8: ∀ open_decisions entry → owner=Tom, dated, options listed. Resolved → 
 id|status|task|cites
 T1|~|corridor skeleton: SPEC + README + org_map.yaml schema|V4
 T2|~|harvest current truth → map: 4 people, 4 roles, 7 personas, 21 processes, 16 state machines, surfaces, skills (system exam 2026-07-21)|V2,V3
-T3|.|interview Tom: NEW responsibility split — resolve ∀ open_decisions (OD-1 Doreen first, OD-5 core)|V1,V3,V8
+T3|~|staged redesign interview S0-S5 with Tom (protocol: README) — resolves ∀ OD incl. OD-5 core; fills accountable ∀ process incl. no-screen physical work|V1,V3,V8
 T4|.|drift check v1 run → first N/N report vs route-manifest + enums + skills|V1,V2
 T5|.|derive Hebrew views: roster, matrix, per-person SOP v2 (playbook superseded in place, history preserved)|V5,V6
 T6|.|10-scenario acceptance drill with Tom|—
 T7|.|consumer wiring: propose CLAUDE.md pointer (Tom sole writer) + skill read-paths|V4
 T8|.|realignment backlog: ∀ resolved OD → tranche/lane routing per AI_BRAIN_ROUTER.md|V7
+T9|.|deep presentation → Tom: RTL Hebrew artifact — domain map, role card per person, handoff diagram, escalation ladder, before/after|V5
+T10|.|employee version: per-person one-pagers + team deck; rollout Doreen/Andrei/Maxim|V5,V6
+
+order (recalibrated 2026-07-21): T1→T2→T3→**T9→T10**, then T4→T8 (system-realignment wave).
 
 ## §B
 

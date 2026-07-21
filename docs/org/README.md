@@ -44,6 +44,24 @@ of harvest: Doreen = office-manager persona on `planner` system role (OD-1).
 - **Tom** — `open_decisions` is the standing interview list; `decision_log` is history.
 - **The team** — via derived Hebrew views only (distribution channel: OD-8).
 
+## The redesign interview (T3) — protocol
+
+Priority per Tom (2026-07-21): the factory's human layer comes first — the floor
+does not run on clear roles today. Six stages, one question at a time (grill
+style, each with a recommendation), answers land in `org_map.yaml` immediately;
+playback ("הנה מה שהבנתי") between stages. Chat-based, mobile-friendly — S2
+works best walking the floor. Output feeds T9 (deep presentation for Tom) →
+iterate → T10 (employee version).
+
+| # | Stage | Produces |
+|---|---|---|
+| S0 | Roster + constraints | full cast (incl. part-time / external / hiring), hours, what Tom stops holding himself |
+| S1 | Pain harvest | 5-10 real recent failures + daily friction → the problem set the design must solve |
+| S2 | Day + week walkthrough | timeline 06:00→close + Thu/Sun rhythm; owner-today vs. owner-should per block; hunts no-screen physical work |
+| S3 | Domain ownership | ONE owner per domain; decides-alone / needs-Tom / backup (Owner-Approver-Informed) |
+| S4 | Seams (התממשקות) | per handoff: trigger, artifact, deadline, failure protocol |
+| S5 | Escalation + iron rules | when to call Tom; never-decide-alone list; 3 iron rules per person |
+
 ## Relation to existing docs (on approval)
 
 | Doc | Becomes |
