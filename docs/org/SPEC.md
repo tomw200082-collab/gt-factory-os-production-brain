@@ -89,7 +89,9 @@ T10|.|employee version: per-person one-pagers + team deck; rollout Doreen/Denis/
 T11|x|world-research ×2 (Tom-requested): owner-bottleneck/EOS pass 1 → R1-R12; SoD/TPM/5S/leads/checklists pass 2 → R13-R17|—
 T12|x|intake questionnaire v2+v3 (deepen ×2): person-centric, PRE-FILLED, then full proposal layer — every field ships a cited recommendation w/ accept/edit; given/suggested/confirmed states; iron-rules + V/I commitments|V5
 
-order (recalibrated 2026-07-21): T1→T2→T3→**T9→T10**, then T4→T8 (system-realignment wave).
+T13|~|floor proposals P-1..P-4 (`PROPOSALS.md`): production-order loop (DIRECTION_AGREED), receiving square, daily briefing, dead-stock — Tom approval per item → realignment wave|V4
+
+order (recalibrated 2026-07-21): T1→T2→T3→**T9→T10**, then T4→T8+T13 (system-realignment wave).
 
 ## §B
 

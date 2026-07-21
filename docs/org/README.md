@@ -13,6 +13,7 @@
 | `SPEC.md` | Goal, constraints, invariants, task list (caveman-encoded) | spec flow only |
 | `org_map.yaml` | **The machine core.** Everything binds here | Claude proposes PR → Tom approves |
 | `views/*.md` | Derived Hebrew views for the team (roster, matrix, per-person SOP) | Generated from map — never hand-edited |
+| `PROPOSALS.md` | Living ops proposals (P-1 production-order loop, P-2 receiving square, P-3 daily briefing, P-4 dead-stock) — nothing executes without Tom | Claude proposes → Tom approves |
 
 ## Why this exists
 

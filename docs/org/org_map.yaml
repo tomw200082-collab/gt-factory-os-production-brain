@@ -147,10 +147,10 @@ zones:  # physical zones — blueprint 04399025 (הלהב 15 חולון, חנו�
     - { id: pkg_stores,      name_he: "מחסני בקבוקים / קרטונים / אריזות / אלכוהול לאורך המעבר", owner: denis }
     - { id: fg_warehouse,    name_he: "מחסן סחורה מוגמרת — עגלות תה, מדפי תוצרת ומוצרים נלווים (בחזית)", owner: maxim }
     - { id: goods_out_door,  name_he: "יציאת הוצאת סחורה (חזית)", owner: maxim }
-    - { id: suppliers_door,  name_he: "כניסת ספקים (חזית) — מסלול הקבלה חוצה את כל המבנה עד העורף", owner: OPEN(OD-3) }
-    - { id: corridor,        name_he: "מעבר אורכי — ציר הזרימה; חציית זרמים חו\"ג/תוצרת באמצע", owner: OPEN(OD-5) }
-    - { id: gallery_team,    name_he: "גלריה — חדר צוות, פינת אוכל, מטבחון (מעל חלל הקרקע)", owner: "OPEN(Q: מי יושב שם ביומיום?)" }
-    - { id: changing_room,   name_he: "חדר הלבשה + שירותים/מקלחת", owner: "OPEN(Q: נוהל היגיינה בכניסה לייצור)" }
+    - { id: suppliers_door,  name_he: "כניסת ספקים (חזית) — מסלול הקבלה חוצה את כל המבנה עד העורף", owner: OPEN(OD-3), note_he: "שאיפת טום (2026-07-21): דניס פותח; טרם פורמלי. פתרון מוצע: ריבוע קליטה בדלת (PROPOSALS P-2)" }
+    - { id: corridor,        name_he: "מעבר אורכי — ציר הזרימה; חציית זרמים נדירה ומקובלת (טום Q5)", owner: OPEN(OD-5), note_he: "כלל קדימות מוצע: עגלת תוצרת יוצאת עוצרת הכל (P-2)" }
+    - { id: gallery_team,    name_he: "גלריה — משרד קומה 2: חדר צוות, פינת אוכל, מטבחון", owner: shared, note_he: "טום 2026-07-21: כל אנשי המשרד (טום, אלכס, דורין, עדי) יושבים שם בדרך כלל" }
+    - { id: changing_room,   name_he: "חדר הלבשה + שירותים/מקלחת", owner: OPEN(OD-5), note_he: "אין נוהל היגיינה; בפועל רק אלכס אוכף (F-5) — עול תפעולי להעברה per OD-9" }
 
 # -----------------------------------------------------------------------------
 # PROCESSES — accountable per transition + handoff. ids/routes/enums verbatim.
@@ -266,6 +266,10 @@ processes:
       - { step: מילוי + סגירה + תוויות + אריזה, accountable: denis, handoff: fg_intake_from_production -> maxim }
       - { step: הזנת דיווח ייצור יומי לפי ביצוע בפועל, accountable: denis, handoff: plan row derived-done }
     system_gap: F-1   # recipes->execution interface needs improvement (Tom)
+    notes_he:
+      - "שקילה תוך כדי בישול — דניס, בעמדת השקילה (טום Q4); צ'ק-ליסט הביצוע חייב לחיות שם, לא kitting מראש"
+      - "QC Brix/pH: אין בדיקה שוטפת כיום — 'לא תקין' (טום Q3, F-4); יעד: דניס בסגירת פקודת ייצור"
+      - "עיצוב מעגל פקודת-הייצור: DIRECTION_AGREED — ראה docs/org/PROPOSALS.md P-1; בנייה טרם אושרה"
 
   - id: rm_pkg_warehouse
     name_he: מחסן חומרי גלם ואריזות
@@ -508,6 +512,7 @@ open_decisions:  # owner=Tom for all. (V8)
   - id: OD-3
     date: 2026-07-21
     q_he: "קבלת סחורה — מי מקבל פיזית ומי מקליד (GR)? כנראה דניס (בעל מחסן חו\"ג) — לאשר"
+    context: "טום 2026-07-21 (Q2): אין תפקיד מוגדר; השאיפה — דניס פותח. פתרון מוצע: ריבוע קליטה בדלת + two-stage receiving (PROPOSALS P-2). נותר לפרמל בשיחת העיצוב"
   - id: OD-4
     date: 2026-07-21
     q_he: "חלוקת טיפול בחריגות (inbox) — לפי אילו קטגוריות ולמי"
@@ -539,6 +544,10 @@ decision_log:
   - { id: D-5, date: 2026-07-21, decision_he: "את השאלון ממלא טום בלבד, כולל פרק אלכס", source: Tom in-session }
 
 findings:  # observed gaps -> realignment wave (V7)
-  - { id: F-1, date: 2026-07-21, finding_he: "ממשק מתכונים -> ביצוע בפועל דורש שיפור (טום); נוגע ל-Recipe-Health corridor הקיים בפורטל", route_to: realignment }
+  - { id: F-1, date: 2026-07-21, finding_he: "ממשק מתכונים -> ביצוע בפועל דורש שיפור (טום); נוגע ל-Recipe-Health corridor הקיים בפורטל", route_to: "realignment — PROPOSALS P-1 סוגר" }
   - { id: F-2, date: 2026-07-21, finding_he: "טיפול בלידים נכנסים לא קורה מספיק טוב (טום); קשור להכרזת מודול sales (DRAFT)", route_to: OD-9 + sales module }
   - { id: F-3, date: 2026-07-21, finding_he: "operator-playbook-he.md מיושן באנשים: אנדריי עזב, ליקוט=מקסים, נהג=מיידן; הזרימה עצמה עדיין נכונה", route_to: T5 supersede }
+  - { id: F-4, date: 2026-07-21, finding_he: "אין בדיקת איכות שוטפת (Brix/pH) — טום: 'לא תקין'; עמדת הבדיקה קיימת פיזית בחדר הייצור", route_to: PROPOSALS P-1 stage C }
+  - { id: F-5, date: 2026-07-21, finding_he: "אין נוהל היגיינה/לבוש בכניסה לייצור; בפועל רק אלכס אוכף — עול תפעולי אצל ה-Visionary", route_to: "OD-9 (העברה לדניס כבעל האזור) + נוהל קצר" }
+  - { id: F-6, date: 2026-07-21, finding_he: "אין תדריך בוקר; הצוות מתחיל בלי סנכרון", route_to: PROPOSALS P-3 }
+  - { id: F-7, date: 2026-07-21, finding_he: "dead stock: מקום אריזות+חו\"ג נגמר ראשון; פריטים ללא שימוש באף SKU; מורשת רכש לא מתוכנן", route_to: PROPOSALS P-4 }
