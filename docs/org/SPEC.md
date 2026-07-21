@@ -60,7 +60,9 @@ T6|.|10-scenario acceptance drill with Tom|—
 T7|.|consumer wiring: propose CLAUDE.md pointer (Tom sole writer) + skill read-paths|V4
 T8|.|realignment backlog: ∀ resolved OD → tranche/lane routing per AI_BRAIN_ROUTER.md|V7
 T9|.|deep presentation → Tom: RTL Hebrew artifact — domain map, role card per person, handoff diagram, escalation ladder, before/after|V5
-T10|.|employee version: per-person one-pagers + team deck; rollout Doreen/Andrei/Maxim|V5,V6
+T10|.|employee version: per-person one-pagers + team deck; rollout Doreen/Denis/Maxim/Adi|V5,V6
+T11|~|world-research (Tom-requested): owner-bottleneck, EOS visionary/integrator, single-point accountability → §R; grounds OD-9 + presentation|—
+T12|~|intake questionnaire v2 (deepen pass): person-centric, PRE-FILLED from Tom brief, seams chapter, Tom↔Alex chapter, system-gaps chapter|V5
 
 order (recalibrated 2026-07-21): T1→T2→T3→**T9→T10**, then T4→T8 (system-realignment wave).
 

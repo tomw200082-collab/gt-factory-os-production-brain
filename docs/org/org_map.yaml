@@ -4,7 +4,7 @@
 # STATUS: DRAFT — pending Tom written approval (merge). Not authority until merged.
 # SPEC: docs/org/SPEC.md   CHARTER: docs/org/README.md
 #
-# SCHEMA v1 (compact):
+# SCHEMA v1.1 (compact):
 #   meta            — version / status / sources of harvested truth
 #   people          — roster: id, names, position, system_role binding, external logins
 #   system_roles    — the 4 locked app_users roles + capability lattice (verbatim from code)
@@ -14,7 +14,8 @@
 #                     accountable + handoff; system{} binds routes/state_machine/skills
 #   state_machines  — enum inventories verbatim from migrations (referenced by processes)
 #   open_decisions  — OD-n: every unresolved org question, owner=Tom, dated, options
-#   decision_log    — resolved ODs move here with date; never deleted
+#   decision_log    — resolved ODs / rulings with date; never deleted
+#   findings        — F-n: observed gaps (system or process) awaiting the realignment wave
 #
 # RULES (SPEC §V): every transition has exactly 1 accountable (V1); every ref must
 # resolve against the live system (V2); persona/role mismatch is flagged, never silent
@@ -24,52 +25,83 @@
 # =============================================================================
 
 meta:
-  version: 1
+  version: 1.1
   status: DRAFT_PENDING_TOM
   updated: 2026-07-21
+  changelog_1_1: "Tom roster brief 2026-07-21: +denis +adi +alex +maidan(ext); andrei left; maxim expanded to FG-warehouse owner; doreen refined; driver=maidan; production_operator=denis"
   harvest_sources:
-    - docs/playbook/operator-playbook-he.md                       # only real human SOP (Tom-owned)
-    - docs/phase8/ux/USER_ROLES_AND_CONTEXTS.md                   # role->human draft (2026-05-08)
-    - gt-factory-os/docs/integrations/downstream_ownership_matrix.md  # §Human responsibilities (stale: "Alex")
-    - gt-factory-os/docs/runbooks/weekly_cadence_runbook.md       # Thursday/Sunday/daily loop
-    - gt-factory-os/docs/specs/sp4_auth_spec.md                   # role capability matrix
-    - gt-factory-os-portal/docs/portal-os/route-manifest.json     # 77 routes x roles
-    - gt-factory-os-portal/src/lib/auth/authorize.ts              # ROLE_CAPABILITY_LATTICE
-    - gt-factory-os db/migrations                                 # state machines (see state_machines)
-    - code exam 2026-07-21 (this session, 3 explore agents)
+    - Tom direct brief in-session 2026-07-21 (roster + responsibilities + Alex problem statement)
+    - docs/playbook/operator-playbook-he.md            # STALE on people (Andrei gone, driver=Maidan) — flow logic still valid; supersede in T5
+    - docs/phase8/ux/USER_ROLES_AND_CONTEXTS.md
+    - gt-factory-os/docs/integrations/downstream_ownership_matrix.md
+    - gt-factory-os/docs/runbooks/weekly_cadence_runbook.md
+    - gt-factory-os/docs/specs/sp4_auth_spec.md
+    - gt-factory-os-portal/docs/portal-os/route-manifest.json
+    - gt-factory-os-portal/src/lib/auth/authorize.ts
+    - gt-factory-os db/migrations
+    - code exam 2026-07-21 (3 explore agents)
 
 # -----------------------------------------------------------------------------
 people:  # V5: no salary/contract/evaluation data. Bindings only.
   - id: tom
     name_he: טום
     name_en: Tom
-    position_he: בעלים
+    position_he: "הנהלה — תפעול, תכנון ורכש (הגדרה סופית: OD-9 + OD-5)"
     system_role: admin            # app_users tom@gteveryday.com role=admin (seed 0058)
-    also_acts_as_role: planner    # planning surfaces daily
+    also_acts_as_role: planner
     external_systems: [shopify, lionwheel, green_invoice, make, github, supabase]
-    personas: [owner, planner]
+    personas: [ops_lead, planner]
+  - id: alex
+    name_he: אלכס
+    name_en: Alex
+    position_he: "מנכ\"ל ובעלים"
+    system_role: null             # portal account unverified; legacy docs mention "Alex (planner)" — verify (OD-2)
+    external_systems: []
+    personas: [owner_visionary]
+    current_he: "מעורב כרגע בהכל (לא רשמית) — מקור צוואר הבקבוק, ראה OD-9"
+    target_he: "לנגן על הכל מלמעלה: קשרים אסטרטגיים עם לקוחות משמעותיים, שיפור מתכונים, ייצור תכנים, יצירתיות מוצר ומכירות — אפס עול תפעולי; שום דבר לא נופל אם הוא לא פועל"
   - id: doreen
     name_he: דורין
     name_en: Doreen
-    position_he: מנהלת משרד / הנהלת חשבונות
+    position_he: הנהלת חשבונות ושירות לקוחות
     system_role: planner          # live DB verified 2026-07-16; persona mismatch -> OD-1
     external_systems: [shopify, lionwheel, green_invoice, whatsapp]
     personas: [office_manager]
-  - id: andrei
-    name_he: אנדריי
-    name_en: Andrei
-    position_he: מלקט
-    system_role: null             # works in LionWheel only; portal account unknown -> OD-2
-    external_systems: [lionwheel]
-    personas: [picker]
+  - id: denis
+    name_he: דניס
+    name_en: Denis
+    position_he: אחראי ייצור
+    system_role: null             # enters daily production actuals — portal account/role to verify (OD-2)
+    external_systems: ["lionwheel?"]
+    personas: [production_lead]
   - id: maxim
     name_he: מקסים
     name_en: Maxim
-    position_he: נהג / הפצה
-    system_role: null             # works in LionWheel only; portal account unknown -> OD-2
+    position_he: אחראי מחסן תוצרת מוגמרת והכנת משלוחים
+    system_role: null             # weekly FG count + picking entry — portal account/role to verify (OD-2)
+    external_systems: [lionwheel]
+    personas: [fg_logistics_lead]
+  - id: adi
+    name_he: עדי
+    name_en: Adi
+    position_he: פיננסים — תזרים ותקציב
+    system_role: null             # works in Green Invoice; portal need to verify (OD-2)
+    external_systems: [green_invoice, "bizibox?"]
+    personas: [finance]
+  - id: maidan
+    name_he: מיידן גבאי
+    name_en: Maidan Gabay
+    position_he: "נהג הפצה — פרילנסר (עצמאי, חשבונית)"
+    kind: external
+    system_role: null
     external_systems: [lionwheel]
     personas: [driver]
-  # hiring active (recruitment process) — add-person protocol: README §update
+  - id: andrei
+    name_he: אנדריי
+    name_en: Andrei
+    status: "left (per Tom 2026-07-21) — kept for history; no active bindings"
+    system_role: null
+    personas: []
 
 # -----------------------------------------------------------------------------
 system_roles:  # locked set, migration 0005_app_users.sql; lattice from portal authorize.ts
@@ -84,31 +116,32 @@ system_roles:  # locked set, migration 0005_app_users.sql; lattice from portal a
 
 # -----------------------------------------------------------------------------
 personas:  # job-shape -> exactly one system role (V3)
-  - { id: owner,              label_he: בעלים,              maps_to_role: admin,    held_by: [tom] }
-  - { id: planner,            label_he: מתכנן,              maps_to_role: planner,  held_by: [tom] }
-  - { id: office_manager,     label_he: מנהלת משרד/הנה"ח,   maps_to_role: planner,  held_by: [doreen], mismatch: OD-1 }  # viewer Hebrew cockpit designed for her, unused
-  - { id: picker,             label_he: מלקט,               maps_to_role: null,     held_by: [andrei], mismatch: OD-2 }
-  - { id: driver,             label_he: נהג,                maps_to_role: null,     held_by: [maxim],  mismatch: OD-2 }
-  - { id: production_operator, label_he: עובד ייצור,        maps_to_role: operator, held_by: [],       mismatch: OD-2 }  # who files production/GR/count forms?
-  - { id: external_viewer,    label_he: צופה חיצוני,        maps_to_role: viewer,   held_by: [] }
+  - { id: owner_visionary,   label_he: "מנכ\"ל־חזון (בלי תפעול)", maps_to_role: null,     held_by: [alex],   mismatch: OD-2 }
+  - { id: ops_lead,          label_he: מוביל תפעול,               maps_to_role: admin,    held_by: [tom] }
+  - { id: planner,           label_he: מתכנן,                     maps_to_role: planner,  held_by: [tom] }
+  - { id: office_manager,    label_he: "הנה\"ח ושירות לקוחות",    maps_to_role: planner,  held_by: [doreen], mismatch: OD-1 }
+  - { id: production_lead,   label_he: אחראי ייצור,               maps_to_role: operator, held_by: [denis],  mismatch: OD-2 }
+  - { id: fg_logistics_lead, label_he: אחראי תוצרת מוגמרת,        maps_to_role: operator, held_by: [maxim],  mismatch: OD-2 }
+  - { id: finance,           label_he: פיננסים,                   maps_to_role: null,     held_by: [adi],    mismatch: OD-2 }
+  - { id: driver,            label_he: נהג,                       maps_to_role: null,     held_by: [maidan] }
+  - { id: external_viewer,   label_he: צופה חיצוני,               maps_to_role: viewer,   held_by: [] }
 
 # -----------------------------------------------------------------------------
 external_systems:
   - { id: shopify,       role_he: מקור כל ההזמנות,            truth: orders }
-  - { id: lionwheel,     role_he: ליקוט והפצה,                truth: open orders + shipment state }   # locked tiebreaker
-  - { id: green_invoice, role_he: חשבוניות וזיכויים,          truth: supplier invoice evidence }      # locked tiebreaker
+  - { id: lionwheel,     role_he: ליקוט והפצה,                truth: open orders + shipment state }
+  - { id: green_invoice, role_he: חשבוניות וזיכויים,          truth: supplier invoice evidence }
   - { id: factory_os,    role_he: אמת מלאי + תכנון + אישורים, truth: stock_ledger append-only }
   - { id: make,          role_he: אוטומציות וצינורות,         truth: none }
   - { id: whatsapp,      role_he: קליטת הזמנות + תקשורת צוות, truth: none }
-  - { id: bizibox,       role_he: הנהלת חשבונות,              truth: none }   # finance axis; no factory-os link
+  - { id: bizibox,       role_he: הנהלת חשבונות,              truth: none }
 
 # -----------------------------------------------------------------------------
-# PROCESSES — each: accountable per transition, handoff, system bindings.
-# accountable: person-id | role-id | OPEN(OD-n).  All route/enum/skill ids verbatim.
+# PROCESSES — accountable per transition + handoff. ids/routes/enums verbatim.
 # -----------------------------------------------------------------------------
 processes:
 
-  # ===== domain: order-to-delivery (the daily loop; source: operator-playbook) =====
+  # ===== domain: order-to-delivery =====
   - id: order_intake_daily
     name_he: קליטת הזמנות יומית
     domain: order_to_delivery
@@ -116,49 +149,48 @@ processes:
     trigger: הזמנה נכנסת (Shopify/LionWheel אוטומטי; WhatsApp/טלפון ידני)
     system:
       external: [shopify, whatsapp, green_invoice]
-      state_machine: wa_session      # bot-typed orders only
+      state_machine: wa_session
       skills: []
     transitions:
       - { step: הזמנה ידנית -> Shopify, accountable: doreen, handoff: auto-invoice (green_invoice) }
       - { step: bot cart committed, accountable: doreen, handoff: shopify order, note: "העוזרת הדיגיטלית של דורין; human_handled -> doreen" }
     deadline_he: "14:00 — סגירת הקו למחר"
 
-  - id: picking_1600
-    name_he: ליקוט יומי 16:00
+  - id: order_prep_picking
+    name_he: הכנת הזמנות וליקוט
     domain: order_to_delivery
-    accountable: andrei
+    accountable: maxim            # was andrei (left); Tom brief 2026-07-21
     system:
       external: [lionwheel]
-      state_machine: null            # LionWheel-side; mirrored via orders_mirror
+      state_machine: orders_mirror
       skills: []
     transitions:
-      - { step: ליקוט + הזנת כמות בפועל, accountable: andrei, handoff: "'אישור' per order -> line close" }
-      - { step: מוצר אזל -> הזנת 0 (⊥ החלפה), accountable: andrei, handoff: auto credit prep -> doreen }
-      - { step: טעות בכמות אחרי אישור, accountable: andrei, handoff: doreen (phone, immediately) }
-    iron_rules_he: ["אזל = 0, לעולם לא להחליף", "אישור רק בסוף ההזמנה", "טעות -> דורין מיד"]
+      - { step: הכנת הזמנות לפי הזמנות פתוחות ב-LionWheel, accountable: maxim, handoff: משלוח מוכן }
+      - { step: הזנת כמויות ליקוט ב-LionWheel, accountable: maxim, handoff: auto credit prep on gaps -> doreen }
+      - { step: הדפסת חשבוניות למשלוח, accountable: maxim, handoff: מסמכים על המשטח }
+    iron_rules_he: ["אזל = 0, לעולם לא להחליף (ירושה מהפלייבוק — לאשרר מול מקסים)"]
 
-  - id: delivery_morning
-    name_he: הפצה בוקר
+  - id: delivery_daily
+    name_he: הפצה יומית
     domain: order_to_delivery
-    accountable: maxim
+    accountable: maidan           # freelance driver (Tom 2026-07-21); playbook said maxim — STALE (F-3)
     system:
       external: [lionwheel]
       state_machine: orders_mirror   # ACTIVE fires FG_OUT ledger decrement (locked trigger)
-      skills: [daily-delivery-dispatch, route-print-pack]   # Tom+Claude assign driver/date; print pack
+      skills: [daily-delivery-dispatch, route-print-pack]
     transitions:
-      - { step: מסירה מלאה -> "בוצע", accountable: maxim, handoff: system credit-none }
-      - { step: סירוב מלא -> "בוטל", accountable: maxim, handoff: auto full credit -> doreen }
-      - { step: מסירה חלקית -> ⊥ לסמן, accountable: maxim, handoff: doreen (phone, immediately) }
-      - { step: לקוח לא זמין -> ⊥ לסמן, accountable: maxim, handoff: doreen decides defer|cancel }
-    iron_rules_he: ["'בוצע' רק כשהסחורה אצל הלקוח", "סחורה חוזרת -> דורין לפני כל סימון"]
+      - { step: מסירה מלאה -> "בוצע", accountable: maidan, handoff: none }
+      - { step: סירוב מלא -> "בוטל", accountable: maidan, handoff: auto full credit -> doreen }
+      - { step: מסירה חלקית -> ⊥ לסמן, accountable: maidan, handoff: doreen (phone, immediately) }
+      - { step: לקוח לא זמין -> ⊥ לסמן, accountable: maidan, handoff: doreen decides defer|cancel }
+    open_q_he: "מי מעמיס את הרכב — מקסים, מיידן, שניהם? (שאלון v2)"
 
   - id: credit_flow
     name_he: זרימת זיכויים
     domain: order_to_delivery
     accountable: doreen
-    trigger: פער ליקוט/מסירה מול חשבונית מקור
     system:
-      surfaces: [/credit-tracking]                    # Hebrew/RTL authorized surface
+      surfaces: [/credit-tracking]
       state_machine: credit_decisions
       external: [green_invoice, lionwheel]
       skills: []
@@ -166,7 +198,6 @@ processes:
       - { step: אישור והפקה (approve), accountable: doreen, handoff: GI credit -> customer }
       - { step: שליחה לטיפול ידני (acknowledge), accountable: doreen, handoff: doreen manual in green_invoice }
       - { step: דחייה (reject + סיבה), accountable: doreen, handoff: closed }
-      - { step: "חשבונית מס/קבלה -> זיכוי+קבלה שלילית", accountable: doreen, handoff: manual path until sandbox verified }
 
   - id: cancellations
     name_he: ביטולי הזמנות
@@ -175,8 +206,8 @@ processes:
     system: { external: [shopify, lionwheel, green_invoice], skills: [] }
     transitions:
       - { step: "ביטול לפני 14:00", accountable: doreen, handoff: delete from shopify + invoice stop|manual credit }
-      - { step: "ביטול אחרי 14:00 לפני יציאה", accountable: doreen, handoff: "LionWheel 'בוטל' -> auto full credit -> doreen approves" }
-      - { step: ביטול אחרי יציאה, accountable: doreen, handoff: notify maxim skip + same flow }
+      - { step: "ביטול אחרי 14:00 לפני יציאה", accountable: doreen, handoff: "LionWheel 'בוטל' -> auto full credit" }
+      - { step: ביטול אחרי יציאת הנהג, accountable: doreen, handoff: notify maidan skip + same flow }
 
   - id: customer_complaint_postdelivery
     name_he: תלונת לקוח אחרי מסירה
@@ -186,11 +217,85 @@ processes:
     transitions:
       - { step: אימות -> זיכוי ידני, accountable: doreen, handoff: stock re-intake if goods returned }
 
-  # ===== domain: planning + procurement (source: weekly_cadence_runbook + code) =====
+  - id: customer_service_collections
+    name_he: שירות לקוחות וגבייה
+    domain: order_to_delivery
+    accountable: doreen
+    system: { external: [whatsapp, green_invoice], skills: [] }
+    transitions:
+      - { step: קשר שוטף עם לקוחות על בעיות, accountable: doreen, handoff: tom on escalation }
+      - { step: גבייה טלפונית מלקוחות חייבים, accountable: doreen, handoff: adi (תזרים) }
+      - { step: מכירות ללקוחות חדשים, accountable: doreen, handoff: none }
+
+  - id: leads_intake
+    name_he: טיפול בלידים נכנסים
+    domain: order_to_delivery
+    accountable: doreen
+    pain_he: "לא קורה מספיק טוב כרגע (Tom 2026-07-21) — F-2"
+    system: { external: [whatsapp, shopify], skills: [] }
+    transitions:
+      - { step: ליד נכנס -> יצירת קשר, accountable: doreen, handoff: לקוח חדש | אבוד }
+
+  # ===== domain: production (Denis) =====
+  - id: production_execution
+    name_he: ביצוע ייצור יומי
+    domain: production
+    accountable: denis
+    system:
+      surfaces: [/stock/production-actual]
+      state_machine: form_submissions
+      skills: [production-order]
+    transitions:
+      - { step: בישולי תה וערבובי כל המשקאות לפי מתכונים, accountable: denis, handoff: מילוי }
+      - { step: מילוי + סגירה + תוויות + אריזה, accountable: denis, handoff: fg_intake_from_production -> maxim }
+      - { step: הזנת דיווח ייצור יומי לפי ביצוע בפועל, accountable: denis, handoff: plan row derived-done }
+    system_gap: F-1   # recipes->execution interface needs improvement (Tom)
+
+  - id: rm_pkg_warehouse
+    name_he: מחסן חומרי גלם ואריזות
+    domain: production
+    accountable: denis
+    system: { surfaces: [/inventory], skills: [] }
+    transitions:
+      - { step: סידור וארגון המחסן, accountable: denis, handoff: none }
+      - { step: קליטה פיזית של סחורה נכנסת, accountable: OPEN(OD-3), handoff: gr_entry }
+      - { step: הקלדת קבלת סחורה (GR), accountable: OPEN(OD-3), handoff: PO rollup }
+
+  - id: filling_room_hygiene
+    name_he: חדר מילוי — סדר וניקיון מערכת
+    domain: production
+    accountable: denis
+    system: { skills: [] }
+    transitions:
+      - { step: סידור חדר המילוי, accountable: denis, handoff: none }
+      - { step: ניקיון שוטף של מערכת המילוי וכל הכלים, accountable: denis, handoff: none }
+
+  # ===== domain: finished goods + logistics (Maxim) =====
+  - id: fg_intake_from_production
+    name_he: קליטת תוצרת מהייצור למחסן (דניס -> מקסים)
+    domain: fg_logistics
+    accountable: maxim
+    seam: true                     # THE prototype seam
+    system: { state_machine: form_submissions, skills: [] }
+    transitions:
+      - { step: דניס מעביר כמויות שיוצרו, accountable: denis, handoff: maxim }
+      - { step: קליטה וסידור במחסן תוצרת, accountable: maxim, handoff: none }
+    open_q_he: "איך ההעברה נרשמת? (דיווח הייצור של דניס אמור לכסות — לאמת בשאלון v2)"
+
+  - id: fg_warehouse
+    name_he: מחסן תוצרת מוגמרת
+    domain: fg_logistics
+    accountable: maxim
+    system: { surfaces: [/inventory], skills: [] }
+    transitions:
+      - { step: סידור ושמירת סדר, accountable: maxim, handoff: none }
+      - { step: ספירה שבועית של תוצרת מוגמרת, accountable: maxim, handoff: "OPEN(OD-2) — where is it recorded?" }
+
+  # ===== domain: planning + procurement =====
   - id: weekly_planning_cadence
     name_he: קצב שבועי — חמישי לקבע, ראשון לרכוש, יומי לבצע
     domain: planning
-    accountable: tom               # planner persona; gate planner+admin (403 otherwise)
+    accountable: tom
     system:
       surfaces: [/planning/meeting, /planning/production-plan]
       state_machine: production_plan
@@ -198,44 +303,42 @@ processes:
     transitions:
       - { step: "חמישי: Firm W2 (draft->planned)", accountable: tom, handoff: sunday procurement }
       - { step: "ראשון: רכש ל-W1 + אימות הגעות W0", accountable: tom, handoff: procurement_weekly }
-      - { step: "יומי: ביצוע W0", accountable: OPEN(OD-2), handoff: production_reporting }
+      - { step: "יומי: ביצוע W0", accountable: denis, handoff: production_execution }
+    note_he: "יעד ארוך: התכנון יושב באנשים האחראים, לא באלכס (Tom 2026-07-21, OD-9)"
 
   - id: procurement_weekly
     name_he: סשן רכש שבועי
     domain: planning
     accountable: tom
     system:
-      surfaces: [/planning/procurement]               # Hebrew/RTL authorized surface
+      surfaces: [/planning/procurement]
       state_machine: purchase_session_lines
       skills: [procurement-planning]
     transitions:
       - { step: proposed -> approved, accountable: tom, handoff: po_placement (APPROVED_TO_ORDER) }
       - { step: proposed -> skipped, accountable: tom, handoff: next session }
-      - { step: approved -> proposed (un-approve), accountable: tom, handoff: re-edit }
 
   - id: po_placement
     name_he: ביצוע הזמנות רכש (תור דורין)
     domain: planning
     accountable: doreen
     system:
-      surfaces: [/purchase-orders/placement-queue]    # Hebrew/RTL authorized surface
+      surfaces: [/purchase-orders/placement-queue]
       state_machine: purchase_orders
       skills: []
     transitions:
       - { step: "APPROVED_TO_ORDER -> OPEN (מחיר+תנאים+בצע הזמנה)", accountable: doreen, handoff: supplier + goods_receipt }
-      - { step: APPROVED_TO_ORDER -> CANCELLED, accountable: OPEN(OD-5), handoff: back to planning }
 
   - id: goods_receipt
     name_he: קבלת סחורה
     domain: planning
-    accountable: OPEN(OD-3)        # who physically receives + posts?
+    accountable: OPEN(OD-3)        # likely denis (owns RM/PKG warehouse) — confirm in questionnaire v2
     system:
-      surfaces: [/stock/receipts]                     # English surface
-      state_machine: form_submissions                 # GR posted -> stock_ledger GR_POSTED
-      skills: [goods-receipt-from-invoice]            # Tom sends invoice -> Claude extracts -> Tom approves -> post
+      surfaces: [/stock/receipts]
+      state_machine: form_submissions
+      skills: [goods-receipt-from-invoice]
     transitions:
-      - { step: GR submit -> posted, accountable: OPEN(OD-3), handoff: PO line rollup OPEN->PARTIAL->RECEIVED }
-      - { step: close-short (CLOSED_SHORT), accountable: OPEN(OD-5), handoff: planning visibility }
+      - { step: GR submit -> posted, accountable: OPEN(OD-3), handoff: PO line rollup }
 
   - id: forecast_monthly
     name_he: תחזית חודשית
@@ -244,52 +347,60 @@ processes:
     system:
       surfaces: [/planning/forecast]
       state_machine: forecast_versions
-      skills: [daily-ops-guardian]   # monthly two-month forecast proposal
+      skills: [daily-ops-guardian]
     transitions:
       - { step: draft -> published, accountable: tom, handoff: planning engine demand }
-      - { step: draft -> discarded, accountable: tom, handoff: none }
 
-  # ===== domain: factory floor =====
-  - id: production_reporting
-    name_he: דיווח ייצור (two-head BOM)
-    domain: factory_floor
-    accountable: OPEN(OD-2)        # production_operator persona unheld
-    system:
-      surfaces: [/stock/production-actual]
-      state_machine: form_submissions   # PRODUCTION_OUTPUT + PRODUCTION_CONSUMPTION ledger rows
-      skills: [production-order]
+  # ===== domain: finance (Adi) =====
+  - id: cashflow_budget
+    name_he: תזרים יומי ותקציב
+    domain: finance
+    accountable: adi
+    system: { external: [green_invoice, "bizibox?"], skills: [] }
     transitions:
-      - { step: actual submit -> posted, accountable: OPEN(OD-2), handoff: plan row derived-done }
+      - { step: עדכון תזרים יומי, accountable: adi, handoff: tom/alex visibility (OD-9) }
+      - { step: ניהול תקציב, accountable: adi, handoff: none }
 
+  - id: supplier_invoices_entry
+    name_he: קליטת חשבוניות ספקים
+    domain: finance
+    accountable: adi
+    system: { external: [green_invoice], skills: [goods-receipt-from-invoice] }
+    transitions:
+      - { step: הכנסת חשבוניות לחשבונית ירוקה, accountable: adi, handoff: none }
+      - { step: הכנסה לתזרים לפי תנאי תשלום, accountable: adi, handoff: none }
+    open_q: OD-11   # Doreen<->Adi boundary in GI (she does credits + supplier order placement there)
+
+  # ===== domain: control =====
   - id: stock_counting
     name_he: ספירות מלאי
-    domain: factory_floor
-    accountable: OPEN(OD-2)
+    domain: control
+    accountable: OPEN(OD-5)
     system:
       surfaces: [/stock/physical-count, /inventory/bulk-count]
       state_machine: count_freezes
       skills: []
     transitions:
-      - { step: count submit -> freeze open, accountable: OPEN(OD-2), handoff: auto-consume | holding }
-      - { step: "holding -> consumed_approved | released_rejected", accountable: tom, handoff: ledger adjust | none, note: planner-approval per matrix }
+      - { step: "FG שבועי", accountable: maxim, handoff: discrepancy -> approval }
+      - { step: "RM/PKG", accountable: OPEN(OD-5), handoff: discrepancy -> approval }
+      - { step: "holding -> consumed_approved | released_rejected", accountable: tom, handoff: ledger adjust | none }
 
   - id: waste_adjustments
     name_he: פחת והתאמות
-    domain: factory_floor
-    accountable: OPEN(OD-2)
+    domain: control
+    accountable: OPEN(OD-5)
     system:
       surfaces: [/stock/waste-adjustments]
       state_machine: form_submissions
       skills: []
     transitions:
-      - { step: small waste -> auto-post, accountable: OPEN(OD-2), handoff: ledger WASTE_POSTED }
-      - { step: positive/large adjustment -> approval, accountable: tom, handoff: inbox approvals (planner+admin) }
+      - { step: small waste -> auto-post, accountable: OPEN(OD-5), handoff: ledger WASTE_POSTED }
+      - { step: positive/large adjustment -> approval, accountable: tom, handoff: inbox approvals }
 
-  # ===== domain: control + exceptions =====
   - id: exceptions_triage
     name_he: טיפול בחריגות (inbox)
     domain: control
-    accountable: OPEN(OD-4)        # Tom/Doreen split undefined; playbook alerts route some to each
+    accountable: OPEN(OD-4)
     system:
       surfaces: [/inbox, /dashboard]
       state_machine: exceptions
@@ -297,16 +408,11 @@ processes:
     transitions:
       - { step: open -> acknowledged, accountable: OPEN(OD-4), handoff: named owner }
       - { step: acknowledged -> resolved, accountable: OPEN(OD-4), handoff: closed }
-    known_splits_he:
-      - "אנדריי לא אישר עד 17:00 -> דורין מתקשרת"
-      - "מקסים לא סימן בוצע -> דורין מתקשרת"
-      - "שגיאת חיבור GI -> טום"
-      - "מיפוי לקוח לא ברור -> דורין בודקת Shopify<->GI"
 
   - id: daily_ops_guardian_morning
     name_he: בדיקת בוקר אוטומטית 06:30
     domain: control
-    accountable: claude            # runs; findings routed to tom
+    accountable: claude
     system: { skills: [daily-ops-guardian], external: [make] }
     transitions:
       - { step: integrity gate + coverage -> HTML report, accountable: claude, handoff: tom (email+push) }
@@ -320,47 +426,39 @@ processes:
       surfaces: [/admin/items, /admin/components, /admin/suppliers, /admin/masters/boms, /admin/users]
       skills: [customer-setup-shopify-gi]
     transitions:
-      - { step: CRUD + user mgmt, accountable: tom, handoff: none, note: admin-only (requireAdmin) }
+      - { step: CRUD + user mgmt, accountable: tom, handoff: none }
 
   - id: integrations_ops
-    name_he: תפעול אינטגרציות
+    name_he: תפעול אינטגרציות ומערכות
     domain: administration
     accountable: tom
     system:
-      surfaces: [/admin/integrations, /admin/sku-map, /admin/sku-aliases, /admin/jobs, /admin/cost-drafts]
+      surfaces: [/admin/integrations, /admin/sku-map, /admin/jobs, /admin/cost-drafts]
       state_machine: integration_sku_map
       skills: []
     transitions:
       - { step: "SKU map pending -> approved|rejected", accountable: tom, handoff: resolver active }
-      - { step: "cost draft pending -> approved (price truth)", accountable: tom, handoff: supplier_items + price_history }
+      - { step: "cost draft pending -> approved", accountable: tom, handoff: supplier_items + price_history }
 
-  # ===== domain: company (beyond factory-os; human+external-tools only — ⊥ invented links) =====
+  # ===== domain: company / leadership =====
+  - id: strategic_growth
+    name_he: צמיחה אסטרטגית ומוצר (יעד — אלכס)
+    domain: company
+    accountable: OPEN(OD-9)
+    target_owner: alex
+    system: { external: [shopify], module_ref: docs/decisions/modules/sales-declaration.md, skills: [] }
+    transitions:
+      - { step: קשרים אסטרטגיים עם לקוחות משמעותיים, accountable: OPEN(OD-9), handoff: doreen (שוטף) }
+      - { step: שיפור מתכונים ופיתוח מוצר, accountable: OPEN(OD-9), handoff: denis (ביצוע) }
+      - { step: ייצור תכנים ושיווק יצירתי, accountable: OPEN(OD-9), handoff: none }
+
   - id: recruitment
     name_he: גיוס
     domain: company
     accountable: tom
-    system: { external: [whatsapp], skills: [gt-recruitment-outreach], note: Gmail scan -> Hebrew outreach }
+    system: { external: [whatsapp], skills: [gt-recruitment-outreach] }
     transitions:
-      - { step: מועמדים חדשים -> הודעות פנייה, accountable: tom, handoff: interview (outside system) }
-
-  - id: marketing_sales
-    name_he: שיווק ומכירות
-    domain: company
-    accountable: tom
-    system:
-      external: [shopify, make]
-      module_ref: docs/decisions/modules/sales-declaration.md   # DRAFT awaiting Tom; map references, not duplicates
-      skills: []
-    transitions:
-      - { step: new-account motion + retention, accountable: tom, handoff: OPEN(OD-5) — sales module if approved }
-
-  - id: finance_bookkeeping
-    name_he: כספים והנהלת חשבונות
-    domain: company
-    accountable: OPEN(OD-5)        # Doreen executes, Tom decides? boundary undefined
-    system: { external: [green_invoice, bizibox], skills: [] }
-    transitions:
-      - { step: שוטף ספקים/לקוחות, accountable: doreen, handoff: tom on anomalies }
+      - { step: מועמדים חדשים -> הודעות פנייה, accountable: tom, handoff: interview }
 
 # -----------------------------------------------------------------------------
 state_machines:  # enum literals VERBATIM from migrations (V2 anchor)
@@ -382,39 +480,49 @@ state_machines:  # enum literals VERBATIM from migrations (V2 anchor)
   orders_mirror:          { source: "db/migrations/0023,0121", values: [UNASSIGNED, ASSIGNED, ACTIVE, COMPLETED], note: LionWheel authoritative; ACTIVE fires FG_OUT }
 
 # -----------------------------------------------------------------------------
-open_decisions:  # owner=Tom for all. The redesign interview walks this list. (V8)
+open_decisions:  # owner=Tom for all. (V8)
   - id: OD-1
     date: 2026-07-21
-    q_he: "דורין — persona מנהלת-משרד על role=planner. להשאיר, או role ייעודי/viewer מחוזק?"
+    q_he: "דורין — persona הנה\"ח/שירות על role=planner. להשאיר, או role ייעודי/viewer מחוזק?"
     context: viewer Hebrew cockpit designed for her persona sits unused; she needs planning:execute for placement-queue
-    options: [keep planner (status quo, doc it), new office role (schema change — realignment tranche), viewer+capability carve]
   - id: OD-2
     date: 2026-07-21
-    q_he: "מי עובד הייצור במערכת? לאנדריי/מקסים יש חשבונות פורטל? מי מדווח ייצור/ספירות/פחת?"
-    context: production_operator persona unheld; Andrei+Maxim bound to LionWheel only
+    q_he: "חשבונות ותפקידי מערכת לדניס, מקסים, עדי (ואלכס?) — מי צריך פורטל, באיזה role, ואיפה נרשמות הספירה השבועית של מקסים והעברות דניס->מקסים"
+    context: "resolved-part 2026-07-21: production reporting = denis; picking = maxim (see decision_log)"
   - id: OD-3
     date: 2026-07-21
-    q_he: "קבלת סחורה — מי מקבל פיזית ומי מקליד (GR)?"
-    context: /stock/receipts English; goods-receipt-from-invoice skill runs via Tom today
+    q_he: "קבלת סחורה — מי מקבל פיזית ומי מקליד (GR)? כנראה דניס (בעל מחסן חו\"ג) — לאשר"
   - id: OD-4
     date: 2026-07-21
-    q_he: "חלוקת טיפול בחריגות (inbox) בין טום לדורין — לפי אילו קטגוריות?"
-    context: playbook already splits alerts ad-hoc; inbox ownership never defined
+    q_he: "חלוקת טיפול בחריגות (inbox) — לפי אילו קטגוריות ולמי"
   - id: OD-5
     date: 2026-07-21
-    q_he: "החלוקה החדשה עצמה: גבולות גזרה מלאים לכל אדם — מה בבעלות מלאה, מה באישור, מה בידיעה בלבד"
-    context: the core of the redesign; fills accountable on every OPEN + rewrites current bindings where Tom decides
+    q_he: "החלוקה החדשה המלאה: גבולות גזרה לכל אדם — בעלות / אישור / ידיעה (ממתין לשאלון v2 + שיחת עיצוב)"
   - id: OD-6
     date: 2026-07-21
     q_he: "אשרור פרוטוקול עדכון: קלוד מציע PR -> טום מאשר; drift check בכל PR + שבועי"
-    context: default assumed after grill interrupt; needs explicit Tom yes
   - id: OD-7
     date: 2026-07-21
     q_he: "registries ריקים של gt-axis-* — להפנות למפה ולסגור, או להשאיר?"
-    context: gt-axis-business declared owner of org knowledge but never fed; two sources risk
   - id: OD-8
     date: 2026-07-21
     q_he: "ערוץ הפצת הנהלים לצוות: הדפסה / WhatsApp / עמוד פורטל"
-    context: derived Hebrew views (T5) need a delivery channel
+  - id: OD-9
+    date: 2026-07-21
+    q_he: "מעבר אלכס ל'מנגן מלמעלה': מה בדיוק הוא מחזיק (קשרים אסטרטגיים, מתכונים, תוכן, יצירתיות מוצר/מכירות), מה עוזב אותו, לאן כל דבר עובר, ומה ההגדרה הסופית של טום"
+    context: "Tom 2026-07-21: אלכס מעורב כרגע בהכל; אחריות שהוא לוקח הרבה פעמים לא מתבצעת; היעד — אפס עול תפעולי, שום דבר לא נופל אם הוא לא פועל. מחקר עולמי הוזמן (§R): visionary/integrator, founder bottleneck"
+  - id: OD-11
+    date: 2026-07-21
+    q_he: "גבול דורין<->עדי בחשבונית ירוקה והנה\"ח: מי מכניס מה, מי בעל הקשר עם רו\"ח"
 
-decision_log: []   # resolved ODs move here with date + decision text; never deleted
+decision_log:
+  - { id: D-1, date: 2026-07-21, decision_he: "דיווח ייצור יומי = דניס (production_lead persona held)", source: Tom in-session }
+  - { id: D-2, date: 2026-07-21, decision_he: "ליקוט והכנת משלוחים = מקסים (החליף את אנדריי)", source: Tom in-session }
+  - { id: D-3, date: 2026-07-21, decision_he: "נהג הפצה = מיידן גבאי, פרילנסר חיצוני", source: Tom in-session }
+  - { id: D-4, date: 2026-07-21, decision_he: "אנדריי עזב — הוסר מכל שיוך פעיל", source: Tom in-session }
+  - { id: D-5, date: 2026-07-21, decision_he: "את השאלון ממלא טום בלבד, כולל פרק אלכס", source: Tom in-session }
+
+findings:  # observed gaps -> realignment wave (V7)
+  - { id: F-1, date: 2026-07-21, finding_he: "ממשק מתכונים -> ביצוע בפועל דורש שיפור (טום); נוגע ל-Recipe-Health corridor הקיים בפורטל", route_to: realignment }
+  - { id: F-2, date: 2026-07-21, finding_he: "טיפול בלידים נכנסים לא קורה מספיק טוב (טום); קשור להכרזת מודול sales (DRAFT)", route_to: OD-9 + sales module }
+  - { id: F-3, date: 2026-07-21, finding_he: "operator-playbook-he.md מיושן באנשים: אנדריי עזב, ליקוט=מקסים, נהג=מיידן; הזרימה עצמה עדיין נכונה", route_to: T5 supersede }
