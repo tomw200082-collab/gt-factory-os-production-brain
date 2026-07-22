@@ -4,7 +4,10 @@ description: >-
   Use when Tom asks to prepare or print the daily delivery route pack for a
   driver — e.g. "תכין את המסלול של מחר למקסים", "חבילת הדפסה למסלול",
   "route pack", or the slash command /route-print-pack. The ONLY input is a
-  driver name + a date. Produces one print-ready PDF (LionWheel work order page 1,
+  driver name + a date — and since 2026-07-22 both have defaults: driver = the
+  route driver (מיידן, per ../daily-delivery-dispatch/drivers.json
+  default_route_driver), date = the next working day ("מחר" on Thursday means
+  Sunday). Produces one print-ready PDF (LionWheel work order page 1,
   then every stop in driving order: real Green Invoice ×2 with picking marks, or
   official LionWheel waybill ×2), proposes any non-standard inventory movements to
   the Factory OS inbox for approval, and emails the file to production@gteveryday.com.
@@ -58,7 +61,14 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
 - Touch **only the named driver's route**. Ignore every other stop.
 
 ## How to run
-1. **Inputs.** Driver name + date (`YYYY-MM-DD`). If no date given, default = tomorrow.
+1. **Inputs.** Driver name + date (`YYYY-MM-DD`) — both optional since 2026-07-22:
+   - No driver named → the **route driver מיידן** (`../daily-delivery-dispatch/drivers.json`
+     → `default_route_driver`; resolve/cache its LionWheel id per that file's instruction;
+     מקסים 28174 = emergency driver only).
+   - No date → **next working day** ("מחר" on Thursday/Friday/Saturday = Sunday; Friday and
+     Saturday are not route days — `../daily-delivery-dispatch/route_calendar.json`).
+   - Timing: build the pack **after the 15:00 line lock** (weekdays) or **after the Sunday
+     ~10:15 final sweep** — never from a still-open line (two-wave picking, mapping v3).
    `--from-stop N` only when Tom explicitly asks to start mid-route.
 2. **Environment.** Ensure deps (install if missing) and confirm secrets:
    ```bash
