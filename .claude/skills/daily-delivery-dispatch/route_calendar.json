@@ -1,0 +1,14 @@
+{
+  "_comment": "Zone-by-day route calendar (Tom, factory mapping v3, approved 2026-07-22). Lets 'מחר' resolve the zone automatically. Keys are weekday names to avoid index-convention bugs. null = no route day. Editable source of truth — update here if the weekly map changes.",
+  "calendar": {
+    "sunday": "center",
+    "monday": "center",
+    "tuesday": "north",
+    "wednesday": "south",
+    "thursday": "center",
+    "friday": null,
+    "saturday": null
+  },
+  "labels": { "center": "מרכז", "north": "צפון", "south": "דרום" },
+  "next_working_day_rule": "A dispatch date of Friday or Saturday is invalid; 'מחר' said on Thursday/Friday/Saturday resolves to Sunday."
+}

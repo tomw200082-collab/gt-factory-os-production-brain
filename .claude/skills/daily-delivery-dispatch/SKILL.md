@@ -1,6 +1,6 @@
 ---
 name: daily-delivery-dispatch
-description: Use when Tom gives a delivery zone + a driver name + a date to dispatch LionWheel orders — e.g. "מרכז, מקסים, מחר", "South David 2026-06-23", "צפון ירוק מקסים 24/6". Pulls the open orders in that zone, checks unified stock truth, and on the in-stock ones sets the driver + delivery date in LionWheel (driver_id + pickup_at ONLY — NEVER status). Returns a consolidated list of everything that is NOT in stock. Always presents the exact plan for Tom's approval before any LionWheel write, and never touches a driver's already-in-progress route for another day.
+description: Use when Tom asks to dispatch LionWheel orders for a delivery day — the full form is zone + driver + date ("מרכז, מקסים, מחר", "South David 2026-06-23"), but since 2026-07-22 the minimal form is just a date or "מחר"; the zone resolves from route_calendar.json (Sun/Mon/Thu=center, Tue=north, Wed=south) and the driver defaults to the route driver (מיידן, drivers.json). Pulls the open orders in that zone, checks unified stock truth, and on the in-stock ones sets the driver + delivery date in LionWheel (driver_id + pickup_at ONLY — NEVER status). Returns a consolidated list of everything that is NOT in stock. Always presents the exact plan for Tom's approval before any LionWheel write, and never touches a driver's already-in-progress route for another day.
 ---
 
 # Daily Delivery Dispatch
@@ -17,12 +17,16 @@ re-set) but it is customer-facing and mass-scale, so it always shows the exact p
 waits for Tom's go before writing (per CLAUDE.md "External-action authorization" §2).
 
 ## Trigger
-Tom writes, in any order / Hebrew or English: **zone + driver name + date.**
-- Zone ∈ { Center / מרכז (purple), North / צפון (green), South / דרום (red) }.
-- Driver = a name → resolve to a LionWheel `driver_id`.
-- Date = the delivery day (Tom always supplies it; do not infer it).
+Tom writes, in any order / Hebrew or English: **a date — everything else has a default** (factory mapping v3, approved 2026-07-22).
+- **Date** — required. "מחר" resolves to the next **working** day: said on Thursday/Friday/Saturday it means **Sunday** (`route_calendar.json` `next_working_day_rule`). A dispatch date of Friday/Saturday is invalid → say so and resolve to Sunday.
+- **Zone** — default: `route_calendar.json` by the delivery date (Sun/Mon/Thu = מרכז, Tue = צפון, Wed = דרום). Tom naming a zone explicitly overrides the calendar (and if it contradicts the calendar, confirm once).
+- **Driver** — default: the route driver **מיידן** (`drivers.json` → `default_route_driver`). While its `driver_id` is UNRESOLVED, follow its `resolution` instruction on the first live run (resolve via the drivers API, confirm with Tom once, cache). Tom naming a driver overrides (מקסים 28174 = emergency driver by prior arrangement).
 
-If any of the three is missing or ambiguous → ask Tom, do not guess.
+Still ambiguous after defaults (unknown city, zero/multiple driver matches) → ask Tom, do not guess.
+
+## Operating clock (context, approved 2026-07-22)
+- Weekdays: order intake closes 14:00; Tom+Dorin reconciliation 14:00–15:00; **line locks in LionWheel at 15:00**. Dispatch for tomorrow normally runs after the 15:00 lock. Maxim picks aggregate-READY orders during the day and does a final delta sweep after the lock.
+- **Sunday exception**: most Sunday orders arrive Sunday morning. Weekend wave is picked 7:30–8:30; cutoff 9:30 (= daily briefing); final sweep + route close 9:30–10:15; truck out ~10:30. A Sunday-morning dispatch run happens ~9:35, not the prior evening. Orders after 9:30 → Monday (also מרכז) unless Tom approves an exception.
 
 ## Non-negotiable workflow
 1. **Resolve inputs.** Driver name → `driver_id` (see Driver resolution). Zone → city set
@@ -79,8 +83,13 @@ is a hard stop: ask Tom, then add it.
 `GET https://members.lionwheel.com/api/v1/drivers.json?key=$LIONWHEEL_API_KEY` → array of
 `{id, first_name, last_name, nick_name, phone, ...}` (≈26 drivers). Match Tom's name
 (Hebrew or English; check first_name / last_name / nick_name; the per-task `driver_str`
-field also shows the display name, e.g. "מקסים"). Confirmed: **Maxim / מקסים = 28174.**
-Zero or multiple matches → ask Tom. Cache confirmed name→id in `drivers.json` (learning).
+field also shows the display name, e.g. "מקסים"). Confirmed: **Maxim / מקסים = 28174**
+(emergency driver only since 2026-07-22). **Default route driver: מיידן (Maiden Gabay)** —
+`drivers.json` → `default_route_driver`; while its `driver_id` is null, resolve it on the
+first live run per its `resolution` instruction (API match on name_variants → one-time Tom
+confirmation → cache). If LionWheel has no Maiden record, STOP and ask Tom which driver
+record the line actually runs under. Zero or multiple matches → ask Tom. Cache confirmed
+name→id in `drivers.json` (learning).
 
 ## Stock classification (live — Supabase project `rvadsozabmxkkrktwgnv`, schema `private_core`)
 1. **Resolve SKUs.** For each order line `sku`:
