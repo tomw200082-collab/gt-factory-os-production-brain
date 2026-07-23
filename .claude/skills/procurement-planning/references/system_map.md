@@ -232,7 +232,18 @@ Portal note (tranche 132): `/planning/procurement` no longer buckets by this
 tier — it classifies each PO from the per-line `coverage_trace` (estimated
 zero-stock date vs. arrival-if-ordered-today) and shows quantified expected
 shortage instead. The tier column remains for API consumers and the calendar
-view. Changing the SQL tier itself is a separate, Tom-gated decision.
+view.
+
+**Ranked read model (backend 0291, Tom-approved 2026-07-23):** prefer
+`api_read.v_purchase_session_po_ranked` for triage — it recomputes `tier_v2`
+(`urgent` / `must` / `recommended`) from each session's stored `coverage_trace`
+using `last_safe_order = zero_date − lead_time` vs today and the release fence,
+and exposes `earliest_zero_date`, `last_safe_order`,
+`worst_gap_if_ordered_today_days`. This is the same shortage math the portal
+uses, now reusable by chat and the session brief — rank by `tier_v2` /
+`last_safe_order`, not the collapsed stored `tier`. The stored SQL `tier`
+inside `fn_generate_purchase_session` is intentionally left unchanged (the view
+supersedes it for ranking).
 
 ### 7c. 0284/0285 additions (2026-07-16)
 
