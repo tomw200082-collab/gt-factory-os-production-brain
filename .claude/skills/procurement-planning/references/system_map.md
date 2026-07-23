@@ -197,6 +197,7 @@ Production-side per-base overrides also exist: `planning.production.safety_stock
 **COMMITTING — gated, requires explicit Tom approval (real PO, real cash):**
 - `fn_place_purchase_order(p_po_id text, p_actor_user_id uuid, p_actor_snapshot text, p_payment_terms text, p_payment_terms_net_days integer, p_payment_terms_eom boolean, p_line_prices jsonb, p_confirm_price_update boolean, p_expected_receive_date date, p_line_qty_overrides jsonb)`
   (signature re-verified 2026-07-16 — two params were added since the 2026-06-25 snapshot: the expected receive date, which closes the double-order trap at placement time, and per-line qty overrides)
+  - **Enforced 2026-07-23 (0290):** `p_expected_receive_date` is now **required** — placing without it raises `EXPECTED_RECEIVE_DATE_REQUIRED` (P0001, mapped to 409). The office manager must enter the supplier-confirmed ETA at placement, so no placed line is ever invisible to the projection. Chaser read model for the legacy null-ETA lines + ongoing monitoring: **`api_read.v_open_po_lines_missing_eta`** (open lines on placed POs with a null ETA — supplier, item, qty, order date, age).
 
 Rule of thumb: **drafts may be generated after a quick confirmation; placement is never automatic.**
 
