@@ -740,7 +740,14 @@ table.thr .over { color: var(--ink-2); font-size: var(--t-xs); }
 .skill.open .caret { transform: rotate(180deg); }
 .skill-body { display: none; padding: 0 15px 15px; border-top: 1px solid var(--line-2); }
 .skill.open .skill-body { display: block; animation: fade .2s ease; }
-.sk-does { font-size: var(--t-sm); color: var(--ink); margin: 12px 0 0; line-height: 1.55; }
+.sk-why { font-size: var(--t-sm); color: var(--ink); margin: 12px 0 0; line-height: 1.55;
+  background: var(--accent-wash-2); border: 1px solid var(--line-2); border-inline-start: 3px solid var(--accent);
+  border-radius: 0 12px 12px 0; padding: 10px 12px; }
+.sk-why .sk-why-k { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; color: var(--accent-2); margin-bottom: 3px; }
+.sk-does { font-size: var(--t-sm); color: var(--ink-2); margin: 11px 0 0; line-height: 1.55; }
+.sy-under { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.sy-under li { font-size: var(--t-sm); color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-2);
+  border-radius: 10px; padding: 8px 11px; line-height: 1.5; }
 .sk-io { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
 @media (min-width: 520px) { .sk-io { grid-template-columns: 1fr 1fr; } }
 .sk-io .io { background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 11px; }
@@ -795,6 +802,30 @@ table.thr .over { color: var(--ink-2); font-size: var(--t-xs); }
 .gap-write:hover { background: var(--warn); color: #fff; }
 .gap-write:focus-visible { outline: none; box-shadow: var(--ring); }
 .gap-write svg { width: 12px; height: 12px; }
+
+/* --- floor writing hero --- */
+.floor-hero { border-radius: 16px; border: 1px solid var(--line); box-shadow: var(--shadow); padding: 16px 16px 15px; margin-bottom: 16px;
+  background: radial-gradient(120% 130% at 100% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 58%), linear-gradient(180deg, var(--accent-wash-2), var(--surface)); }
+.floor-hero .fh-eyebrow { font-size: var(--t-xs); font-weight: 800; letter-spacing: .06em; color: var(--accent-2); }
+.floor-hero h3 { font-size: var(--t-xl); font-weight: 800; letter-spacing: -.02em; margin: 3px 0 6px; text-wrap: balance; }
+.floor-hero p { font-size: var(--t-sm); color: var(--ink-2); margin: 0; line-height: 1.55; }
+.fh-tmpl { margin: 13px 0 0; }
+.fh-tmpl .fh-tmpl-k { font-size: 10.5px; font-weight: 800; color: var(--ink-3); letter-spacing: .03em; }
+.fh-tmpl-row { display: flex; gap: 5px; margin-top: 6px; overflow-x: auto; scrollbar-width: none; }
+.fh-tmpl-row::-webkit-scrollbar { display: none; }
+.fh-tmpl-row span { flex: 0 0 auto; font-size: 11px; font-weight: 800; color: var(--accent-2); background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border: 1px solid var(--line-2); border-radius: 8px; padding: 5px 10px; white-space: nowrap; }
+.fh-actions { display: flex; gap: 8px; margin-top: 14px; }
+.fh-actions button { flex: 1; height: 44px; border-radius: 12px; cursor: pointer; font-family: var(--font); font-size: var(--t-sm); font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+.fh-actions button svg { width: 16px; height: 16px; }
+.fh-add { border: 0; background: var(--accent); color: #fff; }
+.fh-add:hover { background: var(--accent-2); }
+.fh-export { border: 1px solid var(--accent); background: var(--surface); color: var(--accent); }
+.fh-export:hover { background: var(--accent-wash-2); }
+.fh-actions button:focus-visible { outline: none; box-shadow: var(--ring); }
+.fh-note { font-size: var(--t-xs); color: var(--ink-3); margin-top: 12px; }
+.fh-note b { color: var(--ink-2); }
 
 /* --- floor (Toyota job element sheets) --- */
 .floor-cat { margin-top: 18px; }
@@ -1148,9 +1179,19 @@ table.thr .over { color: var(--ink-2); font-size: var(--t-xs); }
 
       <!-- FLOOR -->
       <div class="subpanel" id="sub-bfloor">
-        <div class="book-intro">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg>
-          <span>איך עושים כל דבר פיזית, בשיטת טויוטה: <b>שלב · נקודת מפתח · למה</b> — וזמן־תקן להספק ולחישוב עלויות. מה שעוד לא תועד מסומן ״טרם״ — לוחצים ״רשום את זה״ וממלאים מהרצפה. אף פרט לא מומצא.</span>
+        <div class="floor-hero">
+          <div class="fh-eyebrow">המשטח שלך · לשבוע הקרוב</div>
+          <h3>כתוב כאן איך עושים כל דבר</h3>
+          <p>כל משימה פיזית — מזיגה, אריזה, ליקוט, שקילה, תיוג. לוחצים ״רשום את זה״ על משימה וכותבים חופשי: שלבים, טריקים, כמה זמן לוקח. בסוף השבוע מייצאים ושולחים לקלוד — והוא מלטש לדף־עבודה מקצועי בפורמט טויוטה.</p>
+          <div class="fh-tmpl">
+            <span class="fh-tmpl-k">התבנית שאליה זה יהפוך:</span>
+            <div class="fh-tmpl-row"><span>שלב</span><span>נקודת מפתח</span><span>למה</span><span>זמן־תקן</span><span>הספק</span></div>
+          </div>
+          <div class="fh-actions">
+            <button class="fh-add" id="floorAdd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg> משימה משלך</button>
+            <button class="fh-export" id="floorExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M4 21h16"></path></svg> ייצא את מה שכתבת</button>
+          </div>
+          <p class="fh-note">שני דפים כבר מלאים למטה — <b>ליקוט</b> ו<b>קבלת סחורה</b> — הם הדוגמה לאיך זה נראה כשגמור.</p>
         </div>
         <div id="floorList"></div>
       </div>
@@ -1668,32 +1709,38 @@ const OPEN_ITEMS = [
 const SKILLS = [
   { id:"guardian", name:"בדיקת הבוקר", tech:"daily-ops-guardian", color:"#0E7C86", ic:"chart",
     when:"כל בוקר 6:30 (אוטומטי) · או ״בדיקת בוקר״",
+    why:"כל יום, לפני שמתחילים: יש מספיק תוצרת למכור, מספיק חומר גלם לייצר, והתוכנית תואמת את השטח. קלוד מציע — תום מחליט.",
     does:"עובר על המערכת: יש מספיק תוצרת למכור? מספיק חומר גלם לייצר? התוכנית תואמת את השטח? שולח לתום מייל בוקר בעברית עם כפתורי פעולה — כולל תוכנית מול ביצוע של אתמול ודגל ״לא הוזן דיווח״.",
     reads:"מלאי, הזמנות פתוחות, תוכנית ייצור, תחזית", writes:"טיוטות בלבד + מייל (לא נועל, לא מזמין)",
     modes:["6:30 יומי — בדיקה + מייל","חמישי 15:50 — שומר־הזומבים","מוצ״ש 20:00 — הכנת ראשון"] },
   { id:"plan", name:"תכנון ייצור", tech:"plan-production-14d", color:"#B45309", ic:"plan",
     when:"חמישי — ״בוא נתכנן ייצור״",
-    does:"הריטואל של חמישי: ריטרו על השבוע שעבר → כוונון השבוע הקרוב → תכנון שבוע+2 → טיוטות לתוכנית → תום מכוונן בפורטל ונועל → מעביר את הקנייה לסקיל הרכש. העיקרון: כל טנק הולך למקום שמציל הכי הרבה ₪, הזמנות מחייבות קודם.",
+    why:"כל טנק הולך למקום שמציל הכי הרבה ₪ תרומה בשבועיים הקרובים. הזמנה מחייבת שהוחמצה = הפסד ודאי + אמון; תחזית שהוחמצה = הימור. לכן הזמנות מחייבות תמיד לפני תחזית.",
+    does:"הריטואל של חמישי: ריטרו על השבוע שעבר → כוונון השבוע הקרוב → תכנון שבוע+2 → טיוטות לתוכנית → תום מכוונן בפורטל ונועל → מעביר את הקנייה לסקיל הרכש.",
     reads:"מרווחי תרומה, הזמנות מחייבות, תחזית, מלאי", writes:"טיוטות תוכנית ייצור (תום נועל)",
     modes:["חמישי — תכנון שבועיים"] },
   { id:"procure", name:"תכנון רכש", tech:"procurement-planning", color:"#7C3AED", ic:"cart",
     when:"חמישי אחרי התכנון — ״מה לקנות השבוע״",
-    does:"סשן רכש מונחה־שאלות: מריץ את מנוע התכנון (מספר התחלתי), ואז מפעיל שיפוט של קניין בכיר — בודק את הקלטים, שואל את תום על מה שדורש החלטה, ונוחת על הכמות והתזמון המדויקים. לא סתם סומך על המנוע.",
+    why:"המנוע נותן מספר התחלתי — לא סוף פסוק. קניין בכיר מאמת את הקלטים, שואל רק את מה שבאמת דורש החלטה אנושית, ונוחת על הכמות שמחזיקה שירות גבוה בלי לבזבז מזומן או ליצור קלקול.",
+    does:"סשן רכש מונחה־שאלות: מריץ את מנוע התכנון, מפעיל שיפוט של קניין בכיר, בודק את הקלטים, שואל את תום על מה שדורש החלטה, ונוחת על הכמות והתזמון המדויקים.",
     reads:"בופרים, צריכה, מלאי, ספקים, מחירים", writes:"טיוטות הזמנות → תור הביצוע של דורין",
     modes:["חמישי — סשן רכש"] },
   { id:"dispatch", name:"שיגור מסלול", tech:"daily-delivery-dispatch", color:"#2563EB", ic:"route",
     when:"יומי אחרי הנעילה — ״מחר״",
-    does:"מה שתום עשה ידנית: לוקח כל הזמנה פתוחה באזור היום, בודק מה באמת במלאי, מכניס את מה שיש ל־LionWheel על הנהג הנכון ליום הנכון — ומחזיר רשימה נקייה של מה שחסר. משנה נהג+תאריך בלבד, לעולם לא סטטוס. תמיד מציג תוכנית לאישור לפני כתיבה.",
+    why:"מה שתום עשה ידנית כל יום — אותו דבר, בדיוק, כל פעם. משנה נהג+תאריך בלבד ב־LionWheel, אף פעם לא סטטוס. זה כותב למערכת חיה מול לקוחות — לכן תמיד תוכנית לאישור לפני כל כתיבה.",
+    does:"לוקח כל הזמנה פתוחה באזור היום, בודק מה באמת במלאי, מכניס את מה שיש ל־LionWheel על הנהג הנכון ליום הנכון — ומחזיר רשימה נקייה של מה שחסר.",
     reads:"הזמנות פתוחות באזור, מלאי מאוחד, לוח אזורים", writes:"LionWheel — נהג+תאריך (אחרי אישור תום)",
     modes:["יומי — שיגור אזור היום"] },
   { id:"routepack", name:"חבילת הדפסה", tech:"route-print-pack", color:"#0891B2", ic:"door",
     when:"יומי — ״תכין את המסלול של מחר״",
-    does:"בונה PDF אחד מוכן־להדפסה: דף העבודה של LionWheel, ואז כל תחנה בסדר הנסיעה — חשבונית ירוקה אמיתית ×2 עם סימוני ליקוט (או תעודה רשמית כמוצא אחרון). שולח למייל הייצור.",
+    why:"חשבונית ירוקה אמיתית היא הכלל — תעודת משלוח רק כמוצא אחרון. שום משלוח לא יוצא בלי מסמך שמלווה אותו.",
+    does:"בונה PDF אחד מוכן־להדפסה: דף העבודה של LionWheel, ואז כל תחנה בסדר הנסיעה — חשבונית ירוקה אמיתית ×2 עם סימוני ליקוט. שולח למייל הייצור.",
     reads:"מסלול LionWheel, חשבוניות ירוקה", writes:"PDF + מייל · הצעות תנועת מלאי לאישור",
     modes:["יומי — חבילת מסלול"] },
   { id:"receipt", name:"קבלה מחשבונית", tech:"goods-receipt-from-invoice", color:"#15803D", ic:"credit",
     when:"כשמגיעה חשבונית ספק (תמונה / PDF)",
-    does:"קורא כל פרט מהחשבונית → מציג לאישור תום → רושם קבלת סחורה, מעדכן מחירים עם התראות שינוי, ולוכד את מפרט הרכש המדויק (מידות, חומר, טחינה, ניסוח הספק). כל חשבונית היא לבנה במאגר המפרטים. אף פעם לא רושם לפני אישור.",
+    why:"כל חשבונית היא לבנה במאגר המפרטים: לוכדים כל פרט מדויק (מידות, חומר, טחינה, ניסוח הספק) — כדי שבהמשך אפשר יהיה להזמין מחדש בלי טעות. אף פעם לא רושם לפני אישור תום.",
+    does:"קורא כל פרט מהחשבונית → מציג לאישור → רושם קבלת סחורה, מעדכן מחירים עם התראות שינוי, ולוכד את מפרט הרכש המדויק.",
     reads:"החשבונית + מלאי / מחירים / הזמנות פתוחות", writes:"קבלת סחורה + מחירים + מפרטי רכש (אחרי אישור)",
     modes:["לפי הצורך — כשמגיעה סחורה"] }
 ];
@@ -1715,22 +1762,27 @@ const SYSTEMS = [
   { id:"lionwheel", name:"LionWheel", color:"#2563EB", role:"ליקוט והפצה",
     truth:"המקור לכל ההזמנות הפתוחות ולמצב המשלוחים.",
     doing:["דורין נועלת את הקו ב־15:00","מקסים בונה את המסלול לפי אזור־יום","מיידן מסמן ״בוצע״ אחרי כל לקוח","הסקיל משנה נהג+תאריך — אף פעם לא סטטוס"],
+    under:["סימון האיסוף ב־LionWheel הוא מה שמוריד מהמלאי במערכת (טריגר איסוף→ניכוי) — לכן ״בוצע״ בזמן ובאמת זה קריטי.","ההפרש בין מה שלוקט (LionWheel) למה שהוזמן (חשבונית מקור) = הזיכוי."],
     gaps:["מי מורשה לשנות סטטוס הזמנה, ומתי בכלל נוגעים ידנית?","נקודות שלא נכנסות אוטומטית — מי מקליד ומתי?","בדיוק לפי מה מקסים בונה את סדר המסלול?","מי מוסיף או משנה רשומת נהג?"] },
   { id:"shopify", name:"Shopify", color:"#15803D", role:"הזמנות ומכירות",
     truth:"המקור של כל ההזמנות. כל הזמנה — דרכו, באותו יום.",
     doing:["דורין מכניסה כל הזמנה (גם וואטסאפ־מתוקלדת) באותו יום","חשבונית מקור נוצרת אוטומטית ברגע שההזמנה בפנים"],
+    under:["מלאי התוצרת בשופיפיי הוא יעד סנכרון בלבד — אם יש אי־התאמה, שופיפיי מנצח (הפלטפורמה קובעת מול הלקוח)."],
     gaps:["הזמנה כפולה או תיקון הזמנה — מה התהליך?","מלאי תוצרת בשופיפיי — מי מעדכן ומתי?"] },
   { id:"greeninvoice", name:"חשבונית ירוקה", color:"#0E7C86", role:"חשבוניות וזיכויים", ltr:false,
     truth:"מסמכי החשבונאות — חשבוניות מקור וזיכויים.",
     doing:["חשבונית מקור אוטומטית מכל הזמנת שופיפיי","זיכוי על כל פער ליקוט — דורין מאשרת בבוקר","עדי מכניסה חשבוניות ספקים לפי תנאי תשלום"],
+    under:["עדות חשבונית הספק כאן היא המקור — לא מחירים ״זוכרים״ לבד; צריך לאמת מול המסמך.","אם חשבונית המקור היא חשבונית־מס/קבלה, זיכוי = ״זיכוי + קבלה שלילית״ (עד אימות — טיפול ידני)."],
     gaps:["חשבונית מס/קבלה מול חשבונית רגילה — מתי מה?","תיקון חשבונית שגויה — התהליך המדויק?"] },
   { id:"portal", name:"Factory OS", color:"#7C3AED", role:"הפורטל — הבקרה היומית",
     truth:"אישור זיכויים, קבלות סחורה, תור הרכש, לוח היום.",
     doing:["דניס: קבלת סחורה מול הזמנת הרכש בדלת","דורין: אישור זיכויים + ביצוע הזמנות מהתור","תום: לוח היום, תכנון ובקרה"],
+    under:["הכלל הגדול: טפסים ואינטגרציות יוצרים אירועים · Postgres שומר את האמת · המלאי אף פעם לא נמחק — כל תיקון נרשם כשורת־היפוך, ככה שיש היסטוריה מלאה ואפשר לשחזר."],
     gaps:["הרשאות לכל תפקיד — מי רואה ומי עורך מה?","מסך ישיבת 14:00 — אחרי שהתהליך רץ חודש יציב"] },
   { id:"make", name:"Make", color:"#B45309", role:"האוטומציות — הדבק בין המערכות",
     truth:"מריץ את הגשרים והתזכורות האוטומטיות.",
     doing:["מייל הבוקר של קלוד יוצא דרכו","גשר LionWheel → מלאי (חי מ־10.5)"],
+    under:["הגשר איסוף→מלאי חי ורץ בייצור מ־10.5 — מה שנאסף ב־LionWheel יורד מהמלאי אוטומטית."],
     gaps:["אילו תרחישים פעילים, ומה כל אחד עושה?","מי נוגע בהם כשמשהו נשבר?"] }
 ];
 
@@ -2174,6 +2226,7 @@ function renderSkills() {
         <span class="caret">${ICON.chevD}</span>
       </button>
       <div class="skill-body">
+        ${s.why ? `<div class="sk-why"><span class="sk-why-k">העיקרון</span>${esc(s.why)}</div>` : ""}
         <p class="sk-does">${esc(s.does)}</p>
         <div class="sk-io">
           <div class="io read"><div class="io-k">${ICON.check} קורא</div><div class="io-v">${esc(s.reads)}</div></div>
@@ -2206,6 +2259,7 @@ function renderSystems() {
   SYSTEMS.forEach(s => {
     const card = el("div", "card sys");
     const doing = s.doing.map(d => `<li>${esc(d)}</li>`).join("");
+    const under = (s.under || []).map(u => `<li>${esc(u)}</li>`).join("");
     const gaps = s.gaps.map(g => `<li><span>${esc(g)}</span><button class="gap-write" data-cap="${esc(s.name + ": " + g)}" data-tag="מערכת">${ICON.pen} רשום</button></li>`).join("");
     card.innerHTML = `
       <button class="sys-btn" aria-expanded="false">
@@ -2216,6 +2270,7 @@ function renderSystems() {
       <div class="sys-body">
         <div class="sy-truth"><b>מקור האמת:</b> ${esc(s.truth)}</div>
         <div class="sy-block"><h5>מה עושים בו</h5><ul>${doing}</ul></div>
+        ${under ? `<div class="sy-block"><h5>מתחת למכסה</h5><ul class="sy-under">${under}</ul></div>` : ""}
         <div class="sy-block"><h5>כללים לתעד</h5><ul class="sy-gaps">${gaps}</ul></div>
       </div>`;
     const btn = card.querySelector(".sys-btn");
@@ -2514,6 +2569,8 @@ $("#capText").addEventListener("input", () => { $("#capSave").disabled = !$("#ca
 $("#capSave").addEventListener("click", capSaveNote);
 $("#capCopy").addEventListener("click", capCopy);
 $("#capExport").addEventListener("click", capExport);
+$("#floorAdd").addEventListener("click", () => openCapture("משימה חדשה לרצפה\nשם: \nשלבים:\n1. \nכמה זמן לוקח: ", "רצפה"));
+$("#floorExport").addEventListener("click", () => openCapture());
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeCapture(); });
 function openClockToday() {
   const k = todayModel(HE_DATE().dow).kind;
