@@ -14,6 +14,44 @@
 
 ---
 
+## Factory-mapping v3 rollout — org model → operating system (2026-07-22/23)
+
+**Landed, verified, merged, and partly live in production.** Tom-directed end-to-end pass that turned the filled-in factory-mapping questionnaire (who does what, the seams, the authority thresholds) into (a) a durable operating model, (b) upgraded operating skills, (c) three portal tranches + one backend read model, and (d) automated weekly measurement. This is the "make the org legible and lean" body of work, distinct from the procurement-corridor pass below.
+
+**Source-of-truth docs (this repo, `docs/factory-mapping/`, all on main):**
+- `2026-07-22-mapping-v3-tom-responses.md` — Tom's verbatim questionnaire answers (raw input, not authority).
+- `2026-07-22-mapping-v3-followup-questions.md` — 16 follow-up decisions, all **answered/approved by Tom** (his four edits recorded inline: two-wave picking, Today-board-as-briefing, Sunday routine rebuilt around Sunday-morning order arrival, goods-receipt = system form not Claude skill; plus 23.7 edits: delivery exceptions → Dorin always, Dorin↔Adi check = Tuesday).
+- `2026-07-22-rollout-and-measurement-plan.md` — 6-week phased adoption, ≤2 new habits/person/week, 9 system-measured KPIs + the **CCI cost-of-chaos index** (₪/week = credits + off-Thursday emergency buys + zombie-queue fine).
+- `2026-07-23-week0-baseline.md` — live-measured baseline (corrects the stale "4 GR ever" claim: 114 all-time, 95 by Tom personally, 0 by Dennis).
+
+**Operator doctrine (this repo, `docs/playbook/`):**
+- `operator-playbook-he.md` — **v2, in force** (Tom-approved 23.7). Rewrote the stale v1 for the real team (Maxim=picking/FG, Maiden=driver with his own iron-rules + exception table, Dennis=door goods-receipt), the full clock (two-wave picking, 14:00 close / 15:00 lock, Thursday plan-to-purchase chain, Sunday routine, region-by-day map), and money thresholds. **v1 archived** at `docs/archive/operator-playbook-he-v1-superseded-2026-07-23.md`.
+- `station-cards-he.md` + `.pdf` (print-ready, one page per person), `team-briefing-he.md` + `.pptx` (week-0 deck). Alex conversation pack: `docs/factory-mapping/2026-07-22-alex-package-he.md`.
+
+**Skills (this repo, `.claude/skills/`, merged PR #51):**
+- `daily-delivery-dispatch` + `route-print-pack` — "מחר" is now a complete instruction: zone resolves from new `route_calendar.json` (Sun/Mon/Thu center, Tue north, Wed south), driver defaults to route-driver Maiden (`drivers.json` `default_route_driver`, id resolved+cached on first live run), next-working-day rule (Thu/Fri/Sat → Sunday). Maxim 28174 demoted to emergency driver.
+- `daily-ops-guardian` — new Stage 0.5 (yesterday plan-vs-actual + first-position red flag when a firmed day has no production report), plus two new fire modes: `queue-guard` (Thu 15:50, unplaced-PO check, silent when clean) and `sunday-prep` (Sat 20:00, motzash Sunday draft).
+
+**Portal tranches (`gt-factory-os-portal`, all merged + independently verified):**
+- **137** (PR #177) — `/stock/receipts` door mode for Dennis: short-receipt pre-submit/success visibility, operator-role progress collapse. Presentation-only.
+- **136** (PR #178) — read-only 3-tab **Today board** (Yesterday/Today/Tomorrow) inside `/home`; named gaps G2/G3/G4 shown honestly, never fabricated.
+- **138** (PR #180) — **lean-nav**: per-role pruning via a new `roles?` allow-list + hide-never-grantable-rows doctrine (Tom D1+D2). **Visibility-only — zero route deletion, middleware/lattice untouched, every folded URL still loads directly** (proven per-role in e2e). operator rail ~14→9, viewer ~13→6.
+
+**Backend (`gt-factory-os`, merged + LIVE IN PROD):**
+- **T8** (PR #176) — economics auth guard + AuthError boundary (deepen refactor; behavior-preserving, wire byte-identical).
+- **G1 / migration 0287** (PR #178) — `private_core.v_production_plan_vs_actual` read model. **Applied to prod `rvadsozabmxkkrktwgnv` 2026-07-23 (Tom-authorized, flagged step)** and live-verified: 103 firmed plan rows, 75 with reports, 13 past-firmed no-report days, no_report_flag correctly never fires on today/future. Additive CREATE VIEW, reversible via `DROP VIEW`. Feeds guardian Stage 0.5 + the Today-board Yesterday tab (portal still uses a client-side join stopgap until a later tranche swaps it).
+
+**Automation now running (self-bound Routines, this session):** guardian `queue-guard` (Thu 15:50), `sunday-prep` (Sat 20:00), weekly `scorecard` (Sun 10:00) — all fire into this session with live Supabase + Make-webhook access. First `queue-guard` run already found 4 stuck POs (₪11,253).
+
+**Open / not done (needs Tom, none blocking):**
+- Maxim's portal user (email) — last piece of tranche 137; Dennis already provisioned (role corrected planner→operator 23.7).
+- Alex conversation (pack ready) — gates only rollout weeks 5-6.
+- Deferred: Dorin persona split (audit D3), Maiden's LionWheel driver record (skill resolves/asks on first live run), Sat customer reminder (outbound — Tom's word only), two CI follow-ups (widen `typecheck` to cover `api/src`; make the flaky `supabase` postinstall CI-resilient).
+
+**Current tips (2026-07-23):** brain PRs #50/#51/#52/#53/#54 merged; backend PRs #176/#178 merged; portal PRs #177/#178/#180 merged (+ #179 tranche 139 by a parallel session). Reference PR numbers, not shas (local mains lag the GitHub squash-merges).
+
+---
+
 ## Procurement corridor — audit + rebuild (2026-07-16/17)
 
 **Landed, verified, merged.** Tom-directed end-to-end pass on the procurement corridor: from the SQL recommendation engine through the `/planning/procurement` weekly-meeting triage screen, plus the operating skill that runs it. Scope was explicitly bounded to trigger→triage (post-triage actions — approve/skip/cancel/placement queue — were already live via portal tranches 130-131 and untouched here).
