@@ -110,6 +110,25 @@ Reorder Point (ROP)  = ADU × DLT  +  Safety Stock
 
 ---
 
+### 4b. Buffer suggestion read model (backend 0292, 2026-07-23)
+
+`api_read.v_component_buffer_suggestions` computes a per-component
+`suggested_cover_days` off the flat 7-day default, **differentiated down as
+well as up**, with `current_cover_days`, `delta_days`, `direction`,
+`review_priority`, and a `caveat`. Use it to pick the handful worth tuning in
+Stage 3 — never batch-apply; apply the ones you agree with via the gated
+`planning.safety.component_cover_days.<id>` override.
+
+It uses the DDMRP-factor shortcut (methodology §6), not raw daily-σ, because the
+live data won't support a statistical buffer: **the component consumption
+ledger is empty** (demand is plan-driven) and **`lead_time_days` is a flat 7-day
+default for 171/184 planned components** (only 13 carry a real lead: 37d, 127d).
+So the honest first action is capturing **real lead times** — `lead_is_flat_default`
+flags every guessed one, and the suggestion for those is criticality-centred
+only (HIGH 9 / MEDIUM 7 / NULL 6). Real-lead + HIGH-criticality items go up;
+unclassified short items lean down. Trust the down/up split only once lead
+truth is fixed (§3).
+
 ## 5. DDMRP buffer zones (your engine's native model)
 
 Your purchase engine is DDMRP-lite, so it helps to think in DDMRP zones. Per component:
