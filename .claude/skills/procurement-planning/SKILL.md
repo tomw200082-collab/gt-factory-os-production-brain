@@ -135,7 +135,11 @@ Four post-0284 rules govern the triage itself:
   Must-today ⇔ `last_safe_order ≤ today`. Same math as the portal's action list at
   `/planning/procurement` — for visual triage send Tom there; keep chat for the interview.
 - **Trust flags drive the questions** (trace v3): `last_count_age_days` null or >14 → offer a
-  quick physical count *before* committing cash; `lt_source='global_default'` → the urgency
+  quick physical count *before* committing cash. For the prioritised list, read
+  `api_read.v_count_first_queue` (backend 0294): per session line it gives `count_first`
+  (stale/never-counted with cash on the line) and `count_first_rank` (ranked by
+  `cash_at_stake` desc) — count the top-N most expensive count_first lines before the round
+  (on the last live session, 15/25 lines, ~₪25k against unverified counts). `lt_source='global_default'` → the urgency
   date is a guess — confirm the real lead time (and store it); `missing_price` blocking →
   the session's ₪ total is understated.
 - **Stale-session trap.** Traces freeze at generation. Any count / receipt / plan change
