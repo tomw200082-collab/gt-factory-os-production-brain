@@ -184,6 +184,7 @@ Production-side per-base overrides also exist: `planning.production.safety_stock
   → `fn_generate_purchase_recommendations` + `fn_generate_bf_purchase_recommendations`.
   - `p_trigger_source` is CHECK-constrained to `'manual'` | `'scheduled'` — any other value aborts the run.
   - **Perf (backend 0288, 2026-07-23):** `fn_compute_fg_net_requirements` now materializes this run's FG demand once (session-local temp table) instead of re-evaluating `v_planning_demand` per item × per week. A full **8-week** run completes in **~2.5s** (previously exceeded the 60s budget, forcing 4-week runs). Run the full horizon — no need to truncate. Behaviour is byte-identical; only speed changed.
+  - **Produce-to-stock (backend 0289, 2026-07-23):** `fn_generate_production_recommendations` now emits one order-up-to-target `production` rec for **every** depleting MANUFACTURED/REPACK item (not just shortages), ranked by daily time-to-depletion via `fn_compute_daily_fg_projection`; never "nothing to produce". Coverage bands per item (`planning_item_config.{min,target,max}_coverage_days` > `planning.production.*_coverage_days_default` 7/14/28; powders 10/21/45). `logic_trace.trigger_reason` = shortage/replenish/build_ahead/topup; rank the queue by `order_by_date` (= depletion − production lead). Full model + tuning: `methodology.md` §6b. Tea bases stay on `fn_plan_tea_production`.
 
 **Purchase session (creates DRAFT consolidated POs — safe to run):**
 - `fn_generate_purchase_session(p_actor uuid, p_session_date date, p_session_type text)`

@@ -173,6 +173,40 @@ tuning is the highest-leverage output of a session.
 
 ---
 
+## 6b. Produce-to-stock production (backend 0289, 2026-07-23)
+
+Production planning is **produce-to-stock, not shortage-only**.
+`fn_generate_production_recommendations` always proposes the next batch for
+every MANUFACTURED / REPACK item (tea bases keep their own capacity-aware
+scheduler `fn_plan_tea_production`), ranked by time-to-depletion — never
+"nothing to produce".
+
+Per item, three coverage bands (days) drive an **order-up-to** model, resolved
+`planning_item_config.{min,target,max}_coverage_days` >
+`planning.production.{min,target,max}_coverage_days_default` (seeded 7 / 14 /
+28) > 7 / 14 / 28. Powders default 10 / 21 / 45 (longer shelf life). From the
+plant's **daily** projection (`fn_compute_daily_fg_projection`):
+- `ADU` = horizon demand / (weeks×7); `reorder/target/max_qty` = band-days × ADU.
+- Triggers when projected on-hand drops to/below `target_qty` on some day;
+  `build = target_qty − projected on-hand at that day`, floored by `min_batch`,
+  rounded up the batch grid (`batch_multiple` → BOM `min_run_l` → policy default
+  → exact fill-to-target).
+- `trigger_reason` (in `logic_trace`): `shortage` (stockout within production
+  lead time), `replenish` (reaches the reorder band), `build_ahead` (below
+  target, above reorder), `topup` (never-idle — soonest-to-deplete when nothing
+  is below target).
+- Rank the queue by `order_by_date` = depletion day − production lead time
+  (ascending). `time_to_depletion_days`, the bands and the quantities all live
+  in `logic_trace`.
+
+Tuning is the same differentiate-don't-flatten discipline as component buffers
+(§4): add per-item `planning_item_config` rows (min/target/max coverage,
+`min_batch`, `batch_multiple`, `production_lead_time_days`) to override the
+global defaults — shorten target/max for perishable FG, lengthen for
+shelf-stable. Do not flatten; a handful of high-value items per session.
+
+---
+
 ## 7. ABC-XYZ segmentation → which policy each component deserves
 
 You cannot lavish attention on 184 components. Segment, then differentiate effort and service.
