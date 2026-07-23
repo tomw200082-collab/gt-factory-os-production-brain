@@ -1,0 +1,1790 @@
+<title>GT — מפת התפעול</title>
+<meta name="color-scheme" content="light dark" />
+
+<style>
+/* ============================================================
+   GT — מפת התפעול · living operational map
+   Single-file artifact. Zero external assets (CSP-safe).
+   View over the repo sources of truth — never independent truth.
+   ============================================================ */
+
+:root {
+  --font: system-ui, -apple-system, "Segoe UI", "Noto Sans Hebrew", "Rubik", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* type scale */
+  --t-xs: 11.5px; --t-sm: 13px; --t-base: 15px; --t-md: 17px;
+  --t-lg: 20px; --t-xl: 25px; --t-2xl: 31px; --t-3xl: 38px;
+
+  /* light theme (default) */
+  --bg: #E7ECEA;
+  --bg-2: #EEF2F1;
+  --surface: #FFFFFF;
+  --surface-2: #F1F5F4;
+  --surface-3: #E7EEEC;
+  --ink: #122624;
+  --ink-2: #435450;
+  --ink-3: #6E7E7A;
+  --line: #D6DFDC;
+  --line-2: #E5ECEA;
+  --accent: #0E7C86;
+  --accent-2: #0A5A62;
+  --accent-ink: #073F45;
+  --accent-wash: #DCEFEF;
+  --accent-wash-2: #EBF6F5;
+  --good: #15803D; --good-wash: #E4F4E9; --good-dot: #16A34A;
+  --warn: #A65A0B; --warn-wash: #F9EBD6; --warn-dot: #F59E0B;
+  --urgent: #C2261C; --urgent-wash: #FBE6E4; --urgent-dot: #DC2626;
+  --shadow: 0 1px 2px rgba(16,40,37,.06), 0 8px 24px rgba(16,40,37,.06);
+  --shadow-lg: 0 8px 40px rgba(16,40,37,.16);
+  --ring: 0 0 0 3px rgba(14,124,134,.32);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0C1412;
+    --bg-2: #0F1815;
+    --surface: #15201D;
+    --surface-2: #1B2724;
+    --surface-3: #21302C;
+    --ink: #E7EEEC;
+    --ink-2: #A6B4B0;
+    --ink-3: #7A8A85;
+    --line: #293833;
+    --line-2: #21302C;
+    --accent: #3BB6BD;
+    --accent-2: #63CDD3;
+    --accent-ink: #BEE9EB;
+    --accent-wash: #123632;
+    --accent-wash-2: #0F2A27;
+    --good: #4ADE80; --good-wash: #12281D; --good-dot: #22C55E;
+    --warn: #FBBF24; --warn-wash: #2B2010; --warn-dot: #F59E0B;
+    --urgent: #F98A82; --urgent-wash: #2C1512; --urgent-dot: #EF4444;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.36);
+    --shadow-lg: 0 12px 48px rgba(0,0,0,.6);
+    --ring: 0 0 0 3px rgba(59,182,189,.4);
+  }
+}
+/* explicit theme overrides — win over the media query in both directions */
+:root[data-theme="light"] {
+  --bg: #E7ECEA; --bg-2: #EEF2F1; --surface: #FFFFFF; --surface-2: #F1F5F4; --surface-3: #E7EEEC;
+  --ink: #122624; --ink-2: #435450; --ink-3: #6E7E7A; --line: #D6DFDC; --line-2: #E5ECEA;
+  --accent: #0E7C86; --accent-2: #0A5A62; --accent-ink: #073F45; --accent-wash: #DCEFEF; --accent-wash-2: #EBF6F5;
+  --good: #15803D; --good-wash: #E4F4E9; --good-dot: #16A34A;
+  --warn: #A65A0B; --warn-wash: #F9EBD6; --warn-dot: #F59E0B;
+  --urgent: #C2261C; --urgent-wash: #FBE6E4; --urgent-dot: #DC2626;
+  --shadow: 0 1px 2px rgba(16,40,37,.06), 0 8px 24px rgba(16,40,37,.06);
+  --shadow-lg: 0 8px 40px rgba(16,40,37,.16);
+  --ring: 0 0 0 3px rgba(14,124,134,.32);
+}
+:root[data-theme="dark"] {
+  --bg: #0C1412; --bg-2: #0F1815; --surface: #15201D; --surface-2: #1B2724; --surface-3: #21302C;
+  --ink: #E7EEEC; --ink-2: #A6B4B0; --ink-3: #7A8A85; --line: #293833; --line-2: #21302C;
+  --accent: #3BB6BD; --accent-2: #63CDD3; --accent-ink: #BEE9EB; --accent-wash: #123632; --accent-wash-2: #0F2A27;
+  --good: #4ADE80; --good-wash: #12281D; --good-dot: #22C55E;
+  --warn: #FBBF24; --warn-wash: #2B2010; --warn-dot: #F59E0B;
+  --urgent: #F98A82; --urgent-wash: #2C1512; --urgent-dot: #EF4444;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.36);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,.6);
+  --ring: 0 0 0 3px rgba(59,182,189,.4);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--t-base);
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.ltr { direction: ltr; unicode-bidi: isolate; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+
+/* ---------- app shell ---------- */
+.app {
+  direction: rtl;
+  max-width: 940px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg);
+  padding-bottom: 84px; /* room for bottom tabbar on mobile */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.appbar { order: 0; }
+.content { order: 5; }
+.tabbar { order: 9; }
+@media (min-width: 860px) {
+  .app { padding-bottom: 40px; }
+}
+
+/* ---------- app bar ---------- */
+.appbar {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  display: flex; align-items: center; gap: 9px;
+  background: none; border: 0; cursor: pointer; padding: 4px 6px;
+  border-radius: 12px; color: var(--ink); font-family: var(--font);
+  transition: background .16s;
+}
+.brand:hover { background: var(--surface-2); }
+.brand:focus-visible { outline: none; box-shadow: var(--ring); }
+.logo {
+  width: 34px; height: 34px; border-radius: 10px; flex: 0 0 auto;
+  background: linear-gradient(150deg, var(--accent), var(--accent-2));
+  display: grid; place-items: center; color: #fff;
+  font-weight: 800; font-size: 15px; letter-spacing: .02em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
+}
+.brand-tt { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.12; }
+.brand-tt b { font-size: var(--t-md); font-weight: 800; letter-spacing: -.01em; }
+.brand-tt .asof { font-size: var(--t-xs); color: var(--ink-3); font-weight: 600; }
+.bar-spacer { flex: 1 1 auto; }
+.iconbtn {
+  width: 40px; height: 40px; border-radius: 12px; flex: 0 0 auto;
+  border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink-2); cursor: pointer; display: grid; place-items: center;
+  transition: background .16s, color .16s, border-color .16s;
+}
+.iconbtn:hover { color: var(--accent); border-color: var(--accent); }
+.iconbtn:focus-visible { outline: none; box-shadow: var(--ring); }
+.iconbtn svg { width: 20px; height: 20px; }
+.modebtn {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 40px; padding: 0 12px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink-2); cursor: pointer; font-family: var(--font);
+  font-size: var(--t-sm); font-weight: 700; white-space: nowrap;
+  transition: background .16s, color .16s, border-color .16s;
+}
+.modebtn:hover { border-color: var(--accent); color: var(--accent); }
+.modebtn:focus-visible { outline: none; box-shadow: var(--ring); }
+.modebtn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); }
+.app[data-mode="present"] .modebtn { background: var(--accent); color: #fff; border-color: var(--accent); }
+.app[data-mode="present"] .modebtn .dot { background: #fff; }
+.modebtn .lbl-present { display: none; }
+.app[data-mode="present"] .modebtn .lbl-full { display: none; }
+.app[data-mode="present"] .modebtn .lbl-present { display: inline; }
+@media (max-width: 400px) { .modebtn .txt { display: none; } .modebtn { padding: 0; min-width: 44px; justify-content: center; } }
+
+/* ---------- screens ---------- */
+.content { padding: 16px 14px 8px; }
+.screen { display: none; animation: fade .28s ease; }
+.screen.is-active { display: block; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .screen { animation: none; } }
+
+.screen-head { margin: 2px 2px 14px; }
+.eyebrow {
+  font-size: var(--t-xs); font-weight: 800; letter-spacing: .12em;
+  color: var(--accent); text-transform: none; display: flex; align-items: center; gap: 7px;
+}
+.eyebrow .k { font-family: var(--mono); background: var(--accent-wash); color: var(--accent-2);
+  padding: 1px 6px; border-radius: 6px; font-size: 10.5px; letter-spacing: 0; }
+.screen-head h1 { font-size: var(--t-2xl); font-weight: 800; letter-spacing: -.02em;
+  margin: 8px 0 4px; text-wrap: balance; line-height: 1.1; }
+.screen-head p { color: var(--ink-2); font-size: var(--t-sm); margin: 0; max-width: 60ch; }
+
+/* ---------- cards ---------- */
+.card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 16px; box-shadow: var(--shadow);
+}
+.card + .card { margin-top: 12px; }
+.pad { padding: 15px 16px; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.grid2 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 680px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+
+/* pills / chips */
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px;
+  border-radius: 999px; font-size: var(--t-xs); font-weight: 800; border: 1px solid transparent; }
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; }
+.chip.good { background: var(--good-wash); color: var(--good); } .chip.good .dot { background: var(--good-dot); }
+.chip.warn { background: var(--warn-wash); color: var(--warn); } .chip.warn .dot { background: var(--warn-dot); }
+.chip.urgent { background: var(--urgent-wash); color: var(--urgent); } .chip.urgent .dot { background: var(--urgent-dot); }
+.chip.accent { background: var(--accent-wash); color: var(--accent-2); } .chip.accent .dot { background: var(--accent); }
+.chip.ghost { background: var(--surface-2); color: var(--ink-2); border-color: var(--line); } .chip.ghost .dot { background: var(--ink-3); }
+
+/* ---------- Today strip ---------- */
+.today-hero {
+  border-radius: 20px; overflow: hidden; border: 1px solid var(--line);
+  box-shadow: var(--shadow); background: var(--surface);
+}
+.today-top {
+  padding: 16px 17px 15px;
+  background:
+    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--accent-wash-2), var(--surface));
+  border-bottom: 1px solid var(--line-2);
+}
+.today-eyebrow { font-size: var(--t-xs); font-weight: 800; letter-spacing: .06em; color: var(--accent-2); }
+.today-day { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 3px; }
+.today-day h1 { font-size: var(--t-3xl); font-weight: 800; letter-spacing: -.03em; margin: 0; line-height: 1; }
+.today-date { color: var(--ink-2); font-weight: 700; font-size: var(--t-sm); }
+.today-tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 12px; }
+.today-headline { margin: 13px 0 0; font-size: var(--t-md); font-weight: 700; color: var(--ink); text-wrap: balance; }
+.today-note { margin: 8px 0 0; font-size: var(--t-sm); color: var(--ink-2); }
+
+.anchor-list { list-style: none; margin: 0; padding: 4px 4px 6px; }
+.anchor {
+  display: grid; grid-template-columns: 62px 1fr; gap: 12px; align-items: start;
+  padding: 11px 12px; border-radius: 12px; position: relative;
+}
+.anchor + .anchor { border-top: 1px solid var(--line-2); }
+.anchor.now { background: var(--accent-wash-2); }
+.anchor .a-time { font-family: var(--mono); font-variant-numeric: tabular-nums; direction: ltr;
+  font-weight: 700; font-size: var(--t-sm); color: var(--accent-2); text-align: left; padding-top: 1px; }
+.anchor .a-what { font-size: var(--t-sm); }
+.anchor .a-what b { font-weight: 750; }
+.anchor .a-who { color: var(--ink-3); font-size: var(--t-xs); font-weight: 700; }
+.anchor.now .a-badge { position: absolute; inset-inline-start: 12px; top: -8px;
+  background: var(--accent); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px; }
+
+.who-row { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 14px 15px; }
+.who {
+  display: inline-flex; align-items: center; gap: 7px; background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px 5px 8px; font-size: var(--t-xs); font-weight: 700;
+}
+.who .av { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  color: #fff; font-weight: 800; font-size: 11px; }
+.who small { color: var(--ink-3); font-weight: 600; }
+
+.section-label { font-size: var(--t-xs); font-weight: 800; color: var(--ink-3); letter-spacing: .04em;
+  margin: 20px 4px 9px; display: flex; align-items: center; gap: 8px; }
+.section-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* jump grid on Today */
+.jump { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.jump button {
+  text-align: start; background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 12px 13px; cursor: pointer; color: var(--ink); font-family: var(--font);
+  display: flex; flex-direction: column; gap: 3px; transition: border-color .16s, transform .12s, background .16s;
+}
+.jump button:hover { border-color: var(--accent); transform: translateY(-1px); }
+.jump button:focus-visible { outline: none; box-shadow: var(--ring); }
+.jump .j-t { font-weight: 800; font-size: var(--t-sm); display: flex; align-items: center; gap: 7px; }
+.jump .j-d { color: var(--ink-3); font-size: var(--t-xs); }
+.jump .j-ic { color: var(--accent); }
+.jump .j-ic svg { width: 17px; height: 17px; display: block; }
+
+/* ---------- Flow map ---------- */
+.flow-legend { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 2px 14px; }
+.flow-spine { position: relative; padding: 4px 0; }
+.stage {
+  position: relative; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start;
+  padding-bottom: 14px;
+}
+.stage:last-child { padding-bottom: 0; }
+.stage-rail { position: relative; display: flex; flex-direction: column; align-items: center; }
+.stage-node {
+  width: 34px; height: 34px; border-radius: 11px; flex: 0 0 auto; z-index: 2;
+  display: grid; place-items: center; font-family: var(--mono); font-weight: 800; font-size: 12px;
+  background: var(--accent); color: #fff; box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.stage-node.milestone { background: var(--ink); color: var(--surface); }
+.stage-line { position: absolute; top: 30px; bottom: -14px; width: 2px; background: var(--line);
+  inset-inline-start: 16px; z-index: 1; }
+.stage:last-child .stage-line { display: none; }
+.stage-btn {
+  width: 100%; text-align: start; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px 13px; cursor: pointer; color: var(--ink); font-family: var(--font);
+  transition: border-color .16s, box-shadow .16s, transform .12s; box-shadow: var(--shadow);
+}
+.stage-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.stage-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.stage-btn .s-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.stage-btn .s-t { font-weight: 800; font-size: var(--t-sm); }
+.stage-btn .s-time { font-family: var(--mono); font-variant-numeric: tabular-nums; direction: ltr;
+  font-size: var(--t-xs); font-weight: 700; color: var(--accent-2); background: var(--accent-wash);
+  padding: 2px 7px; border-radius: 7px; }
+.stage-btn .s-d { color: var(--ink-2); font-size: var(--t-xs); margin-top: 4px; }
+.stage-btn .s-who { color: var(--ink-3); font-size: 10.5px; font-weight: 700; margin-top: 6px; }
+.stage-btn .s-more { color: var(--accent); font-size: 10.5px; font-weight: 800; margin-top: 6px; display: inline-flex; gap: 4px; align-items: center; }
+
+.loop-head { display: flex; align-items: center; gap: 9px; margin: 22px 2px 10px; }
+.loop-ic { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+  background: var(--surface-3); color: var(--accent-2); }
+.loop-ic svg { width: 17px; height: 17px; }
+.loop-head h3 { font-size: var(--t-md); font-weight: 800; margin: 0; }
+.loop-head p { font-size: var(--t-xs); color: var(--ink-3); margin: 1px 0 0; font-weight: 600; }
+.loop-track { display: flex; gap: 0; overflow-x: auto; padding: 4px 2px 12px; scrollbar-width: thin; }
+.loop-step { flex: 0 0 auto; width: 176px; }
+.loop-step + .loop-step { margin-inline-start: -2px; }
+.loop-card {
+  width: 100%; height: 100%; text-align: start; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 13px; padding: 11px 12px; cursor: pointer; color: var(--ink); font-family: var(--font);
+  display: flex; flex-direction: column; gap: 4px; transition: border-color .16s, transform .12s; box-shadow: var(--shadow);
+}
+.loop-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.loop-card:focus-visible { outline: none; box-shadow: var(--ring); }
+.loop-card .lc-time { font-family: var(--mono); font-variant-numeric: tabular-nums; direction: ltr;
+  font-size: 10.5px; font-weight: 700; color: var(--accent-2); }
+.loop-card .lc-t { font-weight: 800; font-size: var(--t-sm); }
+.loop-card .lc-d { color: var(--ink-3); font-size: var(--t-xs); }
+.loop-arrow { flex: 0 0 auto; display: grid; place-items: center; width: 22px; color: var(--ink-3); }
+.loop-arrow svg { width: 16px; height: 16px; transform: scaleX(-1); }
+
+/* ---------- People ---------- */
+.people-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 620px) { .people-grid { grid-template-columns: 1fr 1fr; } }
+.person { overflow: hidden; }
+.person-btn {
+  width: 100%; text-align: start; background: none; border: 0; cursor: pointer; color: var(--ink);
+  font-family: var(--font); padding: 14px 15px; display: flex; align-items: center; gap: 12px;
+}
+.person-btn:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 16px; }
+.avatar { width: 46px; height: 46px; border-radius: 13px; flex: 0 0 auto; display: grid; place-items: center;
+  color: #fff; font-weight: 800; font-size: var(--t-md); box-shadow: inset 0 1px 0 rgba(255,255,255,.25); }
+.person-id { flex: 1 1 auto; min-width: 0; }
+.person-id .p-name { font-weight: 800; font-size: var(--t-md); letter-spacing: -.01em; }
+.person-id .p-role { color: var(--ink-2); font-size: var(--t-xs); font-weight: 650; }
+.person-id .p-hours { color: var(--ink-3); font-size: var(--t-xs); font-family: var(--mono); direction: ltr; margin-top: 2px; }
+.person .caret { color: var(--ink-3); transition: transform .2s; flex: 0 0 auto; }
+.person.open .caret { transform: rotate(180deg); }
+.person-body { display: none; padding: 0 15px 15px; border-top: 1px solid var(--line-2); margin-top: 0; }
+.person.open .person-body { display: block; animation: fade .2s ease; }
+.pb-block { margin-top: 12px; }
+.pb-block h4 { font-size: var(--t-xs); font-weight: 800; color: var(--ink-3); letter-spacing: .03em; margin: 0 0 6px; }
+.pb-block ul { margin: 0; padding-inline-start: 18px; }
+.pb-block li { font-size: var(--t-sm); color: var(--ink); margin: 3px 0; }
+.pb-auth { display: flex; flex-direction: column; gap: 6px; }
+.auth-row { display: flex; align-items: center; gap: 8px; justify-content: space-between;
+  background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 7px 10px; }
+.auth-row .ar-k { font-size: var(--t-xs); color: var(--ink-2); font-weight: 650; }
+.auth-row .ar-v { font-family: var(--mono); font-weight: 800; font-size: var(--t-sm); direction: ltr; unicode-bidi: isolate; }
+.escal { font-size: var(--t-sm); color: var(--ink); background: var(--accent-wash-2);
+  border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 11px; }
+.escal b { color: var(--accent-2); }
+.backup-line { font-size: var(--t-xs); color: var(--ink-3); margin-top: 9px; }
+.iron { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.iron li { display: grid; grid-template-columns: 20px 1fr; gap: 6px; font-size: var(--t-sm); }
+.iron li .n { font-family: var(--mono); font-weight: 800; color: var(--accent); direction: ltr; }
+
+.alex-card { border-style: dashed; }
+.alex-card .person-btn { cursor: default; }
+.alex-card .avatar { background: linear-gradient(150deg, #6B7280, #4B5563) !important; }
+
+/* ---------- Clock ---------- */
+.subtabs { display: flex; gap: 7px; margin: 0 2px 14px; flex-wrap: wrap; }
+.subtab {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer;
+  border-radius: 999px; padding: 7px 14px; font-family: var(--font); font-size: var(--t-sm); font-weight: 700;
+  transition: all .16s; display: inline-flex; align-items: center; gap: 7px;
+}
+.subtab:hover { border-color: var(--accent); color: var(--accent); }
+.subtab:focus-visible { outline: none; box-shadow: var(--ring); }
+.subtab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.subtab .tdot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.subtab.active .tdot { background: #fff; }
+.subpanel { display: none; } .subpanel.active { display: block; animation: fade .22s ease; }
+
+.scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 14px; scrollbar-width: thin; }
+table.clock { width: 100%; border-collapse: collapse; background: var(--surface); font-size: var(--t-sm); min-width: 0; }
+table.clock th, table.clock td { text-align: start; padding: 10px 13px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+@media (max-width: 480px) {
+  table.clock th, table.clock td { padding: 9px 9px; font-size: 12.5px; }
+  table.clock .c-time { font-size: 12px; }
+}
+table.clock thead th { background: var(--surface-2); font-weight: 800; font-size: var(--t-xs); color: var(--ink-2);
+  position: sticky; top: 0; }
+table.clock tbody tr:last-child td { border-bottom: 0; }
+table.clock .c-time { font-family: var(--mono); font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate;
+  font-weight: 700; color: var(--accent-2); white-space: nowrap; }
+table.clock tr.hl td { background: var(--accent-wash-2); }
+table.clock tr.hl .c-time { color: var(--accent-2); }
+table.clock td b { font-weight: 750; }
+.who-tag { color: var(--ink-3); font-size: var(--t-xs); font-weight: 700; }
+
+/* region calendar */
+.regcal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 4px; }
+.regday { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 9px 4px;
+  text-align: center; }
+.regday .rd-name { font-size: 10.5px; font-weight: 800; color: var(--ink-3); }
+.regday .rd-zone { font-size: var(--t-xs); font-weight: 800; margin-top: 5px; }
+.regday.center { background: var(--accent-wash); border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); }
+.regday.center .rd-zone { color: var(--accent-2); }
+.regday.north .rd-zone { color: var(--ink); } .regday.north { background: var(--surface-2); }
+.regday.south .rd-zone { color: var(--ink); } .regday.south { background: var(--surface-2); }
+.regday.none { background: var(--bg-2); } .regday.none .rd-zone { color: var(--ink-3); }
+.regday.today { box-shadow: 0 0 0 2px var(--accent); }
+.regday .rd-today { font-size: 9px; font-weight: 800; color: var(--accent); margin-top: 3px; }
+
+/* ---------- Thresholds ---------- */
+table.thr { width: 100%; border-collapse: collapse; background: var(--surface); font-size: var(--t-sm); min-width: 520px; }
+table.thr th, table.thr td { text-align: start; padding: 11px 12px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+table.thr thead th { background: var(--surface-2); font-weight: 800; font-size: var(--t-xs); color: var(--ink-2); }
+table.thr tbody tr:last-child td { border-bottom: 0; }
+table.thr .who-c { font-weight: 750; }
+table.thr .amt { font-family: var(--mono); font-weight: 800; direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+table.thr .over { color: var(--ink-2); font-size: var(--t-xs); }
+.badge-owner { display: inline-block; font-size: 10.5px; font-weight: 800; padding: 1px 7px; border-radius: 6px;
+  background: var(--surface-3); color: var(--ink-2); }
+.badge-owner.tom { background: var(--accent-wash); color: var(--accent-2); }
+.badge-owner.alex { background: #6B72801f; color: var(--ink-2); border: 1px solid var(--line); }
+/* thresholds — cards on mobile, table on desktop */
+.thr-table-wrap { display: none; }
+.thr-cards { display: flex; flex-direction: column; gap: 10px; }
+.thr-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow); }
+.thr-card .tc-subj { font-weight: 800; font-size: var(--t-sm); }
+.tc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 9px; }
+.tc-cell { background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 7px 10px; min-width: 0; }
+.tc-cell.wide { grid-column: 1 / -1; }
+.tc-cell .tc-k { font-size: 10px; font-weight: 800; color: var(--ink-3); letter-spacing: .03em; display: block; }
+.tc-cell .tc-v { font-weight: 750; font-size: var(--t-sm); margin-top: 2px; word-break: break-word; }
+.tc-cell .tc-v.amt { font-family: var(--mono); direction: ltr; unicode-bidi: isolate; }
+@media (min-width: 620px) {
+  .thr-table-wrap { display: block; }
+  .thr-cards { display: none; }
+}
+
+/* ---------- System ---------- */
+.map-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.proc {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 13px 14px; box-shadow: var(--shadow);
+}
+.proc h4 { margin: 0 0 3px; font-size: var(--t-sm); font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.proc .p-sub { color: var(--ink-3); font-size: var(--t-xs); margin-bottom: 9px; }
+.proc .tools { display: flex; flex-direction: column; gap: 6px; }
+.tool-line { display: flex; align-items: center; gap: 8px; font-size: var(--t-xs); }
+.tool-k { font-weight: 800; color: var(--ink-3); width: 58px; flex: 0 0 auto; }
+.tool-v { color: var(--ink); }
+.deeplink { display: inline-flex; align-items: center; gap: 5px; color: var(--accent); font-weight: 800;
+  text-decoration: none; direction: ltr; unicode-bidi: isolate; }
+.deeplink:hover { text-decoration: underline; }
+.deeplink svg { width: 12px; height: 12px; }
+.tool-pill { display: inline-block; background: var(--surface-2); border: 1px solid var(--line-2); color: var(--ink-2);
+  font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 7px; direction: ltr; unicode-bidi: isolate; }
+
+.autobox { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 4px; }
+@media (min-width: 620px) { .autobox { grid-template-columns: 1fr 1fr; } }
+.autocol h4 { font-size: var(--t-sm); font-weight: 800; margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+.autocol ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.autocol li { font-size: var(--t-sm); display: grid; grid-template-columns: 16px 1fr; gap: 8px; }
+.autocol li .tick { color: var(--good); } .autocol.manual li .tick { color: var(--warn); }
+
+.routine { display: flex; align-items: center; gap: 11px; padding: 11px 13px; }
+.routine + .routine { border-top: 1px solid var(--line-2); }
+.routine .r-when { font-family: var(--mono); font-size: var(--t-xs); font-weight: 800; color: var(--accent-2);
+  background: var(--accent-wash); padding: 4px 8px; border-radius: 8px; direction: ltr; unicode-bidi: isolate;
+  white-space: nowrap; flex: 0 0 auto; text-align: center; min-width: 96px; }
+.routine .r-body b { font-weight: 800; font-size: var(--t-sm); }
+.routine .r-body p { margin: 2px 0 0; font-size: var(--t-xs); color: var(--ink-2); }
+
+/* ---------- Measurement ---------- */
+.cci {
+  border-radius: 18px; padding: 18px 18px 16px; border: 1px solid var(--line); box-shadow: var(--shadow);
+  background:
+    radial-gradient(130% 130% at 0% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 55%),
+    linear-gradient(180deg, var(--accent-wash-2), var(--surface));
+}
+.cci .cci-k { font-size: var(--t-xs); font-weight: 800; color: var(--accent-2); letter-spacing: .04em; }
+.cci .cci-n { font-family: var(--mono); font-size: var(--t-3xl); font-weight: 800; letter-spacing: -.02em;
+  direction: ltr; unicode-bidi: isolate; margin: 4px 0 2px; line-height: 1; }
+.cci .cci-n small { font-size: var(--t-md); color: var(--ink-2); font-weight: 700; }
+.cci .cci-sub { font-size: var(--t-sm); color: var(--ink-2); }
+.cci-parts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 13px; }
+.cci-part { background: color-mix(in srgb, var(--surface) 72%, transparent); border: 1px solid var(--line-2);
+  border-radius: 11px; padding: 8px 11px; flex: 1 1 130px; }
+.cci-part .cp-k { font-size: 10.5px; font-weight: 800; color: var(--ink-3); }
+.cci-part .cp-v { font-family: var(--mono); font-weight: 800; direction: ltr; unicode-bidi: isolate; font-size: var(--t-md); margin-top: 2px; }
+.cci-part .cp-d { font-size: 10.5px; color: var(--ink-3); margin-top: 1px; }
+
+.kpi { padding: 12px 14px; }
+.kpi + .kpi { border-top: 1px solid var(--line-2); }
+.kpi-top { display: flex; align-items: flex-start; gap: 10px; }
+.kpi .k-n { font-family: var(--mono); font-weight: 800; color: var(--ink-3); font-size: var(--t-sm); width: 22px; flex: 0 0 auto; direction: ltr; }
+.kpi .k-name { font-weight: 800; font-size: var(--t-sm); flex: 1 1 auto; }
+.kpi .k-def { font-size: var(--t-xs); color: var(--ink-3); margin: 3px 0 0 32px; }
+.kpi-vals { display: flex; gap: 8px; margin: 9px 0 0 32px; flex-wrap: wrap; }
+.kpi-val { flex: 1 1 120px; background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 7px 10px; }
+.kpi-val .kv-k { font-size: 10px; font-weight: 800; color: var(--ink-3); letter-spacing: .04em; }
+.kpi-val .kv-v { font-size: var(--t-sm); font-weight: 750; margin-top: 2px; }
+.kpi-val.tgt { background: var(--accent-wash-2); border-color: var(--line-2); }
+.kpi-val.tgt .kv-v { color: var(--accent-2); }
+
+.rollout { padding: 15px 15px 8px; }
+.roll-meter { display: flex; gap: 5px; margin: 4px 0 14px; }
+.roll-seg { flex: 1; height: 7px; border-radius: 999px; background: var(--surface-3); position: relative; }
+.roll-seg.done { background: var(--accent); } .roll-seg.now { background: var(--accent); box-shadow: 0 0 0 2px var(--accent-wash); }
+.roll-week { display: grid; grid-template-columns: 30px 1fr; gap: 11px; padding: 11px 4px; }
+.roll-week + .roll-week { border-top: 1px solid var(--line-2); }
+.roll-week .rw-n { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; flex: 0 0 auto;
+  font-family: var(--mono); font-weight: 800; background: var(--surface-3); color: var(--ink-2); direction: ltr; }
+.roll-week.is-now .rw-n { background: var(--accent); color: #fff; }
+.roll-week .rw-t { font-weight: 800; font-size: var(--t-sm); }
+.roll-week .rw-a { font-size: var(--t-xs); color: var(--ink-2); margin-top: 2px; }
+.roll-week .rw-g { font-size: 10.5px; color: var(--ink-3); margin-top: 4px; }
+.roll-week .rw-g b { color: var(--accent-2); font-weight: 800; }
+
+/* ---------- Open items ---------- */
+.open-item { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 14px 15px; }
+.open-item + .open-item { border-top: 1px solid var(--line-2); }
+.open-item .oi-ic { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+  background: var(--warn-wash); color: var(--warn); flex: 0 0 auto; }
+.open-item .oi-ic svg { width: 16px; height: 16px; }
+.open-item h4 { margin: 0; font-size: var(--t-sm); font-weight: 800; }
+.open-item p { margin: 3px 0 0; font-size: var(--t-xs); color: var(--ink-2); }
+.open-item .oi-tag { margin-top: 6px; }
+
+/* ---------- callouts ---------- */
+.note {
+  font-size: var(--t-xs); color: var(--ink-2); background: var(--surface-2); border: 1px solid var(--line-2);
+  border-radius: 12px; padding: 10px 12px; display: flex; gap: 9px; align-items: flex-start;
+}
+.note svg { width: 15px; height: 15px; flex: 0 0 auto; color: var(--accent); margin-top: 2px; }
+.note.big { font-size: var(--t-sm); }
+
+/* ---------- footer ---------- */
+.foot { margin: 26px 2px 12px; padding: 16px 4px; border-top: 1px solid var(--line); color: var(--ink-3); }
+.foot .f-improve { font-size: var(--t-sm); color: var(--ink-2); background: var(--surface-2); border: 1px solid var(--line-2);
+  border-radius: 12px; padding: 11px 13px; display: flex; gap: 9px; align-items: flex-start; }
+.foot .f-improve svg { width: 16px; height: 16px; color: var(--accent); flex: 0 0 auto; margin-top: 2px; }
+.foot .f-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 13px; font-size: var(--t-xs); }
+.foot .f-src { flex: 1 1 auto; }
+.selftest { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-weight: 800;
+  font-size: var(--t-xs); padding: 8px 12px; border-radius: 999px; cursor: pointer; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink-3); }
+.selftest.ok { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, var(--line)); background: var(--good-wash); }
+.selftest.bad { color: var(--urgent); border-color: var(--urgent); background: var(--urgent-wash); }
+.selftest .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+/* ---------- bottom tab bar ---------- */
+.tabbar {
+  position: fixed; bottom: 0; inset-inline: 0; z-index: 45; margin: 0 auto; max-width: 940px;
+  display: flex; background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  border-top: 1px solid var(--line); padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+}
+.tab {
+  flex: 1 1 0; min-width: 0; background: none; border: 0; cursor: pointer; color: var(--ink-3);
+  font-family: var(--font); padding: 4px 2px 3px; border-radius: 11px; display: flex; flex-direction: column;
+  align-items: center; gap: 3px; transition: color .16s; position: relative;
+}
+.tab svg { width: 21px; height: 21px; }
+.tab .tab-l { font-size: 10px; font-weight: 750; letter-spacing: -.01em; white-space: nowrap; }
+.tab:focus-visible { outline: none; box-shadow: var(--ring); }
+.tab.active { color: var(--accent); }
+.tab.active::before { content: ""; position: absolute; top: 0; width: 20px; height: 3px; border-radius: 999px; background: var(--accent); }
+.app[data-mode="present"] .tab[data-fullonly] { display: none; }
+.app[data-mode="present"] .full-only { display: none; }
+
+@media (min-width: 860px) {
+  .tabbar {
+    position: sticky; top: 60px; bottom: auto; border-top: 0; border-bottom: 1px solid var(--line);
+    padding: 8px 8px; gap: 4px; border-radius: 0; order: 1;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+  }
+  .content { order: 5; }
+  .tab { flex: 0 0 auto; flex-direction: row; gap: 7px; padding: 8px 13px; }
+  .tab svg { width: 18px; height: 18px; }
+  .tab .tab-l { font-size: var(--t-sm); font-weight: 750; }
+  .tab.active { background: var(--accent-wash); }
+  .tab.active::before { display: none; }
+}
+
+/* ---------- bottom sheet ---------- */
+.sheet-back {
+  position: fixed; inset: 0; z-index: 60; background: rgba(8,20,18,.44); backdrop-filter: blur(2px);
+  display: none; opacity: 0; transition: opacity .2s;
+}
+.sheet-back.show { display: block; opacity: 1; }
+.sheet {
+  position: fixed; inset-inline: 0; bottom: 0; z-index: 61; margin: 0 auto; max-width: 560px;
+  background: var(--surface); border-radius: 22px 22px 0 0; border: 1px solid var(--line); border-bottom: 0;
+  box-shadow: var(--shadow-lg); transform: translateY(102%); transition: transform .28s cubic-bezier(.22,1,.36,1);
+  max-height: 84vh; overflow-y: auto; direction: rtl;
+}
+.sheet.show { transform: none; }
+@media (prefers-reduced-motion: reduce) { .sheet, .sheet-back { transition: none; } }
+.sheet-grab { width: 40px; height: 4px; border-radius: 999px; background: var(--line); margin: 10px auto 0; }
+.sheet-in { padding: 8px 20px 26px; }
+.sheet-in .sh-eye { font-size: var(--t-xs); font-weight: 800; color: var(--accent-2); letter-spacing: .04em; margin-top: 10px; }
+.sheet-in h3 { font-size: var(--t-xl); font-weight: 800; margin: 4px 0 0; letter-spacing: -.02em; text-wrap: balance; }
+.sheet-in .sh-time { font-family: var(--mono); direction: ltr; font-weight: 700; color: var(--accent-2); font-size: var(--t-sm); margin-top: 4px; }
+.sheet-in .sh-d { font-size: var(--t-base); color: var(--ink); margin: 13px 0 0; line-height: 1.6; }
+.sheet-in .sh-rule { font-size: var(--t-sm); color: var(--ink-2); margin: 12px 0 0; background: var(--surface-2);
+  border: 1px solid var(--line-2); border-radius: 12px; padding: 11px 13px; }
+.sheet-in .sh-rule b { color: var(--ink); }
+.sheet-actions { display: flex; flex-direction: column; gap: 9px; margin-top: 18px; }
+.sh-act {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: start;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 13px; padding: 12px 14px;
+  cursor: pointer; color: var(--ink); font-family: var(--font); font-size: var(--t-sm); font-weight: 750;
+  text-decoration: none; transition: border-color .16s, background .16s;
+}
+.sh-act:hover { border-color: var(--accent); background: var(--accent-wash-2); }
+.sh-act:focus-visible { outline: none; box-shadow: var(--ring); }
+.sh-act .sa-r { display: flex; align-items: center; gap: 9px; }
+.sh-act .sa-ic { color: var(--accent); display: grid; place-items: center; }
+.sh-act .sa-ic svg { width: 18px; height: 18px; }
+.sh-act .sa-arrow { color: var(--ink-3); }
+.sh-act small { display: block; color: var(--ink-3); font-weight: 600; font-size: 11px; margin-top: 1px; direction: ltr; }
+.sheet-close { position: sticky; top: 0; float: inline-end; margin: 6px; }
+
+.hidden { display: none !important; }
+</style>
+
+<div class="app" id="app" dir="rtl" lang="he" data-mode="full">
+
+  <!-- ===== APP BAR ===== -->
+  <header class="appbar">
+    <button class="brand" id="homeBtn" aria-label="חזרה ללוח היום">
+      <span class="logo">GT</span>
+      <span class="brand-tt">
+        <b>מפת התפעול</b>
+        <span class="asof" id="asOf">נכון ל־23.7.2026</span>
+      </span>
+    </button>
+    <span class="bar-spacer"></span>
+    <button class="modebtn" id="modeBtn" aria-pressed="false" title="מצב תצוגה">
+      <span class="dot"></span>
+      <span class="txt"><span class="lbl-full">מצב מלא</span><span class="lbl-present">מצב הצגה</span></span>
+    </button>
+    <button class="iconbtn" id="themeBtn" aria-label="החלפת בהיר/כהה" title="בהיר / כהה">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+    </button>
+  </header>
+
+  <div class="content">
+
+    <!-- =================================================== -->
+    <!-- SCREEN: TODAY (home / opening strip)                -->
+    <!-- =================================================== -->
+    <section class="screen" id="s-today" data-screen="today">
+      <div class="today-hero">
+        <div class="today-top">
+          <div class="today-eyebrow">היום במפעל</div>
+          <div class="today-day">
+            <h1 id="todayName">—</h1>
+            <span class="today-date" id="todayDate"></span>
+          </div>
+          <div class="today-tags" id="todayTags"></div>
+          <p class="today-headline" id="todayHeadline"></p>
+          <p class="today-note" id="todayNote"></p>
+        </div>
+        <ul class="anchor-list" id="todayAnchors"></ul>
+        <div class="who-row" id="todayWho"></div>
+      </div>
+
+      <div class="section-label">קפיצה מהירה</div>
+      <div class="jump" id="jumpGrid"></div>
+
+      <div class="note big" style="margin-top:16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+        <span>לוח ״היום״ מחושב מהשעון של הפלייבוק לפי יום השבוע. הלוח החי בפורטל יושב בתוך <b>‎/home‎</b> — שלושה טאבים: אתמול · היום · מחר.</span>
+      </div>
+    </section>
+
+    <!-- =================================================== -->
+    <!-- SCREEN 1: FLOW                                       -->
+    <!-- =================================================== -->
+    <section class="screen" id="s-flow" data-screen="flow">
+      <div class="screen-head">
+        <div class="eyebrow"><span class="k">1</span> זרימת־על</div>
+        <h1>מהזמנה ועד מסירה</h1>
+        <p>הזרימה המלאה של יום עבודה — כל צומת נפתח להסבר קצר וקישור לשכבה או למסך הרלוונטי. גוללים לרוחב בלולאות.</p>
+      </div>
+
+      <div class="flow-legend">
+        <span class="chip accent"><span class="dot"></span> קו יומי</span>
+        <span class="chip ghost"><span class="dot"></span> אבן־דרך</span>
+      </div>
+
+      <div class="flow-spine" id="flowSpine"></div>
+
+      <!-- production loop -->
+      <div class="loop-head">
+        <span class="loop-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path><path d="M3 21v-5h5"></path></svg></span>
+        <div><h3>לולאת הייצור</h3><p>טיוטה במוצ״ש · דניס מ־6:00 · דיווח ייצור בסוף היום</p></div>
+      </div>
+      <div class="loop-track" id="loopProd"></div>
+
+      <!-- procurement loop -->
+      <div class="loop-head">
+        <span class="loop-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21.5 7H6"></path></svg></span>
+        <div><h3>לולאת הרכש</h3><p>תור → ישיבת חמישי → דורין מבצעת → קבלה מול PO בדלת</p></div>
+      </div>
+      <div class="loop-track" id="loopProc"></div>
+
+      <!-- counting loop -->
+      <div class="loop-head">
+        <span class="loop-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-4"></path><path d="M9 3v4M15 3v4M7 12h4M7 16h7"></path></svg></span>
+        <div><h3>לולאת הספירות</h3><p>ספירת חמישי לפי קריטיות · ספירה מלאה בתחילת החודש</p></div>
+      </div>
+      <div class="loop-track" id="loopCount"></div>
+    </section>
+
+    <!-- =================================================== -->
+    <!-- SCREEN 2: PEOPLE                                     -->
+    <!-- =================================================== -->
+    <section class="screen" id="s-people" data-screen="people">
+      <div class="screen-head">
+        <div class="eyebrow"><span class="k">2</span> אנשים</div>
+        <h1>מי עושה מה</h1>
+        <p>שישה אנשים, כל אחד עם קצב, סמכויות ומסלול אסקלציה. הקישו על כרטיס לפתיחה. אלכס — שותף — מופיע רק בספי האישור.</p>
+      </div>
+      <div class="people-grid" id="peopleGrid"></div>
+      <div id="alexSlot" style="margin-top:12px"></div>
+    </section>
+
+    <!-- =================================================== -->
+    <!-- SCREEN 3: CLOCK                                      -->
+    <!-- =================================================== -->
+    <section class="screen" id="s-clock" data-screen="clock">
+      <div class="screen-head">
+        <div class="eyebrow"><span class="k">3</span> השעון</div>
+        <h1>השעון השבועי</h1>
+        <p>שעון אחד לכל השבוע. היום הנוכחי מודגש אוטומטית. גוללים לרוחב בטבלאות ארוכות.</p>
+      </div>
+
+      <div class="subtabs" id="clockSubtabs">
+        <button class="subtab active" data-sub="regular"><span class="tdot"></span> יום רגיל</button>
+        <button class="subtab" data-sub="thursday"><span class="tdot"></span> חמישי</button>
+        <button class="subtab" data-sub="sunday"><span class="tdot"></span> ראשון</button>
+      </div>
+
+      <div class="subpanel active" id="sub-regular">
+        <div class="card scroll-x"><table class="clock" id="tblRegular"></table></div>
+        <div class="note full-only" style="margin-top:12px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="9"></circle></svg>
+          <span>שני + רביעי — סבב גבייה (דורין). שלישי — בדיקת אי־התאמות דורין↔עדי. תדריך הבוקר 9:30 — 5 דקות, חריגים בלבד, תום מוביל.</span>
+        </div>
+      </div>
+      <div class="subpanel" id="sub-thursday">
+        <div class="card scroll-x"><table class="clock" id="tblThursday"></table></div>
+        <div class="note" style="margin-top:12px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="9"></circle></svg>
+          <span>חמישי הוא היום האחרון לפני הסופ״ש — הזמנה שלא בוצעה מאבדת ~3 ימי ליד־טיים. לכן השרשרת סגורה בתוך יום העבודה של דורין.</span>
+        </div>
+      </div>
+      <div class="subpanel" id="sub-sunday">
+        <div class="card scroll-x"><table class="clock" id="tblSunday"></table></div>
+        <div class="note" style="margin-top:12px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="9"></circle></svg>
+          <span>ראשון וגם שני = מרכז ⇒ קאט־אוף 9:30 אגרסיבי בלי לפגוע בלקוח (מפספס → מחר, אותו אזור).</span>
+        </div>
+      </div>
+
+      <div class="section-label">מפת אזורים לפי יום</div>
+      <div class="card pad">
+        <div class="regcal" id="regCal"></div>
+        <p style="font-size:var(--t-xs);color:var(--ink-3);margin:11px 0 0">מקור: <span class="ltr">route_calendar.json</span> — הבסיס להשלמת ״מחר״ בסקיל המסלול.</p>
+      </div>
+    </section>
+
+    <!-- =================================================== -->
+    <!-- SCREEN 4: THRESHOLDS                                 -->
+    <!-- =================================================== -->
+    <section class="screen" id="s-money" data-screen="money">
+      <div class="screen-head">
+        <div class="eyebrow"><span class="k">4</span> ספי ₪</div>
+        <h1>סמכויות בשקלים</h1>
+        <p>מי מחליט לבד, עד כמה, ומי מעל הסף. זיכוי מתועד הוא תיקון מציאות; תשלום הוא החלטת כסף חדשה — מכאן האסימטריה.</p>
+      </div>
+      <div class="thr-cards" id="thrCards"></div>
+      <div class="card scroll-x thr-table-wrap"><table class="thr" id="tblThr"></table></div>
+
+      <div class="card pad" style="margin-top:12px">
+        <h4 style="margin:0 0 6px;font-size:var(--t-sm);font-weight:800">המסלול המהיר של אלכס</h4>
+        <p style="margin:0;font-size:var(--t-sm);color:var(--ink-2)">כל בקשה של אלכס עוברת <b>דרך תום</b>: תוך <span class="num">15</span> דקות תום מחזיר תשובה מתומחרת (״אפשר — ידחה X, יעלה Y״), ואלכס מחליט עם המחיר מול העיניים. הבעיה מעולם לא הייתה ההחלטה — אלא ההפרעה הלא־מתומחרת.</p>
+      </div>
+    </section>
+
+    <!-- =================================================== -->
+    <!-- SCREEN 5: SYSTEM                                     -->
+    <!-- =================================================== -->
+    <section class="screen" id="s-system" data-screen="system">
+      <div class="screen-head">
+        <div class="eyebrow"><span class="k">5</span> המערכת</div>
+        <h1>תהליך ↔ כלי</h1>
+        <p>לכל תהליך: איזה מסך בפורטל, איזה סקיל, ואיזו רוטינה. מה אוטומטי לגמרי, ומה נשאר ידני.</p>
+      </div>
+
+      <div class="map-row" id="procMap"></div>
+
+      <div class="section-label">רוטינות מתוזמנות</div>
+      <div class="card" id="routineList"></div>
+
+      <div class="section-label">אוטומטי מול ידני</div>
+      <div class="card pad">
+        <div class="autobox">
+          <div class="autocol auto">
+            <h4><span class="chip good" style="height:22px"><span class="dot"></span> אוטומטי</span></h4>
+            <ul id="autoList"></ul>
+          </div>
+          <div class="autocol manual">
+            <h4><span class="chip warn" style="height:22px"><span class="dot"></span> ידני</span></h4>
+            <ul id="manualList"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================== -->
+    <!-- SCREEN 6: MEASUREMENT                                -->
+    <!-- =================================================== -->
+    <section class="screen" id="s-measure" data-screen="measure">
+      <div class="screen-head">
+        <div class="eyebrow"><span class="k">6</span> מדידה</div>
+        <h1>איך נדע שזה עובד</h1>
+        <p>מדד־על אחד + 9 מדדים, כולם נמדדים מהמערכת. המערכת מודדת — לא מישהו עומד עם סטופר. אם מספר לא זז — מתקנים את התהליך, לא מאשימים אנשים.</p>
+      </div>
+
+      <div class="cci" id="cciBox"></div>
+
+      <div class="section-label">9 המדדים · קו־ייחוס שבוע־0</div>
+      <div class="card" id="kpiList"></div>
+
+      <div class="section-label">התקדמות ההטמעה · 6 שבועות</div>
+      <div class="card rollout" id="rolloutBox"></div>
+    </section>
+
+    <!-- =================================================== -->
+    <!-- SCREEN 7: OPEN ITEMS                                 -->
+    <!-- =================================================== -->
+    <section class="screen" id="s-open" data-screen="open">
+      <div class="screen-head">
+        <div class="eyebrow"><span class="k">7</span> פתוחים</div>
+        <h1>מה עוד לא סגור</h1>
+        <p>פריטים פתוחים — אף אחד לא חוסם את ההטמעה. מה שאין לו נתון עדיין מסומן ״טרם״, לא מומצא.</p>
+      </div>
+      <div class="card" id="openList"></div>
+      <div class="note" style="margin-top:14px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="9"></circle></svg>
+        <span>דניס כבר הוקצה כמשתמש בפורטל (התפקיד תוקן ל־operator ב־23.7). המסמכים והסקילים החדשים בתוקף ורצים.</span>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="foot">
+      <div class="f-improve">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>רוצים לשפר משהו כאן? כתבו לקלוד בצ׳אט — השינוי מתקפל לעדכון של ראשון (רענון אוטומטי לאותה כתובת). המפה היא תצוגה של מקורות־האמת בריפו, לא אמת עצמאית.</span>
+      </div>
+      <div class="f-meta">
+        <span class="f-src">מקורות: <span class="ltr">operator-playbook-he.md · station-cards-he.md · rollout-and-measurement-plan.md · week0-baseline.md · route_calendar.json · daily-ops-guardian · CURRENT_STATE.md</span></span>
+        <button class="selftest" id="selfTest" title="בדיקת מודל היום לכל 7 הימים">בדיקה עצמית…</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===== BOTTOM TAB BAR ===== -->
+  <nav class="tabbar" id="tabbar" aria-label="ניווט">
+    <button class="tab" data-go="flow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"></path><path d="M20 12l-3-3M20 12l-3 3"></path></svg>
+      <span class="tab-l">זרימה</span>
+    </button>
+    <button class="tab" data-go="people">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 20a5.5 5.5 0 0 1 11 0"></path><path d="M16 5.5a3 3 0 0 1 0 5.4M15 15.2a5.5 5.5 0 0 1 5 4.8"></path></svg>
+      <span class="tab-l">אנשים</span>
+    </button>
+    <button class="tab" data-go="clock">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+      <span class="tab-l">שעון</span>
+    </button>
+    <button class="tab" data-go="money">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M15 9.5c-.5-1-1.7-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 2.8 6 1.3 6 4.1 0 1.3-1.3 2.2-3 2.2-1.3 0-2.5-.5-3-1.5M12 6.5v11"></path></svg>
+      <span class="tab-l">ספי ₪</span>
+    </button>
+    <button class="tab" data-go="system" data-fullonly>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg>
+      <span class="tab-l">מערכת</span>
+    </button>
+    <button class="tab" data-go="measure">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg>
+      <span class="tab-l">מדידה</span>
+    </button>
+    <button class="tab" data-go="open" data-fullonly>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0-10-10"></path><path d="M12 8v4l3 2"></path><path d="M2 12h3"></path></svg>
+      <span class="tab-l">פתוחים</span>
+    </button>
+  </nav>
+
+  <!-- ===== BOTTOM SHEET ===== -->
+  <div class="sheet-back" id="sheetBack"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
+    <button class="iconbtn sheet-close" id="sheetClose" aria-label="סגירה">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+    <div class="sheet-grab"></div>
+    <div class="sheet-in">
+      <div class="sh-eye" id="shEye"></div>
+      <h3 id="shTitle"></h3>
+      <div class="sh-time" id="shTime"></div>
+      <p class="sh-d" id="shDesc"></p>
+      <div class="sh-rule" id="shRule" hidden></div>
+      <div class="sheet-actions" id="shActions"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   WEEKLY_DATA — routine: edit ONLY this block.
+   as_of drives the header stamp; the whole page reads from here.
+   All figures trace to docs/factory-mapping/2026-07-23-week0-baseline.md
+   ============================================================ */
+const WEEKLY_DATA = {          // WEEKLY-REFRESH-BLOCK — routine: edit ONLY here
+  as_of: "2026-07-23",
+  rollout: {
+    total_weeks: 6,
+    week1_start: "2026-07-26",
+    current_index: 0,          // 0 = שבוע-0 הכנה (לפני שבוע 1)
+    current_label: "שבוע 0 · הכנה"
+  },
+  cci: {
+    partial: true,
+    min_total_ils: 6422,
+    credits_ils: 5422, credits_events: 18,
+    zombie_ils: 1000, zombie_count: 4, zombie_gross_ils: 11253,
+    emergency_buys_ils: null   // B — טרם נמדד
+  },
+  kpis: [
+    { n:1, name:"כיסוי קבלות סחורה", def:"אירועי קבלת־סחורה שנרשמו ÷ אספקות שהגיעו באותו שבוע", base:"114 אי־פעם · 0 ע״י דניס", target:"≥ 80%", status:"warn" },
+    { n:2, name:"רצף דיווח ייצור", def:"ימים עם דיווח ייצור ÷ ימים עם תוכנית נעולה", base:"10/14 ימים · 71%", target:"דיווח בכל יום מתוכנן", status:"warn" },
+    { n:3, name:"חביון תור הרכש", def:"חציון שעות אישור→ביצוע + מס׳ ״זומבים״ בצילום חמישי 15:50", base:"4 זומבים · ₪11,253 · עד 20 יום", target:"חציון ≤ יום עסקים · 0 זומבים", status:"urgent" },
+    { n:4, name:"זיכויים ופערי ליקוט", def:"₪ זיכויים לשבוע + מס׳ אירועי פער־ליקוט", base:"18 אירועים · ~₪5,422", target:"≤ 2 פערי ליקוט לשבוע", status:"warn" },
+    { n:5, name:"משמעת קאט־אוף", def:"% הזמנות שנוצרו לפני הקאט־אוף (14:00 · ראשון 9:30)", base:"טרם נמדד", target:"≥ 90% · ראשון ≥ 85%", status:"pending" },
+    { n:6, name:"שעת יציאת רכב ראשון", def:"חותמת האירוע הראשון של מסלול ראשון ב־LionWheel", base:"טרם נמדד", target:"≤ 10:30", status:"pending" },
+    { n:7, name:"טריות ספירות", def:"גיל הספירה המקסימלי על פריטים קריטיים בנעילת חמישי", base:"טרם נמדד", target:"≤ 7 ימים", status:"pending" },
+    { n:8, name:"עמידה בתוכנית ייצור", def:"% אצוות שבוצעו כמתוכנן + מס׳ אצוות לא־מתוכננות", base:"טרם · G1 עלה לייצור 23.7", target:"0 אצוות מחוץ לנתיב", status:"pending" },
+    { n:9, name:"התדריך התקיים", def:"צ׳קבוקס יומי — המדד הידני היחיד", base:"ידני · תדריך ראשון 24.7", target:"≥ 4/5 ימים", status:"pending" }
+  ]
+};
+
+/* ============================================================
+   todayModel(dayIndex) — pure function. 0=ראשון … 6=שבת.
+   ============================================================ */
+const REGIONS = { center:"מרכז", north:"צפון", south:"דרום" };
+
+function todayModel(dayIndex) {
+  const meta = {
+    0: { name:"ראשון", kind:"sunday",   region:"center" },
+    1: { name:"שני",   kind:"regular",  region:"center" },
+    2: { name:"שלישי", kind:"regular",  region:"north"  },
+    3: { name:"רביעי", kind:"regular",  region:"south"  },
+    4: { name:"חמישי", kind:"thursday", region:"center" },
+    5: { name:"שישי",  kind:"weekend",  region:null     },
+    6: { name:"שבת",   kind:"weekend",  region:null     }
+  }[dayIndex];
+
+  const m = { dayIndex, name: meta.name, kind: meta.kind, region: meta.region,
+    regionLabel: meta.region ? REGIONS[meta.region] : null,
+    headline:"", note:"", anchors:[], who:[] };
+
+  const OP = {
+    denn:{n:"דניס",c:"#B45309"}, max:{n:"מקסים",c:"#0E7C86"}, dor:{n:"דורין",c:"#7C3AED"},
+    mai:{n:"מיידן",c:"#2563EB"}, adi:{n:"עדי",c:"#DB2777"}, tom:{n:"תום",c:"#0A5A62"}
+  };
+
+  if (meta.kind === "regular") {
+    m.headline = "יום הפצה רגיל — קו יומי מלא, סגירה ב־14:00 ונעילה ב־15:00.";
+    m.anchors = [
+      { t:"6:00",  w:"תחילת ייצור לפי התוכנית שננעלה אתמול", who:"דניס" },
+      { t:"7:30",  w:"העמסת הרכב לפי סדר המסלול", who:"מקסים + מיידן" },
+      { t:"8:00",  w:"הרכב יוצא", who:"מיידן" },
+      { t:"9:30",  w:"תדריך בוקר — 5 דקות, חריגים בלבד", who:"תום מוביל" },
+      { t:"יום",   w:"גל 1 — ליקוט הזמנות READY־מצרפי שכבר ב־LionWheel", who:"מקסים" },
+      { t:"13:45", w:"דוח הזמנות מחר מול מלאי — READY/SHORT", who:"קלוד → תום+דורין" },
+      { t:"14:00", w:"סוף קליטה מלקוחות ליום העסקים הבא", who:"—" },
+      { t:"14:00", w:"ישיבת הצלבה מול המלאי — מניעת זיכויים", who:"תום + דורין" },
+      { t:"15:00", w:"נעילה ב־LionWheel", who:"דורין" },
+      { t:"15:00", w:"גל 2 — סיבוב סופי לפי דלתא + מסלול + חשבוניות", who:"מקסים" },
+      { t:"סוף",   w:"מסירת תוצרת למקסים + דיווח ייצור לפני יציאה", who:"דניס" }
+    ];
+    if (dayIndex === 1) m.note = "היום גם: סבב גבייה טלפוני (דורין).";
+    if (dayIndex === 2) m.note = "היום גם: בדיקת אי־התאמות דורין↔עדי (זיכויים/גבייה/חשבוניות).";
+    if (dayIndex === 3) m.note = "היום גם: סבב גבייה טלפוני (דורין).";
+    m.who = [OP.denn, OP.max, {n:"מיידן · "+m.regionLabel,c:"#2563EB"}, OP.dor, OP.tom];
+  }
+  else if (meta.kind === "thursday") {
+    m.headline = "יום תכנון ורכש — שרשרת חמישי נסגרת בתוך יום העבודה של דורין.";
+    m.anchors = [
+      { t:"8:00",  w:"הרכב יצא → מקסים מתחיל ספירת תוצרת מוגמרת", who:"מקסים" },
+      { t:"9:30",  w:"ספירות מוזנות (מקסים FG · דניס חו״ג מסומנים) + תדריך", who:"מקסים · דניס" },
+      { t:"13:30", w:"תכנון ייצור + סשן רכש + תור ביצוע מלא בפורטל", who:"תום" },
+      { t:"14:00", w:"ישיבה מקוצרת", who:"תום + דורין" },
+      { t:"14:30", w:"דורין מבצעת את ההזמנות מהתור מול הספקים", who:"דורין" },
+      { t:"15:50", w:"שומר־הזומבים — קלוד מתריע על הזמנות תקועות בתור", who:"קלוד → תום" },
+      { t:"16:00", w:"מה שלא בוצע — מדווח לתום, עובר לראשון 9:00", who:"דורין → תום" }
+    ];
+    m.note = "סבב הגבייה עבר לשני+רביעי כדי לפנות את אחה״צ של חמישי לרכש.";
+    m.who = [OP.max, OP.denn, OP.tom, OP.dor];
+  }
+  else if (meta.kind === "sunday") {
+    m.headline = "ראשון — המערכת כבר הכינה במוצ״ש. דניס מתחיל בלי לחכות להזמנות.";
+    m.anchors = [
+      { t:"6:00",  w:"דניס מייצר מטיוטת מוצ״ש — ייצור למלאי", who:"דניס" },
+      { t:"7:30",  w:"גל 1 — מקסים מלקט את הזמנות הסופ״ש", who:"מקסים" },
+      { t:"8:30",  w:"דורין נכנסת (ראשון בלבד)", who:"דורין" },
+      { t:"9:30",  w:"קאט־אוף הזמנות ראשון = התדריך", who:"תום מוביל" },
+      { t:"9:30",  w:"סיבוב סופי + מסלול + חשבוניות", who:"מקסים" },
+      { t:"10:30", w:"יציאת הרכב (מרכז קרוב)", who:"מיידן" },
+      { t:"13:00", w:"חזרה לשעון הרגיל", who:"—" }
+    ];
+    m.note = "אחרי 9:30 → הזמנה חדשה נדחית למחר (שני = שוב מרכז, הלקוח לא נפגע). קו שני — רק באישור תום.";
+    m.who = [OP.denn, OP.max, OP.dor, {n:"מיידן · מרכז",c:"#2563EB"}, OP.tom];
+  }
+  else { // weekend
+    m.headline = "סופ״ש — אין הפצה.";
+    m.note = "מוצ״ש 20:00 — המערכת מכינה את ראשון אוטומטית: סיכום הזמנות סופ״ש, טיוטת ייצור וראשון, ופערי חו״ג. הכל ממתין ב־6:00.";
+    m.anchors = [
+      { t:"שבת", w:"18:00 — תזכורת אוטומטית ללקוחות מרכז: הזמנה עד 9:30 בראשון — יוצאת מחר", who:"אוטומציה" },
+      { t:"מוצ״ש", w:"~20:00 — אוטומציית ההכנה לראשון רצה (סקיל sunday-prep)", who:"קלוד" }
+    ];
+    m.who = [{n:"אין צוות במשמרת",c:"#6E7E7A"}, {n:"המערכת עובדת ברקע",c:"#0E7C86"}];
+  }
+  return m;
+}
+
+/* self-test — all 7 days */
+function selfTestToday() {
+  const expect = {
+    0:{kind:"sunday",  region:"center"}, 1:{kind:"regular", region:"center"},
+    2:{kind:"regular", region:"north"},  3:{kind:"regular", region:"south"},
+    4:{kind:"thursday",region:"center"}, 5:{kind:"weekend", region:null},
+    6:{kind:"weekend", region:null}
+  };
+  let pass = 0; const fails = [];
+  for (let i = 0; i < 7; i++) {
+    const mo = todayModel(i), e = expect[i];
+    const ok = mo && mo.kind === e.kind && mo.region === e.region
+      && Array.isArray(mo.anchors) && mo.anchors.length > 0
+      && typeof mo.name === "string" && mo.name.length > 0
+      && (e.region === null ? mo.regionLabel === null : mo.regionLabel === REGIONS[e.region]);
+    if (ok) pass++; else fails.push(i);
+  }
+  return { pass, total: 7, fails };
+}
+
+/* ============================================================
+   Static content models (trace to the playbook / sources)
+   ============================================================ */
+const FLOW_STAGES = [
+  { id:"intake", node:"1", milestone:false, time:"כל היום", t:"הזמנה נכנסת", who:"דורין",
+    d:"שופיפיי / וואטסאפ / טלפון → דורין מכניסה לשופיפיי באותו יום → חשבונית מקור אוטומטית בחשבונית ירוקה.",
+    rule:"כלל ברזל: כל הזמנה נכנסת לשופיפיי באותו יום — שום הזמנה לא חיה רק בוואטסאפ.",
+    link:{screen:"people"} },
+  { id:"wave1", node:"2", milestone:false, time:"במהלך היום", t:"גל 1 — ליקוט READY", who:"מקסים",
+    d:"מקסים מלקט הזמנות מחר שכבר ב־LionWheel ומסומנות READY־מצרפי: המלאי מכסה את כל הביקוש הפתוח לפריט, לא רק את ההזמנה — כך ישיבת ההצלבה מטבעה לא נוגעת בהן.",
+    rule:"הזמנה שלוקטה והשתנתה — חוזרת לסבב הסופי + התראה למקסים.",
+    link:{screen:"clock"} },
+  { id:"close", node:"14:00", milestone:true, time:"14:00", t:"סוף קליטה מלקוחות", who:"—",
+    d:"סוף קליטת הזמנות ליום העסקים הבא. הזמנה אחרי 14:00 → מחר, אלא אם תום אישר חריג.",
+    link:{screen:"clock"} },
+  { id:"cross", node:"3", milestone:false, time:"14:00–15:00", t:"ישיבת הצלבה מול המלאי", who:"תום + דורין",
+    d:"על בסיס דוח 13:45 (READY/SHORT + מקור החוסר): כל SHORT נפתר מול הלקוח עכשיו — לא מתגלה בליקוט ולא בדלת. זה החידוש הגדול.",
+    rule:"הדוח הוא גם צ׳ק־ליסט הנעילה: מה שהשתנה נבדק שוב לפני 15:00.",
+    link:{screen:"system"} },
+  { id:"lock", node:"15:00", milestone:true, time:"15:00", t:"נעילה ב־LionWheel", who:"דורין",
+    d:"נעילת הקו. שינוי אחרי הנעילה = שיחה + עדכון ב־LionWheel, לא וואטסאפ בלבד.",
+    link:{screen:"clock"} },
+  { id:"wave2", node:"4", milestone:false, time:"מ־15:00", t:"גל 2 — סיבוב סופי", who:"מקסים",
+    d:"סיבוב סופי לפי דלתא (נכנס מאז / השתנה / SHORT שנפתר) → בניית המסלול ב־LionWheel לפי אזור־יום → הדפסת חשבוניות המסלול.",
+    rule:"שום משלוח לא יוצא בלי חשבונית מודפסת עליו.",
+    link:{screen:"system"} },
+  { id:"loadout", node:"5", milestone:false, time:"7:30–8:00", t:"בוקר מחר — העמסה ויציאה", who:"מקסים + מיידן",
+    d:"העמסה לפי סדר המסלול, בדיקה שכל משלוח עם חשבונית + דף מסלול, סימון שהמשלוח נאסף ב־LionWheel. 8:00 הרכב יוצא (ראשון: 10:30).",
+    link:{screen:"clock"} },
+  { id:"deliver", node:"6", milestone:false, time:"מסלול", t:"מסירה + סימון", who:"מיידן",
+    d:"מסירות לפי LionWheel; אחרי כל לקוח — סימון ״בוצע״. סחורה שחזרה חוזרת איתו למפעל.",
+    rule:"כל חריגה — שיחה לדורין לפני כל סימון (תמיד, גם לפני 9:00). ״בוצע״ = הסחורה אצל הלקוח.",
+    link:{screen:"people"} },
+  { id:"credit", node:"7", milestone:false, time:"בוקר אחרי", t:"זיכויים", who:"דורין",
+    d:"המערכת מכינה זיכוי על כל פער (ההפרש בין מה שלוקט למה שהוזמן). בבוקר אחרי — דורין מאשרת/מפנה לטיפול ידני/דוחה.",
+    rule:"ההפרש בין LionWheel (מה שלוקט) לחשבונית המקור (מה שהוזמן) = הזיכוי.",
+    link:{screen:"system", url:"https://gt-factory-os-portal.vercel.app/credit-tracking", urlLabel:"מעקב זיכויים"} }
+];
+
+const LOOP_PROD = [
+  { time:"מוצ״ש 20:00", t:"טיוטת ייצור ראשון", d:"אוטומציה: סיכום סופ״ש → LionWheel, טיוטה, פערי חו״ג.",
+    id:"lp1", desc:"סקיל sunday-prep רץ במוצ״ש ~20:00 ומכין את ראשון: סיכום הזמנות הסופ״ש, טיוטת ייצור לראשון, בדיקת חו״ג/אריזות, ותצוגת גל־1 למקסים.", link:{screen:"system"} },
+  { time:"6:00", t:"דניס מייצר", d:"מהתוכנית הנעולה (ראשון: מהטיוטה) — ייצור למלאי.",
+    id:"lp2", desc:"תחילת ייצור לפי התוכנית שננעלה אתמול ב־15:00. אין ייצור בלי מתכון פתוח מול העיניים; כל סטייה נרשמת.", link:{screen:"clock"} },
+  { time:"סוף יום", t:"דיווח ייצור", d:"תנאי ליציאה הביתה.",
+    id:"lp3", desc:"הזנת דיווח הייצור במערכת — כלל ברזל: שום יציאה הביתה לפני שדיווח הייצור הוזן. הדגל ״לא הוזן דיווח״ עולה ראשון במייל הבוקר של קלוד.", link:{screen:"measure"} }
+];
+const LOOP_PROC = [
+  { time:"רץ", t:"תור הרכש", d:"״הרשומה היא ההנחיה״ — בלי הודעות מקבילות.",
+    id:"lq1", desc:"רכש עובר לדורין רק דרך התור בפורטל. הזמנה תקועה יותר מיום עסקים — התראה לתום.", link:{screen:"system", url:"https://gt-factory-os-portal.vercel.app/planning/procurement", urlLabel:"סשן הרכש"} },
+  { time:"חמישי 13:30", t:"תכנון → ישיבה", d:"תכנון + סשן רכש + תור מלא עד 13:30; ישיבה 14:00–14:30.",
+    id:"lq2", desc:"תום מסיים תכנון ייצור וסשן רכש, ממלא את תור הביצוע בפורטל, ואז ישיבה מקוצרת עם דורין.", link:{screen:"clock"} },
+  { time:"14:30–15:45", t:"דורין מבצעת", d:"ביצוע ההזמנות מהתור מול הספקים.",
+    id:"lq3", desc:"דורין מזינה מחיר מאושר + תנאי תשלום ומבצעת (בצע הזמנה). מה שלא בוצע עד 15:45 עובר לראשון 9:00.", link:{screen:"system", url:"https://gt-factory-os-portal.vercel.app/purchase-orders/placement-queue", urlLabel:"תור הביצוע"} },
+  { time:"בדלת", t:"קבלת סחורה", d:"מול ה־PO הפתוח, באותו רגע.",
+    id:"lq4", desc:"דניס מזין בדף הקבלה מה שהגיע מול הזמנת הרכש הפתוחה (בחירת PO → כמויות בפועל → פער מסומן), או קבלה ידנית כשאין PO.", link:{screen:"system", url:"https://gt-factory-os-portal.vercel.app/stock/receipts", urlLabel:"קבלת סחורה"} }
+];
+const LOOP_COUNT = [
+  { time:"חמישי 8:00", t:"ספירת תוצרת", d:"מקסים, מיד אחרי יציאת הרכב, מוזנת עד 9:30.",
+    id:"lc1", desc:"ספירת תוצרת מוגמרת מיד אחרי יציאת הרכב — ואז תום מתכנן את הייצור. מה שנספר = מה שנרשם.", link:{screen:"clock"} },
+  { time:"חמישי", t:"חו״ג מסומנים", d:"דניס סופר פריטים שהמערכת מסמנת, לפני נעילת התכנון.",
+    id:"lc2", desc:"צ׳יפ ״דורש ספירה״ + כל פריט קריטי לתוכנית השבוע — לקח תקרית היין: מה שהתוכנית תלויה בו נספר לפני שהתוכנית ננעלת.", link:{screen:"clock"} },
+  { time:"תחילת חודש", t:"ספירה מלאה", d:"שני הראשון בחודש 6:00–7:30, חו״ג + אריזות.",
+    id:"lc3", desc:"ספירה מלאה לפני שהייצור מתרומם. אחרי כל ספירה — ״רענון המלצות״.", link:{screen:"clock"} }
+];
+
+const PEOPLE = [
+  { id:"dorin", name:"דורין", color:"#7C3AED", role:"משרד, לקוחות וזיכויים", hours:"9:00–16:00 · ראשון 8:30",
+    resp:["כל הזמנה חדשה → שופיפיי באותו יום; מענה לליד תוך שעה","אישור זיכויים של יום העסקים הקודם בבוקר","סגירת הזמנות מחר 13:00–14:00 + ישיבת הצלבה 14:00","נעילת הקו ב־LionWheel ב־15:00","כתובת לחריגות המסירה של מיידן — תמיד, גם לפני 9:00"],
+    anchors:["שני + רביעי — סבב גבייה","שלישי — בדיקת אי־התאמות עם עדי","חמישי 14:30–15:45 — ביצוע הזמנות מהתור"],
+    auth:[["זיכוי מפער ליקוט מתועד","עד ₪4,000"],["זיכוי ידני / רצון־טוב","עד ₪500"],["הנחה / מחיר מיוחד","₪0"]],
+    escal:"מעל הסף → <b>תום</b>. לקוח חדש בתנאי אשראי → <b>אלכס</b>. רכש — רק מהתור בפורטל.",
+    backup:"מגבים: תום (הזמנות/זיכויים קריטיים) · עדי (גבייה)." },
+  { id:"dennis", name:"דניס", color:"#B45309", role:"ייצור, מחסן חו״ג וקבלת סחורה", hours:"6:00–17:00",
+    resp:["ייצור מ־6:00 לפי התוכנית שננעלה אתמול","קבלת סחורה מול תעודה + הקלדה במערכת באותו רגע, מול ה־PO","מסירת תוצרת למקסים בסוף יום — כמויות מדויקות","דיווח ייצור לפני היציאה הביתה","הנדימן — תקלות ותחזוקת מכונות"],
+    anchors:["חמישי — ספירת פריטים מסומנים לפני נעילת התכנון","שני הראשון בחודש 6:00–7:30 — ספירה מלאה","ניקיון עומק וסידור מחסן בחמישי"],
+    auth:[["זריקת חומר גלם","עד ₪200"],["ציוד בעצירת ייצור באותו יום","עד ₪300"],["ציוד שוטף 300–2,000","דרך דורין → תום"]],
+    escal:"חריגה מהתוכנית → <b>תום</b>. שינוי מתכון → <b>אלכס + תום</b>. ציוד מעל ₪2,000 → <b>אלכס</b>.",
+    backup:"מגבה: תום — זמנית בלבד (מסומן כסיכון נקודת־כשל יחידה)." },
+  { id:"maxim", name:"מקסים", color:"#0E7C86", role:"מחסן תוצרת, ליקוט ומסלול", hours:"7:30–17:30",
+    resp:["7:30–8:00 העמסת הרכב עם מיידן","גל 1 — ליקוט READY־מצרפי במהלך היום","קליטת תוצרת מדניס ואימות מול הדיווח","גל 2 מ־15:00 — סיבוב סופי + מסלול + חשבוניות","הכנת משלוח מחר: משטחים לפי סדר + חשבוניות"],
+    anchors:["חמישי 8:00 — ספירת תוצרת מוגמרת, מוזנת עד 9:30"],
+    auth:[["סידור מחסן וסדר ליקוט","לבד"],["עצירת משלוח חסר עד השלמה","לבד"],["גריעת תוצרת פגומה","→ תום"]],
+    escal:"עדיפויות בין לקוחות כשחסר מלאי → <b>דורין + תום</b>. לא נוגע במחסן חו״ג של דניס.",
+    backup:"מגבה: תום — מסלול, ליקוט, קליטה, הדפסות." },
+  { id:"maiden", name:"מיידן", color:"#2563EB", role:"הנהג (חיצוני קבוע, כל יום)", hours:"7:30 העמסה · 8:00 יציאה",
+    resp:["העמסה עם מקסים + בדיקת חשבונית על כל משלוח","מסירות לפי LionWheel; סימון ״בוצע״ אחרי כל לקוח","סחורה שחזרה — נמסרת לקליטה חזרה למלאי","תדלוק, טיפולים וניקיון הרכב"],
+    anchors:["מסלול לפי אזור־יום: ראשון/שני/חמישי מרכז · שלישי צפון · רביעי דרום"],
+    auth:[["סימון מסירה לפי המצב בדלת","לפי הנחיית דורין"]],
+    escal:"כל חריגה — שיחה ל<b>דורין</b> לפני כל סימון (מי הלקוח, מה קרה, מה קיבל בפועל). אסקלציה → <b>תום</b>.",
+    backup:"יום בלי מיידן — הסדר מראש עם נהג/שליחות גיבוי; מקסים מוסר לפי המסלול הקיים." },
+  { id:"adi", name:"עדי", color:"#DB2777", role:"פיננסים (חלקי · לרוב מהבית)", hours:"יומי עד 10:00 · שבועי מהמשרד",
+    resp:["תזרים מעודכן עד 10:00","12:00 סנכרון עם דורין: זיכויים, גבייה, חשבוניות ספקים","הכנסת חשבוניות לחשבונית ירוקה + לתזרים לפי תנאי תשלום","ראשון — תמונת תזרים + תקציב לתום ואלכס (ל־Scorecard)"],
+    anchors:["שלישי — בדיקת אי־התאמות עם דורין","חודשי — סגירה מול רו״ח"],
+    auth:[["תשלום לספק","רושמת עד ₪1,000"],["מעל ₪1,000","אישור תום"]],
+    escal:"עדי רושמת — תום מאשר. שתי עיניים על כל שקל יוצא. לא גובה (דורין), לא קובעת תנאי תשלום (תום).",
+    backup:"מגבים: תום (קריאת תזרים) · רו״ח חיצוני (רישום). עדי מגבה את דורין בגבייה." },
+  { id:"tom", name:"תום", color:"#0A5A62", role:"תכנון, רכש והמערכת", hours:"6:30 מייל בוקר · 9:30 תדריך",
+    resp:["6:30 מייל בוקר: plan-vs-actual + דגל ״לא הוזן דיווח״","מוביל את תדריך 9:30 (דורין מחליפה)","מסלול מהיר של אלכס — תשובה מתומחרת תוך 15 דק׳","13:45 דוח READY/SHORT → ישיבת 14:00 עם דורין"],
+    anchors:["חמישי — ספירות עד 9:30 → תכנון + תור עד 13:30 → ישיבה","ראשון — מעטפת רכש מאלכס + Scorecard 10:00"],
+    auth:[["מאשר חריגות מעל ספי הצוות","כן"],["מעטפת רכש שבועית מאלכס","קונה בתוכה בלי לשאול"]],
+    escal:"אלכס משפיע דרך ה־Scorecard והפגישה החודשית — לא בזמן אמת על הרצפה.",
+    backup:"נוהל ״שבוע בלי תום״ — תכנון ורכש דרך הסקילים, דורין מבצעת, אלכס מאשר. מתורגל יום ברבעון." }
+];
+
+const ALEX = {
+  id:"alex", name:"אלכס", color:"#4B5563", role:"שותף — מופיע רק בספי אישור",
+  points:["לקוח חדש בתנאי אשראי","ציוד / השקעה מעל ₪2,000","שינוי מתכון (יחד עם תום)","מעטפת הרכש השבועית (₪)"],
+  note:"אלכס לא נמצא בשעון היומי. כל בקשה שלו עוברת דרך תום ומקבלת מחיר תוך 15 דקות — הוא שומר סמכות, הרצפה שומרת סדר." };
+
+const CLOCK_REGULAR = [
+  ["6:00","תחילת ייצור לפי התוכנית הנעולה","דניס"],
+  ["6:30","מייל בוקר — לוח ״היום״ + plan-vs-actual + דגל דיווח חסר","קלוד → תום"],
+  ["7:30–8:00","העמסת הרכב","מקסים + מיידן"],
+  ["8:00","יציאת הרכב · חריגות מסירה → דורין","מיידן"],
+  ["9:30","תדריך בוקר — 5 דקות, חריגים בלבד","תום מוביל"],
+  ["10:00","תזרים מעודכן","עדי"],
+  ["12:00","סנכרון דורין↔עדי","דורין + עדי"],
+  ["יום","גל 1 — ליקוט READY־מצרפי","מקסים"],
+  ["13:00–14:00","סגירת הזמנות יום־העסקים־הבא + טיוטה","דורין"],
+  ["13:45","דוח הזמנות מחר מול מלאי — READY/SHORT","קלוד → תום+דורין"],
+  ["14:00","סוף קליטה מלקוחות","—"],
+  ["14:00–15:00","ישיבת הצלבה מול המלאי — מניעת זיכויים","תום + דורין"],
+  ["15:00","נעילה ב־LionWheel","דורין"],
+  ["15:00","גל 2 — סיבוב סופי + מסלול + חשבוניות","מקסים"],
+  ["סוף יום","מסירת תוצרת + דיווח ייצור לפני יציאה","דניס"]
+];
+const CLOCK_THURSDAY = [
+  ["8:00","הרכב יצא → ספירת תוצרת מוגמרת","מקסים"],
+  ["9:30","ספירת FG מוזנת · חו״ג מסומנים נספרים · תדריך","מקסים · דניס"],
+  ["13:30","תכנון ייצור + סשן רכש + תור ביצוע מלא","תום"],
+  ["14:00–14:30","ישיבה מקוצרת","תום + דורין"],
+  ["14:30–15:45","ביצוע ההזמנות מהתור מול הספקים","דורין"],
+  ["15:50","שומר־הזומבים — התראה על תור תקוע","קלוד → תום"],
+  ["16:00","מה שלא בוצע → תום → ראשון 9:00","דורין"]
+];
+const CLOCK_SUNDAY = [
+  ["שבת 18:00","תזכורת ללקוחות מרכז: הזמנה עד 9:30 — יוצאת מחר","אוטומציה"],
+  ["מוצ״ש 20:00","אוטומציה: סיכום סופ״ש → LionWheel, טיוטת ייצור, פערי חו״ג","קלוד"],
+  ["6:00","דניס מייצר מהטיוטה — ייצור למלאי","דניס"],
+  ["7:30–8:30","גל 1 — ליקוט הזמנות סופ״ש","מקסים"],
+  ["8:30","דורין נכנסת (ראשון בלבד)","דורין"],
+  ["9:30","קאט־אוף הזמנות ראשון = התדריך","תום מוביל"],
+  ["9:30–10:15","סיבוב סופי + מסלול + חשבוניות","מקסים"],
+  ["10:30","יציאת הרכב (מרכז קרוב)","מיידן"],
+  ["אחרי 9:30","הזמנה חדשה → מחר · קו שני רק באישור תום","—"],
+  ["13:00","חזרה לשעון הרגיל","—"]
+];
+/* which clock row is the "now" anchor per weekday-kind — highlight by time string */
+const REGION_CAL = [
+  ["ראשון","center"],["שני","center"],["שלישי","north"],["רביעי","south"],["חמישי","center"],["שישי","none"],["שבת","none"]
+];
+
+const THRESHOLDS = [
+  { subj:"זיכוי מפער ליקוט מתועד", who:"דורין", amt:"עד ₪4,000", over:"תום", ownerCls:"tom" },
+  { subj:"זיכוי ידני / רצון־טוב", who:"דורין", amt:"עד ₪500", over:"תום", ownerCls:"tom" },
+  { subj:"הנחה / מחיר מיוחד", who:"אף אחד", amt:"₪0", over:"חריגות → תום (לא אלכס)", ownerCls:"tom" },
+  { subj:"זריקת חומר גלם", who:"דניס", amt:"עד ₪200", over:"תום / אלכס", ownerCls:"tom" },
+  { subj:"ציוד — עצירת ייצור באותו יום", who:"דניס", amt:"עד ₪300", over:"—", ownerCls:"" },
+  { subj:"ציוד — שוטף", who:"דניס מאתר → דורין מבצעת", amt:"—", over:"300–2,000 ₪: אישור תום", ownerCls:"tom" },
+  { subj:"ציוד / השקעה", who:"—", amt:"—", over:"מעל ₪2,000: דרך אלכס", ownerCls:"alex" },
+  { subj:"תשלום לספק", who:"עדי רושמת ומכינה", amt:"עד ₪1,000", over:"מעל ₪1,000: אישור תום", ownerCls:"tom" },
+  { subj:"לקוח חדש בתנאי אשראי", who:"—", amt:"—", over:"אלכס", ownerCls:"alex" }
+];
+
+const PROCESSES = [
+  { icon:"door", t:"קבלת סחורה", sub:"דניס, בדלת, מול ה־PO הפתוח",
+    tools:[["מסך","link","/stock/receipts","https://gt-factory-os-portal.vercel.app/stock/receipts"],["סקיל","pill","goods-receipt-from-invoice (בונוס · תום)"],["מצב","txt","ידני — דניס מקליד"]] },
+  { icon:"route", t:"ליקוט ומסלול", sub:"מקסים + מיידן",
+    tools:[["סקיל","pill","route-print-pack · daily-delivery-dispatch"],["מקור","pill","route_calendar.json (״מחר״ → אזור)"],["מצב","txt","שלב א׳ — תום מפעיל"]] },
+  { icon:"board", t:"לוח היום + דוח 13:45", sub:"תדריך הבוקר, אתמול/היום/מחר",
+    tools:[["מסך","link","/home","https://gt-factory-os-portal.vercel.app/home"],["רוטינה","pill","guardian — מייל 06:30"],["מצב","txt","קריאה בלבד"]] },
+  { icon:"plan", t:"תכנון ורכש", sub:"חמישי — תכנון → תור → ביצוע",
+    tools:[["מסך","link","/planning/procurement","https://gt-factory-os-portal.vercel.app/planning/procurement"],["מסך","link","/purchase-orders/placement-queue","https://gt-factory-os-portal.vercel.app/purchase-orders/placement-queue"],["סקיל","pill","plan-production-14d · procurement-planning"]] },
+  { icon:"credit", t:"זיכויים", sub:"דורין מאשרת בבוקר",
+    tools:[["מסך","link","/credit-tracking","https://gt-factory-os-portal.vercel.app/credit-tracking"],["מצב","txt","ידני — אישור/טיפול/דחייה"]] }
+];
+
+const ROUTINES = [
+  { when:"חמישי 15:50", t:"שומר־הזומבים (queue-guard)", d:"בודק הזמנות רכש שאושרו ולא בוצעו לפני שדורין יוצאת ב־16:00. שקט = תקין; ריצה ראשונה כבר מצאה 4 הזמנות תקועות (₪11,253)." },
+  { when:"מוצ״ש 20:00", t:"הכנת ראשון (sunday-prep)", d:"סיכום הזמנות סופ״ש → טיוטת ייצור לראשון → בדיקת חו״ג → תצוגת גל־1 למקסים. הכל ממתין ב־6:00." },
+  { when:"ראשון 10:00", t:"Scorecard שבועי", d:"קלוד מרכיב אוטומטית 7 מספרים עסקיים מהמערכות; בני אדם משלימים 1–2 לכל היותר. אלכס קורא את אותו דף." },
+  { when:"כל יום 6:30", t:"מוניטור יומי (guardian)", d:"שער תקינות → כיסוי FG → כיסוי חו״ג → plan-vs-actual של אתמול → מייל בוקר בעברית עם כפתורי פעולה." }
+];
+
+const AUTO = [
+  "מייל הבוקר של קלוד (06:30) — לוח היום + plan-vs-actual",
+  "שומר־הזומבים (חמישי 15:50)",
+  "הכנת ראשון במוצ״ש (20:00)",
+  "הרכבת ה־Scorecard (ראשון 10:00)",
+  "חשבונית מקור בשופיפיי → חשבונית ירוקה",
+  "הכנת זיכוי על כל פער ליקוט",
+  "read model G1 — תוכנית מול ביצוע (עלה לייצור 23.7)"
+];
+const MANUAL = [
+  "קבלת סחורה — דניס מקליד מול ה־PO",
+  "אישור זיכויים — דורין בבוקר",
+  "ספירות (תוצרת · חו״ג · מלאה)",
+  "סימוני מסירה ב־LionWheel — מיידן",
+  "דיווח ייצור — דניס לפני יציאה",
+  "ביצוע ההזמנות מהתור — דורין",
+  "צ׳קבוקס ״התדריך התקיים״"
+];
+
+const OPEN_ITEMS = [
+  { t:"משתמש פורטל למקסים", d:"החלק האחרון של טראנץ׳ 137 — ממתין למייל של מקסים כדי להקים את המשתמש וההרשאות.", tag:["warn","ממתין"] },
+  { t:"רשומת נהג של מיידן ב־LionWheel", d:"הסקיל פותר או שואל בהרצה החיה הראשונה; עד אז הקו רץ תחת רשומת הנהג הקיימת.", tag:["warn","בהרצה ראשונה"] },
+  { t:"read models עתידיים — G2 / G3 / G4", d:"פערים מסומנים ביושר בלוח היום (אף פעם לא מפוברקים). G1 (תוכנית מול ביצוע) כבר חי בייצור.", tag:["ghost","טרם נבנו"] }
+];
+
+/* ============================================================
+   Render
+   ============================================================ */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const fmtDate = iso => { const [y,m,d] = iso.split("-"); return `${+d}.${+m}.${y}`; };
+
+/* --- header stamp --- */
+$("#asOf").textContent = "נכון ל־" + fmtDate(WEEKLY_DATA.as_of);
+
+/* --- Today --- */
+const HE_DATE = () => {
+  const now = new Date();
+  return { dow: now.getDay(), d: now.getDate(), m: now.getMonth()+1, y: now.getFullYear() };
+};
+function renderToday() {
+  const info = HE_DATE();
+  const m = todayModel(info.dow);
+  $("#todayName").textContent = "יום " + m.name;
+  $("#todayDate").textContent = `${info.d}.${info.m}.${info.y}`;
+  const tags = $("#todayTags"); tags.innerHTML = "";
+  const kindLabel = { regular:"יום רגיל", thursday:"תכנון ורכש", sunday:"רוטינת ראשון", weekend:"סופ״ש" }[m.kind];
+  const kindCls = { regular:"accent", thursday:"warn", sunday:"accent", weekend:"ghost" }[m.kind];
+  tags.appendChild(chip(kindCls, kindLabel));
+  if (m.regionLabel) tags.appendChild(chip("ghost", "אזור: " + m.regionLabel));
+  else tags.appendChild(chip("ghost", "אין הפצה"));
+  $("#todayHeadline").textContent = m.headline;
+  $("#todayNote").textContent = m.note || "";
+  $("#todayNote").style.display = m.note ? "" : "none";
+
+  const al = $("#todayAnchors"); al.innerHTML = "";
+  m.anchors.forEach(a => {
+    const li = el("li", "anchor");
+    li.innerHTML = `<div class="a-time">${esc(a.t)}</div>
+      <div><div class="a-what"><b>${esc(a.w)}</b></div>${a.who && a.who!=="—" ? `<div class="a-who">${esc(a.who)}</div>`:""}</div>`;
+    al.appendChild(li);
+  });
+  const who = $("#todayWho"); who.innerHTML = "";
+  m.who.forEach(p => {
+    const parts = p.n.split(" · ");
+    const initial = parts[0].trim().charAt(0);
+    const w = el("span", "who");
+    w.innerHTML = `<span class="av" style="background:${p.c}">${esc(initial)}</span>${esc(parts[0])}${parts[1]?` <small>· ${esc(parts[1])}</small>`:""}`;
+    who.appendChild(w);
+  });
+}
+function chip(cls, text) { const c = el("span", "chip " + cls, `<span class="dot"></span>${esc(text)}`); return c; }
+
+/* --- jump grid --- */
+const JUMPS = [
+  ["flow","זרימת־על","כל התהליך במפה אחת","flow"],
+  ["clock","השעון","מה קורה בכל שעה","clock"],
+  ["people","אנשים","מי אחראי למה","people"],
+  ["money","ספי ₪","מי מחליט, עד כמה","money"],
+  ["system","המערכת","תהליך ↔ כלי","board"],
+  ["measure","מדידה","9 מדדים + CCI","chart"]
+];
+function renderJumps() {
+  const g = $("#jumpGrid"); g.innerHTML = "";
+  JUMPS.forEach(([go,t,d,ic]) => {
+    const b = el("button");
+    b.dataset.go = go;
+    b.innerHTML = `<span class="j-t"><span class="j-ic">${ICON[ic]}</span>${esc(t)}</span><span class="j-d">${esc(d)}</span>`;
+    b.addEventListener("click", () => go_(go));
+    g.appendChild(b);
+  });
+}
+
+/* --- Flow --- */
+function renderFlow() {
+  const spine = $("#flowSpine"); spine.innerHTML = "";
+  FLOW_STAGES.forEach(s => {
+    const stage = el("div", "stage");
+    stage.innerHTML = `
+      <div class="stage-rail">
+        <div class="stage-node${s.milestone?" milestone":""}">${esc(s.node)}</div>
+        <div class="stage-line"></div>
+      </div>
+      <button class="stage-btn" data-node="${s.id}">
+        <div class="s-top"><span class="s-t">${esc(s.t)}</span><span class="s-time">${esc(s.time)}</span></div>
+        <div class="s-d">${esc(s.d.length>96?s.d.slice(0,94)+"…":s.d)}</div>
+        <div class="s-who">${esc(s.who && s.who!=="—" ? s.who : "")}</div>
+        <span class="s-more">פרטים ${ICON.chevL}</span>
+      </button>`;
+    stage.querySelector(".stage-btn").addEventListener("click", () => openNode(s));
+    spine.appendChild(stage);
+  });
+  renderLoop("#loopProd", LOOP_PROD);
+  renderLoop("#loopProc", LOOP_PROC);
+  renderLoop("#loopCount", LOOP_COUNT);
+}
+function renderLoop(sel, steps) {
+  const track = $(sel); track.innerHTML = "";
+  steps.forEach((s, i) => {
+    const step = el("div", "loop-step");
+    const card = el("button", "loop-card");
+    card.innerHTML = `<span class="lc-time">${esc(s.time)}</span><span class="lc-t">${esc(s.t)}</span><span class="lc-d">${esc(s.d)}</span>`;
+    card.addEventListener("click", () => openNode({ id:s.id, t:s.t, time:s.time, who:"", d:s.desc, link:s.link, rule:null }));
+    step.appendChild(card);
+    track.appendChild(step);
+    if (i < steps.length-1) { const a = el("div", "loop-arrow", ICON.arrow); track.appendChild(a); }
+  });
+}
+
+/* --- People --- */
+function renderPeople() {
+  const g = $("#peopleGrid"); g.innerHTML = "";
+  PEOPLE.forEach(p => g.appendChild(personCard(p)));
+  const a = $("#alexSlot"); a.innerHTML = "";
+  a.appendChild(alexCard(ALEX));
+}
+function personCard(p) {
+  const card = el("div", "card person");
+  const auth = p.auth.map(([k,v]) => `<div class="auth-row"><span class="ar-k">${esc(k)}</span><span class="ar-v">${esc(v)}</span></div>`).join("");
+  const resp = p.resp.map(r => `<li>${esc(r)}</li>`).join("");
+  const anch = p.anchors.map(r => `<li>${esc(r)}</li>`).join("");
+  card.innerHTML = `
+    <button class="person-btn" aria-expanded="false">
+      <span class="avatar" style="background:linear-gradient(150deg, ${p.color}, ${shade(p.color)})">${esc(p.name.charAt(0))}</span>
+      <span class="person-id">
+        <span class="p-name">${esc(p.name)}</span>
+        <span class="p-role">${esc(p.role)}</span>
+        <span class="p-hours">${esc(p.hours)}</span>
+      </span>
+      <span class="caret">${ICON.chevD}</span>
+    </button>
+    <div class="person-body">
+      <div class="pb-block full-only"><h4>אחריות ליבה</h4><ul>${resp}</ul></div>
+      <div class="pb-block"><h4>עוגנים שבועיים</h4><ul>${anch}</ul></div>
+      <div class="pb-block"><h4>סמכות ₪</h4><div class="pb-auth">${auth}</div></div>
+      <div class="pb-block"><div class="escal">${p.escal}</div><div class="backup-line">${esc(p.backup)}</div></div>
+    </div>`;
+  const btn = card.querySelector(".person-btn");
+  btn.addEventListener("click", () => {
+    const open = card.classList.toggle("open");
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  return card;
+}
+function alexCard(a) {
+  const card = el("div", "card person alex-card open");
+  const pts = a.points.map(x => `<li>${esc(x)}</li>`).join("");
+  card.innerHTML = `
+    <div class="person-btn">
+      <span class="avatar">${esc(a.name.charAt(0))}</span>
+      <span class="person-id"><span class="p-name">${esc(a.name)}</span><span class="p-role">${esc(a.role)}</span></span>
+      <span class="chip ghost" style="height:24px"><span class="dot"></span>שותף</span>
+    </div>
+    <div class="person-body" style="display:block">
+      <div class="pb-block"><h4>מופיע רק כאן</h4><ul>${pts}</ul></div>
+      <div class="pb-block"><div class="escal">${esc(a.note)}</div></div>
+    </div>`;
+  return card;
+}
+function shade(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  let r = (n>>16)&255, g = (n>>8)&255, b = n&255;
+  r = Math.max(0, r-28); g = Math.max(0, g-28); b = Math.max(0, b-28);
+  return "#" + ((1<<24) + (r<<16) + (g<<8) + b).toString(16).slice(1);
+}
+
+/* --- Clock --- */
+function renderClock() {
+  buildClockTable("#tblRegular", CLOCK_REGULAR, "שעה", "מה קורה", "מי");
+  buildClockTable("#tblThursday", CLOCK_THURSDAY, "שעה", "שרשרת חמישי", "מי");
+  buildClockTable("#tblSunday", CLOCK_SUNDAY, "שעה", "רוטינת ראשון", "מי");
+  renderRegionCal();
+  highlightClockNow();
+}
+function buildClockTable(sel, rows, h1, h2, h3) {
+  const t = $(sel);
+  t.innerHTML = `<thead><tr><th>${h1}</th><th>${h2}</th><th>${h3}</th></tr></thead><tbody>${
+    rows.map(([time, what, who]) =>
+      `<tr data-time="${esc(time)}"><td class="c-time">${esc(time)}</td><td><b>${esc(what)}</b></td><td class="who-tag">${esc(who)}</td></tr>`
+    ).join("")}</tbody>`;
+}
+function renderRegionCal() {
+  const c = $("#regCal"); c.innerHTML = "";
+  const today = HE_DATE().dow;
+  REGION_CAL.forEach(([name, zone], i) => {
+    const d = el("div", "regday " + zone + (i === today ? " today" : ""));
+    const label = zone === "none" ? "אין" : REGIONS[zone];
+    d.innerHTML = `<div class="rd-name">${esc(name)}</div><div class="rd-zone">${esc(label)}</div>${i===today?'<div class="rd-today">היום</div>':""}`;
+    c.appendChild(d);
+  });
+}
+function highlightClockNow() {
+  const info = HE_DATE();
+  const m = todayModel(info.dow);
+  // pick the sub-panel matching today's kind for the highlight
+  let sub = "regular";
+  if (m.kind === "thursday") sub = "thursday";
+  else if (m.kind === "sunday") sub = "sunday";
+  // clear
+  $$("table.clock tr.hl").forEach(r => r.classList.remove("hl"));
+}
+
+/* --- Thresholds --- */
+function renderThresholds() {
+  const t = $("#tblThr");
+  t.innerHTML = `<thead><tr><th>נושא</th><th>מי מחליט לבד</th><th>הסף</th><th>מעל הסף</th></tr></thead><tbody>${
+    THRESHOLDS.map(r => `<tr>
+      <td><b>${esc(r.subj)}</b></td>
+      <td class="who-c">${esc(r.who)}</td>
+      <td class="amt">${esc(r.amt)}</td>
+      <td class="over">${r.ownerCls ? `<span class="badge-owner ${r.ownerCls}">${esc(r.over)}</span>` : esc(r.over)}</td>
+    </tr>`).join("")}</tbody>`;
+
+  const c = $("#thrCards"); c.innerHTML = "";
+  THRESHOLDS.forEach(r => {
+    const card = el("div", "thr-card");
+    const overVal = r.ownerCls ? `<span class="badge-owner ${r.ownerCls}">${esc(r.over)}</span>` : esc(r.over);
+    card.innerHTML = `
+      <div class="tc-subj">${esc(r.subj)}</div>
+      <div class="tc-grid">
+        <div class="tc-cell"><span class="tc-k">מי מחליט לבד</span><span class="tc-v">${esc(r.who)}</span></div>
+        <div class="tc-cell"><span class="tc-k">הסף</span><span class="tc-v amt">${esc(r.amt)}</span></div>
+        <div class="tc-cell wide"><span class="tc-k">מעל הסף</span><span class="tc-v">${overVal}</span></div>
+      </div>`;
+    c.appendChild(card);
+  });
+}
+
+/* --- System --- */
+function renderSystem() {
+  const map = $("#procMap"); map.innerHTML = "";
+  PROCESSES.forEach(p => {
+    const box = el("div", "proc");
+    const tools = p.tools.map(([k, kind, v, url]) => {
+      let val;
+      if (kind === "link") val = `<a class="deeplink" href="${esc(url)}" target="_blank" rel="noopener">${esc(v)} ${ICON.ext}</a>`;
+      else if (kind === "pill") val = `<span class="tool-pill">${esc(v)}</span>`;
+      else val = `<span class="tool-v">${esc(v)}</span>`;
+      return `<div class="tool-line"><span class="tool-k">${esc(k)}</span>${val}</div>`;
+    }).join("");
+    box.innerHTML = `<h4><span class="loop-ic" style="width:26px;height:26px">${ICON[p.icon]}</span>${esc(p.t)}</h4><div class="p-sub">${esc(p.sub)}</div><div class="tools">${tools}</div>`;
+    map.appendChild(box);
+  });
+  const rl = $("#routineList"); rl.innerHTML = "";
+  ROUTINES.forEach(r => {
+    const row = el("div", "routine");
+    row.innerHTML = `<span class="r-when">${esc(r.when)}</span><div class="r-body"><b>${esc(r.t)}</b><p>${esc(r.d)}</p></div>`;
+    rl.appendChild(row);
+  });
+  $("#autoList").innerHTML = AUTO.map(x => `<li><span class="tick">${ICON.check}</span><span>${esc(x)}</span></li>`).join("");
+  $("#manualList").innerHTML = MANUAL.map(x => `<li><span class="tick">${ICON.hand}</span><span>${esc(x)}</span></li>`).join("");
+}
+
+/* --- Measurement --- */
+function renderMeasure() {
+  const c = WEEKLY_DATA.cci;
+  const box = $("#cciBox");
+  box.innerHTML = `
+    <div class="cci-k">מדד עלות הכאוס · ₪ לשבוע</div>
+    <div class="cci-n">≥ ₪${c.min_total_ils.toLocaleString("en-US")}<small> / שבוע</small></div>
+    <div class="cci-sub">אומדן חלקי — רכיב ״קניות חירום״ (B) טרם נמדד. המספר הזה מדבר לאלכס.</div>
+    <div class="cci-parts">
+      <div class="cci-part"><div class="cp-k">A · זיכויים</div><div class="cp-v">~₪${c.credits_ils.toLocaleString("en-US")}</div><div class="cp-d">${c.credits_events} אירועים</div></div>
+      <div class="cci-part"><div class="cp-k">B · קניות חירום</div><div class="cp-v">טרם</div><div class="cp-d">לא נמדד עדיין</div></div>
+      <div class="cci-part"><div class="cp-k">C · תור תקוע</div><div class="cp-v">₪${c.zombie_ils.toLocaleString("en-US")}</div><div class="cp-d">${c.zombie_count} זומבים · ₪${c.zombie_gross_ils.toLocaleString("en-US")} גולמי</div></div>
+    </div>`;
+
+  const kl = $("#kpiList"); kl.innerHTML = "";
+  WEEKLY_DATA.kpis.forEach(k => {
+    const row = el("div", "kpi");
+    const statusChip = { warn:"warn", urgent:"urgent", pending:"ghost", good:"good" }[k.status] || "ghost";
+    const statusTxt = { warn:"מתחת ליעד", urgent:"דורש טיפול", pending:"טרם נמדד", good:"תקין" }[k.status] || "";
+    row.innerHTML = `
+      <div class="kpi-top">
+        <span class="k-n">${k.n}</span>
+        <span class="k-name">${esc(k.name)}</span>
+        <span class="chip ${statusChip}" style="height:22px"><span class="dot"></span>${esc(statusTxt)}</span>
+      </div>
+      <div class="k-def">${esc(k.def)}</div>
+      <div class="kpi-vals">
+        <div class="kpi-val"><div class="kv-k">קו־ייחוס שבוע־0</div><div class="kv-v">${esc(k.base)}</div></div>
+        <div class="kpi-val tgt"><div class="kv-k">יעד</div><div class="kv-v">${esc(k.target)}</div></div>
+      </div>`;
+    kl.appendChild(row);
+  });
+
+  renderRollout();
+}
+const ROLLOUT_WEEKS = [
+  { w:1, t:"אמת בדלת ובמדף", a:"דניס: קבלה מול PO · מקסים: ספירת FG בחמישי · תום: מוביל תדריך + Scorecard", g:"כיסוי קבלות ≥ 80%" },
+  { w:2, t:"שעון הרכש של חמישי", a:"דורין: עבודה מהתור בלבד · גבייה עוברת לרביעי", g:"תור: חציון ≤ יום · 0 זומבים" },
+  { w:3, t:"סגירת קו דו־גלית", a:"14:00 סוף קליטה → הצלבה → נעילה 15:00 · ליקוט READY", g:"קאט־אוף ≥ 90%" },
+  { w:4, t:"ראשון החדש", a:"אוטומציית מוצ״ש · קאט־אוף 9:30 · יציאה 10:30", g:"יציאת רכב ראשון ≤ 10:30" },
+  { w:5, t:"ספירות וסמכויות", a:"ספירות לפי קריטיות · ספי הסמכות בתוקף · עדי: ״זמין לרכש״", g:"טריות ספירות ≤ 7 ימים" },
+  { w:6, t:"אלכס, גיבויים ונעילה", a:"נתיב מהיר לאלכס · תרגול ״שבוע בלי תום״", g:"0 אצוות מחוץ לנתיב" }
+];
+function renderRollout() {
+  const box = $("#rolloutBox");
+  const cur = WEEKLY_DATA.rollout.current_index; // 0 = prep
+  const meter = ROLLOUT_WEEKS.map((_, i) =>
+    `<div class="roll-seg${(i+1) < cur ? " done" : ""}${(i+1) === cur ? " now" : ""}"></div>`).join("");
+  const weeks = ROLLOUT_WEEKS.map(w => `
+    <div class="roll-week${w.w === cur ? " is-now" : ""}">
+      <div class="rw-n">${w.w}</div>
+      <div><div class="rw-t">${esc(w.t)}</div><div class="rw-a">${esc(w.a)}</div><div class="rw-g">שער: <b>${esc(w.g)}</b></div></div>
+    </div>`).join("");
+  box.innerHTML = `
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+      <div style="font-weight:800;font-size:var(--t-sm)">${esc(WEEKLY_DATA.rollout.current_label)}</div>
+      <div style="font-size:var(--t-xs);color:var(--ink-3)">שבוע 1 מתחיל ${fmtDate(WEEKLY_DATA.rollout.week1_start)} · ≤ 2 הרגלים חדשים לאדם בשבוע</div>
+    </div>
+    <div class="roll-meter">${meter}</div>
+    ${weeks}`;
+}
+
+/* --- Open items --- */
+function renderOpen() {
+  const l = $("#openList"); l.innerHTML = "";
+  OPEN_ITEMS.forEach(o => {
+    const row = el("div", "open-item");
+    row.innerHTML = `<div class="oi-ic">${ICON.dot}</div>
+      <div><h4>${esc(o.t)}</h4><p>${esc(o.d)}</p><div class="oi-tag"><span class="chip ${o.tag[0]}" style="height:22px"><span class="dot"></span>${esc(o.tag[1])}</span></div></div>`;
+    l.appendChild(row);
+  });
+}
+
+/* ============================================================
+   Bottom sheet (node detail)
+   ============================================================ */
+function openNode(s) {
+  $("#shEye").textContent = s.who && s.who !== "—" ? s.who : "צומת בזרימה";
+  $("#shTitle").textContent = s.t;
+  const tEl = $("#shTime");
+  if (s.time) { tEl.textContent = s.time; tEl.style.display = ""; } else tEl.style.display = "none";
+  $("#shDesc").textContent = s.d;
+  const rule = $("#shRule");
+  if (s.rule) {
+    const idx = s.rule.indexOf(": ");           // colon+space only — never split inside a time like 9:00
+    if (idx > -1) rule.innerHTML = `<b>${esc(s.rule.slice(0, idx + 1))}</b>${esc(s.rule.slice(idx + 1))}`;
+    else rule.textContent = s.rule;
+    rule.hidden = false;
+  } else rule.hidden = true;
+
+  const acts = $("#shActions"); acts.innerHTML = "";
+  if (s.link) {
+    if (s.link.screen) {
+      const label = SCREEN_LABEL[s.link.screen];
+      acts.appendChild(sheetAction(ICON[SCREEN_ICON[s.link.screen]], "עבור לשכבה", label, () => { closeSheet(); go_(s.link.screen); }));
+    }
+    if (s.link.url) {
+      acts.appendChild(sheetLink(ICON.ext, "פתח בפורטל", s.link.urlLabel || s.link.url, s.link.url));
+    }
+  }
+  showSheet();
+}
+const SCREEN_LABEL = { flow:"זרימת־על", people:"אנשים", clock:"השעון", money:"ספי ₪", system:"המערכת", measure:"מדידה", open:"פתוחים" };
+const SCREEN_ICON = { flow:"flow", people:"people", clock:"clock", money:"money", system:"board", measure:"chart", open:"dot" };
+function sheetAction(icon, kicker, label, onClick) {
+  const a = el("button", "sh-act");
+  a.innerHTML = `<span class="sa-r"><span class="sa-ic">${icon}</span><span>${esc(kicker)}<small>${esc(label)}</small></span></span><span class="sa-arrow">${ICON.chevL}</span>`;
+  a.addEventListener("click", onClick);
+  return a;
+}
+function sheetLink(icon, kicker, label, url) {
+  const a = el("a", "sh-act");
+  a.href = url; a.target = "_blank"; a.rel = "noopener";
+  a.innerHTML = `<span class="sa-r"><span class="sa-ic">${icon}</span><span>${esc(kicker)}<small dir="ltr">${esc(label)}</small></span></span><span class="sa-arrow">${ICON.ext}</span>`;
+  return a;
+}
+function showSheet() { $("#sheetBack").classList.add("show"); $("#sheet").classList.add("show"); document.body.style.overflow = "hidden"; }
+function closeSheet() { $("#sheetBack").classList.remove("show"); $("#sheet").classList.remove("show"); document.body.style.overflow = ""; }
+$("#sheetBack").addEventListener("click", closeSheet);
+$("#sheetClose").addEventListener("click", closeSheet);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+
+/* ============================================================
+   Navigation + modes
+   ============================================================ */
+const SCREENS = ["today","flow","people","clock","money","system","measure","open"];
+const HIDDEN_IN_PRESENT = ["system","open","today"];
+let current = "today";
+
+function go_(screen) {
+  if (getMode() === "present" && HIDDEN_IN_PRESENT.includes(screen)) screen = "flow";
+  current = screen;
+  SCREENS.forEach(s => {
+    const node = $("#s-" + s);
+    if (node) node.classList.toggle("is-active", s === screen);
+  });
+  $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.go === screen));
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+$$(".tab").forEach(t => t.addEventListener("click", () => go_(t.dataset.go)));
+$("#homeBtn").addEventListener("click", () => { if (getMode() === "present") go_("flow"); else go_("today"); });
+
+/* mode */
+function getMode() { return $("#app").dataset.mode; }
+function setMode(mode, persist=true) {
+  $("#app").dataset.mode = mode;
+  $("#modeBtn").setAttribute("aria-pressed", mode === "present" ? "true" : "false");
+  if (persist) try { localStorage.setItem("gt-map-mode", mode); } catch(e) {}
+  // if current screen is hidden in this mode, redirect
+  if (mode === "present" && HIDDEN_IN_PRESENT.includes(current)) go_("flow");
+  else go_(current);
+}
+$("#modeBtn").addEventListener("click", () => setMode(getMode() === "present" ? "full" : "present"));
+
+/* theme */
+function setTheme(theme, persist=true) {
+  document.documentElement.setAttribute("data-theme", theme);
+  if (persist) try { localStorage.setItem("gt-map-theme", theme); } catch(e) {}
+  updateThemeIcon(theme);
+}
+function currentTheme() {
+  const explicit = document.documentElement.getAttribute("data-theme");
+  if (explicit) return explicit;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+function updateThemeIcon(theme) {
+  const isDark = theme === "dark";
+  $("#themeIcon").innerHTML = isDark
+    ? '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>'
+    : '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>';
+}
+$("#themeBtn").addEventListener("click", () => setTheme(currentTheme() === "dark" ? "light" : "dark"));
+
+/* clock subtabs */
+$$("#clockSubtabs .subtab").forEach(st => {
+  st.addEventListener("click", () => {
+    $$("#clockSubtabs .subtab").forEach(x => x.classList.remove("active"));
+    st.classList.add("active");
+    $$(".subpanel").forEach(p => p.classList.remove("active"));
+    $("#sub-" + st.dataset.sub).classList.add("active");
+  });
+});
+function openClockToday() {
+  const k = todayModel(HE_DATE().dow).kind;
+  const sub = k === "thursday" ? "thursday" : k === "sunday" ? "sunday" : "regular";
+  const btn = $(`#clockSubtabs .subtab[data-sub="${sub}"]`);
+  if (btn) btn.click();
+}
+
+/* self-test */
+function runSelfTest() {
+  const r = selfTestToday();
+  const btn = $("#selfTest");
+  if (r.pass === r.total) { btn.classList.add("ok"); btn.innerHTML = `<span class="dot"></span>בדיקת ימים ${r.pass}/${r.total} ✓`; }
+  else { btn.classList.add("bad"); btn.innerHTML = `<span class="dot"></span>בדיקה נכשלה: ${r.fails.join(",")}`; }
+  btn.title = `todayModel נבדק ל־7 הימים · עבר ${r.pass}/${r.total}`;
+}
+
+/* ============================================================
+   Icons (inline SVG strings)
+   ============================================================ */
+const ICON = {
+  flow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"></path><path d="M20 12l-3-3M20 12l-3 3"></path></svg>',
+  people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 20a5.5 5.5 0 0 1 11 0"></path><path d="M16 5.5a3 3 0 0 1 0 5.4"></path></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>',
+  money:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M15 9.5c-.5-1-1.7-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 2.8 6 1.3 6 4.1 0 1.3-1.3 2.2-3 2.2-1.3 0-2.5-.5-3-1.5M12 6.5v11"></path></svg>',
+  board:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg>',
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg>',
+  door:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v18M4 21h16M14 21V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v16"></path><circle cx="11" cy="12" r="0.6" fill="currentColor"></circle></svg>',
+  route:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2"></circle><circle cx="18" cy="5" r="2"></circle><path d="M8 19h6a4 4 0 0 0 0-8H10a4 4 0 0 1 0-8h6"></path></svg>',
+  plan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path d="M4 9h16M9 4v16"></path></svg>',
+  credit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"></rect><path d="M2.5 9.5h19"></path></svg>',
+  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>',
+  chevL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M15 6l-6 6 6 6"></path></svg>',
+  chevD:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M6 9l6 6 6-6"></path></svg>',
+  ext:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M20 6L9 17l-5-5"></path></svg>',
+  hand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"></path><path d="M18 8a2 2 0 0 1 4 0c0 3-1 9-6 11-4 1.5-8-1-9-5l-1-4a2 2 0 0 1 3.6-1.6L14 13"></path></svg>',
+  dot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 3v3M12 18v3M3 12h3M18 12h3"></path></svg>'
+};
+
+/* ============================================================
+   Boot
+   ============================================================ */
+function boot() {
+  // restore theme
+  try {
+    const savedTheme = localStorage.getItem("gt-map-theme");
+    if (savedTheme) setTheme(savedTheme, false);
+    else updateThemeIcon(currentTheme());
+  } catch(e) { updateThemeIcon(currentTheme()); }
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) updateThemeIcon(currentTheme());
+  });
+
+  renderToday();
+  renderJumps();
+  renderFlow();
+  renderPeople();
+  renderClock();
+  renderThresholds();
+  renderSystem();
+  renderMeasure();
+  renderOpen();
+  runSelfTest();
+  openClockToday();
+
+  // restore mode + landing
+  let mode = "full";
+  try { mode = localStorage.getItem("gt-map-mode") || "full"; } catch(e) {}
+  $("#app").dataset.mode = mode;
+  $("#modeBtn").setAttribute("aria-pressed", mode === "present" ? "true" : "false");
+  go_(mode === "present" ? "flow" : "today");
+}
+boot();
+</script>
