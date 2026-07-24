@@ -369,3 +369,35 @@ Phase 0 בדיקות שפיות → Phase 1 השלמת backend (מיגרציות
 
 המטרה הסופית: ביום העבודה הבא דניס נכנס ל-/production בטלפון, רואה את הריצות של היום, מלקט, מאשר, מדווח — בלי תקלה אחת. לך.
 ```
+
+---
+
+# STATUS: SHIPPED — 2026-07-24
+
+The full end-to-end rollout is complete. All six gates passed.
+
+## Evidence by phase
+
+- **Phase 0 — Boot & sanity:** PASS. Real rollout branch confirmed; prod project `rvadsozabmxkkrktwgnv` (gt-ops-prod).
+- **Phase 1 — Backend:** PASS. Migrations `0295` (production_run + production_run_pick tables, PICK_CONSUMPTION / MATERIAL_DELTA CHECK supersets, QC columns) and `0296` (`components.floor_name`) applied to prod via Supabase MCP with the CHECK supersets verified byte-equal to prod before apply; `rebuild_verifier=0` (stock-truth parity intact). Double-consumption guard added to `production-actuals` (409 `PICKING_RUN_EXISTS`). Migration `0297` (Denis seed) authored then **removed** — prod already had `denispotehin@gmail.com` (operator) and `production@gteveryday.com` (planner); no new account/password created (Tom decision: Denis keeps his own account; Maxim uses the factory tablet on `production@`).
+- **Phase 2 — Portal cutover:** PASS. Tranche 143 repointed the 7 cutover touch-points from `/stock/production-actual` to `/production`; old route stays live at its direct URL for 30 days. Merged.
+- **Phase 3 — Deploy:** PASS. Railway auto-deploys the API on merge to main; Vercel auto-deploys the portal. Prod migrations applied directly via Supabase MCP (announced in chat). `/production` live.
+- **Phase 4 — UX polish iteration 1:** PASS. Tranche 145 — full 5-lens `/ux-release-gate`; every P0/P1 + cheap P2/P3 fixed. Merged (portal PR #185).
+- **Phase 5 — UX polish iteration 2 (Gate 5):** PASS. Tranche 146 — re-ran the 5-lens gate; closed the last 2 residual P1s (INTER-006 correction-dropdown floor_name; INTER-007 rows inert during pick-confirm) + cheap P2 batch. **ZERO P0/P1 on the /production corridor.** tsc 0, eslint 0, vitest 1063/1063, production-picking e2e 11/11. Merged (portal PR #186).
+- **Phase 6 — Real-data dry run + handoff:** PASS (read-only, zero stock impact). Sunday 2026-07-26 materializes **4 runs**, all resolving to ACTIVE BOMs with sane quantities and populated on-hand:
+  1. **SINGLE** — MATCHA 0.5KG (FG-MAT-500G), 40 BAG → matcha bulk 20 kg + bag ×40 + sticker ×40.
+  2. **TANK** — DETOX base (BOM-BASE-DET-REG), 500 L → 7 raw lines (green tea 11.5, luiza 12.5, nana 3.5, lime puree 15, lemon acid 1.5, sugar 180, water 420).
+  3. **PACK** — DETOX 1L (FG-DET-1L), 365 → bottle/cap/label/carton.
+  4. **PACK** — DETOX 0.5L (FG-DET-500ML), 270 → bottle/cap/label/carton.
+  Every Sunday component has a Latin-script `component_name`, so `floor_name` being unset (0% coverage) is cosmetically harmless — no Hebrew-primary rendering; the deferred "תה שחור" is **not** in Sunday's runs. Both accounts active with passwords (Denis=operator, production=planner; both roles pass the run role gate). Sunday 06:30 IDT safety-net reminder armed.
+
+## Two material shortages flagged for Tom (picking flags, never blocks)
+
+- **RAW-LIME-PUREE** — Sunday DET tank needs 15 kg; on-hand ~0.98 kg.
+- **PKG-LABEL-DET-500ML** — Sunday DET 0.5L run needs 270; on-hand 40.
+
+These are planning/stock matters, not feature defects — the pick flow will flag them as shortages and let the operator continue. Worth checking stock / receipts (or adjusting the plan) before Sunday.
+
+## Guardrails honored throughout
+
+`stock_ledger` never mutated (append-only; no direct ledger/projection writes); no pick-confirm on prod during the rehearsal; forbidden files untouched (tailwind.config.ts, globals.css, baseline.json, quarantine.json, UX-standard docs, all CLAUDE.md, LOCKED_DECISIONS.md); explicit-path `git add` only; every portal src/** write inside its active tranche manifest.
