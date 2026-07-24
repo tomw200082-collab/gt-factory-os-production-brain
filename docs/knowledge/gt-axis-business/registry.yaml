@@ -1,0 +1,25 @@
+# GT Business Axis — Knowledge Registry
+# Canonical home (moved here from the session-local skill copy, 2026-07-24, Tom-directed).
+# Written by gt-context-harvester. Each entry is a Candidate Card promoted to fact/pattern/
+# system/terminology/decision after human approval. Never edit without going through the
+# harvester workflow (read first, append, never silently overwrite).
+
+entries:
+  - axis: business
+    type: fact
+    title: "Denis does not know Hebrew, weak English, native Russian"
+    content: >
+      Denis (GT's production operator) does not read/understand Hebrew and does not speak it
+      for operational purposes; his native language is Russian; his English reading level is
+      weak. Any operator-facing UI/copy built for Denis (e.g. portal production screens) must
+      use very simple, short, plain English — never Hebrew, never jargon. This corrected an
+      initial default assumption that Hebrew would be the natural UI language for a
+      factory-floor operator screen.
+    scope: "UI/UX design for Denis, any future operator-facing surface where he is the user"
+    authority: user_confirmed
+    evidence_count: explicit_approval
+    freshness_class: stable
+    blast_radius: medium
+    conflicts_with: none
+    added: 2026-07-24
+    approved_by: user

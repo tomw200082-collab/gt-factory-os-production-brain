@@ -1,0 +1,45 @@
+# GT Systems Axis — Knowledge Registry
+# Canonical home (moved here from the session-local skill copy, 2026-07-24, Tom-directed).
+# Written by gt-context-harvester. Each entry is a Candidate Card promoted to fact/pattern/
+# system/terminology/decision after human approval. Never edit without going through the
+# harvester workflow (read first, append, never silently overwrite).
+
+entries:
+  - axis: systems
+    type: system
+    title: "GT portal user accounts: no self-service signup"
+    content: >
+      GT's portal (gt-factory-os-portal) uses Supabase Auth with a private_core.app_users table
+      (PK = auth.users.id by convention) holding role (admin/planner/operator/viewer). There is
+      no self-service account creation. New users must be provisioned either via a seed SQL
+      migration inserting rows directly into auth.users + auth.identities + app_users (pattern:
+      gt-factory-os migration 0059), or by an admin calling
+      PATCH /api/v1/mutations/admin/users/:user_id after the person's first login. A
+      Supabase-authenticated user with no matching app_users row gets HTTP 403
+      "User not provisioned."
+    scope: "any future request to add/change a portal account"
+    authority: doc_confirmed
+    evidence_count: 1
+    freshness_class: stable
+    blast_radius: medium
+    conflicts_with: none
+    added: 2026-07-24
+    approved_by: user
+
+  - axis: systems
+    type: pattern
+    title: "Portal enforces tranche-scoped edits via live hooks, not convention"
+    content: >
+      gt-factory-os-portal enforces one-tranche-at-a-time editing via a LIVE PreToolUse hook,
+      not just a convention: any Write/Edit to src/** whose exact path is not listed in the
+      currently-active tranche's manifest: block (docs/portal-os/tranches/NNN-*.md, tracked in
+      _active.txt + registry.md) is BLOCKED at the tool-call level. Any portal code task must
+      first author/extend a tranche doc with a complete file manifest before touching src/.
+    scope: "any future code task in gt-factory-os-portal"
+    authority: doc_confirmed
+    evidence_count: "2+ (documented in repo AND observed blocking in practice)"
+    freshness_class: stable
+    blast_radius: medium
+    conflicts_with: none
+    added: 2026-07-24
+    approved_by: user

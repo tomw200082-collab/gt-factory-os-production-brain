@@ -1,0 +1,25 @@
+# GT Production Axis — Knowledge Registry
+# Canonical home (moved here from the session-local skill copy, 2026-07-24, Tom-directed).
+# Written by gt-context-harvester. Each entry is a Candidate Card promoted to fact/pattern/
+# system/terminology/decision after human approval. Never edit without going through the
+# harvester workflow (read first, append, never silently overwrite).
+
+entries:
+  - axis: production
+    type: decision
+    title: "Production stock decrements at pick confirmation, not report time"
+    content: >
+      GT's production stock model (locked decision v2, 2026-07-24, supersedes v1): raw-material
+      and packaging stock decrements when the operator confirms materials PICKED at the START
+      of a production run — not when output is reported at the end. The operator picks
+      BOM-exploded quantities (prefilled, editable), confirms, and a PICK_CONSUMPTION ledger
+      event posts immediately. The end-of-run report only posts output + scrap + optional QC,
+      no consumption.
+    scope: "production planning, stock truth, company-wide"
+    authority: user_confirmed
+    evidence_count: explicit_approval
+    freshness_class: stable
+    blast_radius: high
+    conflicts_with: "supersedes the prior v1 model (consumption computed automatically from reported output at end of run)"
+    added: 2026-07-24
+    approved_by: user

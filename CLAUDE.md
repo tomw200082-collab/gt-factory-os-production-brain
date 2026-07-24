@@ -81,7 +81,7 @@ Every dispatch consults `AI_BRAIN_ROUTER.md` to classify input → lane → agen
 - Other authority docs (EXECUTION_POLICY.md, CURRENT_STATE.md, WORKSPACE_MAP.md, ACTIVE_NOW.md, AI_BRAIN_ROUTER.md) — `ops-docs-curator` writes under `factory-os-governor` approval.
 - `.claude/state/*.json` — only emitting executors append; never overwrite.
 - Frozen flags (`LIONWHEEL_FG_OUT_BRIDGE_ENABLED`, `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED`) — `false` until Tom written approval + dry-run + ≥24h soak + RUNTIME_READY signal.
-- `git push` + PR **merge** — Claude MAY do autonomously when required checks are green and the change is verified (Tom-granted in writing 2026-06-20; supersedes the prior Phase 8 Run F "Tom only / no autonomous push"). Do not merge with red/failing required checks or an unverified high-blast-radius change. **Production deploy** and **applying migrations to the production database** remain deliberate, explicitly-flagged steps — never silent.
+- `git push` + PR **merge** — Claude MAY do autonomously when required checks are green and the change is verified (Tom-granted in writing 2026-06-20; supersedes the prior Phase 8 Run F "Tom only / no autonomous push"). Do not merge with red/failing required checks or an unverified high-blast-radius change. **Production deploy** and **applying migrations to the production database** — Claude MAY also do autonomously (Tom-granted in writing 2026-07-24; supersedes the prior "deliberate, explicitly-flagged, never silent" framing for the deploy *mechanics* only) when the deploy's own gates are green: pre-flight stock-truth check, CI green, migration applies cleanly, post-deploy health check passes. Still post a one-line chat announcement immediately before dispatching, for visibility — not permission; do not wait for a reply. This does not relax stock-ledger append-only semantics or reversal-only corrections in any way — only the deploy *mechanics* moved from "ask first" to "announce and proceed."
 
 ## External-action authorization (Tom-granted in writing, 2026-06-20)
 
@@ -107,11 +107,18 @@ intent.** Clear boundaries, always:
    reversal only); no direct ledger/projection mutation. The two named frozen
    flags above still gate ledger-affecting auto-bridges until their dry-run/soak.
 4. **Merge is Claude's to do** (Tom-granted 2026-06-20) when required checks are
-   green and the change is verified — no waiting for Tom. Production **deploy**
-   and **prod-DB migration apply** stay deliberate, flagged steps — never silent.
-5. **Audit + reversibility.** Every external write is logged/traceable and
+   green and the change is verified — no waiting for Tom.
+5. **Production deploy is also Claude's to do autonomously** (Tom-granted in
+   writing 2026-07-24) — migrations + API deploy — when the deploy's own gates
+   are green (pre-flight stock-truth check, CI green, migration applies
+   cleanly, post-deploy health check). No waiting for a reply required. Still
+   post a one-line chat announcement immediately before dispatching, for
+   visibility, not permission. This does **not** relax anything about the
+   ledger itself — still append-only, still reversal-only corrections — only
+   the deploy *mechanics* moved from "ask first" to "announce and proceed."
+6. **Audit + reversibility.** Every external write is logged/traceable and
    reversible-by-design where possible.
-6. **When unsure — do NOT write. Ask.** Uncertainty discipline still holds.
+7. **When unsure — do NOT write. Ask.** Uncertainty discipline still holds.
 
 This is the operating basis for the planned daily-ops skill: Tom queues intent,
 the skill executes via sanctioned APIs under these boundaries.
@@ -162,6 +169,7 @@ Every agent run ends with: STATUS (PASS / FAIL / BLOCKED / HOLD_FOR_TOM), files 
 ---
 
 **Owner:** Tom (sole writer of this file).
-**Last amended:** 2026-06-20 (Tom-directed, in writing this session): added "External-action authorization" + reworded the MCP/operational-path forbidden assumption. Transcribed at Tom's explicit instruction; Tom remains owner.
+**Last amended:** 2026-07-24 (Tom-directed, in writing this session): production deploy + prod-DB migration apply moved from "deliberate, ask-first" to "Claude's to do autonomously when the deploy's own gates are green, announce-then-proceed" — mirrors the 2026-06-20 merge-autonomy grant. Stock-ledger append-only semantics are explicitly untouched. Transcribed at Tom's explicit instruction; Tom remains owner.
+**Previously amended:** 2026-06-20 (Tom-directed, in writing that session): added "External-action authorization" + reworded the MCP/operational-path forbidden assumption. Transcribed at Tom's explicit instruction; Tom remains owner.
 **Last rewritten:** 2026-05-08 (Phase 8 Run F Wave 4 — kernel extraction + thin-boot rewrite).
 **Pre-rewrite full text preserved at:** `docs/archive/CLAUDE.md.pre-kernel-rewrite-2026-05-08.md`.
