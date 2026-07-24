@@ -7,7 +7,9 @@
 
 ## Verdict
 
-**CONDITIONAL_SHIP** — zero P0 findings remain. Two P1 copy findings are held for Tom because they are a genuine conflict between two authorities, not an oversight (see Conditions).
+**SHIP** — zero P0 findings, and the two held P1 copy findings are now resolved.
+
+> **Resolved 2026-07-24 — Tom: "DENIS SIMPLE WORDS".** `/production` keeps `Done`, `To do` and `Report production`. No code change; the strings were already correct. The conflict is recorded as a scoped exception in `gt-factory-os-portal/docs/portal_ux_standard.md` §1 so a future gate run reads the decision instead of re-raising it.
 
 ## What the gate caught that mattered
 
@@ -37,16 +39,18 @@ Three of the four most serious findings were **second-order effects of this tran
 
 Also fixed while in-file: three stale code comments still describing stock moving at pick time, and three pre-existing type errors in `production-runs/handler.ts` (`floor_name` missing from an `Omit`) that made the module fail to typecheck on `main`.
 
-## Conditions (Tom's call — held deliberately, not overlooked)
+## Conditions — RESOLVED (Tom, 2026-07-24: "DENIS SIMPLE WORDS")
 
-**COPY-001 / COPY-002 — status words.** The content lens flags `run_status_done: "Done"` → `"Completed"` and `run_status_todo: "To do"` → `"Planned"` per the `portal_ux_standard.md` §1 lexicon, where "done" is explicitly in the avoid column.
+**COPY-001 / COPY-002 / COPY-004 — status and action words.** The content lens flagged `run_status_done: "Done"` → `"Completed"`, `run_status_todo: "To do"` → `"Planned"`, and `report_cta: "Report production"` → `"Open Production Report"`, per the `portal_ux_standard.md` §1 lexicon.
 
-Held, because two authorities disagree and the tie is Tom's to break:
+These were held rather than applied, because two authorities disagreed and only Tom could break the tie:
 
-- The lexicon was written for planner-facing surfaces.
-- `/production` has an explicit, documented mandate to use simple English for Denis, who reads English poorly. "Done" and "To do" are the simpler words, and they shipped through Gates 145 and 146 with Tom's Gate-5 sign-off.
+- The lexicon was written for planner- and office-facing surfaces, where the reader has context and time.
+- `/production` has an explicit mandate to use simple English for Denis, who reads English poorly. "Done" and "To do" are the simpler words, and they shipped through Gates 145 and 146 with Tom's Gate-5 sign-off.
 
-Changing them would regress the reading level this surface was deliberately tuned to. Applying the lexicon silently, or ignoring it silently, both seemed worse than asking. **COPY-004** is the same shape: the content lens itself proposed amending the standard to accept the short form "Report production" rather than treating it as a violation.
+Applying the lexicon silently would have regressed the reading level this surface was deliberately tuned to; ignoring it silently would have left the surface quietly out of standard. Both seemed worse than asking.
+
+**Tom's answer, 2026-07-24: "DENIS SIMPLE WORDS."** The strings stay. No code changed — they were already right. What changed is the standard: `portal_ux_standard.md` §1 now carries a scoped exception naming the three terms and the three routes, with the reasoning and the date, so the next gate run reads a decision instead of re-deriving a conflict. The rest of the lexicon still binds on that corridor.
 
 ## Deferred, with reasons
 
@@ -55,7 +59,7 @@ Changing them would regress the reading level this surface was deliberately tune
 | FLOW-012 | Needs a new `report_submission_id` field on the pick-list response to link the audit trail. Real, but a backend contract addition on a rare path (re-opening an already-reported run). |
 | A11Y-147-07 | `--fg-subtle` at 3.09:1 is a design-token fix; `globals.css` is frozen for this OS. Token-level escalation, not a corridor tranche. |
 | A11Y-147-08 | QC `aria-controls` persistence needs the panel always rendered. Pre-existing, unchanged by this tranche. |
-| A11Y-147-10 / 11 | Stepper labels and a link-destination suffix need lexicon coordination — same open question as COPY-001/002. |
+| A11Y-147-10 / 11 | Stepper labels and a link-destination suffix. Now unblocked by Tom's ruling — they follow the simple-word exception — but they are aria-only copy on a path that already reads correctly, so they belong to the next content pass rather than this one. |
 | A11Y-147-13 / INTER-147-03 (steppers) | Stepper heights are pre-existing sizes from Gates 145/146. |
 | INTER-147-04 | No affordance to restore the pre-fill after clearing. The planned quantity is already on screen in the header ("Making 200 L"), so recovery is reading it off the same view. |
 | FLOW-006 | Rendering the actual date in the past-day title. The date sits in the picker directly below it. |
@@ -66,7 +70,7 @@ Changing them would regress the reading level this surface was deliberately tune
 |---|---|---|---|
 | Flow | 0 | 0 | GREEN |
 | Interaction | 0 | 0 | GREEN |
-| Content / state | 0 | 2 (held for Tom) | AMBER |
+| Content / state | 0 | 0 (resolved — Tom kept the simple words) | GREEN |
 | Accessibility | 0 | 0 | GREEN |
 | Visual | 0 | 0 | GREEN |
 
@@ -79,8 +83,8 @@ Changing them would regress the reading level this surface was deliberately tune
 
 ## Tom approval required?
 
-**Yes** — for the COPY-001/002/004 lexicon question above. Nothing else is blocked.
+**Granted.** Tom chose Denis's words on 2026-07-24. Nothing else is blocked.
 
 ## Next action for Tom
 
-Decide whether `/production` keeps Denis's words ("Done", "To do", "Report production") or moves to the standard lexicon ("Completed", "Planned", "Open Production Report"). Either answer is one small commit; the surface should not be left with the two authorities disagreeing.
+None outstanding on UX. The remaining gap is evidence, not design: run the pgTAP suite (`db/tests/0295_production_run_picking.test.sql`) against a real Postgres before this ships — it is the only check that proves stock moves at report time and not before.
