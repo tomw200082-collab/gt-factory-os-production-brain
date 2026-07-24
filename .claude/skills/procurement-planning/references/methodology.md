@@ -110,6 +110,25 @@ Reorder Point (ROP)  = ADU × DLT  +  Safety Stock
 
 ---
 
+### 4b. Buffer suggestion read model (backend 0292, 2026-07-23)
+
+`api_read.v_component_buffer_suggestions` computes a per-component
+`suggested_cover_days` off the flat 7-day default, **differentiated down as
+well as up**, with `current_cover_days`, `delta_days`, `direction`,
+`review_priority`, and a `caveat`. Use it to pick the handful worth tuning in
+Stage 3 — never batch-apply; apply the ones you agree with via the gated
+`planning.safety.component_cover_days.<id>` override.
+
+It uses the DDMRP-factor shortcut (methodology §6), not raw daily-σ, because the
+live data won't support a statistical buffer: **the component consumption
+ledger is empty** (demand is plan-driven) and **`lead_time_days` is a flat 7-day
+default for 171/184 planned components** (only 13 carry a real lead: 37d, 127d).
+So the honest first action is capturing **real lead times** — `lead_is_flat_default`
+flags every guessed one, and the suggestion for those is criticality-centred
+only (HIGH 9 / MEDIUM 7 / NULL 6). Real-lead + HIGH-criticality items go up;
+unclassified short items lean down. Trust the down/up split only once lead
+truth is fixed (§3).
+
 ## 5. DDMRP buffer zones (your engine's native model)
 
 Your purchase engine is DDMRP-lite, so it helps to think in DDMRP zones. Per component:
@@ -170,6 +189,40 @@ ROP = 50×10 + 219 = 719 units
 ```
 The point: the flat 7 is wrong in *both* directions across the catalogue — this is why per-component
 tuning is the highest-leverage output of a session.
+
+---
+
+## 6b. Produce-to-stock production (backend 0289, 2026-07-23)
+
+Production planning is **produce-to-stock, not shortage-only**.
+`fn_generate_production_recommendations` always proposes the next batch for
+every MANUFACTURED / REPACK item (tea bases keep their own capacity-aware
+scheduler `fn_plan_tea_production`), ranked by time-to-depletion — never
+"nothing to produce".
+
+Per item, three coverage bands (days) drive an **order-up-to** model, resolved
+`planning_item_config.{min,target,max}_coverage_days` >
+`planning.production.{min,target,max}_coverage_days_default` (seeded 7 / 14 /
+28) > 7 / 14 / 28. Powders default 10 / 21 / 45 (longer shelf life). From the
+plant's **daily** projection (`fn_compute_daily_fg_projection`):
+- `ADU` = horizon demand / (weeks×7); `reorder/target/max_qty` = band-days × ADU.
+- Triggers when projected on-hand drops to/below `target_qty` on some day;
+  `build = target_qty − projected on-hand at that day`, floored by `min_batch`,
+  rounded up the batch grid (`batch_multiple` → BOM `min_run_l` → policy default
+  → exact fill-to-target).
+- `trigger_reason` (in `logic_trace`): `shortage` (stockout within production
+  lead time), `replenish` (reaches the reorder band), `build_ahead` (below
+  target, above reorder), `topup` (never-idle — soonest-to-deplete when nothing
+  is below target).
+- Rank the queue by `order_by_date` = depletion day − production lead time
+  (ascending). `time_to_depletion_days`, the bands and the quantities all live
+  in `logic_trace`.
+
+Tuning is the same differentiate-don't-flatten discipline as component buffers
+(§4): add per-item `planning_item_config` rows (min/target/max coverage,
+`min_batch`, `batch_multiple`, `production_lead_time_days`) to override the
+global defaults — shorten target/max for perishable FG, lengthen for
+shelf-stable. Do not flatten; a handful of high-value items per session.
 
 ---
 

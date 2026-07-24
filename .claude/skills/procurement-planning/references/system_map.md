@@ -182,6 +182,9 @@ Production-side per-base overrides also exist: `planning.production.safety_stock
 - `fn_execute_planning_run(p_actor_user_id uuid, p_trigger_source text, p_idempotency_key text, p_horizon_start_at date, p_horizon_weeks integer)`
   → orchestrates `fn_compute_fg_net_requirements` → `fn_compute_component_net_purchase`
   → `fn_generate_purchase_recommendations` + `fn_generate_bf_purchase_recommendations`.
+  - `p_trigger_source` is CHECK-constrained to `'manual'` | `'scheduled'` — any other value aborts the run.
+  - **Perf (backend 0288, 2026-07-23):** `fn_compute_fg_net_requirements` now materializes this run's FG demand once (session-local temp table) instead of re-evaluating `v_planning_demand` per item × per week. A full **8-week** run completes in **~2.5s** (previously exceeded the 60s budget, forcing 4-week runs). Run the full horizon — no need to truncate. Behaviour is byte-identical; only speed changed.
+  - **Produce-to-stock (backend 0289, 2026-07-23):** `fn_generate_production_recommendations` now emits one order-up-to-target `production` rec for **every** depleting MANUFACTURED/REPACK item (not just shortages), ranked by daily time-to-depletion via `fn_compute_daily_fg_projection`; never "nothing to produce". Coverage bands per item (`planning_item_config.{min,target,max}_coverage_days` > `planning.production.*_coverage_days_default` 7/14/28; powders 10/21/45). `logic_trace.trigger_reason` = shortage/replenish/build_ahead/topup; rank the queue by `order_by_date` (= depletion − production lead). Full model + tuning: `methodology.md` §6b. Tea bases stay on `fn_plan_tea_production`.
 
 **Purchase session (creates DRAFT consolidated POs — safe to run):**
 - `fn_generate_purchase_session(p_actor uuid, p_session_date date, p_session_type text)`
@@ -194,6 +197,7 @@ Production-side per-base overrides also exist: `planning.production.safety_stock
 **COMMITTING — gated, requires explicit Tom approval (real PO, real cash):**
 - `fn_place_purchase_order(p_po_id text, p_actor_user_id uuid, p_actor_snapshot text, p_payment_terms text, p_payment_terms_net_days integer, p_payment_terms_eom boolean, p_line_prices jsonb, p_confirm_price_update boolean, p_expected_receive_date date, p_line_qty_overrides jsonb)`
   (signature re-verified 2026-07-16 — two params were added since the 2026-06-25 snapshot: the expected receive date, which closes the double-order trap at placement time, and per-line qty overrides)
+  - **Enforced 2026-07-23 (0290):** `p_expected_receive_date` is now **required** — placing without it raises `EXPECTED_RECEIVE_DATE_REQUIRED` (P0001, mapped to 409). The office manager must enter the supplier-confirmed ETA at placement, so no placed line is ever invisible to the projection. Chaser read model for the legacy null-ETA lines + ongoing monitoring: **`api_read.v_open_po_lines_missing_eta`** (open lines on placed POs with a null ETA — supplier, item, qty, order date, age).
 
 Rule of thumb: **drafts may be generated after a quick confirmation; placement is never automatic.**
 
@@ -228,7 +232,18 @@ Portal note (tranche 132): `/planning/procurement` no longer buckets by this
 tier — it classifies each PO from the per-line `coverage_trace` (estimated
 zero-stock date vs. arrival-if-ordered-today) and shows quantified expected
 shortage instead. The tier column remains for API consumers and the calendar
-view. Changing the SQL tier itself is a separate, Tom-gated decision.
+view.
+
+**Ranked read model (backend 0291, Tom-approved 2026-07-23):** prefer
+`api_read.v_purchase_session_po_ranked` for triage — it recomputes `tier_v2`
+(`urgent` / `must` / `recommended`) from each session's stored `coverage_trace`
+using `last_safe_order = zero_date − lead_time` vs today and the release fence,
+and exposes `earliest_zero_date`, `last_safe_order`,
+`worst_gap_if_ordered_today_days`. This is the same shortage math the portal
+uses, now reusable by chat and the session brief — rank by `tier_v2` /
+`last_safe_order`, not the collapsed stored `tier`. The stored SQL `tier`
+inside `fn_generate_purchase_session` is intentionally left unchanged (the view
+supersedes it for ranking).
 
 ### 7c. 0284/0285 additions (2026-07-16)
 

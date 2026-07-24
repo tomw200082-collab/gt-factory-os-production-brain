@@ -135,7 +135,11 @@ Four post-0284 rules govern the triage itself:
   Must-today ⇔ `last_safe_order ≤ today`. Same math as the portal's action list at
   `/planning/procurement` — for visual triage send Tom there; keep chat for the interview.
 - **Trust flags drive the questions** (trace v3): `last_count_age_days` null or >14 → offer a
-  quick physical count *before* committing cash; `lt_source='global_default'` → the urgency
+  quick physical count *before* committing cash. For the prioritised list, read
+  `api_read.v_count_first_queue` (backend 0294): per session line it gives `count_first`
+  (stale/never-counted with cash on the line) and `count_first_rank` (ranked by
+  `cash_at_stake` desc) — count the top-N most expensive count_first lines before the round
+  (on the last live session, 15/25 lines, ~₪25k against unverified counts). `lt_source='global_default'` → the urgency
   date is a guess — confirm the real lead time (and store it); `missing_price` blocking →
   the session's ₪ total is understated.
 - **Stale-session trap.** Traces freeze at generation. Any count / receipt / plan change
@@ -143,8 +147,14 @@ Four post-0284 rules govern the triage itself:
   Never reason over frozen numbers.
 - **Harvest MOQs.** MOQ / order-multiple is 0/NULL across the entire catalog — the engine's
   rounding is currently a no-op. Whenever Tom or a supplier states a real MOQ, multiple or
-  pack size, offer the gated master-data write (`components.moq_purchase_uom` /
-  `order_multiple_purchase_uom`, or `supplier_items.moq`) so the next run rounds correctly.
+  pack size, capture it with the gated, audited setter (backend 0293):
+  `select private_core.fn_set_component_moq('<component_id>', <moq>, <order_multiple>, <actor>, '<snapshot>', '<note>');`
+  (NULL args leave a field unchanged) so the next run rounds correctly — the engine already
+  rounds to `components.moq_purchase_uom`, so a captured value takes effect immediately.
+  Read `api_read.v_component_effective_moq` to see where MOQ resolves (component →
+  `suppliers.default_moq` → `planning.purchase.moq_default.supplier_type.<TYPE>` category
+  default) and which components still have a `moq_gap` (173 live) to capture. Category
+  defaults are Tom's to fill per real knowledge — never guess an MOQ (it inflates orders).
   Every session should leave master data smarter than it found it.
 
 For each supplier / line, check and, where it needs a human, **ask Tom one sharp question**:

@@ -102,6 +102,9 @@ from private_core.current_balances where item_type in ('RM','PKG');
 ```
 
 ### 1c. Open-PO supply not netted (the double-order trap)
+> Backend 0290 (2026-07-23): placement now **requires** an ETA, and a canonical
+> chaser view exists — prefer `select * from api_read.v_open_po_lines_missing_eta;`
+> (open lines on placed POs still missing an ETA). Only legacy lines can appear.
 ```sql
 -- Open PO lines with no expected_receive_date → NOT counted as incoming supply by the engine.
 select pol.po_id, pol.component_id, pol.item_id, pol.open_qty, pol.line_status,
