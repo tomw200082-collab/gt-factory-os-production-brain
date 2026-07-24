@@ -47,4 +47,14 @@
 
 ---
 
+### 2026-07-24: "New" GT initiatives are usually adoption, not construction — check built-vs-field first
+
+**What happened:** In an owner-facing planning session (6 initiatives across INBOUND ops + OUTBOUND sales, prepared for Alex), the initiatives were first framed as things to "build." A pre-planning read of the brain showed 5 of 6 were already ~80–90% built in the *system* — factory-mapping v3 (playbook / 9 KPIs / CCI), the procurement engine + placement queue, stock-truth (ledger / projections / guardian), and the Shopify↔inventory sync. Tom stated the crux: "many of the processes exist in the system but not in reality yet." The real remaining work is field ADOPTION / behaviour-change, not engineering.
+
+**Why it was surprising:** The instinct on a "let's improve X" brief is to estimate build effort. For GT specifically, most of the platform already exists in code; the binding constraint is field-adoption capacity (the rollout plan caps it at ≤2 new habits/person/week), not developer time. Estimating adoption items as "builds" inflates timelines and mis-frames the owner-ask — for adopt-items it is a public mandate + freeing people/time, not "approve a build."
+
+**Corrective:** When planning GT "improvements," classify each item build-vs-adopt against `CURRENT_STATE.md` + the factory-mapping rollout docs BEFORE estimating. Price the adoption gap (change-management, habit cadence), not the code. Sequence field-adoption serially (one live change at a time, next enters only when its KPI shows traction); run pure-build "lab" work in parallel since it needs no operator behaviour change.
+
+---
+
 *Log initiated: 2026-04-23.*
