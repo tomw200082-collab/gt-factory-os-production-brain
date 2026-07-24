@@ -160,6 +160,11 @@ The UX gate runs in parallel with the technical gate; both must pass.
 - Versioned; freeze window applies
 
 ### Production reporting v1
+> **SUPERSEDED on consumption side — 2026-07-24, Tom approved in writing (grill interview + PR
+> approval).** Replaced by "Production order cycle v2 (picking-based consumption)" below.
+> Output/scrap reporting, two-head BOM structure, pinning semantics, and idempotency patterns
+> remain in force and are inherited by v2. Retained for history.
+
 - Operator reports output quantity + scrap quantity + notes
 - System computes standard consumption from the **two-head BOM**:
   - **PACK head** (`items.primary_bom_head_id` → `bom_kind='PACK'` or `'REPACK'`): packaging components consumed proportionally to (output + scrap).
@@ -168,7 +173,38 @@ The UX gate runs in parallel with the technical gate; both must pass.
 - Both BOM versions (PACK and BASE-when-applicable) are **pinned at form-open time** and **rejected on stale submission** (409 `STALE_BOM_VERSION` for PACK / `STALE_BASE_BOM_VERSION` for BASE).
 - All consumption rows for a single submission are written to `stock_ledger` inside one transaction with the form's `idempotency_key`. Per-row idempotency keys carry the source (`pack` / `base`) and `component_id` so pack and base never collide: `PA:<idem>:CONSUME:<source>:<component_id>`.
 - `related_bom_version_id` on each `stock_ledger` row is source-correct (PACK lines → pack version; BASE lines → base version).
-- Do **not** collect manual per-component actual consumption in v1.
+- Do **not** collect manual per-component actual consumption in v1. *(Superseded 2026-07-24 — see next section.)*
+
+### Production order cycle v2 — picking-based consumption (locked 2026-07-24)
+> **Authority:** Tom approved in writing, 2026-07-24 (grill interview, 9 decisions; approval
+> gate = Tom's review of the PR introducing this section). Origin: factory mapping 2026-07-22
+> "מעגל פקודת הייצור: מאמצים". Full design:
+> `docs/superpowers/specs/2026-07-24-production-order-picking-design.md`.
+
+- RM/PKG consumption moves from report-time computation to **pick-time confirmation**:
+  the operator confirms per-component collected quantities (prefilled from the pinned BOM
+  explosion, tap-to-confirm, editable) and stock decrements at pick confirmation.
+- Two-stage picking mirrors the two-head BOM: liquids once per base tank; packaging per SKU.
+  Each confirmation is a separate event with its own actor (future worker-separation ready;
+  today one unified UI, Denis performs both).
+- Runs derive from `production_plan` (one-tap entry); unplanned runs allowed — tagged,
+  immediately flagged to Tom, never blocked.
+- Physical truth wins: shortage / excess / not-collected never hard-block; each emits a flag
+  (shortage event · count signal · explicit zero). Batch-stop remains the operator's call.
+- Post-confirmation corrections are append-only deltas ("+ Add" / "Return"); confirmed picks
+  are never edited. Cancelled batch → reversal rows.
+- End-of-run report shrinks to output + scrap + QC (Brix / pH / sample / note — **all
+  optional**) + notes; it posts output rows only, never consumption.
+- Nothing in the operator path is mandatory except row-resolution before "Done collecting".
+- UI: simple English only (single dictionary file; no second language built now); word-poor,
+  touch-first (≥60px targets); `floor_name` Latin display field on RM/PKG items (optional,
+  Hebrew fallback + coverage flag); item photos = phase 2. The portal Hebrew-exception list
+  is **not** extended.
+- Inherited unchanged from v1: two-head BOM structure, version pinning at open + stale
+  rejection, one-transaction ledger writes, per-row idempotency keys, source-correct
+  `related_bom_version_id`.
+- Transition: per-date cutover (deploy-flagged); old form leaves nav, remains for pre-cutover
+  corrections for 30 days with a double-consumption guard, then retires.
 
 ### Counting v1
 - Full monthly count is the base process
@@ -217,8 +253,10 @@ The UX gate runs in parallel with the technical gate; both must pass.
 - Use approval rules, not free editing
 
 ### Production Actual
-- Simplified v1 model only: output + scrap + notes
-- Compute consumption from pinned BOM version
+- *(Amended 2026-07-24 per "Production order cycle v2":)* consumption posts at **pick
+  confirmation**, not at report submit. The end-of-run report = output + scrap + QC
+  (all QC fields optional) + notes, posting output rows only.
+- Compute required quantities from pinned BOM version (pin at pick-list open)
 - Never resolve BOM version at submit time if already pinned earlier
 
 ### PO workflow
