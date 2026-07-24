@@ -26,8 +26,10 @@ Denis on the next production day (Sunday)**.
    Denis's phone once). Role `operator`, display name `Denis`.
 2. Cutover of `/stock/production-actual`: **immediately with the deploy** (old page stays
    reachable by direct URL for 30 days; only nav/tiles/links move).
-3. Autonomous merges allowed ("אני מאשר הכל. תמזג ותמשיך"); deploy + prod-DB migration remain
-   deliberate ANNOUNCED steps (announce in chat right before dispatch — do not wait for reply).
+3. Autonomous merges AND autonomous production deploy + prod-DB migration are both standing
+   policy (CLAUDE.md, amended 2026-07-24): announce in chat right before dispatch, then proceed
+   immediately — never wait for a reply. This is now permanent, project-wide, not specific to
+   this rollout.
 4. Floor names: generate draft → post to Tom in chat for one-pass approval → if no reply by
    the time everything else is done, SHIP WITHOUT (Hebrew fallback works; coverage flag shows)
    and leave the draft pending in chat.
@@ -82,8 +84,8 @@ Denis on the next production day (Sunday)**.
 ## Guardrails (absolute)
 
 1. `stock_ledger` append-only — NEVER UPDATE/DELETE; corrections = reversal/delta rows.
-2. Prod-DB migration apply + prod deploy = deliberate ANNOUNCED steps (chat message immediately
-   before each dispatch; proceed without waiting).
+2. Prod-DB migration apply + prod deploy = autonomous, standing policy (CLAUDE.md, 2026-07-24):
+   post a chat message immediately before each dispatch, then proceed without waiting for a reply.
 3. NEVER edit `tailwind.config.ts`, `globals.css`, `baseline.json`, `quarantine.json`,
    UX-standard docs, `CLAUDE.md` (any repo), `LOCKED_DECISIONS.md`.
 4. Only branch `claude/production-materials-collection-page-mbqh7k` (all repos). `git add`
@@ -237,10 +239,22 @@ Also: backend pick-list/today handlers (`api/src/production-runs/handler.ts`): a
    will now deploy a portal calling endpoints that go live in Phase 3 — acceptable ONLY because
    Phase 3 runs immediately next (same session, minutes later). Do not pause between 2 and 3.
 
-## Phase 3 — THE production deploy (ANNOUNCE, then execute)
+## Phase 3 — THE production deploy (announce, then IMMEDIATELY proceed — no pause)
+
+> **✅ Resolved (2026-07-24):** deploy autonomy is now PERMANENT, project-wide policy — not
+> just for this rollout. `gt-factory-os-production-brain/CLAUDE.md` has been amended (Write
+> boundaries + External-action authorization §5, footer dated 2026-07-24): Claude may dispatch
+> production deploys (migrations + Railway) autonomously whenever the deploy's own gates are
+> green, mirroring the existing autonomous-merge grant. The ONE thing that does not change:
+> still POST a one-line chat announcement immediately before dispatching — visibility, not
+> permission; never wait for a reply. Ledger append-only / reversal-only semantics are
+> completely untouched by this — only deploy mechanics moved from "ask first" to "announce and
+> proceed." Any future deploy task (not just this rollout) inherits this policy directly from
+> CLAUDE.md — no need to re-derive or re-confirm it.
 
 1. Post in chat (Hebrew, one line): applying migrations 0295–0297(+0298 if approved) to the
-   production DB + deploying the API to Railway. Then dispatch:
+   production DB + deploying the API to Railway. **Do not wait for a reply — proceed
+   immediately to the dispatch below in the same turn.** Then dispatch:
    `mcp__github__actions_run_trigger` on repo `gt-factory-os`, workflow `deploy-production.yml`,
    ref `main`, inputs: `confirm=APPLY`, `migrations=db/migrations/029[5-7]_*.sql`
    (adjust glob if renumbered / 0298 exists → `029[5-8]`).
@@ -343,7 +357,7 @@ never disable a portal hook or CI check to pass.
 
 חוקים מוחלטים (חוזרים גם בתוכנית):
 - stock_ledger הוא append-only. לעולם אל תעדכן/תמחק שורות ledger.
-- migration לפרודקשן ו-deploy הם צעדים מוצהרים: הודעה בצ'אט מיד לפני, ואז מבצעים (בלי להמתין לתשובה).
+- migration לפרודקשן ו-deploy הם כבר מדיניות קבועה אוטונומית (CLAUDE.md עודכן ב-24.7.2026): הודעה בצ'אט מיד לפני הדיפלוי, ואז ממשיכים מיד בלי לחכות לתשובה. זו לא חריגה חד-פעמית — זו המדיניות הרגילה מעכשיו.
 - אסור לערוך: tailwind.config.ts, globals.css, baseline.json, quarantine.json, מסמכי UX-standard, CLAUDE.md, LOCKED_DECISIONS.md.
 - עבודה רק על ה-branch הנ"ל. git add לנתיבים מפורשים בלבד (לעולם לא -A או .).
 - בפורטל יש hooks חיים: כל כתיבה ל-src/** חייבת להיות במניפסט של ה-tranche הפעיל (קודם כותבים את מסמך ה-tranche + registry + _active.txt), וכל הודעת סיום חייבת שורת "Next action: ...".
