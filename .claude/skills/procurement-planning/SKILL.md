@@ -40,22 +40,29 @@ placement of a real PO is hard-gated, per-PO, every time.
 1. **The engine is a hypothesis, not an answer.** Every recommended quantity rests on a forecast, an
    on-hand figure, an open-PO position, a lead time, an MOQ, and a buffer. If any input is stale, missing,
    or flat-defaulted, the number is suspect. Establish the inputs *before* trusting the output.
-2. **Interview with precision, not interrogation.** Ask only the questions whose answers change a decision
+2. **No demand basis = stop and alert, don't guess.** (Locked by Tom, 2026-07-24.) A component's demand
+   basis has a strict priority: the **firmed production plan** is the strongest signal; the published
+   **sales forecast** is the fallback for anything the firmed plan doesn't cover (it only reaches ~2 weeks
+   out). If a component has **neither** — no firmed-plan consumption in the near window and no forecast
+   coverage — do not let the engine's default/flat behavior stand in silently. Explicitly flag it to Tom
+   before presenting or acting on a quantity for that line: proceeding on neither basis risks significant
+   purchasing mistakes.
+3. **Interview with precision, not interrogation.** Ask only the questions whose answers change a decision
    — demand Tom knows that the data doesn't (a new account, a promo, a supplier going on holiday), cash
    constraints this week, shelf-life, supplier trust. Put his real numbers in front of him. One tight
    cluster of questions at a time. Never ask about the obvious or the trivial. (Tom values brevity and
    precision; respect it.)
-3. **Show the math and the trace.** Every recommendation must be explainable: ADU, lead time, buffer, MOQ
+4. **Show the math and the trace.** Every recommendation must be explainable: ADU, lead time, buffer, MOQ
    rounding, coverage. The engine stores `logic_trace` / `coverage_trace` / `moq_rounding_trace` — surface
    and translate them. Never present a confident quantity built on a flagged input without saying so.
-4. **Differentiate.** A flat policy is the enemy. The highest-value output of a session is often setting
+5. **Differentiate.** A flat policy is the enemy. The highest-value output of a session is often setting
    the *right* per-component buffer — some up, some down — not a uniform pad.
-5. **Frame trade-offs, let Tom choose.** It's "if we do this, we accept that" (service vs cash vs spoilage
+6. **Frame trade-offs, let Tom choose.** It's "if we do this, we accept that" (service vs cash vs spoilage
    vs effort). He is operations, finance, and production at once; give him the numbers and the call.
-6. **Gate mutations.** Generating drafts (planning run, session) is reversible and may proceed after a
+7. **Gate mutations.** Generating drafts (planning run, session) is reversible and may proceed after a
    quick confirm. Writing buffer overrides and **placing orders** stop the skill — present, get explicit
    approval, then act. Placement (`fn_place_purchase_order`) is never automatic.
-7. **Language.** Converse with Tom and write all operator/supplier-facing artifacts (session brief, order
+8. **Language.** Converse with Tom and write all operator/supplier-facing artifacts (session brief, order
    messages) in **Hebrew**. Keep SQL, internal reasoning, and code in English.
 
 ---
@@ -87,6 +94,10 @@ Before any number is trusted, validate the inputs.
 - **Empty ≠ green.** A gate query returning zero rows proves nothing until a control query
   shows it actually saw data (§1b carries one). Hard-learned 2026-07-16: the staleness gate
   silently passed green for weeks on a wrong `item_type` filter.
+- **No-demand-basis check** (principle 2, Tom-locked 2026-07-24). For every component on the buy
+  list, confirm it has a firmed-production-plan link or forecast coverage. Any component with
+  neither is a **blocked** scorecard item, not a caution — call it out by name before Stage 5
+  triage, don't let it ride through on a silent default.
 Present a short **integrity scorecard** (green / caution / blocked per input). If something material is
 wrong, recommend fixing first (e.g. set the missing receive dates) and ask Tom whether to proceed,
 proceed-with-caveats, or pause. Do not paper over a stale input.
