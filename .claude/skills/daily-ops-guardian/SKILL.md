@@ -21,6 +21,8 @@ description: >-
 
 Role: GT daily ops guardian. Engine = hypothesis; Tom = final word. Converse Hebrew; SQL/internal English. Live DB: Supabase MCP, project `rvadsozabmxkkrktwgnv`, schema `private_core`, site `GT-MAIN`.
 
+**Verified runnable SQL for every stage lives in `references/sql_library.md`** (guardian-owned, all queries run live 2026-07-24). Reuse it verbatim — do NOT re-derive stage SQL from sibling skills in a headless run.
+
 Created per Tom written request 2026-07-03 (grill session; satisfies STEP4-SKILLS-DECISION threshold: Tom approval in writing).
 
 ## §G — Tom-locked 2026-07-03
@@ -56,6 +58,14 @@ Read-only. For yesterday (skip if yesterday ∉ working days Sun-Thu):
 2. **Plan vs actual:** firmed `production_plan` rows for yesterday vs actual reported output, per batch: planned qty / actual qty / gap + the reported gap reason (verbatim if present, "לא צוינה סיבה" if absent). One exception row per meaningful gap; 🟢 one-liner when clean ("ייצור אתמול: תואם תוכנית, N/N אצוות").
 Numbers live-SQL per V4. This stage feeds the 9:30 daily briefing — the email IS the briefing agenda.
 
+### Stage 0 pre-flight — connector reachability (V9, added 2026-07-24)
+
+**Before any SQL, confirm the session actually has the live connectors.** The 2026-07-05 → 07-24 findings-log gap was caused by fresh/headless trigger sessions running without live Supabase/Make access and then **dying silently** — no numbers, no email, no log row, no signal. Silent no-op is the one forbidden outcome.
+
+1. Supabase: run a trivial `select 1` against project `rvadsozabmxkkrktwgnv`. If it errors / the Supabase tool is `enabledInChat:false` → connectors are off in this session.
+2. Make: the send target is `hook 3340241` / scenario `6439326` (verified live 2026-07-24 — URL below). Make MCP reachable confirms the account is present.
+3. **If Supabase or Make is unreachable, DO NOT proceed silently.** Emit the loud-failure path instead: (a) short Hebrew chat/push — "daily-ops-guardian: אין גישת Supabase/Make בסשן הזה — הריצה לא בוצעה, צריך להפעיל את הקונקטורים"; (b) if Gmail is up, drop a one-line `mcp__Gmail__create_draft` note so Tom still sees something; (c) append a one-line `FAILURE` row to `data/forecast-findings-log.md` (date · reason · which connector was off) and commit it. Then HALT. A visible failure is a success; a silent no-op is the bug this pre-flight exists to kill.
+
 ### Stage 0 — integrity gate (read-only)
 
 Same 4-row scorecard as plan-production-14d Stage 0 (🟢/🟡/🔴):
@@ -68,13 +78,13 @@ select private_core.rebuild_verifier();  -- ! = 0, else report 🔴 + HALT draft
 
 ### Stage 1 — FG sell-coverage
 
-∀ sellable FG: `current_balances` + incoming firmed production − committed open orders (LionWheel mirror) − forecast demand over horizon (14d). Output: shortage list ranked by `margin_risk_ils_day` (reuse plan-production-14d §G SQL). Committed-shortage ≠ forecast-shortage — separate columns, committed first.
+∀ sellable FG: `current_balances` + incoming firmed production − committed open orders (LionWheel mirror) − forecast demand over horizon (14d). **Canonical query: `private_core.fn_compute_daily_fg_projection(today, today+13)`** — returns per item/day `demand_lionwheel_qty` (committed), `demand_forecast_qty` (forecast), `shortfall_qty`, `risk_tier` (`healthy`/`stockout`). See `references/sql_library.md` Stage 1. Committed-shortage (`demand_lionwheel_qty>0` on a short item) ≠ forecast-shortage — separate columns, committed first: committed short → 🔴, forecast-only → 🟡. (Verified 2026-07-24: dated committed demand can legitimately be 0 across the window — all open orders dateless-backlog — so a wall of forecast gaps with committed=0 is 🟡, not 🔴.)
 
 **+ dateless-backlog line (Tom 2026-07-04):** open orders w/o `pickup_at` = staged backlog, supplied in tranches, invisible to engine demand by design. Report per item: backlog units, orders, oldest date. ⊥ treat as immediate shortage — surface so next tranche isn't forgotten (Thursday schedules it).
 
 ### Stage 2 — RM/PKG coverage
 
-Explode firmed `production_plan` (existing BOM explosion — `fn_explode_bom_to_components_v2` path) vs `current_balances` + open PO lines (expected receipts). Output: components short for planned production, with first-blocked production date. Reuse procurement-planning `sql_library.md` queries; ⊥ new SQL where a library query exists.
+**Canonical read: the latest completed planning run's `private_core.planning_run_component_netting`** (rows where `net_purchase_qty > 0` = components short for firmed production), plus the latest open `purchase_session.warnings` (surfaces `po_overdue_receipt` / `po_missing_expected_delivery` — real, actionable) and `purchase_session.input_integrity.counts` (stale/never-counted RM/PKG = stock-truth trust). See `references/sql_library.md` Stage 2. A net-short component blocking a firmed batch within its lead time → 🔴; otherwise on the purchase list → 🟡. (Underlying explosion is still `fn_explode_bom_to_components_v2`; prefer the run's read model when a fresh run exists.)
 
 ### Stage 3 — committed-first recheck + drafts
 
@@ -101,6 +111,14 @@ Apply this table to every `{{G1_COLOR}}/{{G1_WASH}}`, `{{G2_COLOR}}/{{G2_WASH}}`
 **Bidi hygiene:** when writing free-text tokens (`{{VERDICT_HEADLINE}}`, `{{EXC_TITLE}}`, `{{EXC_DETAIL}}`, `{{ACTION_TEXT}}`), wrap any bare Latin word (e.g. product/batch terms), standalone date, or number bridged directly to Hebrew text in `<span class="ltr">...</span>` — matching the convention already used for `{{DATE}}`, `{{RUN_TIME}}`, and `{{EXC_ITEM_ID}}` in the template. A prior run shipped bare English mid-sentence ("batch", "bulk", a bare date) and it renders wrong in Outlook's RTL bidi handling — don't repeat that.
 
 **`{{VERIFIER_DRIFT}}`** stays a live number in the footer ("בדיקת תקינות: X") — never replace it with static "all clear" text, since a non-zero value here is exactly the Stage 0 integrity signal Tom needs to see even when the rest of the report reads fine.
+
+**Gauge fill % — deterministic definitions (⊥ eyeball):**
+- `{{G1_FILL_PCT}}` = round(100 × (FG items projected − FG items with any stockout day) / FG items projected). Color = severity: 🔴 if any committed shortfall, else 🟡 if forecast stockouts exist, else 🟢.
+- `{{G2_FILL_PCT}}` = round(100 × (components in netting − components with `net_purchase_qty>0`) / components in netting). Color = 🔴 if a net-short component blocks a firmed batch ≤ its lead time, else 🟡 if any net-short, else 🟢.
+- `{{G3_FILL_PCT}}` = round(100 × yesterday actual_output / planned_qty), or 100 if yesterday had no firmed plan. Color = 🔴 if V7 fired (firmed plan, no report), else 🟡 if the gap exceeds tolerance, else 🟢.
+- Hero verdict = worst severity across the G1/G2/G3 that ran.
+
+**On send:** strip the leading author/design `<!-- ... -->` comment (fill from `<!DOCTYPE html>` onward) — it is for skill authors, not Tom's inbox.
 
 Delivery: **real send**, no tap required (Tom-verified 2026-07-04). `Bash: curl -sS -X POST "https://hook.eu1.make.com/8yie1tl89bxsq8qqp6o47qydfr8cguji" -H "Content-Type: application/json" -d '{"subject":"GT Factory OS · בדיקת בוקר · <date>","html":"<filled template>"}'` — this triggers Make scenario `GT Guardian — Daily Email` (id 6439326, active), which calls Gmail `sendAnEmail` (app `google-email` v4, connection `new leads` id 6308857, scope `gmail.send`) and delivers straight to tom@gteveryday.com. Confirm HTTP 200 from curl; if non-200 or curl error, do not skip — say so explicitly in the summary and fall back to `mcp__Gmail__create_draft` (Gmail MCP, draft-only, one-tap) so Tom still gets something.
 Also send the short Hebrew chat message + push (unchanged from before) as an in-session backup notice.
@@ -143,6 +161,7 @@ First guardian run of month → separate proposal (chat + doc in `docs/planning/
 - V6: forecast rows change only via approved weekly/monthly proposal, never by guardian directly.
 - V7: yesterday-had-plan & no production report → 🔴 rendered FIRST in the exception list, every time. ⊥ bury it.
 - V8: `queue-guard` with an empty queue sends nothing — silence is the success signal; ⊥ noise mail.
+- V9: (added 2026-07-24) ∀ run → Stage 0 pre-flight connector check before any SQL. Connector-less session → **loud failure** (chat/push + Gmail-draft note + FAILURE log row), never a silent no-op. Silent death was the root cause of the 2026-07-05→24 gap. Webhook target verified live: `hook 3340241` → scenario `6439326` (active) → `https://hook.eu1.make.com/8yie1tl89bxsq8qqp6o47qydfr8cguji`; HTTP 200 = accepted, then confirm the Make execution status and, when in doubt, the message in tom@gteveryday.com. End-to-end re-verified 2026-07-24 (Make exec `b987cb5a` success, email thread `19f92baf5228748a`).
 
 ## Trigger setup — additional modes (after merge)
 
