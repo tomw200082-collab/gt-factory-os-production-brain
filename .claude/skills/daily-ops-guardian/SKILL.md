@@ -56,6 +56,14 @@ Read-only. For yesterday (skip if yesterday ∉ working days Sun-Thu):
 2. **Plan vs actual:** firmed `production_plan` rows for yesterday vs actual reported output, per batch: planned qty / actual qty / gap + the reported gap reason (verbatim if present, "לא צוינה סיבה" if absent). One exception row per meaningful gap; 🟢 one-liner when clean ("ייצור אתמול: תואם תוכנית, N/N אצוות").
 Numbers live-SQL per V4. This stage feeds the 9:30 daily briefing — the email IS the briefing agenda.
 
+### Stage 0 pre-flight — connector reachability (V9, added 2026-07-24)
+
+**Before any SQL, confirm the session actually has the live connectors.** The 2026-07-05 → 07-24 findings-log gap was caused by fresh/headless trigger sessions running without live Supabase/Make access and then **dying silently** — no numbers, no email, no log row, no signal. Silent no-op is the one forbidden outcome.
+
+1. Supabase: run a trivial `select 1` against project `rvadsozabmxkkrktwgnv`. If it errors / the Supabase tool is `enabledInChat:false` → connectors are off in this session.
+2. Make: the send target is `hook 3340241` / scenario `6439326` (verified live 2026-07-24 — URL below). Make MCP reachable confirms the account is present.
+3. **If Supabase or Make is unreachable, DO NOT proceed silently.** Emit the loud-failure path instead: (a) short Hebrew chat/push — "daily-ops-guardian: אין גישת Supabase/Make בסשן הזה — הריצה לא בוצעה, צריך להפעיל את הקונקטורים"; (b) if Gmail is up, drop a one-line `mcp__Gmail__create_draft` note so Tom still sees something; (c) append a one-line `FAILURE` row to `data/forecast-findings-log.md` (date · reason · which connector was off) and commit it. Then HALT. A visible failure is a success; a silent no-op is the bug this pre-flight exists to kill.
+
 ### Stage 0 — integrity gate (read-only)
 
 Same 4-row scorecard as plan-production-14d Stage 0 (🟢/🟡/🔴):
@@ -143,6 +151,7 @@ First guardian run of month → separate proposal (chat + doc in `docs/planning/
 - V6: forecast rows change only via approved weekly/monthly proposal, never by guardian directly.
 - V7: yesterday-had-plan & no production report → 🔴 rendered FIRST in the exception list, every time. ⊥ bury it.
 - V8: `queue-guard` with an empty queue sends nothing — silence is the success signal; ⊥ noise mail.
+- V9: (added 2026-07-24) ∀ run → Stage 0 pre-flight connector check before any SQL. Connector-less session → **loud failure** (chat/push + Gmail-draft note + FAILURE log row), never a silent no-op. Silent death was the root cause of the 2026-07-05→24 gap. Webhook target verified live: `hook 3340241` → scenario `6439326` (active) → `https://hook.eu1.make.com/8yie1tl89bxsq8qqp6o47qydfr8cguji`; HTTP 200 = accepted, then confirm the Make execution status and, when in doubt, the message in tom@gteveryday.com. End-to-end re-verified 2026-07-24 (Make exec `b987cb5a` success, email thread `19f92baf5228748a`).
 
 ## Trigger setup — additional modes (after merge)
 
