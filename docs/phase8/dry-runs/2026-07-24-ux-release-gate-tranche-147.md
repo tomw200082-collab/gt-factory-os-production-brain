@@ -79,7 +79,14 @@ Applying the lexicon silently would have regressed the reading level this surfac
 - Portal: `tsc --noEmit` clean · `eslint` clean · `vitest run` **1080/1080**, 129 files.
 - Backend: `cd api && tsc --noEmit` → **0 errors in `production-runs`** (3 on `main`) · `npm run test:production-runs` **18/18**.
 - **Not evidenced:** render-grade screenshots. The gate asks visual findings to cite a screenshot; the harness could not launch in this container (the installed Playwright wants a Chromium build that is not present, and `playwright install` is not permitted here). The visual lens produced two P1s from a partial render plus code reading; the rest of its findings cite `file:line`. Worth a re-run with screenshots before this ships.
-- **Not evidenced:** the pgTAP suite. `db/tests/0295_production_run_picking.test.sql` is updated for the new ordering but pgTAP is not installed here and no Postgres is reachable.
+- **pgTAP: 32/32 PASS.** Run for real, not stated. pgTAP + Postgres 16 were installed in the container and the migration chain applied to a scratch database; the four assertions that carry the behaviour change:
+  - `R25: on-hand still 100 after collecting 30 — a pick confirmation moves no stock`
+  - `R28: end-of-run report posts the consumption row (0297 — not the pick confirmation)`
+  - `R31: the consumed pick row is stamped, so a re-report cannot double-consume it`
+  - `R32: on-hand nets to 70 (100 seeded − 30) once the run is REPORTED`
+  - plus `R30: rebuild_verifier = 0` — projection parity holds after the pick + report posts, which is the check the evidence standard requires.
+
+  Harness caveat, stated so the number is not read as more than it is: the scratch DB was built from the migration chain with the data-seed, scheduler (`pg_cron`/`pg_net`) and reporting-view-rebuild migrations skipped, and with `auth.users` / `auth.identities` / the Supabase roles stubbed. Every object and function 0295 touches was verified present before the run. This exercises the substrate, not the handlers — the handler logic is covered by the 18 `net-picks` unit tests.
 
 ## Tom approval required?
 
