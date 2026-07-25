@@ -180,10 +180,17 @@ The UX gate runs in parallel with the technical gate; both must pass.
 > gate = Tom's review of the PR introducing this section). Origin: factory mapping 2026-07-22
 > "מעגל פקודת הייצור: מאמצים". Full design:
 > `docs/superpowers/specs/2026-07-24-production-order-picking-design.md`.
+>
+> **AMENDED on consumption timing — 2026-07-24 (same day), Tom in writing.** The picking
+> flow itself stands exactly as locked below; only *when* the pick hits stock moved. See
+> "Consumption at report time" immediately after this section. Every other bullet here —
+> two-stage picking, one-tap run derivation, unplanned runs, physical-truth-never-blocks,
+> append-only corrections, the shrunken report, simple-English UI — is unchanged.
 
 - RM/PKG consumption moves from report-time computation to **pick-time confirmation**:
   the operator confirms per-component collected quantities (prefilled from the pinned BOM
   explosion, tap-to-confirm, editable) and stock decrements at pick confirmation.
+  *(Superseded same day — the confirmation stands, the decrement moved. See below.)*
 - Two-stage picking mirrors the two-head BOM: liquids once per base tank; packaging per SKU.
   Each confirmation is a separate event with its own actor (future worker-separation ready;
   today one unified UI, Denis performs both).
@@ -205,6 +212,35 @@ The UX gate runs in parallel with the technical gate; both must pass.
   `related_bom_version_id`.
 - Transition: per-date cutover (deploy-flagged); old form leaves nav, remains for pre-cutover
   corrections for 30 days with a double-consumption guard, then retires.
+
+### Consumption at report time (locked 2026-07-24, amends v2 above the same day)
+> **Authority:** Tom, in writing, 2026-07-24: "on the today's-runs page you enter the raw
+> materials and packaging as you know, but only after entering actual production does
+> everything we entered there actually come off stock. The reason is that sometimes
+> production is cancelled at the last minute and then everything is returned to place, even
+> after we've collected." Implementation: portal tranche 147 + migration 0297.
+
+- **Collecting records; reporting is what moves stock.** A pick confirmation writes
+  `production_run_pick` rows and **no ledger rows**. The end-of-run report posts the
+  `PICK_CONSUMPTION` rows **and** the `PRODUCTION_OUTPUT` row in one transaction.
+- Consumption is computed from the **net** of a run's un-consumed pick rows per
+  `(source, component_id)` — confirmed picks plus every signed correction — capped to
+  on-hand. Contributing rows are stamped with the movement id, which is what makes a
+  re-report a no-op rather than a double decrement.
+- Mid-run corrections ("+ Add" / "Return") are **signed pick rows**, not ledger rows.
+  A "Return" posted to the ledger before the report would credit stock that was never
+  debited; this is a correctness constraint, not a stylistic one.
+- **A cancelled run needs no reversal** — nothing was ever posted. This is the point of the
+  change, and it removes the reversal path v2 would otherwise have required for the
+  cancel-after-collect case, which is routine on this floor.
+- **Reporting is always available**, including for a run still in `PLANNED` that nobody
+  picked for: back-dated reporting is normal. Such a report consumes nothing and still
+  books the finished goods.
+- Unchanged and non-negotiable: `stock_ledger` stays append-only, corrections stay
+  reversal-only, cap-to-available still means physical truth never drives a projection
+  negative, per-row idempotency keys still carry source + component, and
+  `related_bom_version_id` stays source-correct (the pinned version survives netting even
+  though correction rows carry none).
 
 ### Counting v1
 - Full monthly count is the base process
