@@ -8,6 +8,12 @@ the schema evolved: re-introspect with `information_schema.columns` and adjust.
 Conventions: `:HORIZON_START` = a date (usually next Sunday or today); replace `:COMPONENT_ID`,
 `:ACTOR_UUID`, `:SUPPLIER_ID`, `:WINDOW_DAYS` etc. before running.
 
+> **⊥ HAND-ROLL BOM EXPLOSION.** "What does the plan consume?" has exactly ONE canonical query —
+> §11. `production_plan` carries demand in TWO row shapes (FG rows `item_id IS NOT NULL` **and** tank
+> rows `item_id IS NULL` via `pack_manifest[]`); any walk that sees only one shape silently drops the
+> other (this is how CALM's raw materials went uncounted on 2026-07-18). Run §11 or read live session
+> lines (§8) — never improvise a BOM walk in chat.
+
 ## Table of contents
 0. Resolve actor & site
 1. Pre-flight integrity gates (run all before trusting numbers)
@@ -20,6 +26,7 @@ Conventions: `:HORIZON_START` = a date (usually next Sunday or today); replace `
 8. Read back the latest purchase session + POs + lines
 9. Buffer recommendation (suggested component_cover_days)
 10. GATED writes — buffer override, line edits (Tom approval required)
+11. CANONICAL: production plan → component demand (⊥ hand-roll BOM explosion)
 
 ---
 
@@ -393,4 +400,61 @@ select * from private_core.fn_place_purchase_order(
   :LINE_PRICES::jsonb, :CONFIRM_PRICE_UPDATE::bool
 );
 -- This is the only step that creates a committed order. The skill stops and asks before this, every time.
+```
+
+---
+
+## 11. CANONICAL — production plan → component demand (⊥ hand-roll BOM explosion)
+
+> **The single source for "what does the plan consume".** Mirrors `fn_generate_purchase_session`
+> (migration 0235) exactly. `production_plan` has TWO row shapes and BOTH carry demand:
+> - **FG rows** — `item_id IS NOT NULL` (ad-hoc bottling, Muza cocktails, matcha, sangria).
+> - **Tank rows** — `item_id IS NULL`, demand carried by `pack_manifest[]`; every tea-base tank the
+>   engine schedules (DETOX / NAMASTEA / CALM / FRESH / …), `base_bom_head_id` set, `uom='L'`.
+>
+> A query that filters `item_id IS NOT NULL`, or explodes `base_bom_head_id` directly, **silently
+> drops every tank row** — most of the tea programme, and 100% of any base with no same-window FG row.
+> CALM was invisible exactly this way on 2026-07-18 (its dried apple + chamomile never reached the
+> buy list from a hand-rolled walk). ⊥ improvise a BOM walk; run this, or read the live session lines
+> (§8). Uses the engine's own `fn_explode_bom_to_components` — full multi-level (FG → pack → base →
+> RM/PKG), no reinvention.
+
+```sql
+-- Gross component demand for [:START, :END]. :START/:END dates (e.g. current_date, current_date+13).
+-- Net against on-hand/open-PO via §7 netting or the live session; this is the DEMAND side only.
+with demand as (
+  -- (a) finished-good rows
+  select x.component_id, sum(x.qty_per_unit) as qty_inv
+  from private_core.production_plan pp
+  cross join lateral private_core.fn_explode_bom_to_components(
+               pp.item_id, pp.planned_qty::private_core.qty_8dp) x
+  where pp.plan_type='production' and pp.status in ('planned','in_production')
+    and pp.plan_date between :START and :END
+    and pp.item_id is not null and pp.planned_qty > 0 and x.component_id is not null
+  group by x.component_id
+  union all
+  -- (b) tank rows — demand lives in pack_manifest[]
+  select x.component_id, sum(x.qty_per_unit)
+  from private_core.production_plan pp
+  cross join lateral jsonb_array_elements(pp.pack_manifest) m
+  cross join lateral private_core.fn_explode_bom_to_components(
+               (m->>'item_id')::text, (m->>'qty')::numeric::private_core.qty_8dp) x
+  where pp.plan_type='production' and pp.status in ('planned','in_production')
+    and pp.plan_date between :START and :END
+    and pp.item_id is null and jsonb_array_length(pp.pack_manifest) > 0
+    and x.component_id is not null
+  group by x.component_id
+)
+select d.component_id, c.component_name,
+       round(sum(d.qty_inv),2)                            as demand_inv_uom,
+       coalesce(oh.on_hand,0)                             as on_hand,
+       round(sum(d.qty_inv) - coalesce(oh.on_hand,0),2)   as gross_short
+from demand d
+left join private_core.components c on c.component_id = d.component_id
+left join (select item_id, sum(calculated_on_hand) as on_hand
+             from private_core.current_balances group by item_id) oh on oh.item_id = d.component_id
+group by d.component_id, c.component_name, oh.on_hand
+order by gross_short desc;
+-- Verified live 2026-07-18: reproduces the tank-row RM a hand-rolled walk missed —
+-- RAW-APPLE-DRY (30 kg) and RAW-CHAM (21.6 kg) from the CALM tank on 2026-07-30.
 ```
