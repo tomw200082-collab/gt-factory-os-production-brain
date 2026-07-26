@@ -27,6 +27,63 @@ Data-quality / engine-contract flag (not forecast): `fn_compute_daily_fg_project
 
 Run note: today's 06:30 IDT scheduled trigger fired (per trigger logs) but produced no completion evidence (no commit here, presumably no email) — leading hypothesis is the fresh/headless trigger session lacked live Supabase access. This run is a manual make-up executed from an interactive session with confirmed live Supabase + Gmail access, to isolate "skill bug" from "trigger infrastructure gap."
 
+## 2026-07-06 (manual run, Tom asked explicitly for a forecast-improvement suggestion; forecast version 369f5cb1 published 2026-06-08, now 28d old 🟡 — first run past the 14d staleness threshold)
+
+Stage 1b two-window persistence test (day −28..−15 vs −14..0) run read-only against `fn_forecast_daily_demand` + `stock_ledger` FG_OUT_PICK, per plan-production-14d §1b. 18 items passed the >15%/>15% same-direction filter.
+
+**Routine correction candidates (not stock/backlog-censored, factor inside [0.5, 2.0] clamp — proposed to Tom in chat this run, none written without approval, per V6):**
+
+| item | actual_b (14d rate) | forecast_b | dev | proposed_factor |
+|---|---|---|---|---|
+| FG-REV-500ML | 7.57/day | 3.92/day | +93.0% | 1.47 |
+| FG-FRE-500ML | 7.36/day | 5.95/day | +23.6% | 1.12 |
+| FG-DES-1L | 4.14/day | 3.50/day | +18.4% | 1.09 |
+| FG-DET-500ML | 11.21/day | 20.84/day | −46.2% | 0.77 |
+| ADD-GAR-ROSE-DRY | 0.29/day | 0.52/day | −45.0% | 0.77 |
+
+**Structural (factor outside clamp — flagged for Tom's judgment, NOT a routine proposal):**
+
+| item | dev | implied factor |
+|---|---|---|
+| FG-SAN-WHI-1L | +560.0% | 3.80 |
+| FG-MAT-18G | +294.6% | 2.47 |
+
+**Stock/backlog-censored (real signal exists, cannot be trusted yet — low actuals reflect empty shelf or unpicked backlog, not low demand):** FG-FRE-500ML-NS, FG-MAT-500G, GTCC-MUZ-APPZ-1L, FG-NM-3850ML, FG-FRE-1L, FG-NM-1L, FG-DET-1L, FG-REV-1L, FG-NAM-1L, FG-DET-1L-NS, FG-CAL-1L.
+
+**Separate finding — forecast staleness itself:** published version `369f5cb1` is now 28 days old, past the 14d Stage-0 threshold for the first time since this skill started tracking (was 25d on 2026-07-03, 27d on 2026-07-05). Horizon (`2026-06-01` + 9 weeks = through `2026-08-03`) still covers the planning window, so this is a freshness/quality flag, not a coverage gap — but the correction-factor drift above (5 routine + 2 structural candidates, mostly this run) is consistent with a forecast that is due for a full republish rather than one-off factor patches. Recommend: republish the forecast at the next monthly cycle (guardian is 2026-07 first-of-month proposal per §Monthly) rather than accumulating more per-item factors.
+
+**RM/PKG gaps found in Stage 2 (latest planning run 2026-06-23, 13d stale — read-back only, not re-run):** `RAW-LEMON-JUICE` (11.36 on hand) and `RAW-MERLOT-GRAPES` (1.73 on hand) both feed multiple Muza batches marked `ready_if_purchase_executes` in that run but have **no line in the current open purchase session** (`2026-07-04`) — a real procurement gap, not yet actioned (handed to procurement-planning skill scope, not written here). `PKG-LABEL-MUZ-JASM-1L` has `needs_purchase_missing_supplier` (zero supplier mapping) blocking the entire Muza Jasmine line at every recommended batch size — needs a new supplier before it can even enter a purchase session. `ADD-MUZ-BZSM-1L` still `blocked_missing_bom` (no active BOM version) — same as prior runs, unresolved.
+
+## 2026-07-09 (third guardian run; manual, Thursday — plan-production-14d ritual day; forecast version 369f5cb1 published 2026-06-08, unchanged, now 31d old 🟡; rebuild_verifier=0, last planning run 2026-06-23)
+
+| item | signal | evidence (14d window) | direction |
+|---|---|---|---|
+| FG-DET-STR-500ML | improving — not a new alarm | committed backlog now 850 units / 5 open orders (oldest 2026-06-09, 30d), down from 1,250/7 on 2026-07-05; 500L batch firmed for 2026-07-14 (Tom-approved 2026-07-04 note references the tranche plan) | system already handling this correctly via the tranche plan; keep scheduling next tranche, no new action |
+| ADD-MUZ-PNMM-1L | Muza line status decision now overdue 46 days | committed 132 units / 3 orders, oldest 2026-05-24 (46d); still zero production_plan row; 6 more Muza SKUs (FG-MUZ-JAS-200ML, ADD-MUZ-PRPL-1L, ADD-MUZ-TRIL-1L, FG-MUZ-NEG-200ML, ADD-MUZ-JASM-1L, FG-MUZ-HER-200ML, FG-MUZ-QUE-200ML) share the same zero-plan pattern, committed gaps 24–144 units each | this has recurred in every guardian run since 2026-07-03; escalating to a direct ask in today's report rather than another silent log line |
+| FG-FRE-1L (base FRE-REG) | new — base fully unscheduled | on-hand 26, committed backlog 97/13 orders, gap 71 units, ~₪1,764/day material margin at risk; base_bom_head_id BOM-BASE-FRE-REG has zero `production_plan` rows (planned or draft) anywhere in the 14d window, while sibling bases (DET-REG, DET-STR, NAM-REG, FRE-NS, CAL-REG) all have at least a draft or planned batch | flagged for today's Thursday ritual — highest-margin unscheduled gap found this run |
+| FG-MAT-30G / FG-MAT-500G | persists — still zero repack batch | FG-MAT-30G: 0 on-hand vs 300 committed (1 order, since 2026-06-29, 10d); FG-MAT-500G: 3 on-hand vs 8 committed, ~₪2,822/day material margin at risk | same gap as 2026-07-03 finding, still unaddressed 6 days later; needs a matcha-repack slot in today's ritual |
+| RM/PKG procurement-approval backlog (not forecast, engine-contract adjacent) | 4 draft purchase-session POs (~₪14,223 total, session opened 2026-07-04) have sat `proposed`/unapproved since their `order_by_date` (2026-06-24–2026-06-27, 12–15d overdue): PKG-CAP-PLASTIC-28+PKG-BOTTLE-500ML (session_po ec4db7d9, ₪6,940.73), RAW-APPLE-DRY (ba71c749, ₪2,316.00), RAW-LYCHEE-PUREE (21965b83, ₪4,574.20), PKG-LABEL-CON-500ML (731e0f79, ₪392.04). PKG-CAP-PLASTIC-28 and PKG-BOTTLE-500ML block the firmed 2026-07-12 DET-REG batch in 3 days | approval, not sourcing, is the bottleneck — surfaced as today's #1 action, not a new draft (drafts already exist) |
+| PKG-BOTTLE-1L | overdue receipt, separate from the approval backlog above | PO-2026-00216: 32,999 units ordered 2026-05-13, `expected_receive_date` 2026-07-05 (4d past due), still `OPEN`/not received; blocks the firmed 2026-07-12 DET-REG batch | chase the supplier directly — quantity is not the issue, the shipment is |
+
+Data-quality flags (not forecast): negative on-hand — EXCLUDED-NONSTOCK −354 (accounting bucket, not a real FG), FG-CAL-1L −136 (has a firmed 500L batch 2026-07-20; likely unposted production/receipt event), FG-MAT-100G −10, GT-MAT-KIT −8, FG-NM-3850ML −7, FG-SAN-BAB-RED/WHI-750ML −6/−6, ADD-UBE-500G −5, GTCC-MUZ-APPZ-1L −3, AP-DRI-PIN-1KG −1, FG-SAN-RED-3850ML −1. rebuild_verifier=0 ∴ ledger-consistent negatives = unrecorded production/receipt events, same pattern as 2026-07-03.
+
+Double-order-trap (Stage 0 gate, not forecast): 15 open PO lines across 9 POs (PO-2026-00256/257/258/259/260/261/263/264, ordered 2026-07-03–2026-07-06) still have no `expected_receive_date`. Two of them (RAW-LIME-PUREE 80 units on PO-2026-00258, PKG-LABEL-NAM-500ML 1,000 units on PO-2026-00260) would fully cover this run's Stage-2 shortages on those components once a supplier ETA is confirmed — flagged in today's report as a quick win, not a new order.
+
+## 2026-07-17 (Tom asked "למה זה לא עובד?" — root-cause + manual run; forecast version 369f5cb1 published 2026-06-08, still unchanged, now 39d old 🟡)
+
+**Root cause of the 12-day silence (2026-07-05 → 2026-07-17), found this run:** there was never a recurring cron trigger for this skill. `list_triggers` shows the account's entire trigger store is one-shot `send_later` PR-babysitting check-ins (re-arming hourly) for unrelated PRs — none targets `daily-ops-guardian`. The 2026-07-05 hypothesis ("fresh/headless session lacked live Supabase access") was the wrong diagnosis: a live check this run (`rebuild_verifier()`) succeeded fine from a fresh-context session. Separately, the Make delivery pipe (scenario `6439326`) is healthy and fired successfully on 07-06, 07-09, 07-10 and 07-15 (real 27–38KB payloads, HTTP 200) — meaning the skill *did* run and email Tom on at least those four days via manual/ad-hoc fires, but none of those runs committed a findings-log entry, so this log under-represents actual run history. Fixed this run: real cron trigger created (`30 3 * * *` UTC, fresh session per fire, see repo commit). Process gap also flagged: findings-log commit should not be optional on days the report sends — folding into the Stage 4/5 checklist going forward.
+
+| item | signal | evidence (14d window) | direction |
+|---|---|---|---|
+| PKG-BOTTLE-1L | engine-contract mask hides a real PKG shortage | PO-2026-00216 (32,999u) is 11 days overdue (expected 2026-07-05); projection still counts it as arriving today, netting the component to "healthy". Real position: 816 on-hand vs 4,957 firmed 14d demand = **-4,141 deficit**, first-blocked 2026-07-19. No draft session line exists for it yet (the generator that produced session `00802e4a` on 07-16 was fooled by the same mask). | not a forecast miss — data-quality/engine-contract gap (same class as the 07-05 `incoming_supply_qty` flag). Chase the supplier or correct the PO status before the engine can see this; flagged as today's #1 procurement action regardless. |
+| ADD-MUZ-PNMM-1L | committed backlog keeps aging, Muza line status still undecided | 72 units unpicked (2 orders), oldest now **54 days** (was 42d on 07-05, 25-ish implied on 07-03) — +12 days aged with zero progress since the last guardian run that flagged it | third consecutive flagged run with no movement; this is no longer a forecast question, it's a stalled Tom decision (line status) blocking a real customer promise |
+| FG-MUZ-JAS-200ML / FG-MUZ-NEG-200ML | same Muza-line blocker, two more SKUs | 24 units unpicked each (2 orders each), oldest 33 days; no firmed `production_plan` row for either in the next 30 days | same root cause as above — bundling under one Tom decision, not two separate asks |
+| FG-CAL-500ML / FG-CAL-1L | committed backlog with no firmed coverage, **not previously logged** | 22u (500ML) + 16u (1L) unpicked, no firmed batch in next 30 days | unlike ENE (explicitly deprioritized per Tom's 2026-07-04 tradeoff), CAL's exclusion doesn't trace to a documented decision — flagging as new, needs Tom confirmation whether this is deliberate or an oversight |
+| — (systemic) | committed-demand blind spot, still 100%, third run running | Every open LionWheel order with backlog_units > 0 checked this run (31 items) had `backlog_units_dateless = backlog_units` — i.e. **zero** committed demand is currently visible to `fn_compute_daily_fg_projection`'s own internal calculation; every committed-shortage number in this run came from a direct mirror read, not the engine | unchanged since 07-03; the engine-contract fix recommended on 07-05 (net firmed production + dateless-aware committed demand) has not landed — re-flagging, still out of guardian's write scope |
+
+Data-quality flags (not forecast): 6 open PO lines still missing `expected_receive_date` (RAW-LUISA 48u, RAW-LIME-PUREE 80u, PKG-LABEL-DET-1L-NS 1000u, PKG-LABEL-NAM-500ML 1000u, RAW-ROSE-DRY-GARNISH 10u, RAW-DRIED-ORANGE 5u) — 3 of these (LUISA, LIME-PUREE, LABEL-NAM-500ML) are the exact components showing as short in Stage 2's RM/PKG coverage, i.e. already on order, just needs a date set. Physical-count staleness (from session `00802e4a`'s own `input_integrity`): only 4/33 session-scoped targets fresh, 19 stale, 10 never counted, oldest 66 days — caveats the confidence of every RM/PKG on-hand number this run, surfaced but not gate-blocking (`rebuild_verifier=0`).
+
+
 ## 2026-07-24 (restoration-verification run; manual, Friday; forecast c7e9db2a published 2026-07-23, age 0 🟢; rebuild_verifier=0 🟢)
 
 Verdict 🟡 לעקוב (WATCH): stock truth clean, **zero committed (dated) orders at risk**, watch items are forecast-driven production + procurement (open weekly session) + a data-quality cluster.
@@ -42,3 +99,23 @@ Verdict 🟡 לעקוב (WATCH): stock truth clean, **zero committed (dated) ord
 Delivery / run evidence (V4, observed this session — no fabrication): rebuild_verifier=**0**; FG via `fn_compute_daily_fg_projection`; RM via `planning_run_component_netting` (run 2ad307b8, 90/141 components net-positive, ₪38,990 across 10 draft POs in open session 62179ce9); email POSTed to Make webhook → **HTTP 200 "Accepted"**; Make execution `b987cb5a` status=success (2 ops, 27,873 B, 06:05:52Z); email confirmed delivered to tom@gteveryday.com (thread `19f92baf5228748a`, 06:05:53Z). Yesterday production report present (2/2 batches, 93 of 101 u; plan rows not linked-closed — `completed_submission_id` null — minor data note, not a missing-report red).
 
 Root-cause of the 2026-07-05 → 07-24 log gap: fresh scheduled-session runs were not completing the full loop (live-SQL → fill → send → **commit findings-log** → chat). The Make→Gmail delivery leg itself continued to fire on some days (executions on 07-21/07-23), so delivery infra was not the failure — the full guardian loop was. Mitigation this session: skill hardened with a **connector pre-flight** (V9) so a connector-less session fails *loudly* (chat/push + Gmail-draft note + a FAILURE log row) instead of silently no-op'ing.
+
+## 2026-07-25 (sunday-prep / motzash run; manual fire from an interactive session; Saturday 22:45 IL; rebuild_verifier=0 🟢; LionWheel mirror fresh 19:30Z)
+
+Verdict 🔴 דחוף (URGENT): Sunday 26/7's firmed DETOX tank is **materially blocked** — one raw material, and the PO that fixes it has been sitting unplaced since Thursday.
+
+| item | signal | evidence (live SQL 2026-07-25) | direction |
+|---|---|---|---|
+| RAW-LIME-PUREE | blocks a firmed batch | `BOM-BASE-DET-REG` active version needs **15.00 kg** per 500 L tank; `current_balances` on-hand **0.98 kg** (last refreshed 2026-07-21). Sunday 26/7 has a firmed 500 L DETOX tank (`TEAEDD:w2-rebuild-v2-20260716:BOM-BASE-DET-REG`, pack 365×FG-DET-1L + 270×FG-DET-500ML) | place `PO-2026-00267` (Ristretto, 80 kg, ₪2,736 — `APPROVED_TO_ORDER` since 23/7 19:18Z) Sunday first thing, or move the tank |
+| PKG-LABEL-DET-500ML | packaging short for the same batch | on-hand **40** vs **270** bottles planned → short 230. Count last refreshed 2026-07-21 | physical check before 06:00; count age makes the number itself untrustworthy |
+| FG-MAT-30G | committed demand, zero stock, unverifiable packaging | on-hand **0**; **330 units** open on 2 LionWheel orders; Monday 27/7 plans only 30 TIN. `PKG-TIN-MAT-30G`, `PKG-LID-MAT-30G`, `PKG-LABEL-MAT-30G` have **no `current_balances` row at all** (never counted/received) while the same run's netting shows both tin and lid net-short 10,485 | bulk matcha is fine (RAW-MATCHA-BULK 366.5 kg) — the constraint is 30G packaging. Needs a real count + a buy decision |
+| ADD-MUZ-PRPL-1L / ADD-MUZ-TRIL-1L | committed vs zero stock, plan covers partially | PRPL: 180 open / 0 on-hand / 126 planned Mon. TRIL: 120 open / 0 on-hand / 96 planned Mon (both plan rows created by Tom 25/7 18:53Z) | gap stays open toward customers; confirm tranche pacing |
+| (procurement) 4 POs | zombie-queue pattern, 2 days old | `APPROVED_TO_ORDER`, none placed: 00266 Havshush (apple 20 kg + nana 15 kg), 00267 Ristretto (lime 80 kg), 00268 Holyland (ODK peach 84), 00269 Neve HaTavlin (luiza 40 kg). Line totals ₪1,320+₪360+₪2,736+₪2,938.32+₪2,800 = **₪10,154.32** | Sunday 09:00 first task per the Thursday clock |
+
+**No `GUARD:` drafts written this run — deliberate.** Sunday already carries Tom's own firmed rows (`TEAEDD:%` / `PLAN14D:%`, untouchable per V5), and the gap is *materials*, not an unplanned slot; a draft batch would not have made lime puree exist. Reported instead. Consistent with §C1 (draft-writes only) and V3 (committed first).
+
+Gauges: G1 45% 🟡 (`fn_compute_daily_fg_projection` 67 items projected / 37 with a stockout day; `demand_lionwheel_qty`=0 across all of them → forecast-driven, not dated-committed). G2 36% 🔴 (planning run `2ad307b8`: 141 components in netting, 90 net-short; lime puree blocks a firmed batch inside its lead time). G3 100% 🟢 (yesterday = Friday, not a working day → not applicable).
+
+Delivery evidence (V4, observed this run): email POSTed to the Make webhook → **HTTP 200 "Accepted"**; Make execution **`fa250a049d904d77b355e0d192f9bde6`** 2026-07-25T19:46:30.602Z, status=1 success, 2 ops, 31,396 B → tom@gteveryday.com.
+
+Infrastructure note: the three weekly Routines (`sunday-prep`, `queue-guard`, weekly `scorecard`) were **self-bound to dead sessions** and had been firing into empty sessions with no repo on disk — the same silent-death class as the 07-05→07-24 gap, one layer up. Rebuilt this session as fresh-session-per-fire on `env_017y3uFy4wo8cdvYBA2FP68T` with an explicit in-prompt repo-bootstrap chain (`add_repo` → clone → `register_repo_root`) plus a loud-failure fallback. This particular sunday-prep run was executed manually from an interactive session because the fired routine had not produced drafts or a send within ~8 minutes; its bootstrap path remains **unverified end-to-end** and must be confirmed on the next scheduled fire (Thu 30/7 queue-guard is the earliest natural test).
