@@ -6,7 +6,8 @@ Input (the only things a human supplies): --driver "<name>"  --date YYYY-MM-DD
 Optional: --from-stop N (only when explicitly requested).
 
 Everything else is default and automatic:
-  page 1   : LionWheel work order (daily_route_plan), fitted to one A4 portrait
+  page 1   : LionWheel work order (daily_route_plan), legible print size, one
+             A4 portrait page when it fits at that size, else spills to page 2+
   then     : every stop in driving order (visits.daily_order)
                - stop with a Green Invoice  -> real GI invoice, annotated, x2 copies
                - stop without an invoice     -> official LionWheel waybill, x2 copies
@@ -207,15 +208,18 @@ def lw_login_cookies():
 # Compact print CSS for the LionWheel work order ("הדפסת סידור עבודה" =
 # /visits/print_labels). Their print view renders the יעד column so narrow that
 # each Hebrew letter stacks on its own line, blowing the route up to ~13 pages.
-# nowrap + tight cells collapses it back to single-line rows so all stops fit one
-# A4 page. We keep LionWheel's own header/columns/branding — only the layout is
-# tightened, nothing is invented.
+# nowrap + tight cells collapses it back to single-line rows, sized to stay
+# legible on paper (Tom, 2026-07-28: the old 9.5px base was unreadable once
+# _render_one()'s fit-to-one-page scale kicked in on top of it) — see
+# MIN_SCALE in _render_one() for the one-page-when-legible / two-page-when-not
+# tradeoff. We keep LionWheel's own header/columns/branding — only the layout
+# is tightened, nothing is invented.
 WORKORDER_FIT_CSS = """
 @page { size: A4 portrait; margin: 5mm; }
 * { box-sizing: border-box; }
-table { font-size: 9.5px !important; width: 100% !important; border-collapse: collapse !important; }
-td, th { white-space: nowrap !important; padding: 2px 4px !important;
-         line-height: 1.2 !important; overflow: hidden !important;
+table { font-size: 13px !important; width: 100% !important; border-collapse: collapse !important; }
+td, th { white-space: nowrap !important; padding: 3px 5px !important;
+         line-height: 1.3 !important; overflow: hidden !important;
          vertical-align: middle !important; }
 img { max-height: 48px !important; }
 """
@@ -281,16 +285,25 @@ def _render_one(pg, url, out, fit_one):
     opts = dict(format="A4", print_background=True,
                 margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
     if fit_one:
-        # Real LionWheel work order, fitted to ONE A4 page AND spread to fill its
-        # full height: tighten layout (nowrap), scale to fit width, then stretch
-        # the route table so its rows distribute the remaining vertical space
-        # (no dead whitespace at the bottom).
+        # Real LionWheel work order: tighten layout (nowrap), scale to fit page
+        # width, then fit height — but NEVER shrink past MIN_SCALE, the
+        # readable floor (below it the printed text stops being legible; see
+        # the 2026-07-28 note on WORKORDER_FIT_CSS). A route that fits one A4
+        # page at >= MIN_SCALE gets stretched to fill it (no dead whitespace
+        # at the bottom, same as before). A route too long to stay legible on
+        # one page prints at the floor size and spills onto page 2+ instead —
+        # assemble() already merges every page of this PDF as the pack's lead
+        # section, so a big route gets a legible multi-page work order instead
+        # of an illegible one-pager (previously page_ranges="1" clipped it
+        # unconditionally, silently dropping any rows past the fold).
+        MIN_SCALE = 0.75
+        scale = MIN_SCALE
         try:
             pg.add_style_tag(content=WORKORDER_FIT_CSS)
             pg.wait_for_timeout(400)
             usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
             w = pg.evaluate("document.body.scrollWidth") or 800
-            scale = min(1.0, usable_w / max(w, 1))
+            width_scale = min(1.0, usable_w / max(w, 1))
             m = pg.evaluate(
                 "(() => { const ts=[...document.querySelectorAll('table')]"
                 ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
@@ -299,21 +312,24 @@ def _render_one(pg, url, out, fit_one):
             ) or {}
             non_table = float(m.get("nonTable", 0))
             table_h0 = float(m.get("tableH", 0))
-            target_table = int(max(table_h0, usable_h / scale - non_table))
-            pg.evaluate(
-                "(h)=>{const ts=[...document.querySelectorAll('table')]"
-                ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
-                " if(ts[0]) ts[0].style.height=h+'px';}",
-                target_table,
-            )
-            pg.wait_for_timeout(300)
-            h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
-            scale = min(scale, usable_h / max(h, 1))
-            scale = max(0.4, round(scale, 3))
+            fit_scale = min(width_scale, usable_h / max(table_h0 + non_table, 1))
+            if fit_scale >= MIN_SCALE:
+                target_table = int(max(table_h0, usable_h / fit_scale - non_table))
+                pg.evaluate(
+                    "(h)=>{const ts=[...document.querySelectorAll('table')]"
+                    ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
+                    " if(ts[0]) ts[0].style.height=h+'px';}",
+                    target_table,
+                )
+                pg.wait_for_timeout(300)
+                h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
+                scale = round(max(min(fit_scale, usable_h / max(h, 1)), MIN_SCALE), 3)
+                opts["page_ranges"] = "1"   # confirmed to fit exactly one page
+            # else: doesn't fit one page even at the floor -> hold the floor
+            # size and let it paginate naturally (no page_ranges clip)
         except Exception:
-            scale = 0.62
+            pass   # scale stays MIN_SCALE; no page_ranges clip either
         opts["scale"] = scale
-        opts["page_ranges"] = "1"
     pg.pdf(path=out, **opts)
 
 
@@ -629,9 +645,10 @@ def build(driver, date, from_stop=None, copies=2):
                 continue
         waybill_stops.append(s)                       # no invoice → needs waybill
 
-    # 2. ONE Playwright session: the REAL LionWheel work order (page 1, fitted to
-    #    one A4) + a waybill for each stop that has no invoice. build_workorder()
-    #    is kept only as a fallback if LionWheel doesn't return the work order.
+    # 2. ONE Playwright session: the REAL LionWheel work order (page 1+, legible
+    #    size, one A4 page when it fits) + a waybill for each stop that has no
+    #    invoice. build_workorder() is kept only as a fallback if LionWheel
+    #    doesn't return the work order.
     wo = None
     jobs = []
     if not from_stop and driver_id:
