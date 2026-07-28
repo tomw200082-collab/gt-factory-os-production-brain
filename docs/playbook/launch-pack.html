@@ -50,10 +50,16 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
  background:var(--ac);color:#fff;font-size:.72rem;font-weight:800;margin-left:.45rem;vertical-align:.05rem}
 .two{display:grid;grid-template-columns:1.4fr 1fr;gap:.9rem;align-items:start}
 .miss{font-size:.83rem;line-height:1.5;margin:.25rem 0 0;color:var(--ink)}
-.new{margin-top:.5rem;background:var(--newbg);border-right:4px solid var(--ac);border-radius:0 3px 3px 0;padding:.4rem .65rem}
-.nl{font-size:.68rem;font-weight:800;letter-spacing:.13em;color:var(--ac);margin-bottom:.2rem}
-.new ul{margin:0;padding-right:1rem;font-size:.83rem;line-height:1.42;font-weight:600;columns:2;column-gap:1.3rem}
-.new li{break-inside:avoid;margin-bottom:.1rem}
+.nt{margin-top:.75rem;background:var(--newbg);border-right:4px solid var(--ac);
+ border-radius:0 3px 3px 0;padding:.5rem .75rem}
+.ntl{font-size:.66rem;font-weight:800;letter-spacing:.13em;color:var(--ac);margin-bottom:.15rem}
+.nt p{margin:0;font-size:.92rem;line-height:1.5;font-weight:600}
+/* דף לקיחות */
+.log .dh{border-top-color:var(--ink)} .log .dk{color:var(--ink)} .log h1{font-size:2rem}
+.lg{width:100%;border-collapse:collapse;margin-top:.95rem;font-size:.9rem}
+.lg th{font-size:.7rem;letter-spacing:.06em;color:var(--mut);text-align:right;
+ padding:0 .35rem .3rem;border-bottom:2px solid var(--ink);white-space:nowrap}
+.lg td{height:1.6rem;border-bottom:1px solid var(--rule);padding:.1rem .35rem}
 .sign{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:1rem;align-items:end;
  margin-top:.7rem;border-top:1.5px solid var(--rule);padding-top:.5rem}
 .sl2{font-size:.86rem;font-weight:800}
@@ -104,33 +110,112 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
  .wk thead{display:table-header-group}}
 @media (max-width:640px){.page{padding:7mm 5mm} .two{grid-template-columns:1fr}
  h1{font-size:1.8rem} .sign{grid-template-columns:1fr} .wk th.dcol{width:2rem}}
+
+/* --- annotation layer · screen only ------------------------------------ */
+:root{--pen:#2F5D8C;--pen-wash:#EEF3F8;--pen-line:#C7D8E7;--pen-on:#fff;}
+@media (prefers-color-scheme:dark){:root{--pen:#89B6E6;--pen-wash:#131C25;--pen-line:#27394B;--pen-on:#0A1219;}}
+:root[data-theme="dark"]{--pen:#89B6E6;--pen-wash:#131C25;--pen-line:#27394B;--pen-on:#0A1219;}
+:root[data-theme="light"]{--pen:#2F5D8C;--pen-wash:#EEF3F8;--pen-line:#C7D8E7;--pen-on:#fff;}
+body{padding-bottom:4.6rem}
+.page{scroll-margin-top:.8rem}
+
+.nb{margin:1.15rem -12mm -5mm;padding:.8rem 12mm .95rem;background:var(--pen-wash);
+ border-top:1px dashed var(--pen-line)}
+.nb.has{border-top:1px solid var(--pen)}
+.nbh{display:flex;align-items:center;gap:.45rem;margin-bottom:.45rem}
+.nbd{width:.5rem;height:.5rem;border-radius:50%;border:1.5px solid var(--pen-line);
+ background:transparent;flex:none}
+.nb.has .nbd{background:var(--pen);border-color:var(--pen)}
+.nbl{font-size:.64rem;font-weight:800;letter-spacing:.15em;color:var(--pen)}
+.nbn{font-size:.72rem;color:var(--mut);margin-inline-start:auto;text-align:left}
+.chips{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.45rem}
+.chip{font-family:inherit;font-size:.75rem;font-weight:600;color:var(--mut);background:var(--paper);
+ border:1px solid var(--pen-line);border-radius:999px;padding:.2rem .62rem;cursor:pointer;
+ transition:background .15s,color .15s,border-color .15s}
+.chip:hover{border-color:var(--pen);color:var(--pen)}
+.chip[aria-pressed="true"]{background:var(--pen);border-color:var(--pen);color:var(--pen-on)}
+.nta{display:block;width:100%;font-family:inherit;font-size:.92rem;line-height:1.5;color:var(--ink);
+ background:var(--paper);border:1px solid var(--pen-line);border-radius:4px;padding:.5rem .62rem;
+ resize:none;overflow:hidden;min-height:3.2rem;direction:rtl}
+.nta::placeholder{color:var(--mut);opacity:.8}
+.nta:focus{outline:none;border-color:var(--pen)}
+.chip:focus-visible,.fb:focus-visible,a.tc:focus-visible{outline:2px solid var(--pen);outline-offset:2px}
+
+.fab{position:fixed;inset-block-end:1rem;inset-inline-start:50%;transform:translateX(50%);z-index:60;
+ display:flex;align-items:center;gap:.15rem;background:var(--paper);border:1px solid var(--pen-line);
+ border-radius:999px;padding:.3rem .38rem;box-shadow:0 6px 26px rgba(10,26,42,.18)}
+.fb{font-family:inherit;font-size:.79rem;font-weight:700;color:var(--ink);background:transparent;
+ border:none;border-radius:999px;padding:.36rem .7rem;cursor:pointer;white-space:nowrap;
+ transition:background .15s,color .15s}
+.fb:hover:not([disabled]){background:var(--pen-wash);color:var(--pen)}
+.fb.pri{background:var(--pen);color:var(--pen-on)}
+.fb.pri:hover:not([disabled]){background:var(--pen);color:var(--pen-on);filter:brightness(1.1)}
+.fb[disabled]{opacity:.35;cursor:default}
+.fb.nav{font-size:1rem;padding:.3rem .5rem;line-height:1}
+.fsep{width:1px;height:1.15rem;background:var(--pen-line);flex:none;margin:0 .2rem}
+.fct{font-size:.75rem;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap;padding:0 .3rem}
+.fct b{color:var(--ink);font-weight:800}
+.fct.n b{color:var(--pen)}
+.tst{position:fixed;inset-block-end:4.4rem;inset-inline-start:50%;
+ transform:translateX(50%) translateY(6px);z-index:70;background:var(--ink);color:var(--paper);
+ font-size:.82rem;font-weight:700;padding:.5rem .95rem;border-radius:999px;opacity:0;
+ pointer-events:none;transition:opacity .22s,transform .22s}
+.tst.show{opacity:1;transform:translateX(50%) translateY(0)}
+
+a.tc{text-decoration:none;color:inherit;grid-template-columns:2rem 1fr auto .55rem;
+ border-radius:3px;transition:background .15s}
+a.tc:hover{background:var(--pen-wash)}
+.tcd{width:.45rem;height:.45rem;border-radius:50%;background:var(--pen);opacity:0;align-self:center}
+a.tc.has .tcd{opacity:1}
+
+.how{margin-top:.75rem;display:flex;gap:.65rem;align-items:baseline;background:var(--pen-wash);
+ border-inline-start:3px solid var(--pen);border-radius:3px;padding:.55rem .75rem;
+ font-size:.87rem;line-height:1.5}
+.how>b{font-size:.64rem;font-weight:800;letter-spacing:.13em;color:var(--pen);white-space:nowrap}
+.how em{font-style:normal;font-weight:800;color:var(--pen)}
+
+@media (max-width:640px){
+ .nb{margin:1rem -5mm -7mm;padding:.75rem 5mm .85rem}
+ .how{flex-direction:column;gap:.25rem}
+ .fab{gap:.05rem;padding:.28rem .3rem}
+ .fb{font-size:.74rem;padding:.34rem .55rem}
+ .wide{display:none}
+}
+@media (prefers-reduced-motion:reduce){.tst,.chip,.fb,a.tc{transition:none}}
+@media print{.nb,.fab,.tst,.how{display:none!important} body{padding-bottom:0}}
+
 </style>
 
-<section class="page apx">
+<section class="page apx" id="d0">
   <header class="dh"><div class="dk">GT EVERYDAY · חבילת ההשקה</div>
-  <h1>14 המסמכים</h1>
-  <div class="dr">להדפסה לפני רביעי 29.7 · חמישה פרוטוקולים וארבעה־עשר עמודים לרצפה</div></header>
+  <h1>15 המסמכים</h1>
+  <div class="dr">להדפסה לפני רביעי 29.7 · חמישה פרוטוקולים ועשרה דפים לרצפה</div></header>
   <p class="lede">חמישה פרוטוקולי עבודה — עמוד אחד לכל אדם, נחתם בישיבה האישית. תשעה צ׳קליסטים —
-  כל דף מחזיק שבוע שלם, חמישה ימים בעמודות. מדפיסים פעם בשבוע, תולים במחסן.</p>
+  כל דף מחזיק שבוע שלם, חמישה ימים בעמודות. ודף לקיחות אחד למחסן הדוגמאות.
+  מדפיסים פעם בשבוע, תולים במקום.</p>
+  <div class="how"><b>איך מעירים</b><span>מתחת לכל מסמך יש פס תכלת. מסמנים איפה הבעיה,
+  כותבים מה לתקן — ובסוף לוחצים <em>העתק הכל</em> ומדביקים לי בצ׳אט. נשמר אוטומטית, גם אם סוגרים את הדף.
+  הפס לא מודפס.</span></div>
   <div class="toc">
-    <div class="tc"><b>1</b><span>פרוטוקול עבודה — מקסים</span><span class="r">מחסנים, קבלת סחורה, ליקוט ומסלול</span></div><div class="tc"><b>2</b><span>פרוטוקול עבודה — דניס</span><span class="r">ייצור, מתכונים ותחזוקה</span></div><div class="tc"><b>3</b><span>פרוטוקול עבודה — דורין</span><span class="r">משרד, לקוחות, זיכויים וביצוע רכש</span></div><div class="tc"><b>4</b><span>פרוטוקול עבודה — מיידן</span><span class="r">הנהג — מסירות ומענה בשטח</span></div><div class="tc"><b>5</b><span>פרוטוקול עבודה — עדי</span><span class="r">פיננסים ותזרים</span></div>
-    <div class="tc"><b>6</b><span>צ׳קליסט — מחסן תוצרת מוגמרת</span><span class="r">מקסים</span></div><div class="tc"><b>7</b><span>צ׳קליסט — מחסן דוגמאות</span><span class="r">מקסים</span></div><div class="tc"><b>8</b><span>צ׳קליסט — מחסן תוויות</span><span class="r">מקסים</span></div><div class="tc"><b>9</b><span>צ׳קליסט — מחסן אריזות — בקבוקים, פקקים, קרטונים, ג׳ריקנים</span><span class="r">מקסים</span></div><div class="tc"><b>10</b><span>צ׳קליסט — מחסן סירופים, אלכוהול וסמודי׳ז</span><span class="r">מקסים</span></div><div class="tc"><b>11</b><span>צ׳קליסט — מחסן עלים</span><span class="r">מקסים</span></div><div class="tc"><b>12</b><span>צ׳קליסט — מקפיאים</span><span class="r">מקסים</span></div><div class="tc"><b>13</b><span>צ׳קליסט — מחסן הרכב</span><span class="r">מקסים</span></div><div class="tc"><b>14</b><span>צ׳קליסט — רצפת הייצור</span><span class="r">דניס</span></div>
+    <a class="tc" href="#d1" data-i="1"><b>1</b><span>פרוטוקול עבודה — מקסים</span><span class="r">מחסנים, קבלת סחורה, ליקוט ומסלול</span><i class="tcd"></i></a><a class="tc" href="#d2" data-i="2"><b>2</b><span>פרוטוקול עבודה — דניס</span><span class="r">ייצור, מתכונים ותחזוקה</span><i class="tcd"></i></a><a class="tc" href="#d3" data-i="3"><b>3</b><span>פרוטוקול עבודה — דורין</span><span class="r">משרד, לקוחות, זיכויים וביצוע רכש</span><i class="tcd"></i></a><a class="tc" href="#d4" data-i="4"><b>4</b><span>פרוטוקול עבודה — מיידן</span><span class="r">הנהג — מסירות, מענה בשטח וקרטון הרכב</span><i class="tcd"></i></a><a class="tc" href="#d5" data-i="5"><b>5</b><span>פרוטוקול עבודה — עדי</span><span class="r">פיננסים ותזרים</span><i class="tcd"></i></a><a class="tc" href="#d6" data-i="6"><b>6</b><span>צ׳קליסט — מחסן תוצרת מוגמרת</span><span class="r">מקסים</span><i class="tcd"></i></a><a class="tc" href="#d7" data-i="7"><b>7</b><span>צ׳קליסט — מחסן דוגמאות</span><span class="r">מקסים</span><i class="tcd"></i></a><a class="tc" href="#d8" data-i="8"><b>8</b><span>דף לקיחות — מחסן דוגמאות</span><span class="r">כל מי שלוקח</span><i class="tcd"></i></a><a class="tc" href="#d9" data-i="9"><b>9</b><span>צ׳קליסט — מחסן תוויות</span><span class="r">מקסים</span><i class="tcd"></i></a><a class="tc" href="#d10" data-i="10"><b>10</b><span>צ׳קליסט — מחסן אריזות — בקבוקים, פקקים, קרטונים, ג׳ריקנים</span><span class="r">מקסים</span><i class="tcd"></i></a><a class="tc" href="#d11" data-i="11"><b>11</b><span>צ׳קליסט — מחסן סירופים, אלכוהול וסמודי׳ז</span><span class="r">מקסים</span><i class="tcd"></i></a><a class="tc" href="#d12" data-i="12"><b>12</b><span>צ׳קליסט — מחסן עלים</span><span class="r">מקסים</span><i class="tcd"></i></a><a class="tc" href="#d13" data-i="13"><b>13</b><span>צ׳קליסט — מקפיאים</span><span class="r">מקסים</span><i class="tcd"></i></a><a class="tc" href="#d14" data-i="14"><b>14</b><span>צ׳קליסט — קרטון הרכב</span><span class="r">מיידן</span><i class="tcd"></i></a><a class="tc" href="#d15" data-i="15"><b>15</b><span>צ׳קליסט — רצפת הייצור</span><span class="r">דניס</span><i class="tcd"></i></a>
   </div>
   <div class="risk">שינוי בעלות מפגישה 1: <b>קבלת הסחורה בדלת עברה מדניס למקסים.</b>
-  מקסים מקבל ומקליד מול הזמנת הרכש; דניס עוקב אחרי מקור חומר הגלם בצריכה. הפלייבוק מ־23.7 עדיין כתוב אחרת — הוא מתוקן בהמשך.</div>
+  מקסים מקבל ומקליד מול הזמנת הרכש; דניס עוקב אחרי מקור חומר הגלם בצריכה.
+  <b>קרטון הרכב עבר למיידן</b> — הוא לא חוזר איתו למפעל כל יום. הפלייבוק מ־23.7 עדיין כתוב אחרת — הוא מתוקן בהמשך.</div>
   <div class="pf">GT Everyday · חבילת ההשקה · 29.7.2026</div>
+  <div class="nb" data-k="apx|סקירה — 14 המסמכים" data-t="סקירה — 14 המסמכים"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">סקירה — 14 המסמכים</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="המספרים">המספרים</button><button type="button" class="chip" aria-pressed="false" data-c="הבעלות">הבעלות</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="המספר נכון? הבעלות נכונה? מה חסר כאן?" aria-label="הערות על סקירה — 14 המסמכים"></textarea></div>
 </section>
 
-<section class="page prot">
+<section class="page prot" id="d1">
 <header class="dh">
   <div class="dk">פרוטוקול עבודה</div>
   <h1>מקסים</h1>
   <div class="dr">מחסנים, קבלת סחורה, ליקוט ומסלול · 7:30 – 17:30</div>
 </header>
-<div class="one">אני הבעלים של כל מה שנכנס בדלת ושל כל מה שיוצא ממנה — קבלת הסחורה, תשעת המחסנים, הליקוט והמסלול.</div>
+<div class="one">אני הבעלים של כל מה שנכנס בדלת ושל כל מה שיוצא ממנה — קבלת הסחורה, המחסנים, הליקוט והמסלול.</div>
 
 <h2 class="sec">היום שלי</h2>
-<table class="grid"><tbody><tr><td class="hh">7:30–8:00</td><td class="ww">העמסת הרכב עם מיידן — ובדיקה שיש חשבונית על כל משלוח</td><td class="ss">LionWheel</td></tr><tr><td class="hh">8:00</td><td class="ww">הרכב יוצא</td><td class="ss">—</td></tr><tr><td class="hh">9:30</td><td class="ww">תדריך בוקר — 5 דקות, חריגים בלבד</td><td class="ss">—</td></tr><tr><td class="hh">כשסחורה מגיעה</td><td class="ww">בודק מול תעודת המשלוח ומקליד קבלה באותו רגע, מול הזמנת הרכש</td><td class="ss">Factory OS · קבלות</td></tr><tr><td class="hh">במהלך היום</td><td class="ww">גל 1 — ליקוט הזמנות מחר שמסומנות READY</td><td class="ss">LionWheel</td></tr><tr><td class="hh">במהלך היום</td><td class="ww">קליטת תוצרת מדניס ואימות מול הדיווח שלו</td><td class="ss">Factory OS</td></tr><tr><td class="hh">15:00</td><td class="ww">גל 2 — סיבוב סופי רק על מה שהשתנה + מסלול + הדפסת חשבוניות</td><td class="ss">LionWheel</td></tr><tr><td class="hh">סוף יום</td><td class="ww">סגירת תשעת המחסנים לפי הצ׳קליסט + השלמת קרטון הרכב</td><td class="ss">דף הצ׳קליסט</td></tr></tbody></table>
+<table class="grid"><tbody><tr><td class="hh">7:30–8:00</td><td class="ww">העמסת הרכב עם מיידן — ובדיקה שיש חשבונית על כל משלוח</td><td class="ss">LionWheel</td></tr><tr><td class="hh">8:00</td><td class="ww">הרכב יוצא</td><td class="ss">—</td></tr><tr><td class="hh">כשסחורה מגיעה</td><td class="ww">בודק מול תעודת המשלוח ומקליד קבלה באותו רגע, מול הזמנת הרכש</td><td class="ss">Factory OS · קבלות</td></tr><tr><td class="hh">במהלך היום</td><td class="ww">גל 1 — ליקוט הזמנות מחר שמסומנות READY</td><td class="ss">LionWheel</td></tr><tr><td class="hh">במהלך היום</td><td class="ww">קליטת תוצרת מדניס — מה שמגיע עם תוויות נכנס למחסן, מה שבלי ממתין בצד</td><td class="ss">Factory OS</td></tr><tr><td class="hh">15:00</td><td class="ww">גל 2 — סיבוב סופי רק על מה שהשתנה + מסלול + הדפסת חשבוניות</td><td class="ss">LionWheel</td></tr><tr><td class="hh">סוף יום</td><td class="ww">סגירת שבעת המחסנים לפי הצ׳קליסט</td><td class="ss">דף הצ׳קליסט</td></tr></tbody></table>
 
 <h2 class="sec">השבוע והחודש שלי</h2>
 <ul class="bul"><li>רביעי 8:00 — ספירת תוצרת מוגמרת ומחסן דוגמאות, מיד אחרי שהרכב יוצא. מוזן עד 9:30.</li><li>רביעי 15:00 — נכנס לישיבה עם דניס לקבל את התוכנית הנעולה ולדווח מה חסר.</li></ul>
@@ -141,15 +226,13 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
 <div class="two">
   <div>
     <h2 class="sec">מה אני מחליט לבד</h2>
-    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">מעל זה</th></tr></thead><tbody><tr><td>סידור המחסן וסדר הליקוט</td><td class="c"><b>לבד</b></td><td class="c">—</td></tr><tr><td>עצירת משלוח חסר עד השלמה</td><td class="c"><b>לבד</b></td><td class="c">—</td></tr><tr><td>גריעת תוצרת פגומה</td><td class="c"><b>—</b></td><td class="c">תום</td></tr><tr><td>עדיפות בין לקוחות כשחסר מלאי</td><td class="c"><b>—</b></td><td class="c">דורין + תום</td></tr></tbody></table>
+    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">פונים ל־</th></tr></thead><tbody><tr><td>סידור המחסן וסדר הליקוט</td><td class="c"><b>לבד</b></td><td class="c">—</td></tr><tr><td>עצירת משלוח חסר עד השלמה</td><td class="c"><b>לבד</b></td><td class="c">—</td></tr><tr><td>גריעת תוצרת פגומה</td><td class="c"><b>—</b></td><td class="c">תום</td></tr><tr><td>עדיפות בין לקוחות כשחסר מלאי</td><td class="c"><b>—</b></td><td class="c">דורין + תום</td></tr></tbody></table>
   </div>
   <div>
     <h2 class="sec">מה קורה כשלא עשו</h2>
     <p class="miss">מייל הבוקר של 6:30 מראה לתום אם סגירת המחסנים לא נרשמה או אם הגיעה סחורה בלי קבלה. חוסר שלא סומן מתגלה בישיבת 14:00 — ואז הוא כבר זיכוי.</p>
   </div>
 </div>
-
-<div class="new"><div class="nl">מה חדש מ־29.7</div><ul><li>קבלת הסחורה בדלת עברה אליך — אתה מקליד, לא דניס.</li><li>תשעה מחסנים נסגרים בצ׳קליסט חתום בסוף כל יום.</li><li>נפתח מחסן דוגמאות — נספר בנפרד ונגרע מהמחסן הראשי.</li><li>קרטון הרכב מושלם כל ערב, וכל מה שנלקח ממנו נרשם.</li><li>הספירה עברה מיום חמישי ליום רביעי.</li></ul></div>
 
 <div class="sign">
   <div class="sl2">קראתי, הבנתי, וזה התפקיד שלי</div>
@@ -158,7 +241,8 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
   <div class="sg"><span>תאריך</span><i></i></div>
 </div>
 <div class="pf">GT Everyday · פרוטוקול עבודה מקסים · גרסה 29.7.2026</div>
-</section><section class="page prot">
+<div class="nb" data-k="prot|פרוטוקול עבודה — מקסים" data-t="פרוטוקול עבודה — מקסים"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">פרוטוקול עבודה — מקסים</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="שעות">שעות</button><button type="button" class="chip" aria-pressed="false" data-c="היום שלי">היום שלי</button><button type="button" class="chip" aria-pressed="false" data-c="כללי ברזל">כללי ברזל</button><button type="button" class="chip" aria-pressed="false" data-c="ספי סמכות">ספי סמכות</button><button type="button" class="chip" aria-pressed="false" data-c="כשלא עשו">כשלא עשו</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="השעות נכונות? כלל הברזל בר־בדיקה, או סיסמה? ה״מה קורה כשלא עשו״ אמיתי?" aria-label="הערות על פרוטוקול עבודה — מקסים"></textarea></div>
+</section><section class="page prot" id="d2">
 <header class="dh">
   <div class="dk">פרוטוקול עבודה</div>
   <h1>דניס</h1>
@@ -167,7 +251,7 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
 <div class="one">אני הבעלים של הייצור — מהמתכון ועד התוצרת שנמסרת למקסים, ושל התחזוקה שמאפשרת לרצפה לרוץ.</div>
 
 <h2 class="sec">היום שלי</h2>
-<table class="grid"><tbody><tr><td class="hh">6:00</td><td class="ww">תחילת ייצור לפי התוכנית שננעלה אתמול. בראשון — לפי הטיוטה שמחכה במייל</td><td class="ss">Factory OS</td></tr><tr><td class="hh">בכל אצווה</td><td class="ww">מדידת PH ו־BRIX ורישום שני הערכים</td><td class="ss">דיווח הייצור</td></tr><tr><td class="hh">בכל אצווה</td><td class="ww">רישום מאיזו הזמנת רכש נלקח כל חומר גלם</td><td class="ss">דיווח הייצור</td></tr><tr><td class="hh">9:30</td><td class="ww">תדריך בוקר</td><td class="ss">—</td></tr><tr><td class="hh">סוף יום</td><td class="ww">מסירת התוצרת למקסים — כמויות מדויקות</td><td class="ss">Factory OS</td></tr><tr><td class="hh">לפני היציאה</td><td class="ww">דיווח ייצור + דיווח מה ליקטתי</td><td class="ss">Factory OS</td></tr><tr><td class="hh">לפני היציאה</td><td class="ww">סגירת רצפת הייצור לפי הצ׳קליסט</td><td class="ss">דף הצ׳קליסט</td></tr></tbody></table>
+<table class="grid"><tbody><tr><td class="hh">6:00</td><td class="ww">תחילת ייצור לפי התוכנית שננעלה אתמול. בראשון — לפי הטיוטה שמחכה במייל</td><td class="ss">Factory OS</td></tr><tr><td class="hh">בכל אצווה</td><td class="ww">מדידת PH ו־BRIX ורישום שני הערכים</td><td class="ss">דיווח הייצור</td></tr><tr><td class="hh">בכל אצווה</td><td class="ww">רישום מאיזו הזמנת רכש נלקח כל חומר גלם</td><td class="ss">דיווח הייצור</td></tr><tr><td class="hh">סוף יום</td><td class="ww">מסירת התוצרת למקסים — כמויות מדויקות</td><td class="ss">Factory OS</td></tr><tr><td class="hh">לפני היציאה</td><td class="ww">דיווח ייצור + דיווח מה ליקטתי</td><td class="ss">Factory OS</td></tr><tr><td class="hh">לפני היציאה</td><td class="ww">סגירת רצפת הייצור לפי הצ׳קליסט</td><td class="ss">דף הצ׳קליסט</td></tr></tbody></table>
 
 <h2 class="sec">השבוע והחודש שלי</h2>
 <ul class="bul"><li>רביעי — ספירת חומרי הגלם שהמערכת מסמנת, לפני שהתכנון ננעל.</li><li>רביעי 15:00 — נכנס לישיבה לקבל את התוכנית הנעולה.</li><li>שני הראשון בחודש, 6:00–7:30 — ספירה מלאה של חומרי גלם ואריזות, לפני שהייצור מתרומם.</li></ul>
@@ -178,15 +262,13 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
 <div class="two">
   <div>
     <h2 class="sec">מה אני מחליט לבד</h2>
-    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">מעל זה</th></tr></thead><tbody><tr><td>עצירת אצווה חשודה</td><td class="c"><b>לבד, בלי לשאול</b></td><td class="c">—</td></tr><tr><td>זריקת חומר גלם</td><td class="c"><b>עד ₪200</b></td><td class="c">תום / אלכס</td></tr><tr><td>ציוד בעצירת ייצור באותו יום</td><td class="c"><b>עד ₪300</b></td><td class="c">—</td></tr><tr><td>ציוד שוטף ₪300–2,000</td><td class="c"><b>דרך דורין</b></td><td class="c">אישור תום</td></tr><tr><td>ציוד / השקעה מעל ₪2,000</td><td class="c"><b>—</b></td><td class="c">אלכס</td></tr><tr><td>שינוי מתכון</td><td class="c"><b>—</b></td><td class="c">אלכס + תום</td></tr></tbody></table>
+    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">פונים ל־</th></tr></thead><tbody><tr><td>עצירת אצווה חשודה</td><td class="c"><b>לבד, בלי לשאול</b></td><td class="c">—</td></tr><tr><td>זריקת חומר גלם</td><td class="c"><b>עד ₪200</b></td><td class="c">תום / אלכס</td></tr><tr><td>ציוד בעצירת ייצור באותו יום</td><td class="c"><b>עד ₪300</b></td><td class="c">—</td></tr><tr><td>ציוד שוטף ₪300–2,000</td><td class="c"><b>דרך דורין</b></td><td class="c">תום</td></tr><tr><td>ציוד / השקעה מעל ₪2,000</td><td class="c"><b>—</b></td><td class="c">אלכס</td></tr><tr><td>שינוי מתכון</td><td class="c"><b>—</b></td><td class="c">אלכס + תום</td></tr></tbody></table>
   </div>
   <div>
     <h2 class="sec">מה קורה כשלא עשו</h2>
     <p class="miss">מייל הבוקר של 6:30 מדגיש באדום כל יום מתוכנן שלא קיבל דיווח ייצור. אצווה בלי PH ו־BRIX נחשבת דיווח חסר.</p>
   </div>
 </div>
-
-<div class="new"><div class="nl">מה חדש מ־29.7</div><ul><li>מדידת PH ו־BRIX ורישומם בכל אצווה.</li><li>דיווח מה ליקטת, בנוסף לדיווח הייצור.</li><li>רישום מאיזו הזמנת רכש נלקח כל חומר גלם — ידנית, עד שהמערכת תדע לעשות את זה.</li><li>צ׳קליסט סגירה לרצפת הייצור בסוף כל יום.</li><li>אתה אחראי על חלפים, תחזוקה וציוד: שקי סינון, אקדחי תאריך, מסקנטייפ ואקדחי טייפרים, וציוד הניקיון.</li><li>קבלת הסחורה בדלת עברה למקסים. המעקב אחרי מקור חומר הגלם נשאר אצלך.</li></ul></div>
 
 <div class="sign">
   <div class="sl2">קראתי, הבנתי, וזה התפקיד שלי</div>
@@ -195,7 +277,8 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
   <div class="sg"><span>תאריך</span><i></i></div>
 </div>
 <div class="pf">GT Everyday · פרוטוקול עבודה דניס · גרסה 29.7.2026</div>
-</section><section class="page prot">
+<div class="nb" data-k="prot|פרוטוקול עבודה — דניס" data-t="פרוטוקול עבודה — דניס"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">פרוטוקול עבודה — דניס</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="שעות">שעות</button><button type="button" class="chip" aria-pressed="false" data-c="היום שלי">היום שלי</button><button type="button" class="chip" aria-pressed="false" data-c="כללי ברזל">כללי ברזל</button><button type="button" class="chip" aria-pressed="false" data-c="ספי סמכות">ספי סמכות</button><button type="button" class="chip" aria-pressed="false" data-c="כשלא עשו">כשלא עשו</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="השעות נכונות? כלל הברזל בר־בדיקה, או סיסמה? ה״מה קורה כשלא עשו״ אמיתי?" aria-label="הערות על פרוטוקול עבודה — דניס"></textarea></div>
+</section><section class="page prot" id="d3">
 <header class="dh">
   <div class="dk">פרוטוקול עבודה</div>
   <h1>דורין</h1>
@@ -215,15 +298,13 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
 <div class="two">
   <div>
     <h2 class="sec">מה אני מחליט לבד</h2>
-    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">מעל זה</th></tr></thead><tbody><tr><td>זיכוי מפער ליקוט מתועד</td><td class="c"><b>עד ₪4,000</b></td><td class="c">תום</td></tr><tr><td>זיכוי ידני / רצון־טוב</td><td class="c"><b>עד ₪500</b></td><td class="c">תום</td></tr><tr><td>הנחה או מחיר מיוחד</td><td class="c"><b>₪0</b></td><td class="c">כל חריגה → תום</td></tr><tr><td>לקוח חדש בתנאי אשראי</td><td class="c"><b>—</b></td><td class="c">אלכס</td></tr><tr><td>רכש</td><td class="c"><b>רק מהתור בפורטל</b></td><td class="c">—</td></tr></tbody></table>
+    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">פונים ל־</th></tr></thead><tbody><tr><td>זיכוי מפער ליקוט מתועד</td><td class="c"><b>עד ₪4,000</b></td><td class="c">תום</td></tr><tr><td>זיכוי ידני / רצון־טוב</td><td class="c"><b>עד ₪500</b></td><td class="c">תום</td></tr><tr><td>הנחה או מחיר מיוחד</td><td class="c"><b>₪0</b></td><td class="c">אלכס</td></tr><tr><td>לקוח חדש בתנאי אשראי</td><td class="c"><b>—</b></td><td class="c">אלכס</td></tr><tr><td>רכש</td><td class="c"><b>רק מהתור בפורטל</b></td><td class="c">—</td></tr></tbody></table>
   </div>
   <div>
     <h2 class="sec">מה קורה כשלא עשו</h2>
-    <p class="miss">שומר־הזומבים בודק כל חמישי ב־15:50 ומתריע לתום על כל הזמנה שנשארה תקועה בתור. זיכוי שלא אושר בבוקר נשאר פתוח ונראה בדף המספרים.</p>
+    <p class="miss">בדיקה אוטומטית רצה כל חמישי ב־15:50 ומתריעה על כל הזמנה שנשארה תקועה בתור. זיכוי שלא אושר בבוקר נשאר פתוח ונראה בדף המספרים.</p>
   </div>
 </div>
-
-<div class="new"><div class="nl">מה חדש מ־29.7</div><ul><li>התכנון ומעטפת הרכש נסגרים ברביעי ב־14:00. התור שאת מבצעת בחמישי כבר סגור — הוא לא משתנה תוך כדי היום.</li><li>ריטרו הזיכויים הוא סעיף קבוע בישיבת רביעי — עוברים על כל זיכוי מהשבוע.</li></ul></div>
 
 <div class="sign">
   <div class="sl2">קראתי, הבנתי, וזה התפקיד שלי</div>
@@ -232,35 +313,34 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
   <div class="sg"><span>תאריך</span><i></i></div>
 </div>
 <div class="pf">GT Everyday · פרוטוקול עבודה דורין · גרסה 29.7.2026</div>
-</section><section class="page prot">
+<div class="nb" data-k="prot|פרוטוקול עבודה — דורין" data-t="פרוטוקול עבודה — דורין"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">פרוטוקול עבודה — דורין</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="שעות">שעות</button><button type="button" class="chip" aria-pressed="false" data-c="היום שלי">היום שלי</button><button type="button" class="chip" aria-pressed="false" data-c="כללי ברזל">כללי ברזל</button><button type="button" class="chip" aria-pressed="false" data-c="ספי סמכות">ספי סמכות</button><button type="button" class="chip" aria-pressed="false" data-c="כשלא עשו">כשלא עשו</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="השעות נכונות? כלל הברזל בר־בדיקה, או סיסמה? ה״מה קורה כשלא עשו״ אמיתי?" aria-label="הערות על פרוטוקול עבודה — דורין"></textarea></div>
+</section><section class="page prot" id="d4">
 <header class="dh">
   <div class="dk">פרוטוקול עבודה</div>
   <h1>מיידן</h1>
-  <div class="dr">הנהג — מסירות ומענה בשטח · 7:30 העמסה · 8:00 יציאה · בראשון 10:30</div>
+  <div class="dr">הנהג — מסירות, מענה בשטח וקרטון הרכב · 7:30 העמסה · 8:00 יציאה · בראשון 10:30</div>
 </header>
-<div class="one">אני הבעלים של הדרך — מהרגע שהסחורה עלתה לרכב ועד שהיא בידיים של הלקוח.</div>
+<div class="one">אני הבעלים של הדרך — מהרגע שהסחורה עלתה לרכב ועד שהיא בידיים של הלקוח — ושל מה שיש ברכב.</div>
 
 <h2 class="sec">היום שלי</h2>
-<table class="grid"><tbody><tr><td class="hh">7:30–8:00</td><td class="ww">העמסה עם מקסים + בדיקה שיש חשבונית על כל משלוח</td><td class="ss">—</td></tr><tr><td class="hh">8:00</td><td class="ww">יציאה למסלול. בראשון — 10:30</td><td class="ss">LionWheel</td></tr><tr><td class="hh">כל היום</td><td class="ww">מסירות לפי הסדר; סימון ״בוצע״ אחרי כל לקוח</td><td class="ss">LionWheel</td></tr><tr><td class="hh">כשיש חריגה</td><td class="ww">שיחה לדורין לפני שמסמנים משהו</td><td class="ss">—</td></tr><tr><td class="hh">כשחסר בשטח</td><td class="ww">השלמה מיידית מקרטון הרכב — ורישום מה נלקח</td><td class="ss">—</td></tr><tr><td class="hh">סוף מסלול</td><td class="ww">סחורה שחזרה נמסרת למקסים לקליטה חזרה למלאי</td><td class="ss">—</td></tr><tr><td class="hh">שוטף</td><td class="ww">תדלוק, טיפולים וניקיון הרכב</td><td class="ss">—</td></tr></tbody></table>
+<table class="grid"><tbody><tr><td class="hh">7:30–8:00</td><td class="ww">העמסה עם מקסים + בדיקה שיש חשבונית על כל משלוח</td><td class="ss">—</td></tr><tr><td class="hh">8:00</td><td class="ww">יציאה למסלול. בראשון — 10:30</td><td class="ss">LionWheel</td></tr><tr><td class="hh">כל היום</td><td class="ww">מסירות לפי הסדר; סימון ״בוצע״ אחרי כל לקוח</td><td class="ss">LionWheel</td></tr><tr><td class="hh">כשיש חריגה</td><td class="ww">שיחה לדורין לפני שמסמנים משהו</td><td class="ss">—</td></tr><tr><td class="hh">כשחסר בשטח</td><td class="ww">השלמה מיידית מקרטון הרכב — ורישום מה נלקח ולאיזה לקוח</td><td class="ss">—</td></tr><tr><td class="hh">סוף מסלול</td><td class="ww">סגירת קרטון הרכב לפי הצ׳קליסט + דיווח למקסים ולדורין מה נלקח</td><td class="ss">דף הצ׳קליסט</td></tr><tr><td class="hh">כשמגיעים למפעל</td><td class="ww">סחורה שחזרה נמסרת למקסים; הקרטון מושלם לפי הרשימה</td><td class="ss">—</td></tr><tr><td class="hh">שוטף</td><td class="ww">תדלוק, טיפולים וניקיון הרכב</td><td class="ss">—</td></tr></tbody></table>
 
 <h2 class="sec">השבוע והחודש שלי</h2>
 <ul class="bul"><li>המסלול לפי אזור־יום: ראשון · שני · חמישי — מרכז. שלישי — צפון. רביעי — דרום.</li></ul>
 
 <h2 class="sec">שלושה כללי ברזל</h2>
-<ul class="iron"><li><span class="num">1</span>כל חריגה — שיחה לדורין לפני שמסמנים. תמיד.</li><li><span class="num">2</span>לוחצים ״בוצע״ רק כשהסחורה אצל הלקוח — לא כשהיא עוד ברכב.</li><li><span class="num">3</span>סחורה דחויה חוזרת איתי למפעל. לא נשארת אצל הלקוח ולא ״מסתדרת״ בדרך.</li></ul>
+<ul class="iron"><li><span class="num">1</span>כל חריגה — שיחה לדורין לפני שמסמנים. תמיד.</li><li><span class="num">2</span>לוחצים ״בוצע״ רק כשהסחורה אצל הלקוח — לא כשהיא עוד ברכב.</li><li><span class="num">3</span>כל מה שנלקח מקרטון הרכב נרשם ומדווח. זה לא מחסן נסתר.</li></ul>
 
 <div class="two">
   <div>
     <h2 class="sec">מה אני מחליט לבד</h2>
-    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">מעל זה</th></tr></thead><tbody><tr><td>קיבל הכל</td><td class="c"><b>סימון ״בוצע״</b></td><td class="c">—</td></tr><tr><td>דחה חלק</td><td class="c"><b>—</b></td><td class="c">שיחה לדורין</td></tr><tr><td>חנות סגורה / אין איש</td><td class="c"><b>—</b></td><td class="c">שיחה לדורין</td></tr><tr><td>דחה הכל</td><td class="c"><b>—</b></td><td class="c">שיחה לדורין</td></tr><tr><td>סימנתי משהו בטעות</td><td class="c"><b>—</b></td><td class="c">שיחה לדורין מיד</td></tr></tbody></table>
+    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">פונים ל־</th></tr></thead><tbody><tr><td>קיבל הכל</td><td class="c"><b>סימון ״בוצע״</b></td><td class="c">—</td></tr><tr><td>דחה חלק</td><td class="c"><b>—</b></td><td class="c">דורין</td></tr><tr><td>חנות סגורה / אין איש</td><td class="c"><b>—</b></td><td class="c">דורין</td></tr><tr><td>דחה הכל</td><td class="c"><b>—</b></td><td class="c">דורין</td></tr><tr><td>סימנתי משהו בטעות</td><td class="c"><b>—</b></td><td class="c">דורין, מיד</td></tr></tbody></table>
   </div>
   <div>
     <h2 class="sec">מה קורה כשלא עשו</h2>
     <p class="miss">דורין רואה כל סימון ב־LionWheel. סימון שנעשה בלי שיחה, כשהייתה חריגה, מתגלה למחרת — ואז הזיכוי כבר יצא.</p>
   </div>
 </div>
-
-<div class="new"><div class="nl">מה חדש מ־29.7</div><ul><li>בקרטון שברכב יש מגוון תוצרת מוגמרת למענה מיידי על חוסר לא צפוי בשטח.</li><li>כל מה שנלקח מהקרטון נרשם ונגרע. זה לא מחסן נסתר.</li></ul></div>
 
 <div class="sign">
   <div class="sl2">קראתי, הבנתי, וזה התפקיד שלי</div>
@@ -269,7 +349,8 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
   <div class="sg"><span>תאריך</span><i></i></div>
 </div>
 <div class="pf">GT Everyday · פרוטוקול עבודה מיידן · גרסה 29.7.2026</div>
-</section><section class="page prot">
+<div class="nb" data-k="prot|פרוטוקול עבודה — מיידן" data-t="פרוטוקול עבודה — מיידן"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">פרוטוקול עבודה — מיידן</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="שעות">שעות</button><button type="button" class="chip" aria-pressed="false" data-c="היום שלי">היום שלי</button><button type="button" class="chip" aria-pressed="false" data-c="כללי ברזל">כללי ברזל</button><button type="button" class="chip" aria-pressed="false" data-c="ספי סמכות">ספי סמכות</button><button type="button" class="chip" aria-pressed="false" data-c="כשלא עשו">כשלא עשו</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="השעות נכונות? כלל הברזל בר־בדיקה, או סיסמה? ה״מה קורה כשלא עשו״ אמיתי?" aria-label="הערות על פרוטוקול עבודה — מיידן"></textarea></div>
+</section><section class="page prot" id="d5">
 <header class="dh">
   <div class="dk">פרוטוקול עבודה</div>
   <h1>עדי</h1>
@@ -281,23 +362,21 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
 <table class="grid"><tbody><tr><td class="hh">עד 10:00</td><td class="ww">תזרים מעודכן</td><td class="ss">—</td></tr><tr><td class="hh">12:00</td><td class="ww">סנכרון עם דורין: זיכויים, גבייה, חשבוניות ספקים</td><td class="ss">—</td></tr><tr><td class="hh">שוטף</td><td class="ww">הכנסת חשבוניות לחשבונית ירוקה ולתזרים לפי תנאי תשלום</td><td class="ss">חשבונית ירוקה</td></tr></tbody></table>
 
 <h2 class="sec">השבוע והחודש שלי</h2>
-<ul class="bul"><li>שלישי — בדיקת אי־התאמות עם דורין.</li><li>ראשון — תמונת תזרים ותקציב לתום ולאלכס, נכנסת לדף המספרים.</li><li>רביעי האחרון בחודש — מספקת את בסיס התזרים לחישוב המזומן הנזיל לרכש לחודש הבא.</li><li>חודשי — סגירה מול רואה החשבון.</li></ul>
+<ul class="bul"><li>שלישי — בדיקת אי־התאמות עם דורין.</li><li>ראשון — תמונת תזרים ותקציב לתום ולאלכס, נכנסת לדף המספרים.</li><li>רביעי האחרון בחודש — מוסר לתום תמונת מזומן: מה נכנס, מה יוצא, מה כבר מחויב. המספר לרכש נקבע אצל תום לפי הצורך בתכנון — התמונה הכספית היא הבדיקה שהוא עושה מולה.</li><li>חודשי — סגירה מול רואה החשבון.</li></ul>
 
 <h2 class="sec">שלושה כללי ברזל</h2>
-<ul class="iron"><li><span class="num">1</span>אף חשבונית לא נכנסת לתזרים בלי תנאי תשלום.</li><li><span class="num">2</span>חריגת תקציב צפויה = התראה לפני שהיא קורית, לא אחרי.</li><li><span class="num">3</span>עדי רושמת — תום מאשר. תמיד שתי עיניים על כסף שיוצא.</li></ul>
+<ul class="iron"><li><span class="num">1</span>אף חשבונית לא נכנסת לתזרים בלי תנאי תשלום.</li><li><span class="num">2</span>חריגת תקציב צפויה = התראה לפני שהיא קורית, לא אחרי.</li><li><span class="num">3</span>עדי רושם — תום מאשר. תמיד שתי עיניים על כסף שיוצא.</li></ul>
 
 <div class="two">
   <div>
     <h2 class="sec">מה אני מחליט לבד</h2>
-    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">מעל זה</th></tr></thead><tbody><tr><td>תשלום לספק</td><td class="c"><b>רושמת עד ₪1,000</b></td><td class="c">מעל ₪1,000 — אישור תום</td></tr><tr><td>גבייה מלקוחות</td><td class="c"><b>—</b></td><td class="c">דורין</td></tr><tr><td>קביעת תנאי תשלום</td><td class="c"><b>—</b></td><td class="c">תום</td></tr></tbody></table>
+    <table class="grid sm"><thead><tr><th>נושא</th><th class="c">לבד</th><th class="c">פונים ל־</th></tr></thead><tbody><tr><td>תשלום לספק</td><td class="c"><b>עד ₪1,000</b></td><td class="c">תום</td></tr><tr><td>גבייה מלקוחות</td><td class="c"><b>—</b></td><td class="c">דורין</td></tr><tr><td>קביעת תנאי תשלום</td><td class="c"><b>—</b></td><td class="c">תום</td></tr></tbody></table>
   </div>
   <div>
     <h2 class="sec">מה קורה כשלא עשו</h2>
     <p class="miss">חשבונית בלי תנאי תשלום לא נכנסת לתזרים — והפער מתגלה בסנכרון של 12:00 עם דורין.</p>
   </div>
 </div>
-
-<div class="new"><div class="nl">מה חדש מ־29.7</div><ul><li>ברביעי האחרון בכל חודש את מספקת את נתוני התזרים שמהם תום גוזר לאלכס מספר אחד: כמה מזומן נזיל צריך לרכש בחודש הבא.</li></ul></div>
 
 <div class="sign">
   <div class="sl2">קראתי, הבנתי, וזה התפקיד שלי</div>
@@ -306,150 +385,270 @@ ul.iron li{font-size:.89rem;font-weight:700;line-height:1.3;padding:.21rem .5rem
   <div class="sg"><span>תאריך</span><i></i></div>
 </div>
 <div class="pf">GT Everyday · פרוטוקול עבודה עדי · גרסה 29.7.2026</div>
-</section><section class="page chk">
+<div class="nb" data-k="prot|פרוטוקול עבודה — עדי" data-t="פרוטוקול עבודה — עדי"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">פרוטוקול עבודה — עדי</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="שעות">שעות</button><button type="button" class="chip" aria-pressed="false" data-c="היום שלי">היום שלי</button><button type="button" class="chip" aria-pressed="false" data-c="כללי ברזל">כללי ברזל</button><button type="button" class="chip" aria-pressed="false" data-c="ספי סמכות">ספי סמכות</button><button type="button" class="chip" aria-pressed="false" data-c="כשלא עשו">כשלא עשו</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="השעות נכונות? כלל הברזל בר־בדיקה, או סיסמה? ה״מה קורה כשלא עשו״ אמיתי?" aria-label="הערות על פרוטוקול עבודה — עדי"></textarea></div>
+</section><section class="page chk" id="d6">
 <header class="dh">
   <div class="dk">צ׳קליסט סגירה · שבוע אחד</div>
   <h1>מחסן תוצרת מוגמרת</h1>
   <div class="dr">סוגר: <b>מקסים</b> · מתי: סוף כל יום</div>
 </header>
-<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל מה שהתקבל מדניס נקלט במערכת</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">אין סחורה שעומדת על הרצפה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">מה שלוקט למחר ערוך לפי סדר המסלול</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">כל מוצר במדף הקבוע שלו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">פנים קדימה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הישן קדימה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">שבור או פגום — רק באזור המסומן</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">הרצפה נקייה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">אין קרטונים ריקים בשטח המחסן</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">בטיחות</td></tr><tr><td class="it">המעברים פנויים</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">המחסן נעול</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל מה שהתקבל מדניס נקלט במערכת</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">במחסן יש רק תוצרת שמוכנה לליקוט</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">תוצרת בלי תוויות — באזור ההמתנה שליד מחסן חומרי הגלם, ורשומה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">כל ההזמנות של מחר מוכנות למסלול</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">כל מוצר במדף הקבוע שלו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">פנים קדימה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הישן קדימה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">שבור או פגום — רק באזור המסומן</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">הרצפה נקייה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">אין קרטונים ריקים בשטח המחסן</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">בטיחות</td></tr><tr><td class="it">המעברים פנויים</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<div class="nt"><div class="ntl">שים לב</div><p>מה שאין לו תווית עדיין הוא לא מלאי זמין. הוא נספר, הוא רשום — אבל הוא לא במחסן ולא נכנס להזמנה.</p></div>
 <div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>פער בין מה שנספר למה שרשום במערכת — לא מתקנים לבד. שיחה לתום.</p></div>
-<div class="rule4">
-  <div class="r4l">הכלל שמאחורי כל הצ׳קליסט</div>
-  <p>ארבע שאלות, כל יום, בכל מחסן: <b>מלאי · סדר · ניקיון · בטיחות.</b> וי או חריגה — אין מצב שלישי.
-  מה שאין לו וי בסוף היום הוא לא ״כמעט״ — הוא פתוח, ומישהו צריך לדעת עליו.</p>
-</div>
 <div class="pf">GT Everyday · מחסן תוצרת מוגמרת · שבוע של ______ · גרסה 29.7.2026</div>
-</section><section class="page chk">
+<div class="nb" data-k="chk|צ׳קליסט — מחסן תוצרת מוגמרת" data-t="צ׳קליסט — מחסן תוצרת מוגמרת"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">צ׳קליסט — מחסן תוצרת מוגמרת</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על צ׳קליסט — מחסן תוצרת מוגמרת"></textarea></div>
+</section><section class="page chk" id="d7">
 <header class="dh">
   <div class="dk">צ׳קליסט סגירה · שבוע אחד</div>
   <h1>מחסן דוגמאות</h1>
   <div class="dr">סוגר: <b>מקסים</b> · מתי: סוף כל יום</div>
 </header>
-<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל מה שנלקח היום נרשם ונגרע מהמחסן הראשי</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">לכל פריט רשום למי הוא מיועד</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">פריט שלא יצא תוך חודש — חוזר למלאי הרגיל</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הכול על המדף הייעודי בלבד</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">המדף נקי</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">אין פריט פתוח</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל מה שנלקח היום רשום בדף הלקיחות ונגרע מהמחסן הראשי</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">פריט שלא יצא תוך חודש — חוזר למלאי הרגיל</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הכול על המדף הייעודי בלבד</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">המדף נקי</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">אין פריט פתוח</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<div class="nt"><div class="ntl">שים לב</div><p>לצד המחסן תלוי דף הלקיחות. כל מי שלוקח משהו רושם בעצמו — מה, כמה ומתי. בלי הדף אין מעקב.</p></div>
 <div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>פריט שנלקח בלי רישום — שיחה לתום. דוגמה שלא נרשמה היא חוסר שאף אחד לא יודע עליו.</p></div>
-<div class="rule4">
-  <div class="r4l">הכלל שמאחורי כל הצ׳קליסט</div>
-  <p>ארבע שאלות, כל יום, בכל מחסן: <b>מלאי · סדר · ניקיון · בטיחות.</b> וי או חריגה — אין מצב שלישי.
-  מה שאין לו וי בסוף היום הוא לא ״כמעט״ — הוא פתוח, ומישהו צריך לדעת עליו.</p>
-</div>
 <div class="pf">GT Everyday · מחסן דוגמאות · שבוע של ______ · גרסה 29.7.2026</div>
-</section><section class="page chk">
+<div class="nb" data-k="chk|צ׳קליסט — מחסן דוגמאות" data-t="צ׳קליסט — מחסן דוגמאות"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">צ׳קליסט — מחסן דוגמאות</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על צ׳קליסט — מחסן דוגמאות"></textarea></div>
+</section><section class="page log" id="d8">
+<header class="dh">
+  <div class="dk">דף רישום · תלוי ליד המדף</div>
+  <h1>דף לקיחות — מחסן דוגמאות</h1>
+  <div class="dr">רושם: <b>כל מי שלוקח</b> · מתי: בזמן הלקיחה, לא אחר כך</div>
+</header>
+<table class="lg"><thead><tr><th>תאריך</th><th>מה נלקח</th><th>כמות</th><th>מי לקח</th><th>למי / לאן</th><th>נרשם במערכת</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+<div class="nt"><div class="ntl">שים לב</div><p>כל לקיחה נרשמת בשורה אחת, ברגע שלוקחים. מקסים עובר על הדף בסוף היום וגורע במערכת.</p></div>
+<div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>פריט שיצא בלי שורה בדף הוא חוסר שאף אחד לא יודע עליו — והוא יתגלה רק בספירה.</p></div>
+<div class="pf">GT Everyday · דף לקיחות — מחסן דוגמאות · דף של ______ · גרסה 29.7.2026</div>
+<div class="nb" data-k="chk|דף לקיחות — מחסן דוגמאות" data-t="דף לקיחות — מחסן דוגמאות"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">דף לקיחות — מחסן דוגמאות</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על דף לקיחות — מחסן דוגמאות"></textarea></div>
+</section><section class="page chk" id="d9">
 <header class="dh">
   <div class="dk">צ׳קליסט סגירה · שבוע אחד</div>
   <h1>מחסן תוויות</h1>
   <div class="dr">סוגר: <b>מקסים</b> · מתי: סוף כל יום</div>
 </header>
-<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל סוג במקום הקבוע והמסומן שלו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">נרשם מי מתחת למלאי מינימום</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">תוויות שלא בשימוש — מוצר שירד או עיצוב ישן — בצד ומסומנות</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">המדף יבש</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">אין תוויות על הרצפה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">בטיחות</td></tr><tr><td class="it">המחסן סגור</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל סוג במקום הקבוע והמסומן שלו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">נרשם מי מתחת למלאי המינימום</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">תוויות שלא בשימוש — מוצר שירד או עיצוב ישן — בצד ומסומנות</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<div class="nt"><div class="ntl">שים לב</div><p>מלאי המינימום של כל תווית = שלושה שבועות ייצור לפי התחזית, מעוגל כלפי מעלה ל־500 יחידות. הכמות משתנה מתווית לתווית — הזמן לא. תמיד שלושה שבועות.</p></div>
 <div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>תווית שתיגמר תוך פחות משבוע — נכנסת לתור הרכש היום, לא ברביעי.</p></div>
-<div class="rule4">
-  <div class="r4l">הכלל שמאחורי כל הצ׳קליסט</div>
-  <p>ארבע שאלות, כל יום, בכל מחסן: <b>מלאי · סדר · ניקיון · בטיחות.</b> וי או חריגה — אין מצב שלישי.
-  מה שאין לו וי בסוף היום הוא לא ״כמעט״ — הוא פתוח, ומישהו צריך לדעת עליו.</p>
-</div>
 <div class="pf">GT Everyday · מחסן תוויות · שבוע של ______ · גרסה 29.7.2026</div>
-</section><section class="page chk">
+<div class="nb" data-k="chk|צ׳קליסט — מחסן תוויות" data-t="צ׳קליסט — מחסן תוויות"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">צ׳קליסט — מחסן תוויות</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על צ׳קליסט — מחסן תוויות"></textarea></div>
+</section><section class="page chk" id="d10">
 <header class="dh">
   <div class="dk">צ׳קליסט סגירה · שבוע אחד</div>
   <h1>מחסן אריזות — בקבוקים, פקקים, קרטונים, ג׳ריקנים</h1>
   <div class="dr">סוגר: <b>מקסים</b> · מתי: סוף כל יום</div>
 </header>
-<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל סוג במקום הקבוע שלו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">נרשם מי מתחת למלאי מינימום</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">משטחים סגורים, לא פתוחים לאבק</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">קרטונים שנרטבו — בחוץ</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">אין פריטי אריזה באזור הייצור</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">בטיחות</td></tr><tr><td class="it">משטחים לא ערומים גבוה מדי</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">המעברים פנויים</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל סוג במקום הקבוע שלו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">נרשם מי מתחת למלאי המינימום</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">משטחים סגורים, לא פתוחים לאבק</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">אין פריטי אריזה באזור הייצור</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">בטיחות</td></tr><tr><td class="it">המעברים פנויים</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+
 <div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>פקק או בקבוק מתחת למינימום — נכנס לתור הרכש היום. בלעדיהם אין ייצור.</p></div>
-<div class="rule4">
-  <div class="r4l">הכלל שמאחורי כל הצ׳קליסט</div>
-  <p>ארבע שאלות, כל יום, בכל מחסן: <b>מלאי · סדר · ניקיון · בטיחות.</b> וי או חריגה — אין מצב שלישי.
-  מה שאין לו וי בסוף היום הוא לא ״כמעט״ — הוא פתוח, ומישהו צריך לדעת עליו.</p>
-</div>
 <div class="pf">GT Everyday · מחסן אריזות — בקבוקים, פקקים, קרטונים, ג׳ריקנים · שבוע של ______ · גרסה 29.7.2026</div>
-</section><section class="page chk">
+<div class="nb" data-k="chk|צ׳קליסט — מחסן אריזות — בקבוקים, פקקים, קרטונים, ג׳ריקנים" data-t="צ׳קליסט — מחסן אריזות — בקבוקים, פקקים, קרטונים, ג׳ריקנים"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">צ׳קליסט — מחסן אריזות — בקבוקים, פקקים, קרטונים, ג׳ריקנים</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על צ׳קליסט — מחסן אריזות — בקבוקים, פקקים, קרטונים, ג׳ריקנים"></textarea></div>
+</section><section class="page chk" id="d11">
 <header class="dh">
   <div class="dk">צ׳קליסט סגירה · שבוע אחד</div>
   <h1>מחסן סירופים, אלכוהול וסמודי׳ז</h1>
   <div class="dr">סוגר: <b>מקסים</b> · מתי: סוף כל יום</div>
 </header>
-<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל מיכל סגור ומסומן: מה יש בו ומתי נפתח</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">תאריכים קרובים קדימה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">האלכוהול במקום נעול וספיר</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">אין נזילות על הרצפה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">אין מיכל פתוח</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">בטיחות</td></tr><tr><td class="it">אין מקור חום ליד האלכוהול</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל דבר במקומו ומסומן: מה יש בו ומתי נפתח</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+
 <div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>מיכל בלי סימון — לא משתמשים בו. שיחה לדניס.</p></div>
-<div class="rule4">
-  <div class="r4l">הכלל שמאחורי כל הצ׳קליסט</div>
-  <p>ארבע שאלות, כל יום, בכל מחסן: <b>מלאי · סדר · ניקיון · בטיחות.</b> וי או חריגה — אין מצב שלישי.
-  מה שאין לו וי בסוף היום הוא לא ״כמעט״ — הוא פתוח, ומישהו צריך לדעת עליו.</p>
-</div>
 <div class="pf">GT Everyday · מחסן סירופים, אלכוהול וסמודי׳ז · שבוע של ______ · גרסה 29.7.2026</div>
-</section><section class="page chk">
+<div class="nb" data-k="chk|צ׳קליסט — מחסן סירופים, אלכוהול וסמודי׳ז" data-t="צ׳קליסט — מחסן סירופים, אלכוהול וסמודי׳ז"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">צ׳קליסט — מחסן סירופים, אלכוהול וסמודי׳ז</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על צ׳קליסט — מחסן סירופים, אלכוהול וסמודי׳ז"></textarea></div>
+</section><section class="page chk" id="d12">
 <header class="dh">
   <div class="dk">צ׳קליסט סגירה · שבוע אחד</div>
   <h1>מחסן עלים</h1>
   <div class="dr">סוגר: <b>מקסים</b> · מתי: סוף כל יום</div>
 </header>
-<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל סוג במיכל סגור ומסומן</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הישן קדימה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">אין שקים פתוחים</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">המחסן יבש</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">אין שאריות על הרצפה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">בטיחות</td></tr><tr><td class="it">קריר ויבש — לא ליד קיטור או מקור חום</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל סוג במיכל סגור ומסומן</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הישן קדימה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">אין שקים פתוחים</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">אין שאריות על הרצפה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+
 <div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>ריח או מראה חשוד — בצד + תמונה לתום ולאלכס. לא לפח, לא לשימוש.</p></div>
-<div class="rule4">
-  <div class="r4l">הכלל שמאחורי כל הצ׳קליסט</div>
-  <p>ארבע שאלות, כל יום, בכל מחסן: <b>מלאי · סדר · ניקיון · בטיחות.</b> וי או חריגה — אין מצב שלישי.
-  מה שאין לו וי בסוף היום הוא לא ״כמעט״ — הוא פתוח, ומישהו צריך לדעת עליו.</p>
-</div>
 <div class="pf">GT Everyday · מחסן עלים · שבוע של ______ · גרסה 29.7.2026</div>
-</section><section class="page chk">
+<div class="nb" data-k="chk|צ׳קליסט — מחסן עלים" data-t="צ׳קליסט — מחסן עלים"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">צ׳קליסט — מחסן עלים</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על צ׳קליסט — מחסן עלים"></textarea></div>
+</section><section class="page chk" id="d13">
 <header class="dh">
   <div class="dk">צ׳קליסט סגירה · שבוע אחד</div>
   <h1>מקפיאים</h1>
   <div class="dr">סוגר: <b>מקסים</b> · מתי: סוף כל יום</div>
 </header>
-<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">טמפרטורה</td></tr><tr class="tmp"><td class="it">רשום את הטמפרטורה כמספר — לא וי</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">אין סחורה שחוסמת את זרימת האוויר</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">כל מוצר במקומו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הישן קדימה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">אין קרח מצטבר</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הדלת נסגרת עד הסוף</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">טמפרטורה</td></tr><tr class="tmp"><td class="it">רשום את הטמפרטורה כמספר — לא וי</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<div class="nt"><div class="ntl">שים לב</div><p>זה הדף היחיד שכל כולו מספר אחד. אין פה וי — יש טמפרטורה, כל יום, בכתב יד.</p></div>
 <div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>חריגה בטמפרטורה — שיחה לתום מיד. לא מחר בבוקר.</p></div>
-<div class="rule4">
-  <div class="r4l">הכלל שמאחורי כל הצ׳קליסט</div>
-  <p>ארבע שאלות, כל יום, בכל מחסן: <b>מלאי · סדר · ניקיון · בטיחות.</b> וי או חריגה — אין מצב שלישי.
-  מה שאין לו וי בסוף היום הוא לא ״כמעט״ — הוא פתוח, ומישהו צריך לדעת עליו.</p>
-</div>
 <div class="pf">GT Everyday · מקפיאים · שבוע של ______ · גרסה 29.7.2026</div>
-</section><section class="page chk">
+<div class="nb" data-k="chk|צ׳קליסט — מקפיאים" data-t="צ׳קליסט — מקפיאים"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">צ׳קליסט — מקפיאים</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על צ׳קליסט — מקפיאים"></textarea></div>
+</section><section class="page chk" id="d14">
 <header class="dh">
   <div class="dk">צ׳קליסט סגירה · שבוע אחד</div>
-  <h1>מחסן הרכב</h1>
-  <div class="dr">סוגר: <b>מקסים</b> · מתי: סוף כל יום</div>
+  <h1>קרטון הרכב</h1>
+  <div class="dr">סוגר: <b>מיידן</b> · מתי: סוף מסלול</div>
 </header>
-<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">הקרטון מושלם לפי הרשימה הקבועה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">כל מה שנלקח היום נרשם ונגרע</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">הקרטון במקום הקבוע ברכב</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">אין פריט פתוח או פגום בקרטון</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">מלאי</td></tr><tr><td class="it">כל מה שנלקח היום נרשם — מה, כמה ולאיזה לקוח</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">דווח למקסים ולדורין מה נלקח</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">סדר</td></tr><tr><td class="it">הקרטון במקום הקבוע ברכב</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">אין פריט פתוח או פגום בקרטון</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<div class="nt"><div class="ntl">שים לב</div><p>הקרטון נשאר ברכב, ולכן הוא באחריותך. כשמגיעים למפעל — מקסים משלים אותו לפי הרשימה הקבועה.</p></div>
 <div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>זה לא מחסן נסתר. פריט שנלקח בלי רישום הוא חוסר שלא נספר ויחזור כזיכוי.</p></div>
-<div class="rule4">
-  <div class="r4l">הכלל שמאחורי כל הצ׳קליסט</div>
-  <p>ארבע שאלות, כל יום, בכל מחסן: <b>מלאי · סדר · ניקיון · בטיחות.</b> וי או חריגה — אין מצב שלישי.
-  מה שאין לו וי בסוף היום הוא לא ״כמעט״ — הוא פתוח, ומישהו צריך לדעת עליו.</p>
-</div>
-<div class="pf">GT Everyday · מחסן הרכב · שבוע של ______ · גרסה 29.7.2026</div>
-</section><section class="page chk">
+<div class="pf">GT Everyday · קרטון הרכב · שבוע של ______ · גרסה 29.7.2026</div>
+<div class="nb" data-k="chk|צ׳קליסט — קרטון הרכב" data-t="צ׳קליסט — קרטון הרכב"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">צ׳קליסט — קרטון הרכב</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על צ׳קליסט — קרטון הרכב"></textarea></div>
+</section><section class="page chk" id="d15">
 <header class="dh">
   <div class="dk">צ׳קליסט סגירה · שבוע אחד</div>
   <h1>רצפת הייצור</h1>
   <div class="dr">סוגר: <b>דניס</b> · מתי: לפני היציאה הביתה</div>
 </header>
-<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">דיווח</td></tr><tr><td class="it">דיווח הייצור בפנים</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">PH ו־BRIX נרשמו לכל אצווה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">נרשם מאיזו הזמנת רכש נלקח כל חומר גלם</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">מה שליקטתי דווח</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">מסירה</td></tr><tr><td class="it">התוצרת נמסרה למקסים בכמויות מדויקות</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ציוד</td></tr><tr><td class="it">המכונות נוקו וכובו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">שקי הסינון טופלו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הכלים במקום הקבוע</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">אין חומר פתוח על השולחנות</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הרצפה נקייה ויבשה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">תחזוקה</td></tr><tr><td class="it">מה שהתקלקל היום נרשם</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+<table class="wk"><thead><tr><th>הבדיקה</th><th class="dcol">ראשון</th><th class="dcol">שני</th><th class="dcol">שלישי</th><th class="dcol">רביעי</th><th class="dcol">חמישי</th></tr></thead><tbody><tr class="grp"><td colspan="6">דיווח</td></tr><tr><td class="it">דיווח הייצור בפנים</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">PH ו־BRIX נרשמו לכל אצווה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">נרשם מאיזו הזמנת רכש נלקח כל חומר גלם</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">מה שליקטתי דווח</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">מסירה</td></tr><tr><td class="it">התוצרת נמסרה למקסים — ומסומן מה יצא עם תוויות ומה בלי</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ציוד</td></tr><tr><td class="it">המכונות נוקו וכובו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">שקי הסינון טופלו</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הכלים במקום הקבוע</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">ניקיון</td></tr><tr><td class="it">אין חומר פתוח על השולחנות</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr><td class="it">הרצפה נקייה ויבשה</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">תחזוקה</td></tr><tr><td class="it">מה שהתקלקל היום נרשם</td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td><td class="bxw"><span class="tk"></span></td></tr><tr class="grp"><td colspan="6">חתימה</td></tr><tr><td class="it">ראשי תיבות</td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td><td class="bxw"><span class="wr"></span></td></tr></tbody></table>
+
 <div class="stop"><div class="stl">עוצרים ומתקשרים</div><p>מכונה שעצרה ייצור — רושמים ומתקשרים לתום באותו יום.</p></div>
-<div class="rule4">
-  <div class="r4l">הכלל שמאחורי כל הצ׳קליסט</div>
-  <p>ארבע שאלות, כל יום, בכל מחסן: <b>מלאי · סדר · ניקיון · בטיחות.</b> וי או חריגה — אין מצב שלישי.
-  מה שאין לו וי בסוף היום הוא לא ״כמעט״ — הוא פתוח, ומישהו צריך לדעת עליו.</p>
-</div>
 <div class="pf">GT Everyday · רצפת הייצור · שבוע של ______ · גרסה 29.7.2026</div>
+<div class="nb" data-k="chk|צ׳קליסט — רצפת הייצור" data-t="צ׳קליסט — רצפת הייצור"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">צ׳קליסט — רצפת הייצור</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="הסעיפים">הסעיפים</button><button type="button" class="chip" aria-pressed="false" data-c="מי סוגר">מי סוגר</button><button type="button" class="chip" aria-pressed="false" data-c="השעה">השעה</button><button type="button" class="chip" aria-pressed="false" data-c="עוצרים ומתקשרים">עוצרים ומתקשרים</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="אפשר לסמן וי בעשר שניות? חסר סעיף? מי סוגר — נכון? ״עוצרים ומתקשרים״ אמיתי?" aria-label="הערות על צ׳קליסט — רצפת הייצור"></textarea></div>
 </section>
 
-<section class="page apx">
+<section class="page apx" id="d16">
   <header class="dh"><div class="dk">נספח א׳</div><h1>ספי סמכות</h1>
   <div class="dr">אותו מספר בכל הפרוטוקולים. זו הטבלה שמכריעה.</div></header>
-  <table><thead><tr><th>נושא</th><th>מי מחליט לבד</th><th class="c">הסף</th><th class="c">מעל הסף</th></tr></thead>
-  <tbody><tr><td>זיכוי מפער ליקוט מתועד</td><td>דורין</td><td class="c"><b>עד ₪4,000</b></td><td class="c">תום</td></tr><tr><td>זיכוי ידני / רצון־טוב</td><td>דורין</td><td class="c"><b>עד ₪500</b></td><td class="c">תום</td></tr><tr><td>הנחה או מחיר מיוחד</td><td>אף אחד</td><td class="c"><b>₪0</b></td><td class="c">כל חריגה → תום</td></tr><tr><td>זריקת חומר גלם</td><td>דניס</td><td class="c"><b>עד ₪200</b></td><td class="c">תום / אלכס</td></tr><tr><td>ציוד בעצירת ייצור באותו יום</td><td>דניס</td><td class="c"><b>עד ₪300</b></td><td class="c">—</td></tr><tr><td>ציוד שוטף</td><td>דניס מאתר → דורין מבצעת</td><td class="c"><b>₪300–2,000</b></td><td class="c">אישור תום</td></tr><tr><td>ציוד או השקעה</td><td>—</td><td class="c"><b>מעל ₪2,000</b></td><td class="c">אלכס</td></tr><tr><td>תשלום לספק</td><td>עדי רושמת ומכינה</td><td class="c"><b>עד ₪1,000</b></td><td class="c">אישור תום</td></tr><tr><td>לקוח חדש בתנאי אשראי</td><td>—</td><td class="c"><b>—</b></td><td class="c">אלכס</td></tr></tbody></table>
-  <div class="rule4"><div class="r4l">הכלל</div><p>מתחת לסף — מחליטים לבד, בלי לשאול ובלי להתנצל.
-  מעל הסף — שאלה אחת לאדם אחד. אין מצב שבו לא ברור למי פונים.</p></div>
+  <table><thead><tr><th>נושא</th><th>מי מחליט לבד</th><th class="c">הסף</th><th class="c">פונים ל־</th></tr></thead>
+  <tbody><tr><td>זיכוי מפער ליקוט מתועד</td><td>דורין</td><td class="c"><b>עד ₪4,000</b></td><td class="c">תום</td></tr><tr><td>זיכוי ידני / רצון־טוב</td><td>דורין</td><td class="c"><b>עד ₪500</b></td><td class="c">תום</td></tr><tr><td>הנחה או מחיר מיוחד</td><td>אף אחד</td><td class="c"><b>₪0</b></td><td class="c">אלכס</td></tr><tr><td>זריקת חומר גלם</td><td>דניס</td><td class="c"><b>עד ₪200</b></td><td class="c">תום / אלכס</td></tr><tr><td>ציוד בעצירת ייצור באותו יום</td><td>דניס</td><td class="c"><b>עד ₪300</b></td><td class="c">—</td></tr><tr><td>ציוד שוטף</td><td>דניס מאתר → דורין מבצעת</td><td class="c"><b>₪300–2,000</b></td><td class="c">תום</td></tr><tr><td>ציוד או השקעה</td><td>—</td><td class="c"><b>מעל ₪2,000</b></td><td class="c">אלכס</td></tr><tr><td>תשלום לספק</td><td>עדי רושם ומכין</td><td class="c"><b>עד ₪1,000</b></td><td class="c">תום</td></tr><tr><td>לקוח חדש בתנאי אשראי</td><td>—</td><td class="c"><b>—</b></td><td class="c">אלכס</td></tr></tbody></table>
+  <div class="rule4"><div class="r4l">הכלל</div><p>בתוך הסף — מחליטים לבד, בלי לשאול ובלי להתנצל.
+  מעבר לו — שאלה אחת, לאדם אחד. אין מצב שבו לא ברור למי פונים.</p></div>
   <div class="pf">GT Everyday · נספח א׳ · ספי סמכות · 29.7.2026</div>
+  <div class="nb" data-k="apx|נספח א׳ — ספי סמכות" data-t="נספח א׳ — ספי סמכות"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">נספח א׳ — ספי סמכות</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="המספרים">המספרים</button><button type="button" class="chip" aria-pressed="false" data-c="הבעלות">הבעלות</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="המספר נכון? הבעלות נכונה? מה חסר כאן?" aria-label="הערות על נספח א׳ — ספי סמכות"></textarea></div>
 </section>
 
-<section class="page apx">
+<section class="page apx" id="d17">
   <header class="dh"><div class="dk">נספח ב׳</div><h1>מי מחליף את מי</h1>
   <div class="dr">כשמישהו לא מגיע — זה הדף שפותחים.</div></header>
   <table><thead><tr><th class="c">התפקיד</th><th>מי מגבה</th><th class="c">מצב</th></tr></thead>
   <tbody><tr><td class="c"><b>דורין</b></td><td>תום — הזמנות וזיכויים קריטיים · עדי — גבייה</td><td class="c">גבוי מלא</td></tr><tr><td class="c"><b>דניס</b></td><td>תום — זמנית בלבד</td><td class="c">⚠ נקודת כשל יחידה — הסיכון הפתוח הגדול ביותר</td></tr><tr><td class="c"><b>מקסים</b></td><td>תום — מסלול, ליקוט, קליטה והדפסות</td><td class="c">גבוי מלא</td></tr><tr><td class="c"><b>מיידן</b></td><td>נהג או שליחות גיבוי בהסדר מראש; מקסים מוסר לפי המסלול הקיים</td><td class="c">דורש הסדר מראש</td></tr><tr><td class="c"><b>עדי</b></td><td>תום — קריאת תזרים · רואה חשבון חיצוני — רישום</td><td class="c">גבוי מלא</td></tr><tr><td class="c"><b>תום</b></td><td>נוהל ״שבוע בלי תום״: תכנון ורכש דרך הכלים הקיימים, דורין מבצעת, אלכס מאשר</td><td class="c">מתורגל יום ברבעון</td></tr></tbody></table>
   <div class="risk">דניס הוא נקודת כשל יחידה: אין לו מחליף אמיתי, רק תום וזמנית.
-  זה הסיכון התפעולי הפתוח הגדול ביותר — וההחלטה מה עושים איתו לא נסגרה עדיין.</div>
+  זה הסיכון התפעולי הפתוח הגדול ביותר.
+  <b>המסקנה: מגייסים עובד רצפה נוסף</b> — שיסגור משולש עם מקסים ודניס, כך שלכל אחד מהשניים יש גיבוי אמיתי
+  ולא רק תום. עד שזה קורה, כל היעדרות של דניס היא עצירת ייצור.</div>
   <div class="pf">GT Everyday · נספח ב׳ · מחליפים · 29.7.2026</div>
+  <div class="nb" data-k="apx|נספח ב׳ — מי מחליף את מי" data-t="נספח ב׳ — מי מחליף את מי"><div class="nbh"><i class="nbd"></i><span class="nbl">הערות שלי</span><span class="nbn">נספח ב׳ — מי מחליף את מי</span></div><div class="chips"><button type="button" class="chip" aria-pressed="false" data-c="המספרים">המספרים</button><button type="button" class="chip" aria-pressed="false" data-c="הבעלות">הבעלות</button><button type="button" class="chip" aria-pressed="false" data-c="חסר סעיף">חסר סעיף</button><button type="button" class="chip" aria-pressed="false" data-c="ניסוח">ניסוח</button></div><textarea class="nta" rows="2" placeholder="המספר נכון? הבעלות נכונה? מה חסר כאן?" aria-label="הערות על נספח ב׳ — מי מחליף את מי"></textarea></div>
 </section>
+
+<div class="fab" role="toolbar" aria-label="הערות">
+  <button type="button" class="fb nav" id="prev" aria-label="המסמך הקודם">&rsaquo;</button>
+  <span class="fct" id="pCt"></span>
+  <button type="button" class="fb nav" id="next" aria-label="המסמך הבא">&lsaquo;</button>
+  <i class="fsep"></i>
+  <span class="fct n" id="nCt"></span>
+  <button type="button" class="fb pri" id="copyAll">העתק הכל</button>
+  <button type="button" class="fb" id="clearAll">נקה</button>
+</div>
+<div class="tst" id="tst" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var KEY="gt-docs-notes-v1", st={};
+  try{ st=JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ st={}; }
+
+  var blocks=[].slice.call(document.querySelectorAll(".nb"));
+  var pages=[].slice.call(document.querySelectorAll(".page"));
+  var tocs=[].slice.call(document.querySelectorAll("a.tc"));
+  var cur=0;
+
+  function rec(k){ if(!st[k]) st[k]={t:"",c:[]}; if(!st[k].c) st[k].c=[]; return st[k]; }
+  function full(k){ var r=st[k]; return !!(r&&((r.t||"").trim()||(r.c||[]).length)); }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(st)); }catch(e){} }
+  function grow(ta){ ta.style.height="auto"; ta.style.height=Math.max(ta.scrollHeight,50)+"px"; }
+
+  function paint(){
+    var n=0;
+    blocks.forEach(function(b){
+      var on=full(b.dataset.k);
+      if(on) n++;
+      b.classList.toggle("has",on);
+    });
+    tocs.forEach(function(a){
+      var b=blocks[+a.dataset.i];
+      a.classList.toggle("has", !!(b&&full(b.dataset.k)));
+    });
+    document.getElementById("nCt").innerHTML="הערות <b>"+n+"</b>";
+    var none=n===0;
+    document.getElementById("copyAll").disabled=none;
+    document.getElementById("clearAll").disabled=none;
+  }
+
+  blocks.forEach(function(b){
+    var k=b.dataset.k, r=rec(k);
+    var ta=b.querySelector(".nta");
+    ta.value=r.t||"";
+    grow(ta);
+    ta.addEventListener("input",function(){ rec(k).t=ta.value; grow(ta); save(); paint(); });
+    [].slice.call(b.querySelectorAll(".chip")).forEach(function(c){
+      var on=r.c.indexOf(c.dataset.c)>-1;
+      c.setAttribute("aria-pressed",on?"true":"false");
+      c.addEventListener("click",function(){
+        var rr=rec(k), i=rr.c.indexOf(c.dataset.c);
+        if(i>-1) rr.c.splice(i,1); else rr.c.push(c.dataset.c);
+        c.setAttribute("aria-pressed",i>-1?"false":"true");
+        save(); paint();
+      });
+    });
+  });
+
+  function setCur(i){
+    cur=Math.max(0,Math.min(pages.length-1,i));
+    document.getElementById("pCt").innerHTML='<span class="wide">מסמך </span><b>'+(cur+1)+"</b> / "+pages.length;
+    document.getElementById("prev").disabled=cur===0;
+    document.getElementById("next").disabled=cur===pages.length-1;
+  }
+  function jump(i){ setCur(i); pages[cur].scrollIntoView({behavior:"smooth",block:"start"}); }
+  document.getElementById("prev").addEventListener("click",function(){ jump(cur-1); });
+  document.getElementById("next").addEventListener("click",function(){ jump(cur+1); });
+
+  var tick=false;
+  window.addEventListener("scroll",function(){
+    if(tick) return; tick=true;
+    requestAnimationFrame(function(){
+      tick=false;
+      var at=0;
+      for(var i=0;i<pages.length;i++){ if(pages[i].getBoundingClientRect().top<=90) at=i; }
+      if(at!==cur) setCur(at);
+    });
+  },{passive:true});
+
+  function toast(m){
+    var t=document.getElementById("tst");
+    t.textContent=m; t.classList.add("show");
+    clearTimeout(t._h);
+    t._h=setTimeout(function(){ t.classList.remove("show"); },2300);
+  }
+
+  document.getElementById("copyAll").addEventListener("click",function(){
+    var out=["# הערות לליטוש · 14 המסמכים",""];
+    blocks.forEach(function(b,i){
+      var r=st[b.dataset.k]; if(!r) return;
+      var txt=(r.t||"").trim(), ch=r.c||[];
+      if(!txt&&!ch.length) return;
+      out.push("## "+(i+1)+" · "+b.dataset.t);
+      if(ch.length) out.push("נקודות: "+ch.join(" · "));
+      if(txt) out.push(txt);
+      out.push("");
+    });
+    var text=out.join("\n");
+    function fb(){
+      var ta=document.createElement("textarea");
+      ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); toast("הועתק — הדבק לקלוד"); }
+      catch(e){ toast("לא הצלחתי להעתיק"); }
+      document.body.removeChild(ta);
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ toast("הועתק — הדבק לקלוד"); },fb);
+    } else fb();
+  });
+
+  document.getElementById("clearAll").addEventListener("click",function(){
+    if(!confirm("למחוק את כל ההערות מכל המסמכים?")) return;
+    st={}; try{ localStorage.removeItem(KEY); }catch(e){}
+    blocks.forEach(function(b){
+      var ta=b.querySelector(".nta"); ta.value=""; grow(ta);
+      [].slice.call(b.querySelectorAll(".chip")).forEach(function(c){ c.setAttribute("aria-pressed","false"); });
+    });
+    paint(); toast("נמחק");
+  });
+
+  window.addEventListener("resize",function(){
+    blocks.forEach(function(b){ grow(b.querySelector(".nta")); });
+  });
+  setCur(0); paint();
+})();
+</script>
