@@ -43,6 +43,12 @@
 **מה הרצפה צריכה:** הדף המודפס נשאר ותלוי במחסן — הוא הזיכרון הפיזי. הסימון עצמו קורה במערכת,
 כדי שהסגירה תהיה נתון ולא נייר בארון.
 
+**הוכרע ב־28.7:** הדף המודפס הוא **דף עיון בלבד** — מה בודקים, מה סוגרים. אין בו תיבות סימון,
+אין עמודות ימים, ואין שורת חתימה. **הסימון כולו נעשה במערכת.**
+היוצא היחיד הוא דף הלקיחות של מחסן הדוגמאות — הדף היחיד בחבילה שכותבים בו ביד.
+
+זה מעלה את הדחיפות של המשימה הזאת: **עד שהמסך קיים, אין איפה לסמן.**
+
 **מה בונים — המינימום שעובד:**
 - מסך אחד לכל תפקיד, לא מסך לכל מחסן. מקסים פותח מסך אחד בסוף היום ורואה את שבעת המחסנים שלו כרשימה.
 - סעיף = שורה אחת עם וי. אין הערות חובה, אין צילום חובה, אין חתימה דיגיטלית.
@@ -162,16 +168,17 @@
 **מה היה:** חמישה מתוך ששת המשתמשים הופיעו בשמות גנריים או באנגלית, והחשוב מכולם —
 `production@gteveryday.com` — הופיע כ־״Production״. משם צמחה קריאה שגויה שלי, ראו משימה 14.
 
-**מה תוקן ב־28.7** (רק `display_name`; מייל, סיסמה ואישור מייל לא נגעתי בהם):
+**מה תוקן ב־28.7** (רק `display_name`; מייל, סיסמה ואישור מייל לא נגעתי בהם).
+תום ביקש שמות באנגלית — התיקון האמיתי הוא ש־`Production` הפך ל־`Maxim` ושדורין קיבלה שם קריא:
 
 | מייל | שם קודם | שם עכשיו | תפקיד |
 |---|---|---|---|
-| tom@gteveryday.com | Tom | **תום** | admin |
-| alex.berov@gmail.com | Alex | **אלכס** | planner |
-| accounting@greentea-everyday.com | דורין | דורין | planner |
-| production@gteveryday.com | Production | **מקסים** | operator |
-| denispotehin@gmail.com | Denis | **דניס** | operator |
-| adi@gteveryday.com | Adi | **עדי** | viewer |
+| tom@gteveryday.com | Tom | Tom | admin |
+| alex.berov@gmail.com | Alex | Alex | planner |
+| accounting@greentea-everyday.com | דורין | **Doreen** | planner |
+| production@gteveryday.com | Production | **Maxim** | operator |
+| denispotehin@gmail.com | Denis | Denis | operator |
+| adi@gteveryday.com | Adi | Adi | viewer |
 
 עודכן בשני המקומות שמחזיקים שם — `private_core.app_users.display_name` וגם
 `auth.users.raw_user_meta_data.display_name` — כדי שלא ייווצר פער בין השניים.
