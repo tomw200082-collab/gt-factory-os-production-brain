@@ -20,7 +20,8 @@ the **driver name** and the **day**; everything else is default and automatic.
 
 ## Output (one merged, print-ready PDF)
 1. **Page 1** — the LionWheel work order (`daily_route_plan`) for that driver/date,
-   fitted to a single A4 portrait page.
+   at a legible print size; one A4 portrait page when the route fits at that
+   size, otherwise it spills onto page 2+ rather than shrinking further.
 2. **Then, every stop in driving order** (`visits.daily_order`):
    - stop **with** a Green Invoice → the **real GI invoice**, annotated, **×2 copies**.
    - **Invoices are the rule — a waybill is a genuine last resort.** Every stop
@@ -39,15 +40,18 @@ the **driver name** and the **day**; everything else is default and automatic.
      spilled over); the first page is never dropped. Saves two printed sheets per
      affected stop (×2 copies).
 
-## Page 1 — the REAL LionWheel work order (Tom, 2026-06-21)
+## Page 1 — the REAL LionWheel work order (Tom, 2026-06-21; readable-text fix 2026-07-28)
 Page 1 is LionWheel's own "סידור עבודה" print (the **הדפסת סידור עבודה** button =
 `GET /visits/print_labels?date=DD/MM/YYYY&driver_id={id}`), **not** a page we
 generate. It carries LionWheel's header/branding and full columns. LionWheel's
 print view stacks the `יעד` column one Hebrew letter per line (~13 pages); we inject
-compact print CSS (`white-space:nowrap`, tight cells) and pick the largest scale
-that still fits, so all stops land on **one A4 portrait page** — layout tightened
-only, nothing invented. `build_workorder()` stays as a fallback if LionWheel does
-not return the page.
+compact print CSS (`white-space:nowrap`, tight cells, 13px base font — up from
+9.5px, which printed unreadably small once scaled to fit) and scale to fit —
+**but never below a readable floor** (`MIN_SCALE = 0.75` in `_render_one()`).
+A route that fits one A4 page at that floor gets stretched to fill it (no dead
+whitespace); a route too long to stay legible on one page spills onto page 2+
+instead of shrinking further or being silently clipped. `build_workorder()`
+stays as a fallback if LionWheel does not return the page.
 
 ## Invoice annotation design (formal, rounded — Tom, 2026-06-21)
 Per product line, at the **right margin, precise to the line**, a formal rounded
