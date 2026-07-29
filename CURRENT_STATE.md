@@ -566,6 +566,8 @@ Any activation that would otherwise touch one of these items must emit `assumpti
 
 - **RUNTIME_READY signal coverage post-cutover** — re-verify `.claude/state/runtime_ready.json` for entries dated after 2026-05-08 (especially post-cutover LionWheel closure, production-simulation date-range, purchase-session, economics layer). Emit any missing signals via the appropriate `backend-db-executor` dispatch (signal emission is the only authorized write to that file).
 
+- **Production reporting should accept actual-produced qty, not assume a full batch — flagged by Tom 2026-07-29.** Real case: Sun 26/7 + Mon 27/7 tank batches (`BOM-BASE-DET-REG`, `BOM-BASE-FRE-REG`) did run, but Dennis hadn't logged the raw-material collection cleanly beforehand, so the daily-plan page showed them stuck `OVERDUE` instead of closing normally (worked around in chat 2026-07-29 by manually setting `status='completed'`, `closed_at` on the two `production_plan` rows — checkmark only, no RM ledger movement, no qty change). The batch is not always a true 500 L — actual output should be derivable from the real bottle counts produced, even when RM collection was entered imperfectly or late. Needs a `backend-db-executor` design pass on the "report production" flow (portal "Report products" action) to decouple confirmed output qty from RM-collection completeness. Not fixed yet — Tom explicitly deferred the fix, this is the open item only.
+
 ## Current-state reference artifacts
 Primary current-state source:
 - `GT_Factory_OS.xlsx`
