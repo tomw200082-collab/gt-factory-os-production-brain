@@ -7,7 +7,7 @@ description: >-
   FG sell-coverage vs committed+forecast → RM/PKG coverage vs firmed plan → committed-first plan
   recheck → draft re-plans + purchase-session drafts (never firm/place) → forecast findings log →
   HTML email report (Hebrew, branded, action buttons), sent for real via a Make.com webhook →
-  Gmail send (no draft tap needed), + short chat/push backup. Weekly (Thursday) findings
+  Gmail send (no draft tap needed), + short chat/push backup. Weekly (Wednesday, the meeting day) findings
   feed plan-production-14d retro; monthly
   a two-month forecast proposal (growth, seasonality, product trends). Reuses live engines only.
   Extra modes (2026-07-22): "queue-guard" (Thursday 15:50 — unplaced APPROVED_TO_ORDER POs before
@@ -41,7 +41,7 @@ Created per Tom written request 2026-07-03 (grill session; satisfies STEP4-SKILL
 - C2: auto-run 06:30 IL daily (scheduled trigger, fresh session) + manual fire anytime.
 - C3: output = **HTML email** to Tom (Hebrew, `references/email_template.html`, branded, deep-link buttons to the exact portal surface) + short chat/push as backup notice; drafts wait in portal at their native surfaces. (Tom-amended 2026-07-04.)
 - C4: re-plan rule = committed-first, the locked plan-production-14d objective (`margin_risk_ils_day`, committed always wins, no math). ⊥ new thresholds.
-- C5: forecast cadence — daily: log findings only; weekly (Thursday): consolidated update proposals into plan-production-14d retro; monthly: two-month forecast proposal.
+- C5: forecast cadence — daily: log findings only; weekly (Wednesday, the meeting day): consolidated update proposals into plan-production-14d retro; monthly: two-month forecast proposal.
 
 ## Daily flow — 6 stages, in order
 
@@ -80,7 +80,7 @@ select private_core.rebuild_verifier();  -- ! = 0, else report 🔴 + HALT draft
 
 ∀ sellable FG: `current_balances` + incoming firmed production − committed open orders (LionWheel mirror) − forecast demand over horizon (14d). **Canonical query: `private_core.fn_compute_daily_fg_projection(today, today+13)`** — returns per item/day `demand_lionwheel_qty` (committed), `demand_forecast_qty` (forecast), `shortfall_qty`, `risk_tier` (`healthy`/`stockout`). See `references/sql_library.md` Stage 1. Committed-shortage (`demand_lionwheel_qty>0` on a short item) ≠ forecast-shortage — separate columns, committed first: committed short → 🔴, forecast-only → 🟡. (Verified 2026-07-24: dated committed demand can legitimately be 0 across the window — all open orders dateless-backlog — so a wall of forecast gaps with committed=0 is 🟡, not 🔴.)
 
-**+ dateless-backlog line (Tom 2026-07-04):** open orders w/o `pickup_at` = staged backlog, supplied in tranches, invisible to engine demand by design. Report per item: backlog units, orders, oldest date. ⊥ treat as immediate shortage — surface so next tranche isn't forgotten (Thursday schedules it).
+**+ dateless-backlog line (Tom 2026-07-04):** open orders w/o `pickup_at` = staged backlog, supplied in tranches, invisible to engine demand by design. Report per item: backlog units, orders, oldest date. ⊥ treat as immediate shortage — surface so next tranche isn't forgotten (the Wednesday meeting schedules it).
 
 ### Stage 2 — RM/PKG coverage
 
@@ -127,8 +127,13 @@ Also send the short Hebrew chat message + push (unchanged from before) as an in-
 
 Same skill, different clock + narrow scope. Each mode runs its own reduced loop — never the full 6 stages.
 
-### Mode `queue-guard` — Thursday 15:50 IL (Q7: the zombie-PO guard)
-Read-only, one query, one short message. Check the purchase queue: POs in `APPROVED_TO_ORDER` (approved this week / any age) not yet placed by Dorin. If none → send nothing (silence = good). If any → short Hebrew chat/push + email to Tom before Dorin leaves at 16:00: per PO — supplier, ₪, age in queue, approved-when. Framing: "הזמנות שלא בוצעו — עוברות לראשון 9:00 כמשימה ראשונה" per the Thursday clock. This is the guard against the zombie-PO pattern (6 found 2026-07-16).
+### Mode `queue-guard` — placement day 15:50 IL (Q7: the zombie-PO guard)
+> **Cadence moved 2026-07-30 (Tom):** meeting Wed, placement **Thu**. This sweep exists to catch POs
+> Dorin has not placed before she leaves, so it fires on the **placement day** — now Thursday 15:50
+> (it already was Thursday by coincidence of the old clock; the *reason* is now the placement day, not
+> the meeting day). The prep mode below still names Sunday because Sunday is the production week's
+> first day — that is the factory week, not the cadence. ! re-read before changing either.
+Read-only, one query, one short message. Check the purchase queue: POs in `APPROVED_TO_ORDER` (approved this week / any age) not yet placed by Dorin. If none → send nothing (silence = good). If any → short Hebrew chat/push + email to Tom before Dorin leaves at 16:00: per PO — supplier, ₪, age in queue, approved-when. Framing: "הזמנות שלא בוצעו — עוברות למחר 9:00 כמשימה ראשונה" per the placement-day clock (Thu since 2026-07-30; was Sun). This is the guard against the zombie-PO pattern (6 found 2026-07-16).
 
 ### Mode `sunday-prep` — Saturday ~20:00 IL (Q9: motzash automation)
 The Sunday-chaos killer. Draft-writes only per C1:

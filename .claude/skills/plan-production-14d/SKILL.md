@@ -1,7 +1,7 @@
 ---
 name: plan-production-14d
 description: >-
-  Tom's Thursday production-planning ritual for GT Factory OS. Trigger every Thursday or when Tom says
+  Tom's Wednesday production-planning ritual for GT Factory OS. Trigger every Wednesday (the meeting day; was Thursday until 2026-07-30) or when Tom says
   "בוא נתכנן ייצור", "תכנון שבועיים", "plan production", "/plan-production-14d", "ריטרו ייצור", or asks
   to review last week's production vs plan and lock the next two weeks. One batched flow: retrospective →
   tune incoming (firmed) week → plan week+2 → write drafts to production_plan → Tom fine-tunes in portal →
@@ -10,7 +10,7 @@ description: >-
   first. Reuses live engines only; hands the buying interview to the procurement-planning skill.
 ---
 
-# plan-production-14d — Thursday 14-day production cockpit
+# plan-production-14d — Wednesday 14-day production cockpit
 
 Role: GT head of production planning. Engine = hypothesis; Tom = final word. Converse Hebrew; SQL/internal English. Live DB: Supabase MCP, project `rvadsozabmxkkrktwgnv`, schema `private_core`, site `GT-MAIN`.
 
@@ -24,7 +24,7 @@ Created per Tom written request 2026-07-03 (satisfies STEP4-SKILLS-DECISION thre
 2. **Between two fires → money decides, ⊥ "who is at zero".** Score = `margin_risk_ils_day` × shortage-days prevented in window. On-hand only shifts WHEN loss starts, not its rate. Zero-stock + tiny demand → waits; that is the honest business answer.
 3. **Constraints, not goals:** full 500 L tanks, ≤1/day, ⊥ overproduce past forecast+buffer (shelf life).
 4. **Bottling coexistence (Tom-locked 2026-07-04):** tank MAY run alongside item-level bottling, EXCEPT day with Muza-200ml bottling > 200 bottles (engine-enforced, migration 0278, policy key `planning.production.muza_200ml_tank_block_threshold`). Muza 200ml: **one variety per day, ≤200 bottles when tank runs**, most-urgent-by-committed-orders first. ⊥ stack 3-4 varieties on one day.
-5. **Dateless committed = staged backlog (Tom 2026-07-04):** open LionWheel orders w/o `pickup_at` invisible to engine demand (projection = GREATEST(dated-committed, forecast)) — by design; Tom supplies in tranches (e.g. DET-STR 1,250: 400 supplied, next tranche following week). ! ∀ Thursday → review dateless backlog, schedule next tranche explicitly. ⊥ panic-produce full backlog at once.
+5. **Dateless committed = staged backlog (Tom 2026-07-04):** open LionWheel orders w/o `pickup_at` invisible to engine demand (projection = GREATEST(dated-committed, forecast)) — by design; Tom supplies in tranches (e.g. DET-STR 1,250: 400 supplied, next tranche following week). ! ∀ meeting day (Wed) → review dateless backlog, schedule next tranche explicitly. ⊥ panic-produce full backlog at once.
 
 Per-base score (verified live 2026-07-03; margin data complete ∀ 10 tea bases):
 
@@ -163,7 +163,7 @@ order by plan_date;   -- each row = overdue, never produced, still counts as dem
 
 Headline sentence: "הפסדנו השבוע ~₪<X> תרומה בגלל <bases>". Conclusion per miss: "<base> אזל ב-<date> כי <cause>; בתכנון הבא: <fix>". ⊥ other invented KPI/score.
 
-### Stage 1b — forecast self-correction loop (every Thursday, right after retro)
+### Stage 1b — forecast self-correction loop (every meeting day, right after retro)
 
 Extends the Stage-1 forecast-accuracy metric into a closed loop. Representation: one
 `planning_policy` row per item — `key = planning.demand.correction_factor.<ITEM_ID>`, `value` =
@@ -312,9 +312,9 @@ Then `fn_generate_purchase_session(actor, next_sunday, 'weekly')` — reads ONLY
 
 ### Stage 5b — Lock Gate (after firm, before relay; added 2026-07-18). 🟢 = W2 locked; 🔴 = meeting not done
 
-The whole point of Thursday: the next 14 days leave **locked** — complete, engine-authored,
+The whole point of the meeting (Wed): the next 14 days leave **locked** — complete, engine-authored,
 single-representation, clean of stragglers. Then only the incoming (firmed) week gets fine-tuned next
-Thursday (Stage 2). A board that fails these was never really locked. 5 checks, one scorecard; any 🔴 →
+the meeting (Stage 2). A board that fails these was never really locked. 5 checks, one scorecard; any 🔴 →
 fix before Stage 6. ⊥ relay a broken board to the buyer — a wrong plan silently produces a wrong buy list.
 
 ```sql
@@ -382,7 +382,7 @@ used and demand stays auditable. Present the scorecard (G1–G5, G4a/G4b split);
 Invoke **procurement-planning** skill, entering at its Stage 5 (quantity interview). Pass: session_id, stage-0 scorecard, firmed weeks summary. Its stages 0/1/4 = already satisfied; 2–3 (ABC/buffers) monthly or when flagged, not weekly.
 Interview per supplier/line (qty sanity, MOQ, consolidation, cash) → Tom approves per-PO **in chat** → approve+place session PO → `fn_create_manual_po(...)` → **`APPROVED_TO_ORDER`** → Doreen's `/purchase-orders/placement-queue`. She confirms price/terms/date with supplier → `fn_place_purchase_order` (captures `expected_receive_date` — closes no-ETA trap at source).
 ⊥ supplier messages from this skill. ⊥ `fn_place_purchase_order` from this skill — Doreen only.
-Sunday residue: placement only (+quick delta check if asked).
+Next-day (Thu) residue: placement only (+quick delta check if asked).
 
 ## Guardrails
 
@@ -395,7 +395,7 @@ Sunday residue: placement only (+quick delta check if asked).
 | session PO → APPROVED_TO_ORDER | per-PO Tom approval in chat |
 | `fn_place_purchase_order`, other `planning_policy` writes | ⊥ (Doreen / separate Tom-gated action) |
 | **manual `production_plan` INSERT/UPDATE** (bypassing drafts→firm) | ⊥ by default. Only w/ explicit Tom approval AND the row sets `proposal_id` + (tank ⇒ `pack_manifest`) AND passes Lock Gate (Stage 5b). Prefer re-plan through the engine. |
-| **Stage 5b Lock Gate** | ! run every Thursday after firm, before Stage 6; any 🔴 → fix first, ⊥ relay |
+| **Stage 5b Lock Gate** | ! run every meeting day after firm, before Stage 6; any 🔴 → fix first, ⊥ relay |
 | **component demand for the buyer** | ! §11 canonical query or live session lines only; ⊥ hand-rolled BOM walk |
 
 Immutability: ⊥ UPDATE/DELETE `stock_ledger`, `purchase_orders`, audit tables. Schema drift → re-introspect, ⊥ guess. `current_balances.item_type` ∈ {RM,PKG,FG}.
@@ -403,5 +403,5 @@ Immutability: ⊥ UPDATE/DELETE `stock_ledger`, `purchase_orders`, audit tables.
 ## Parked (revisit, non-blocking)
 
 - `planning.production.cover_days_buffer` — hardcoded fallback 3 in 0216, no policy row; seed to tune from UI.
-- `session_day_of_week=0` fence stays correct while Doreen places Sundays.
+- ⚠ `session_day_of_week=0` fence assumed Sunday placement. Cadence moved 2026-07-30 (Tom): meeting Wed, placement Thu → the fence needs re-checking against `dow=4`. Open item, backend lane.
 - Cocktail/Muza line: several HIGH-criticality RM unstocked + missing BOM/supplier mappings — excluded from planning until Tom decides line status.
