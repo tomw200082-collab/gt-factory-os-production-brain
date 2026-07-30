@@ -95,5 +95,36 @@ tokens, own tranche) · INTER-108 form wrapper.
 2. Tranche 155 executes on the same branch → new PR.
 3. MEET-306 backend DTO as its own small change in `gt-factory-os`.
 
-**Tom approval required:** yes — this plan (one tranche, 24 items) + merge timing of #198.
-**Next action for Tom:** "מאשר 155" (and merge #198, or tell me to merge it).
+**Approved by Tom in session** ("סגור" → "תמזג ואני מאשר את 155").
+
+---
+
+# Addendum — executed
+
+`gt-factory-os-portal` PR **#198 merged** (tranche 154, the placement queue).
+Tranche 155 built and pushed as PR **#199** on a branch reset from the merged main.
+
+**Built:** 24 of 24 planned items, including the P0 (work-queue CTA now reads the real `po_status`
+and says "צריך אישור קודם" instead of offering placement on an unapproved order) and the cadence
+re-encode (`CADENCE_DAYS` constant; `Sun–Thu capacity` left alone as the factory work-week).
+
+**Corrected mid-build — one audit claim was wrong.** MEET-305 ("Edited" badge tooltip) was dropped:
+the audit stated `updated_at` / `updated_by_snapshot` were already on `DraftWeekRow`. They are not —
+the type carries neither. Building it would have meant inventing a backend field, so it joins
+MEET-306 in the backend lane. Recorded here so the next audit of this surface does not re-propose it
+as portal-side S-effort.
+
+**Evidence:** `assets/corridor-2026-07-30/` — before shots for all three pages (desktop + mobile);
+`.../after-155/` — the same pages and viewports after the tranche.
+
+**Verification:** tsc 0 · eslint 0 · vitest 1133/1133 · playwright @mocked 56/56.
+
+Two meeting tests were updated rather than worked around — they encoded the *old* intent (a fourth
+co-equal Procure tile; a truncating week label). Both now assert the new intent with the reason in
+the test body.
+
+**Still parked:** COPY-110 (Tom's per-role cancel-reason subset), A11Y-106 (frozen tokens),
+INTER-108. **Backend lane:** MEET-306 + MEET-305 (`base_name` and edit provenance on the
+production-plan list DTO).
+
+**Next action for Tom:** review PR #199 (preview link on the PR) and say merge or change.
