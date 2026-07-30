@@ -181,6 +181,83 @@ execution; decisions on #22 (grouping) and #30 (reason catalogue) can ride along
 
 ---
 
+# Addendum — tranche 154 executed (same day)
+
+Tom approved the fix tranche in-session ("מאשר טראנץ' 154") and agreed with the governor
+recommendations on the two open design questions. Implemented in
+`gt-factory-os-portal` PR **#198** (branch `claude/procurement-execution-ux-x3p14w`); manifest at
+`docs/portal-os/tranches/154-placement-queue-clarity.md`.
+
+## Verdict movement
+
+**HOLD → cleared pending merge.** The single P0 (VIS-101) is fixed, plus 31 of 32 P1 and 9 of 12 P2.
+
+| Dimension | P0 before | P0 after | P1 before | P1 after |
+|---|---|---|---|---|
+| Flow | 0 | 0 | 4 | 0 |
+| Interaction | 0 | 0 | 6 | 0 |
+| Visual | 1 | **0** | 7 | 0 |
+| Copy | 0 | 0 | 9 | 1 (COPY-110) |
+| Accessibility | 0 | 0 | 7 | 0 |
+
+Deliberately not closed, with reasons:
+- **COPY-110** (shared cancel-reason catalogue) — still blocked on Tom picking the per-role subset.
+  Not invented.
+- **INTER-108** (`<form>` wrapper for Enter-to-submit) — deferred; interacts with the confirm-dialog
+  flow and is a P2 convenience.
+- **A11Y-106** (`--fg-subtle` at 3.09:1) — token-level, and tokens are frozen. Needs its own tranche.
+
+## Design decisions taken (Tom-delegated, governor-recommended)
+
+1. **FLOW-110 grouping** — supplier grouping kept; groups ordered by their most urgent member, with
+   that state on the group header. Both auditors' concerns satisfied without a flat list.
+2. **Hierarchy by promotion, not demotion** — the gate proposed shrinking the group heading to
+   `.eyebrow`. Since the supplier name now appears exactly once, it is the call target and stays
+   prominent; the *row* was demoted instead (status chip + mono PO number). Same ladder, correct
+   direction.
+3. **A11Y-105 split** — primary-first DOM order applied to the schedule footer, deliberately **not**
+   to the cancel footer: landing on "חזרה" first before a destructive action is the guard.
+
+## Correction to a gate finding
+
+**VIS-102 was right about the defect and wrong about the fix.** The proposed `lang="he"` on the RTL
+root does not make `<input type="date">` render DD/MM/YYYY — Chromium formats date inputs from the
+**browser's** locale and ignores the document language. Verified against a render: the widget still
+showed `08/09/2026` for the 9th of August. `lang="he"` stays (correct for other reasons), and the
+guarantee now comes from a `DateEcho` printing the Israeli format beside every date input.
+Recorded so the next gate does not re-propose the same non-fix.
+
+## Evidence
+
+`assets/uxg-2026-07-30/after/`:
+- `purchase-orders-placement-queue-planner-desktop.png` / `-mobile.png` — same fixture, same
+  viewports as the before-shots one directory up. Mobile now shows all five orders in the first
+  viewport; previously two auto-opened panels pushed rows 3–5 below the fold.
+- `expanded-desktop.png` — the expanded row as a numbered call script (1 · send the order,
+  2 · record what the supplier confirmed, then arrival date and payment terms).
+- `expanded-split-desktop.png` — partial-supply state with the split panel and the per-line
+  validation message.
+- `schedule-desktop.png` — the schedule panel as two labelled fieldsets, with the date echo visible
+  beside the native widget.
+
+Rail placement and tone verified by pixel probe rather than by eye: danger `rgb(193,105,98)`,
+warning `rgb(209,154,90)`, accent `rgb(99,132,135)` at the row's inline-start (right) edge.
+
+## Verification
+
+`tsc --noEmit` 0 · `eslint` 0 · `vitest` **1130/1130** · `playwright --grep @mocked` **56/56**.
+New unit cases pin the behaviours that changed: supplier name absent from the collapsed row, no
+auto-open, schedule blocked before the click while a required late-reason is empty, native
+radiogroup semantics, Israeli date rendering, and the `aria-disabled` click guard.
+
+## Next action for Tom
+
+Review and merge `gt-factory-os-portal#198` once its checks are green. Two decisions still open and
+unblocked by this work: the shared cancel-reason catalogue (COPY-110), and whether the
+`--fg-subtle` contrast fix warrants its own token tranche (A11Y-106).
+
+---
+
 **Gate run:** 2026-07-30, session `claude/procurement-execution-ux-x3p14w`.
 **Agents:** ux-flow-architect, interaction-design-specialist, visual-system-designer,
 ux-content-state-designer, accessibility-usability-auditor; verdict by governor pass with two P0
