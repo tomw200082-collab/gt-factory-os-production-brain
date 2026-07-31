@@ -195,8 +195,8 @@ A binary checklist of conditions that must all be true before the module is cons
 - [ ] All tests in §14 green; coverage report attached.
 - [ ] Rollback strategy in §16 dry-run-tested.
 - [ ] Module added to `AI_BRAIN_ROUTER.md` §3 lane table.
-- [ ] Module agents added to `AGENT_REGISTRY.md`.
-- [ ] Module commands added to `COMMAND_REGISTRY.md`.
+- [ ] Module agents added to `REGISTRY.md`.
+- [ ] Module commands added to `REGISTRY.md`.
 - [ ] CURRENT_STATE.md updated to record module live status.
 
 ---

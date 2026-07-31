@@ -6,7 +6,7 @@
 >
 > **Use:** copy this file to `PRODUCTION/.claude/agents/<agent-name>.md` (or to a future module's agent directory) and fill every section. An agent file that omits required sections is rejected by `/source-truth-audit` and `factory-os-governor`.
 >
-> **Related:** `AI_BRAIN_ROUTER.md` (decides when this agent runs); `AGENT_REGISTRY.md` (indexes the agent after creation); `EXECUTION_POLICY.md` (operating law every agent must follow).
+> **Related:** `AI_BRAIN_ROUTER.md` (decides when this agent runs); `REGISTRY.md` (indexes the agent after creation); `EXECUTION_POLICY.md` (operating law every agent must follow).
 
 ---
 
