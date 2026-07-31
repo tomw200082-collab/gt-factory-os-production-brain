@@ -51,11 +51,35 @@ GT Factory OS is a narrow, high-trust factory operations platform for GT Everyda
 | Stock projections | `balance_anchors` + ledger projection table (rebuild-verified nightly) |
 | Open orders + shipment state | LionWheel mirror |
 | Shopify FG inventory | Sync target only — platform wins on disagreement |
+| **Sales revenue (all channels)** | **Union of two tills — Shopify (B2C retail) + Green Invoice tax invoices (B2B wholesale). Neither alone is total revenue. See "Revenue composition" below.** |
 | Supplier invoice evidence | Green Invoice (not active prices alone — validation rules required) |
 | Workbook | Transitional only — never long-term truth; no round-trip ever |
 | Live gate status / completion / critical path | `CURRENT_STATE.md` (sole) |
 | RUNTIME_READY signals | `.claude/state/runtime_ready.json` (sole) |
 | W2 mode | `.claude/state/active_mode.json` (sole) |
+
+### Revenue composition (locked)
+
+GT sells through **two independent tills**. Any surface that states revenue, units sold, gross
+profit, or margin must declare which tills it covers, and a figure labelled as total revenue
+must cover both:
+
+| Till | System | Segment | Grain available |
+|---|---|---|---|
+| B2C retail | Shopify | Consumers, storefront orders | ShopifyQL `net_sales` / `net_items_sold` per `product_variant_sku`, ex-VAT |
+| B2B wholesale | Green Invoice | Distributors, chains, cafés, private-label customers (ELITA, BABKA, NONO MIMI, MUZA) | `/documents/search` type **305**, `income[]` lines: `catalogNum` (= `items.barcode`), `quantity`, `price`, `amount`, ex-VAT |
+
+Rules:
+1. **Never equate one till with total sales.** A channel-scoped number is valid only when the
+   channel is named on the surface itself.
+2. Recognised revenue = Shopify net sales + Green Invoice **type 305** only. Type 330
+   (חשבון עסקה) and 210 (תעודת משלוח) are pipeline, not revenue. Type 400 (קבלה) is payment
+   against an existing invoice — counting it double-counts.
+3. All revenue ex-VAT, matching the ex-VAT cost basis of the economics layer.
+4. Join key between tills and the item master: Shopify → `items.sku`; Green Invoice →
+   `items.barcode`. Unmapped codes must be **reported with their value**, never skipped silently.
+5. A revenue surface must state its coverage rate (mapped ÷ total) so an incomplete join is
+   visible rather than absorbed.
 
 ## Absolute non-negotiables
 1. **Stock truth ships before planning cutover.**
@@ -169,7 +193,8 @@ Every agent run ends with: STATUS (PASS / FAIL / BLOCKED / HOLD_FOR_TOM), files 
 ---
 
 **Owner:** Tom (sole writer of this file).
-**Last amended:** 2026-07-24 (Tom-directed, in writing this session): production deploy + prod-DB migration apply moved from "deliberate, ask-first" to "Claude's to do autonomously when the deploy's own gates are green, announce-then-proceed" — mirrors the 2026-06-20 merge-autonomy grant. Stock-ledger append-only semantics are explicitly untouched. Transcribed at Tom's explicit instruction; Tom remains owner.
-**Previously amended:** 2026-06-20 (Tom-directed, in writing that session): added "External-action authorization" + reworded the MCP/operational-path forbidden assumption. Transcribed at Tom's explicit instruction; Tom remains owner.
+**Last amended:** 2026-07-31 (Tom-directed, in writing this session): added the **Sales revenue (all channels)** row to the source-of-truth table plus the **Revenue composition (locked)** subsection — revenue is the union of the Shopify (B2C) and Green Invoice type-305 (B2B) tills, every revenue surface must declare its channel coverage, and unmapped join codes must be reported with their value rather than skipped. Nothing about stock-ledger semantics, lanes, or approvals changed. Transcribed at Tom's explicit instruction; Tom remains owner.
+**Previously amended:** 2026-07-24 (Tom-directed, in writing that session): production deploy + prod-DB migration apply moved from "deliberate, ask-first" to "Claude's to do autonomously when the deploy's own gates are green, announce-then-proceed" — mirrors the 2026-06-20 merge-autonomy grant. Stock-ledger append-only semantics are explicitly untouched. Transcribed at Tom's explicit instruction; Tom remains owner.
+**Earlier amendment:** 2026-06-20 (Tom-directed, in writing that session): added "External-action authorization" + reworded the MCP/operational-path forbidden assumption. Transcribed at Tom's explicit instruction; Tom remains owner.
 **Last rewritten:** 2026-05-08 (Phase 8 Run F Wave 4 — kernel extraction + thin-boot rewrite).
 **Pre-rewrite full text preserved at:** `docs/archive/CLAUDE.md.pre-kernel-rewrite-2026-05-08.md`.
