@@ -36,9 +36,8 @@ Evidence for the range: all gates closed · bridge live daily since 2026-05-10 �
 **Status = query, ⊥ this file:** `select private_core.run_shopify_sync_health('manual')`.
 **All depth — architecture, traps, canonical queries, 0302–0311 history → skill `shopify-sync`.** The 2026-07-31 bullets that stood here (sync-writes-nothing, network_fail, 40 negatives, stale exceptions, "flag has no reader") are **resolved or superseded** — ⊥ act on old revisions.
 
-Open (Shopify):
-- **`ADD-ORANGE-100G`** — 29 units anchor-only, 0 ledger movements ever; twin `ADD-GAR-ORA-DRY` is live+mapped+syncing. Physical count → reversal/re-post onto twin, or retire. Stock-truth call, ⊥ mapping.
-- **~60 unmapped ACTIVE Shopify variants** (stale negatives, e.g. `GTMN-PIK-254` −2675) — storefront cleanup for Tom. ⊥ a sync gap: coverage direction is system→Shopify (Tom 2026-08-01).
+Open (Shopify): **none.** Coverage = every ACTIVE sellable item mapped (0311, 0314). Corridor retired: cron 16+19 off (0312), 571 stale exceptions closed (0313), `shopify_fg_push` tombstoned. Exception inbox = 1 real item (`shopify_oversell:FG-MAT-30G`) + the `EXCLUDED-NONSTOCK` sentinel.
+**⊥ raise the ~60 unmapped Shopify variants / Muzot lines (Tom 2026-08-01):** out of scope, ⊥ a sync gap — coverage runs system→Shopify. Detail: skill `shopify-sync`.
 
 ## Open — needs Tom
 
@@ -70,7 +69,7 @@ Any activation touching these ! emit `assumption_failure` and surface the gap.
 
 1. UI green ≠ posted ledger event. 200 OK on submit ⊥ evidence.
 2. Integration runtime built on guessed field names → reconciles wrong at first real split/merge/cancel.
-3. Shopify FG disagreement resolved wrong way — **we are authoritative; the reconciler overwrites Shopify from our truth every 5 min** (Tom 2026-08-01). Shopify owns only its order pipeline. (brain `CLAUDE.md` §Source-of-truth "platform wins" line is stale — Tom-sole-writer, pending his edit.)
+3. Shopify FG disagreement resolved wrong way — **we are authoritative; the reconciler overwrites Shopify from our truth every 5 min** (Tom 2026-08-01, now also in `CLAUDE.md` §Source of truth). Shopify owns only its order pipeline.
 4. Green Invoice auto-creating components or auto-updating prices → corrupts price audit trail.
 5. Admin CRUD mass-editing BOM or supplier mapping without approval gates.
 6. Excel round-trip creeping back via any operator workflow that edits the workbook.
