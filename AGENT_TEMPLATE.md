@@ -115,7 +115,7 @@ The agent reads broadly but lists the canonical references it must consult befor
 
 ### Requires Tom written approval
 - <list of high-risk commands>
-- `git push` — always requires explicit user instruction; never autonomous (Run F Tom decision A).
+- `git push` — autonomous when required checks green & change verified (Tom 2026-06-20; supersedes Run F decision A). Red/unverified → explicit instruction required.
 
 ### Explicitly forbidden
 - <list of forbidden commands>
@@ -184,7 +184,7 @@ The stop conditions in `EXECUTION_POLICY.md` §Stop semantics also apply. This t
 |---|---|
 | <Action 1> | yes |
 | <Action 2> | yes |
-| `git push` to any remote | yes (always — Run F Tom decision A) |
+| `git push` to any remote | no — autonomous when checks green & verified (Tom 2026-06-20) |
 | <safe action> | no |
 
 The full approval-thresholds table in `EXECUTION_POLICY.md` §Approval thresholds is the canonical source. This table is the agent-specific subset.
@@ -257,7 +257,7 @@ This agent (`<name>`) runs alongside `<legacy-name>`. Wave 6 archival is governe
 3. **Allowed-paths is exhaustive.** If a path is not in the allowed list, the agent cannot write to it.
 4. **Stop on uncertainty.** Emit `assumption_failure` rather than guess.
 5. **Evidence over claims.** Every PASS includes test counts, contract references, and signal paths.
-6. **No autonomous git push.** Per Run F Tom decision A, every push requires explicit Tom instruction. Memory files contradicting this are superseded by `EXECUTION_POLICY.md`.
+6. **Autonomous git push + merge when green.** Tom 2026-06-20 supersedes Run F decision A: push + PR merge need no approval when required checks are green and the change is verified. Red/unverified checks still need a human checkpoint. Canonical: `CLAUDE.md` §Authorization.
 
 ---
 

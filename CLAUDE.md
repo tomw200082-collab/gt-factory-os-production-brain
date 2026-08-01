@@ -106,6 +106,7 @@ Any agent HALTS, emits signal, routes to `factory-os-governor`. ⊥ silently con
 ## Evidence
 
 Tests report N/N. Projection = rebuild-from-ledger within tolerance. RUNTIME_READY only when every check green. "It should work" ⊥ evidence.
+Full proof a feature works, 6 layers: ledger write posted → projection updates → operator-visible output → downstream consumer reads the new value → `rebuild_verifier()=0` → exception path exercised (⊥ just happy path). 200 OK proves layer 1 only.
 Every PASS states: files changed · tests N/N · contracts referenced · signals emitted · stop conditions tripped · Tom approvals required · rollback plan · next handoff.
 
 ## Handoff

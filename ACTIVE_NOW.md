@@ -3,13 +3,13 @@
 > Ephemeral. **Authoritative on nothing.** Gate status, completion, critical path, open gaps → `CURRENT_STATE.md`.
 > Rule: this file names *what is hot*, ⊥ restates state. Restating = drift.
 
-**Refreshed:** 2026-07-31.
+**Refreshed:** 2026-08-01.
 
 ## Hot
 
-- **Doc-lean pass (this session).** Brain authority docs rewritten lean; full originals in `docs/archive/*.pre-lean-2026-07-31.md`. `AGENT_REGISTRY.md` + `COMMAND_REGISTRY.md` merged → `REGISTRY.md`. All pan-form W2 Mode-B carve-outs **retired** (Tom 2026-07-31).
-- **Shopify FG sync writes nothing** — zero `ok` rows in 7d. Blocked on the code sentinel, ⊥ on a flag. Detail + what unblocking needs → `CURRENT_STATE.md` §Open.
-- **Migration 0302** applied prod: both orphaned `feature_flags` Shopify rows now tracked; `shopify_fg_sync_v2_live` narrowed `"*"` → `ADD-GAR-ANISE`.
+- **Knowledge-tier architecture landed.** Boot docs = invariants + traps + open gaps only; domain depth → `.claude/skills/<domain>/SKILL.md`, loaded on demand. `close-session` §Step 4 routes new knowledge by type on every close — self-building, ⊥ manual upkeep. First skill: `shopify-sync`.
+- **Shopify sync — LIVE.** 53/53 sellable items sync every 5 min via `shopify_available_reconcile`; coverage complete. Detail → skill `shopify-sync`, status by query (`run_shopify_sync_health`), ⊥ by prose here.
+- **Doc-recovery pass (this session, 2026-08-01).** Compared every pre-lean archive against its lean replacement; ~10 genuine method items restored compactly across `EXECUTION_POLICY.md` / `AI_BRAIN_ROUTER.md` / `REGISTRY.md` / `CURRENT_STATE.md` / `AGENT_TEMPLATE.md`. Verdict: the 2026-07-31 lean pass was substantially correct — real gaps were narrow, not wholesale loss. Stale doc claims found + fixed same pass (2 files still taught pre-2026-06-20 "never autonomous push" after the rule changed).
 
 ## Running automation
 
