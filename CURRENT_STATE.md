@@ -45,6 +45,17 @@ Evidence for the range: all gates closed · bridge live daily since 2026-05-10 �
 - Telegram bot token + chat_id (monitoring alerts). `app_users` uuid for count import.
 - Read-only verify exact Railway env literal for `LIONWHEEL_FG_OUT_BRIDGE_ENABLED`.
 
+## Shopify cutover — BLOCKED by two findings (shadow report, 2026-08-01)
+
+Phase 3 ran read-only against the 47 swept items. **⊥ enable live writes until both are resolved.**
+
+1. **Our qty ≈ 2× Shopify on essentially every FG line, several at exactly 2.000.**
+   `GT-LUI-FRE-1L` 766/383 · `GT-ODK-MAN-1` 394/197 · `GTEL-MAR-PEA-0.3L` 458/229 · `GT-MAS-CHA-0.5L` 486/243 · `GT-JAS-LOW-1L` 950/473 · `GT-SEN-LOW-1L` 940/452 · `GT-LUI-LOW-1L` 1576/659.
+   Exact 2.000 ratios ⊥ coincidence — points at a UOM / pack-size mismatch (bottles vs 2-packs) or double-counting in the `SUM(cb.calculated_on_hand)` aggregation. **Pushing live today would double every storefront quantity.** ! root-cause before any write.
+2. **Duplicate SKUs across multiple Shopify variants.** `GT-LUI-FRE-1L` appears on 3 variants (383/0/0), `GT-LUI-LOW-1L` on 2 (659/0), `GT-MAS-CHA-0.5L` on 2 (0/243). The sync keys `skuCache` by SKU (Map, one `inventory_item_id` per key), so it would write to an arbitrary one and leave the rest stale — possibly writing the live number onto a dead 0-qty duplicate.
+
+Gate E scope (`ADD-GAR-ANISE` only, migration 0302) limits blast radius but resolves neither.
+
 ## Deferred (Tom decision, ⊥ blocking)
 
 SQL `tier` semantics (portal now classifies from trace math, underlying tier still old floor-breach logic) · `cover_days` buffer over-buffers 81/81 components sampled — needs plan-aware formula · ₪-at-risk trend needs a "previous session" definition · `--fg-subtle` light-theme contrast 3.09:1 unaudited · A11Y-003/004/010 · Dorin persona split · Maiden LionWheel driver record · Sat customer reminder · widen CI `typecheck` to `api/src` · flaky `supabase` postinstall in CI.
