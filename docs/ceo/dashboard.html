@@ -1,0 +1,219 @@
+<title>GT · פתיחת שבוע</title>
+<style>
+  :root{
+    --bg:#F6F5F1; --card:#FFFFFF; --ink:#1B211C; --muted:#66706A; --line:#E4E3DC;
+    --accent:#1E6B4F; --accent-ink:#FFFFFF;
+    --red:#DC2626; --red-wash:#FEEBEA; --amber:#B45309; --amber-wash:#FEF2DA; --green:#15803D; --green-wash:#E7F8ED;
+    --slot:#F1F0EA;
+  }
+  @media (prefers-color-scheme: dark){ :root{
+    --bg:#0F1310; --card:#171C18; --ink:#E7EBE7; --muted:#93A099; --line:#262D28;
+    --accent:#58BE96; --accent-ink:#0F1310;
+    --red:#F87171; --red-wash:#3A1717; --amber:#FBBF24; --amber-wash:#3A2E12; --green:#4ADE80; --green-wash:#12321E;
+    --slot:#10150F;
+  }}
+  :root[data-theme="light"]{
+    --bg:#F6F5F1; --card:#FFFFFF; --ink:#1B211C; --muted:#66706A; --line:#E4E3DC;
+    --accent:#1E6B4F; --accent-ink:#FFFFFF;
+    --red:#DC2626; --red-wash:#FEEBEA; --amber:#B45309; --amber-wash:#FEF2DA; --green:#15803D; --green-wash:#E7F8ED;
+    --slot:#F1F0EA;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F1310; --card:#171C18; --ink:#E7EBE7; --muted:#93A099; --line:#262D28;
+    --accent:#58BE96; --accent-ink:#0F1310;
+    --red:#F87171; --red-wash:#3A1717; --amber:#FBBF24; --amber-wash:#3A2E12; --green:#4ADE80; --green-wash:#12321E;
+    --slot:#10150F;
+  }
+  html{background:var(--bg)}
+  body{margin:0;font-family:"Segoe UI","Noto Sans Hebrew",system-ui,-apple-system,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+  .wrap{max-width:680px;margin:0 auto;padding:20px 16px 96px}
+  .kicker{font-size:.72rem;letter-spacing:.14em;color:var(--accent);font-weight:700}
+  h1{font-size:1.9rem;font-weight:800;margin:.1rem 0 .2rem;line-height:1.15;text-wrap:balance}
+  .sub{color:var(--muted);font-size:.9rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+  .badge{display:inline-block;padding:.1rem .55rem;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--amber-wash);color:var(--amber)}
+  section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:14px}
+  section.hero{border-inline-start:4px solid var(--accent)}
+  h2{font-size:.8rem;letter-spacing:.1em;color:var(--muted);font-weight:700;margin:0 0 10px}
+  h2 b{color:var(--ink)}
+  .row{display:flex;gap:.6rem;align-items:baseline;justify-content:space-between;padding:.35rem 0;border-top:1px solid var(--line);font-size:.92rem}
+  .row:first-of-type{border-top:0}
+  .row .val{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+  .dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin-inline-end:.4rem;vertical-align:baseline}
+  .g .dot{background:var(--green)} .a .dot{background:var(--amber)} .r .dot{background:var(--red)} .m .dot{background:var(--muted)}
+  .hint{color:var(--muted);font-size:.82rem}
+  .rock{display:flex;gap:.6rem;align-items:center;margin-top:.55rem}
+  .rock-num{flex:none;width:1.9rem;height:1.9rem;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-weight:800;display:flex;align-items:center;justify-content:center}
+  .rock-input{flex:1;min-height:1.6rem;background:var(--slot);border:1px dashed var(--line);border-radius:8px;padding:.45rem .6rem;font-size:.95rem}
+  .rock-input:focus{outline:2px solid var(--accent);border-style:solid}
+  .rock-input:empty::before{content:attr(data-ph);color:var(--muted)}
+  .st{flex:none;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;font:inherit;font-size:.75rem;font-weight:700;padding:.15rem .55rem;cursor:pointer}
+  .st[data-v="1"]{background:var(--amber-wash);color:var(--amber);border-color:transparent}
+  .st[data-v="2"]{background:var(--green-wash);color:var(--green);border-color:transparent}
+  .task{display:flex;gap:.55rem;align-items:flex-start;padding:.4rem 0;border-top:1px solid var(--line);font-size:.92rem}
+  .task:first-of-type{border-top:0}
+  .task input{margin-top:.25rem;accent-color:var(--accent);width:1.05rem;height:1.05rem}
+  .task label{flex:1}
+  .task .src{color:var(--muted);font-size:.78rem;display:block}
+  .proj{display:flex;gap:.6rem;align-items:baseline;padding:.4rem 0;border-top:1px solid var(--line);font-size:.9rem}
+  .proj:first-of-type{border-top:0}
+  .chip{flex:none;font-size:.72rem;font-weight:700;border-radius:999px;padding:.08rem .5rem}
+  .chip.g{background:var(--green-wash);color:var(--green)} .chip.a{background:var(--amber-wash);color:var(--amber)}
+  .chip.q{background:var(--slot);color:var(--muted)}
+  .proj .nm{font-weight:700}
+  .proj .ds{color:var(--muted)}
+  .pad{width:100%;min-height:7rem;background:var(--slot);border:1px dashed var(--line);border-radius:8px;padding:.6rem;font:inherit;font-size:.95rem;color:var(--ink);box-sizing:border-box;resize:vertical}
+  .pad:focus{outline:2px solid var(--accent);border-style:solid}
+  .bar{position:fixed;bottom:0;inset-inline:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+  .bar-in{max-width:680px;margin:0 auto;display:flex;gap:.7rem;align-items:center}
+  .copy{flex:none;background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;font:inherit;font-weight:800;font-size:.95rem;padding:.6rem 1.1rem;cursor:pointer}
+  .copy:focus-visible,.st:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .bar .hint{flex:1}
+  .toast{position:fixed;bottom:84px;inset-inline:0;display:flex;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s}
+  .toast.on{opacity:1}
+  .toast span{background:var(--ink);color:var(--bg);border-radius:999px;padding:.4rem 1rem;font-size:.85rem;font-weight:700}
+  @media (prefers-reduced-motion: reduce){ .toast{transition:none} }
+</style>
+
+<div class="wrap" dir="rtl" id="board" data-week="2026-08-02" data-week-label="ראשון 2.8 → חמישי 6.8">
+  <div class="kicker">GT EVERYDAY · CEO OS</div>
+  <h1>פתיחת שבוע</h1>
+  <div class="sub">
+    <span>שבוע <b>ראשון 2.8 → חמישי 6.8</b></span>
+    <span class="badge" data-live="verdict">גרסה ראשונה · טרם ננעל</span>
+    <span data-live="stamp">עודכן מוצ״ש 1.8</span>
+  </div>
+
+  <section class="hero" aria-label="שלוש האבנים">
+    <h2>🪨 <b>שלוש האבנים של השבוע</b> · לוחצים על הסטטוס כדי לעדכן</h2>
+    <div class="rock"><div class="rock-num">1</div><div class="rock-input" contenteditable="true" id="rock1" data-ph="האבן הראשונה — הדבר שחייב לקרות השבוע"></div><button class="st" data-for="rock1" data-v="0">פתוח</button></div>
+    <div class="rock"><div class="rock-num">2</div><div class="rock-input" contenteditable="true" id="rock2" data-ph="האבן השנייה"></div><button class="st" data-for="rock2" data-v="0">פתוח</button></div>
+    <div class="rock"><div class="rock-num">3</div><div class="rock-input" contenteditable="true" id="rock3" data-ph="האבן השלישית"></div><button class="st" data-for="rock3" data-v="0">פתוח</button></div>
+    <p class="hint" data-live="retro">רטרו שבוע קודם: אין — זו הפתיחה הראשונה.</p>
+  </section>
+
+  <section aria-label="מפעל">
+    <h2><b>מפעל</b> · דופק תפעולי</h2>
+    <div data-live="factory">
+      <div class="row g"><span><span class="dot"></span>אמת מלאי</span><span class="val">rebuild = 0 · ‏83/83 לילות ירוקים</span></div>
+      <div class="row g"><span><span class="dot"></span>סנכרון Shopify</span><span class="val">53/53 · כל 5 דק׳</span></div>
+      <div class="row a"><span><span class="dot"></span>חריגים פתוחים</span><span class="val">1 · ‏oversell FG-MAT-30G</span></div>
+      <div class="row m"><span><span class="dot"></span>ייצור + כיסוי RM/PKG</span><span class="val">ימולא בריצת מוצ״ש</span></div>
+    </div>
+  </section>
+
+  <section aria-label="מכירות והזמנות">
+    <h2><b>מכירות והזמנות</b> · השבוע שהסתיים</h2>
+    <div data-live="sales">
+      <div class="row m"><span><span class="dot"></span>מכירות ₪ · הזמנות · לקוחות בולטים</span><span class="val">ימולא בריצת מוצ״ש</span></div>
+      <div class="row m"><span><span class="dot"></span>Backlog ללא תאריך</span><span class="val">ימולא</span></div>
+    </div>
+  </section>
+
+  <section aria-label="כסף">
+    <h2><b>כסף</b> · Green Invoice</h2>
+    <div data-live="money">
+      <div class="row m"><span><span class="dot"></span>חשבוניות ספקים פתוחות · נכנס השבוע</span><span class="val">יחובר</span></div>
+    </div>
+    <p class="hint">לפי חוקי המוח: בדיקת API חיה לפני קריאה ראשונה — ⊥ ניחושים.</p>
+  </section>
+
+  <section aria-label="יומן">
+    <h2><b>יומן</b> · השבוע הקרוב</h2>
+    <div data-live="calendar">
+      <div class="row m"><span><span class="dot"></span>פגישות ואירועים</span><span class="val">ימולא בריצת מוצ״ש</span></div>
+      <div class="row m"><span><span class="dot"></span>רביעי</span><span class="val">ישיבת תכנון ייצור 14 יום</span></div>
+    </div>
+  </section>
+
+  <section aria-label="פרוייקטים">
+    <h2><b>פרוייקטים</b> · המקור: docs/ceo/registry.md</h2>
+    <div data-live="projects">
+      <div class="proj"><span class="chip g">חי</span><span class="nm">Factory OS</span><span class="ds">‏~85–90%, כל שערי v1 סגורים</span></div>
+      <div class="proj"><span class="chip g">חי</span><span class="nm">Shopify sync</span><span class="ds">‏53/53, watchdogs פעילים</span></div>
+      <div class="proj"><span class="chip g">חי</span><span class="nm">LionWheel bridge</span><span class="ds">בשימוש יומי מאז 10.5</span></div>
+      <div class="proj"><span class="chip a">בתהליך</span><span class="nm">פורטל</span><span class="ds">‏92/100 · שאריות A11Y</span></div>
+      <div class="proj"><span class="chip a">בתהליך</span><span class="nm">מיפוי מפעל v3</span><span class="ds">playbook v2 בתוקף · אלכס ממתין</span></div>
+      <div class="proj"><span class="chip a">נבנה</span><span class="nm">פתיחת שבוע — CEO OS</span><span class="ds">הדשבורד הזה · ריצה ראשונה במוצ״ש</span></div>
+      <div class="proj"><span class="chip q">לאימות</span><span class="nm">גיוס</span><span class="ds">מה סטטוס המשרות?</span></div>
+      <div class="proj"><span class="chip q">בשער</span><span class="nm">שיווק / CRM</span><span class="ds">מוקפא עד MODULE_TEMPLATE + אישור</span></div>
+    </div>
+  </section>
+
+  <section aria-label="ממתין לך">
+    <h2><b>ממתין לך</b> · סמן מה שטופל — זה ייכנס לסיכום</h2>
+    <div class="task"><input type="checkbox" id="t-maxim"><label for="t-maxim">מקסים — משתמש פורטל (מייל)<span class="src">‏tranche 137 · דניס provisioned</span></label></div>
+    <div class="task"><input type="checkbox" id="t-alex"><label for="t-alex">שיחת אלכס — החבילה מוכנה<span class="src">‏factory-mapping · שערים שבועות 5–6</span></label></div>
+    <div class="task"><input type="checkbox" id="t-telegram"><label for="t-telegram">Telegram bot token + chat_id להתראות</label></div>
+    <div class="task"><input type="checkbox" id="t-uuid"><label for="t-uuid">app_users uuid לייבוא ספירות</label></div>
+    <div class="task"><input type="checkbox" id="t-jobtoken"><label for="t-jobtoken">JOB_RUNNER_TOKEN + קונטיינר audit<span class="src">‏P2 דיווח — audit_runs ריק</span></label></div>
+    <div class="task"><input type="checkbox" id="t-railway"><label for="t-railway">אימות literal של דגל LionWheel ב-Railway</label></div>
+  </section>
+
+  <section aria-label="פנקס">
+    <h2><b>פנקס</b> · הערות, רעיונות, ריקון ראש — נשמר במכשיר</h2>
+    <textarea class="pad" id="pad" placeholder="כתוב כאן כל דבר — משימות חדשות, מחשבות, החלטות. הכל נכנס לסיכום המועתק."></textarea>
+  </section>
+
+  <div class="bar"><div class="bar-in">
+    <button class="copy" id="copyBtn">📋 העתק סיכום לקלוד</button>
+    <span class="hint">מדביקים בסשן — ואני מעדכן רישום, כרטיס שבוע וגרדיאן.</span>
+  </div></div>
+  <div class="toast" id="toast" role="status"><span>הסיכום הועתק — הדבק אצלי בסשן</span></div>
+</div>
+
+<script>
+(function(){
+  var wk = document.getElementById('board').dataset.week;
+  var K = function(id){ return 'gtceo:' + (id.indexOf('rock')===0 ? wk+':' : '') + id; };
+  var stLabels = ['פתוח','בתהליך','בוצע ✓'];
+
+  document.querySelectorAll('.rock-input').forEach(function(el){
+    var v = localStorage.getItem(K(el.id)); if(v) el.textContent = v;
+    el.addEventListener('input', function(){ localStorage.setItem(K(el.id), el.textContent.trim()); });
+  });
+  document.querySelectorAll('.st').forEach(function(btn){
+    var key = K(btn.dataset.for) + ':st';
+    var v = parseInt(localStorage.getItem(key) || '0', 10);
+    var render = function(){ btn.dataset.v = v; btn.textContent = stLabels[v]; };
+    render();
+    btn.addEventListener('click', function(){ v = (v+1)%3; localStorage.setItem(key, v); render(); });
+  });
+  document.querySelectorAll('.task input').forEach(function(cb){
+    cb.checked = localStorage.getItem(K(cb.id)) === '1';
+    cb.addEventListener('change', function(){ localStorage.setItem(K(cb.id), cb.checked ? '1' : '0'); });
+  });
+  var pad = document.getElementById('pad');
+  pad.value = localStorage.getItem(K('pad')) || '';
+  pad.addEventListener('input', function(){ localStorage.setItem(K('pad'), pad.value); });
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    var L = [];
+    L.push('=== GT פתיחת שבוע — סיכום דשבורד ===');
+    L.push('שבוע: ' + document.getElementById('board').dataset.weekLabel + ' (' + wk + ')');
+    L.push('');
+    L.push('🪨 אבנים:');
+    ['rock1','rock2','rock3'].forEach(function(id, i){
+      var t = (document.getElementById(id).textContent || '').trim() || '—';
+      var s = stLabels[parseInt(localStorage.getItem(K(id)+':st') || '0', 10)];
+      L.push((i+1) + ') ' + t + ' [' + s + ']');
+    });
+    L.push('');
+    var done = [], open = [];
+    document.querySelectorAll('.task').forEach(function(t){
+      var cb = t.querySelector('input');
+      var name = t.querySelector('label').childNodes[0].textContent.trim();
+      (cb.checked ? done : open).push(name);
+    });
+    if(done.length){ L.push('✅ טופל: ' + done.join(' · ')); }
+    L.push('⬜ פתוח: ' + (open.join(' · ') || '—'));
+    L.push('');
+    L.push('📝 פנקס:');
+    L.push(pad.value.trim() || '—');
+    var txt = L.join('\n');
+    var show = function(){ var t = document.getElementById('toast'); t.classList.add('on'); setTimeout(function(){ t.classList.remove('on'); }, 2200); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(show, function(){ fallback(txt); show(); }); }
+    else { fallback(txt); show(); }
+    function fallback(s){ var ta = document.createElement('textarea'); ta.value = s; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); }
+  });
+})();
+</script>
