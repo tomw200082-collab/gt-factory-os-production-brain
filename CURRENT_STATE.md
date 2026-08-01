@@ -45,16 +45,36 @@ Evidence for the range: all gates closed · bridge live daily since 2026-05-10 �
 - Telegram bot token + chat_id (monitoring alerts). `app_users` uuid for count import.
 - Read-only verify exact Railway env literal for `LIONWHEEL_FG_OUT_BRIDGE_ENABLED`.
 
-## Shopify cutover — BLOCKED by two findings (shadow report, 2026-08-01)
+## Shopify — data is CLEAN. Both "blockers" were analyst error (2026-08-01)
 
-Phase 3 ran read-only against the 47 swept items. **⊥ enable live writes until both are resolved.**
+An earlier revision of this section claimed a 2× quantity drift and a duplicate-SKU
+hazard. **Both were wrong. Retracted.** Recorded here because the retraction is the
+useful part.
 
-1. **Our qty ≈ 2× Shopify on essentially every FG line, several at exactly 2.000.**
-   `GT-LUI-FRE-1L` 766/383 · `GT-ODK-MAN-1` 394/197 · `GTEL-MAR-PEA-0.3L` 458/229 · `GT-MAS-CHA-0.5L` 486/243 · `GT-JAS-LOW-1L` 950/473 · `GT-SEN-LOW-1L` 940/452 · `GT-LUI-LOW-1L` 1576/659.
-   Exact 2.000 ratios ⊥ coincidence — points at a UOM / pack-size mismatch (bottles vs 2-packs) or double-counting in the `SUM(cb.calculated_on_hand)` aggregation. **Pushing live today would double every storefront quantity.** ! root-cause before any write.
-2. **Duplicate SKUs across multiple Shopify variants.** `GT-LUI-FRE-1L` appears on 3 variants (383/0/0), `GT-LUI-LOW-1L` on 2 (659/0), `GT-MAS-CHA-0.5L` on 2 (0/243). The sync keys `skuCache` by SKU (Map, one `inventory_item_id` per key), so it would write to an arbitrary one and leave the rest stale — possibly writing the live number onto a dead 0-qty duplicate.
+- **"2× drift" was a fan-out in the ad-hoc shadow query, ⊥ in the data.** Every FG item
+  carries **2 approved `integration_sku_map` rows** (internal id + storefront SKU, e.g.
+  `FG-DET-1L-NS` has both `FG-DET-1L-NS` and `GT-LUI-FRE-1L`). The ad-hoc query grouped by
+  `coalesce(i.sku, ism.external_sku)`, collapsing both alias rows into one group and summing
+  the same balance twice → exactly 2.000×. **Production is correct**: its query groups by
+  `ism.external_sku` explicitly, keeping the fan-out in separate groups.
+- **"Duplicate SKUs" are on ARCHIVED products.** `GT-LUI-FRE-1L` resolves to one ACTIVE
+  variant (383) plus two ARCHIVED (0/0). The active-products cache holds active products
+  only, so `skuCache` has exactly one entry per SKU. No ambiguity.
 
-Gate E scope (`ADD-GAR-ANISE` only, migration 0302) limits blast radius but resolves neither.
+**Verified truth: `current_balances` = Shopify, exactly, on every sampled line** —
+`ADD-ODK-MAN-1L` 197=197 · `FG-DET-1L-NS` 383=383 · `FG-MAR-PEA-300ML` 229=229 ·
+`FG-NAM-500ML` 243=243. One `current_balances` row per item, no batch/site fan-out.
+
+**Why Shopify already matches:** `shopify_available_write` (cron 19, */5) is running the
+committed-aware AfS path — 13,165 `shadow_would_set_available` + 935 `shadow_skip_no_change`
+in 24h, latest 06:25. Shopify FG inventory is being maintained by that path, ⊥ by the
+disabled v1/v2 FG sync. ∴ the FG sync being off is costing far less than assumed — quantify
+what it uniquely adds before treating its cutover as urgent.
+
+**Lesson (⊥ delete):** three claims this session were raised from inference and refuted by
+one query each — `audit_runs` "no nightly verification" (83/83 runs exist), the 2× drift, and
+the duplicate SKUs. Ad-hoc analytics queries over `integration_sku_map` **! group by
+`external_sku`** or they double. Re-derive from the production query, ⊥ hand-rolled joins.
 
 ## Deferred (Tom decision, ⊥ blocking)
 
