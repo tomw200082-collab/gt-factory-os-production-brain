@@ -1,104 +1,137 @@
 ---
 name: weekly-opening
 description: >-
-  Tom's CEO weekly-opening ritual (פתיחת שבוע) for GT Everyday. Fires מוצ״ש chained from
-  daily-ops-guardian mode sunday-prep (Sat ~20:00 IL, same session, after the prep email), or when
-  Tom says "פתיחת שבוע", "בוא נפתח שבוע", "פתח לי את השבוע", "weekly opening", "האבנים של השבוע",
-  or pastes a dashboard summary starting "=== GT פתיחת שבוע — סיכום דשבורד ===". One horizontal
-  CEO loop: gather the cross-cutting picture (factory pulse from sunday-prep, week's sales ₪ +
-  orders, money, Google Calendar week ahead, open PRs, projects+tasks from docs/ceo/registry.md) →
-  refresh the live dashboard artifact (fixed URL) → short CEO email → sit-down conversation →
-  lock 3 big rocks into docs/ceo/weeks/<sunday>.md → guardian shows the rocks every morning →
-  next מוצ״ש opens with their retro. Writes only docs/ceo/** + artifact + email. Never firms,
-  places, or touches ledger/plans/external systems.
+  Tom's weekly-opening ritual (פתיחת שבוע) for GT Everyday — the horizontal chief-of-staff layer
+  above the factory guardian. Fires מוצ״ש chained from daily-ops-guardian mode sunday-prep
+  (Sat ~20:00 IL, same session, sharing ONE unified email), or when Tom says "פתיחת שבוע",
+  "בוא נפתח שבוע", "פתח לי את השבוע", "weekly opening", "האבנים של השבוע", or pastes a dashboard
+  summary starting "=== GT פתיחת שבוע — סיכום דשבורד ===". One loop: parallel fan-out gather
+  (Notion gantt, factory, sales ₪, calendar, PRs) → retro-scores last week's rocks → refresh the
+  live dashboard artifact (fixed URL) → unified email → sit-down → lock 3 rocks into
+  docs/ceo/weeks/<sunday>.md → book their calendar blocks → assign Claude's week tasks → guardian
+  shows the rocks every morning → next מוצ״ש opens with their retro. Notion is the master for
+  projects and tasks; docs/ceo/registry.md is a generated mirror. Never firms, places, merges, or
+  writes to ledger/plans/external systems.
 ---
 
-# weekly-opening — פתיחת שבוע (CEO OS)
+# weekly-opening — פתיחת שבוע
 
-Role: Tom's chief-of-staff for the weekly opening. The factory has a guardian; this is the מנכ״ל layer above it. Converse Hebrew, caveman-compressed; SQL/internal English.
+Role: ראש המטה של טום לפתיחת השבוע. למפעל יש גרדיאן; זו השכבה הרוחבית מעליו.
+**טום = סמנכ״ל GT Everyday** (⊥ מנכ״ל — תוקן ע״י טום 2026-08-01). שיחה בעברית, caveman-דחוס; SQL/פנימי באנגלית.
 
-Created per Tom written request 2026-08-01 (grill session, 4 locked answers; satisfies written-approval threshold). CEO home restored same session from `docs/archive/*.pre-lean-2026-07-31.md` → `docs/ceo/registry.md`.
+בסיס: גריל טום 2026-08-01 (2 סבבים, 8 החלטות נעולות G1–G8; מספק את סף האישור-בכתב).
+ליבה משותפת: `docs/ceo/reference/` — `notion_contract.md` · `luz_rules.md` · `verification.md` · `state_contract.md`.
+נקרא **לפי צורך**, ⊥ מראש. אחות יומית: `chief-of-staff-daily`.
 
-## §G — Tom-locked 2026-08-01 (grill)
+## §G — נעול (גריל טום 2026-08-01)
 
 ! בהירות רוחבית: מפעל + מכירות + כסף + יומן + פרוייקטים + משימות — מסך אחד. ! שליטה = החלטות, ⊥ קריאה.
 
-- G1: horizontal, one screen. The dashboard shows everything the CEO owns; nothing important lives only in Tom's head or a lean-doc gap.
-- G2: every opening ends with **3 locked rocks** — or an explicit "לא ננעל". A report without decisions is not an opening.
-- G3: the control loop: מוצ״ש locks → guardian's morning email carries the rocks daily → next מוצ״ש opens with their retro. This loop — not the report — is what "שליטה בכל זמן נתון" means.
-- G4: nothing lost, ever again: the CEO layer lives in this repo (`docs/ceo/`), git-versioned. Doc-lean passes may compress live docs; the registry + week cards are the durable CEO surface.
-- G5: evidence standard inherited from guardian — every number live this run, ⊥ remembered/stale.
+- **G1: נושן = מאסטר** לפרויקטים ומשימות. `docs/ceo/registry.md` = **מראה נגזרת**, נכתבת ע״י הסקילים בלבד. אבנים + כרטיסי שבוע נשארים בגיט.
+- **G2: כתיבה מלאה לנושן** בלי אישור פר-פריט — סימון בוצע, תאריכים, סטטוס, עדיפות, משימות מהחלטות. מחיקה/שינוי מהותי = טום.
+- **G3: קלוד מבצע.** משימות מהגאנט מוקצות לקלוד בישיבה, רצות בלילה, מסומנות בוצע עם לינק לתוצר.
+- **G8: לולאת 3 האבנים** — מוצ״ש נועל → גרדיאן מציג כל בוקר → מוצ״ש הבא פותח ברטרו. **הלולאה, ⊥ הדוח**, היא ״שליטה בכל זמן נתון״.
+- G2′ (v1): כל פתיחה נגמרת ב-3 אבנים נעולות — או ״לא ננעל״ מפורש. דוח בלי החלטות ⊥ פתיחה.
+- G5′ (v1): כל מספר חי בריצה הזאת. ⊥ זכור, ⊥ מהשבוע שעבר.
 
-## §C — constraints (grill 2026-08-01)
+## §C — גבולות
 
-- C1: **writes = `docs/ceo/**` only** (registry, week cards, dashboard.html) + republish the artifact + send the CEO email + git commit/push of those paths. ⊥ `production_plan` writes (guardian's lane), ⊥ firm / place / ledger / projection / external-system writes, ⊥ authority docs.
-- C2: fire = chained from `daily-ops-guardian` mode `sunday-prep` (same session, after the prep email — chain step lives in that skill) + manual trigger words anytime + paste-back mode. No separate cron.
-- C3: output = live dashboard artifact (fixed URL below) + short CEO email (Hebrew, guardian template infra + palette, subject `GT · פתיחת שבוע · <date>`, ≤1 screen, dashboard button first) + the sit-down conversation. Email delivery = guardian's Make webhook, same fallback rules (non-200 → say so + Gmail draft).
-- C4: registry + week-card **content comes from Tom's words** (sit-down or paste-back). Claude adds statuses, links, cross-refs, and proposes — ⊥ invents tasks, goals, or rocks on its own authority.
-- C5: degrade gracefully, loudly: unreachable source → section renders "לא זמין" + one-line reason. ⊥ block the ritual on a missing source, ⊥ silent no-op (guardian V9 spirit). Green Invoice specifically: live API inspection before the first real read (`CURRENT_STATE.md` UNRESOLVED); until then the money section says "יחובר".
+- **C1 — כתיבות מותרות:** `docs/ceo/**` · **נושן** (לפי `notion_contract.md` §גבולות) · **Google Calendar** — רק אירועי `[cos-os]`, רק אחרי אישור טום · הארטיפקט · המייל · commit/push של הנתיבים האלה.
+  **⊥:** `production_plan` (הלֵן של הגרדיאן) · firm/place · ledger/projections · מערכות חיצוניות (Shopify/LionWheel/Green Invoice) · authority docs · merge.
+- **C2 — הצתה:** משורשר מ-`daily-ops-guardian` mode `sunday-prep` (אותו סשן) + מילות טריגר + מצב הדבקה. ⊥ cron נפרד.
+- **C3 — מייל: מאוחד** (נעול 2026-08-01). מוצ״ש מייצר **מייל אחד** — מפעל למחר + השכבה הרוחבית. נושא `GT · מוצ״ש · <תאריך>`. תשתית + פלטת הגרדיאן, ≤1 מסך, כפתור דשבורד ראשון. שליחה = webhook הגרדיאן, אותם כללי fallback (non-200 ⇒ להגיד + טיוטת Gmail).
+- **C4 — תוכן מהמילים של טום.** קלוד מוסיף סטטוסים, תאריכים, לינקים, הצלבות ו**מציע** — ⊥ ממציא משימות, יעדים או אבנים על דעת עצמו.
+- **C5 — לדגרד בקול.** מקור לא זמין ⇒ הסעיף מציג ״לא זמין״ + שורת סיבה. ⊥ לחסום את הריטואל, ⊥ no-op שקט (V9 של הגרדיאן). Green Invoice: ⊥ קריאה חיה לפני inspection (`CURRENT_STATE.md` UNRESOLVED) — עד אז ״יחובר״.
+- **C6 — הודעות לעובדים = טיוטות בלבד.** אלכס/דורין/מקסים/דניס/עדי/אדי/אמיר — נוסח מוכן-להעתקה לטום. **⊥ שליחה ישירה, לעולם.**
 
-## Flow — 6 stages
+## Flow
 
 ```
-0 context → 1 gather horizontal → 2 dashboard refresh → 3 CEO email → 4 sit-down → 5 write + handoff
+0 קונטקסט → 1 fan-out → 2 רטרו-לפני-נעילה → 3 דשבורד → 4 מייל מאוחד
+                                                    → 5 ישיבה → 6 נעילה+לו״ז+תור → 7 כתיבה
 ```
+0–4 רצים headless בשרשור המוצ״ש. 5–7 כשטום מגיע (אותו ערב או ראשון).
 
-Stages 0–3 run headless (מוצ״ש chain). Stage 4 runs when Tom shows up — same evening or Sunday. Stage 5 closes the loop.
+### Stage 0 — קונטקסט
 
-### Stage 0 — context
+כרטיס השבוע הנוכחי + הקודם מ-`docs/ceo/weeks/`. בשרשור sunday-prep: **לעשות שימוש חוזר במספרים החיים של ההרצה** — ⊥ לגזור מחדש. הצתה ידנית בלי prep טרי: המינימום מ-`daily-ops-guardian/references/sql_library.md` (Stage 0 gate + Stage 1 headline).
 
-Read `docs/ceo/registry.md`, current + previous `docs/ceo/weeks/*.md`. In the sunday-prep chain: **reuse the prep run's live numbers** (FG coverage, RM gaps, weekend orders, route preview) — ⊥ re-derive. Manual fire without fresh prep data: pull the minimal set via `daily-ops-guardian/references/sql_library.md` (Stage 0 gate + Stage 1 headline only).
+### Stage 1 — fan-out (סאב-סוכנים במקביל)
 
-### Stage 1 — gather horizontal (each best-effort per C5)
+**חמישה סאב-סוכנים, כל אחד מחזיר תקציר קצר — ⊥ נתונים גולמיים.** הסשן הראשי מסנתז בלבד; זה מה ששומר את הקונטקסט לחלק שדורש שיפוט (עקרון 1+9).
 
-- **מפעל:** from sunday-prep (verdict, 🔴/🟡 headlines, open exceptions count).
-- **מכירות והזמנות:** the ended week (Fri→Thu): units + ₪ by channel, top customers, dateless backlog — LionWheel mirror SQL + Shopify analytics (`run-analytics-query`).
-- **כסף:** Green Invoice — gated per C5.
-- **יומן:** Google Calendar MCP, next 7 days, business-relevant events only.
-- **פרוייקטים/משימות:** registry + open PRs across the 3 repos (GitHub MCP) + portal scorecard number if fresh.
-- **אבנים:** previous week card → retro status per rock.
+| סוכן | מושך | מחזיר |
+|---|---|---|
+| **נושן** | הגאנט המלא לפי `notion_contract.md` | פרויקטים מעוכבים (+ימים) · **תקועים** (פעיל בלי משימה פתוחה) · משימות מזדקנות · waiting-on פר-אדם · עומס פר-אדם |
+| **מפעל** | מ-sunday-prep (⊥ מריץ מחדש) | verdict · כותרות 🔴/🟡 · חריגים פתוחים |
+| **מכירות** | LionWheel mirror + Shopify analytics, שבוע שהסתיים (ו׳→ה׳) | יחידות + ₪ לפי ערוץ · לקוחות מובילים · backlog בלי תאריך |
+| **יומן** | Google Calendar, 7 ימים קדימה | פגישות עסקיות · **ימים בלי חלון עומק** (⇐ `luz_rules.md`) |
+| **PRs** | GitHub, 3 הריפואים | PRs פתוחים · טיוטות מהלילה שממתינות |
 
-### Stage 2 — dashboard refresh
+**כסף:** Green Invoice מגודר (C5) ⇒ ״יחובר״.
+סוכן נופל ⇒ הסעיף שלו ״לא זמין + סיבה״. **⊥ מפיל את הריטואל.**
 
-Regenerate the `data-live="…"` blocks + `data-week` / `data-week-label` in `docs/ceo/dashboard.html` (keep ids/keys stable — Tom's notes and checkmarks live in his device's localStorage and must survive republish). Republish **to the fixed URL** via the Artifact tool with `url` = the URL below. Commit the refreshed HTML.
+### Stage 2 — רטרו לפני נעילה (evaluator)
 
-### Stage 3 — CEO email
+**⊥ קובעים אבנים חדשות לפני שמצייני את הישנות.** לכל אבן מהשבוע שעבר: ✅ / ❌ + שורת ״למה״.
+**החטאה חוזרת** (אותה אבן נכשלת פעמיים, או 3 החטאות ב-4 שבועות) ⇒ ⊥ להציע אותה שוב כמו שהיא. להעלות שאלה: *האבן גדולה מדי? חסומה? ⊥ באמת בעדיפות?* — ובאמת להציע **שינוי בסקיל עצמו** אם התבנית חוזרת.
 
-Guardian webhook, subject `GT · פתיחת שבוע · <date>`. Contents, in order: verdict badge · last week's rocks retro (✅/❌ one line each) · 3 **proposed** rocks (drafted from evidence — committed gaps, aged tasks, project next-steps; marked הצעה) · dashboard button · top 3 exceptions. Short chat/push backup. This email is the invitation to the sit-down, ⊥ its replacement.
+### Stage 3 — רענון דשבורד
 
-### Stage 4 — the sit-down (interactive)
+לחדש את בלוקי `data-live="…"` + `data-week` / `data-week-label` ב-`docs/ceo/dashboard.html`. **לשמור ids/keys יציבים** — ההערות והצ׳קים של טום חיים ב-localStorage במכשיר שלו וחייבים לשרוד רה-פרסום. לפרסם ל-**URL הקבוע** דרך `Artifact` עם `url`. לקמט.
 
-Entry: Tom replies / says a trigger word / pastes the dashboard summary. Order:
-1. **רטרו:** last week's rocks — done/not + one-line why. Misses feed this week's proposal.
-2. **סיבוב לוח:** walk the board top-down; collect decisions and new tasks as they come (Tom talks, Claude writes).
-3. **גריל האבנים:** challenge until exactly 3 are locked — each rock: concrete, week-sized, has a "done looks like". Push back on vague rocks ("לשפר מכירות" → מה, כמה, עד מתי).
-4. Anything Tom raises that ∉ this week → registry (project/task/deferred), ⊥ lost.
+### Stage 4 — מייל מאוחד
 
-**Paste-back mode:** input starting `=== GT פתיחת שבוע — סיכום דשבורד ===` → parse rocks (text + status), checked tasks, פנקס lines → apply: rocks/statuses → week card; checked tasks → mark done in registry; פנקס → sort into tasks/notes/decisions, ask one batched question on anything ambiguous. Then continue as sit-down step 3 if rocks unlocked.
+נושא `GT · מוצ״ש · <תאריך>`. סדר: verdict מפעל · **רטרו אבני השבוע שעבר** (✅/❌ שורה לכל אחת) · **3 אבנים מוצעות** (מסומנות ״הצעה״) · כפתור דשבורד · 3 חריגים · מפעל למחר (מ-sunday-prep). גיבוי קצר בצ׳אט/push.
+המייל = ההזמנה לישיבה, ⊥ תחליף שלה.
 
-### Stage 5 — write + handoff
+### Stage 5 — הישיבה (אינטראקטיבי)
 
-Write the week card `docs/ceo/weeks/<sunday YYYY-MM-DD>.md` (rocks + decisions + notes; previous card gets its retro filled). Update registry (statuses, done tasks, new items). Commit + push the `docs/ceo/**` paths (explicit paths, ⊥ `git add -A`). Confirm to Tom in one line: מה ננעל, מה עודכן, מה ממתין.
+1. **רטרו** — תוצאות Stage 2, מהפה של טום. החטאות מזינות את ההצעה.
+2. **סיבוב לוח** — מלמעלה למטה; טום מדבר, קלוד כותב. החלטות ומשימות נאספות תוך כדי.
+3. **גריל האבנים** — ללחוץ עד ש**בדיוק 3** ננעלות. כל אבן: קונקרטית · בגודל שבוע · יש לה ״איך נראה גמור״. אבן מעורפלת ⇒ לדחוף (״לשפר מכירות״ → מה, כמה, עד מתי).
+4. כל מה שעולה ו⊥ שייך לשבוע ⇒ נושן (משימה/פרויקט/נדחה). **⊥ אובד.**
 
-## Dashboard artifact
+**מצב הדבקה:** קלט שמתחיל `=== GT פתיחת שבוע — סיכום דשבורד ===` ⇒ לפרסר אבנים (טקסט+סטטוס), משימות מסומנות, שורות פנקס ⇒ אבנים→כרטיס · מסומנות→**בוצע בנושן** · פנקס→משימות/הערות/החלטות, עם שאלה מרוכזת אחת על מה שעמום. ואז להמשיך מסעיף 3 אם האבנים ⊥ ננעלו.
 
-- **Fixed URL:** `https://claude.ai/code/artifact/91a4c88a-3815-4cda-93ba-7d113b36773f`
-- Source of truth for its HTML: `docs/ceo/dashboard.html` (this repo). Republish same URL only — a new URL is a bug (V4).
-- Tom's rocks/notes/checkmarks persist in device localStorage keyed `gtceo:*`; rocks are keyed per `data-week`.
+### Stage 6 — נעילה ⇒ לו״ז ⇒ תור (G3+G5)
 
-## §V — invariants
+נעילת 3 האבנים מפעילה **שלושה** דברים, ⊥ אחד:
+1. **בלוקים ביומן** — לכל אבן ≥בלוק אחד בשבוע, לפי `luz_rules.md` (L6). מוצע לטום, נכתב **רק אחרי אישור**.
+2. **משימות-קלוד לשבוע** (G3) — מה מהגאנט קלוד לוקח. כל אחת נכתבת כספק לפי `verification.md` §א׳.
+3. **הקצאות אנשים** — waiting-on חדשים עם `תאריך יעד` = ה-checkback. טיוטות nudge מוכנות-להעתקה (C6).
 
-- V1: ∀ opening → ends with 3 locked rocks or explicit "לא ננעל השבוע" in the card. ⊥ silent skip.
-- V2: week card = sole home of the rocks. Guardian **reads** it for the morning row; ⊥ writes it. Weekly-opening is the sole writer.
-- V3: registry ⊥ duplicates system state (stock, plans, POs live in Postgres — point, don't copy).
-- V4: one artifact URL forever. Republish via `url`; ⊥ mint new URLs.
-- V5: ⊥ noise: email ≤ 1 screen, dashboard ≤ 9 sections. New section = something else leaves.
-- V6: ∀ number shown ← live this run (G5). Sections without live data say so ("ימולא", "לא זמין") — ⊥ stale numbers dressed as fresh.
+### Stage 7 — כתיבה + מסירה
 
-## Handoffs
+בסדר הזה:
+1. **נושן ראשון** (המאסטר): החלטות→משימות חדשות · סימוני בוצע · עדכוני סטטוס/תאריך/עדיפות.
+2. **כרטיס השבוע** `docs/ceo/weeks/<יום א׳ YYYY-MM-DD>.md`: אבנים · החלטות · הערות · תור לילה. הכרטיס הקודם מקבל את הרטרו שלו.
+3. **מראה registry** — להיגזר מחדש מנושן. ⊥ לערוך ידנית (`state_contract.md` §2).
+4. commit + push של נתיבי `docs/ceo/**` **מפורשים** (⊥ `git add -A`).
+5. שורה אחת לטום: מה ננעל · מה עודכן · מה ממתין.
 
-- daily-ops-guardian — sunday-prep chains into this skill; guardian's daily email renders the rocks row from the current week card.
-- plan-production-14d — Wednesday ritual; rocks referencing production land there, ⊥ re-planned here.
-- procurement-planning — purchase decisions surfaced in the sit-down route there.
-- close-session — harvests sit-down decisions worth durable capture.
-- factory-os-governor — any stop condition (CLAUDE.md) → HALT + route.
+## דשבורד
+
+- **URL קבוע:** `https://claude.ai/code/artifact/91a4c88a-3815-4cda-93ba-7d113b36773f`
+- מקור ה-HTML: `docs/ceo/dashboard.html`. רה-פרסום לאותו URL בלבד — URL חדש = באג (V4).
+- הערות/צ׳קים של טום ב-localStorage `gtceo:*`; אבנים ממופתחות לפי `data-week`.
+
+## §V — אינוואריאנטים
+
+- **V1** ∀ פתיחה → 3 אבנים נעולות או ״לא ננעל השבוע״ מפורש בכרטיס. ⊥ דילוג שקט.
+- **V2** כרטיס השבוע = **הבעלים היחיד** של האבנים. הגרדיאן קורא; weekly-opening כותב.
+- **V3** נושן = מאסטר לפרויקטים/משימות (G1). סתירה מראה↔נושן ⇒ **נושן מנצח**, המראה נכתבת מחדש.
+- **V4** URL ארטיפקט אחד לתמיד.
+- **V5** ⊥ רעש: מייל ≤1 מסך, דשבורד ≤9 סעיפים. סעיף חדש ⇒ משהו יוצא.
+- **V6** ∀ מספר ← חי בריצה הזאת. אין נתונים ⇒ ״ימולא״/״לא זמין״, ⊥ מספר ישן בתחפושת.
+- **V7** ∀ אבן נעולה ⇒ בלוק ביומן (L6). אבן בלי זמן היא משאלה.
+- **V8** ⊥ merge, ⊥ deploy, ⊥ שליחה לעובדים. אף פעם, גם כשהכל ירוק.
+
+## מסירות
+
+- `daily-ops-guardian` — sunday-prep משרשר לכאן ומתאחד למייל אחד; המייל היומי מרנדר את שורת האבנים מכרטיס השבוע.
+- `chief-of-staff-daily` — יורש את האבנים והתור; מריץ day-open/day-close א׳–ה׳.
+- `plan-production-14d` — ריטואל רביעי; אבנים שנוגעות בייצור נוחתות שם, ⊥ מתוכננות כאן.
+- `procurement-planning` — החלטות קנייה מהישיבה נוסעות לשם.
+- `close-session` — קוצר החלטות ששוות שימור קבוע.
+- `factory-os-governor` — כל stop condition (`CLAUDE.md`) ⇒ HALT + ניתוב.

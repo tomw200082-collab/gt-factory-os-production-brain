@@ -143,8 +143,9 @@ The Sunday-chaos killer. Draft-writes only per C1:
 2. **Sunday production draft:** committed-first + forecast for Sunday/Monday → `production_plan` drafts (`GUARD:` prefix, ⊥ touch `TEAEDD:%`), sized against current FG balances.
 3. **RM/PKG check for that draft:** explode vs `current_balances` — anything short for Sunday morning is a 🔴 headline (Tom sees it Saturday night, not Sunday 7:00).
 4. **Route preview:** Sunday = מרכז; list the weekend orders already dispatchable (wave-1 pick list for Maxim 7:30).
-5. Email (same template/palette) + short chat, so the plan is waiting at 6:00: "טיוטת ראשון מוכנה — דניס יכול להתחיל".
-6. **Chain → weekly-opening (Tom-approved 2026-08-01 grill):** after the prep email is sent, run the `weekly-opening` skill in this same session — the CEO opening (dashboard refresh + CEO email + rocks proposal), reusing this run's live numbers. Its writes are `docs/ceo/**` only; prep constraints C1 unchanged. Prep failure ⊥ cancels the chain — weekly-opening still runs and reports the gap loudly (its C5).
+5. Compose the prep content (same template/palette) so the plan is waiting at 6:00: "טיוטת ראשון מוכנה — דניס יכול להתחיל". **⊥ send it yet** — see step 6.
+6. **Chain → weekly-opening, ONE unified email (Tom-approved 2026-08-01 grill; unified locked 2026-08-01 R2):** run the `weekly-opening` skill in this same session, handing it this run's live numbers (⊥ re-derive). It appends the horizontal layer — rocks retro, 3 proposed rocks, dashboard button, exceptions — and **sends a single email**, subject `GT · מוצ״ש · <date>`, factory-for-tomorrow section included. **⊥ two emails on מוצ״ש.** Its writes are `docs/ceo/**` + Notion + calendar-on-approval; prep constraints C1 unchanged.
+   Prep failure ⊥ cancels the chain — weekly-opening still runs, still sends, and reports the gap loudly (its C5). weekly-opening unreachable ⇒ fall back to sending the prep email alone and say so.
 
 ## Weekly — Thursday handoff
 
@@ -182,7 +183,8 @@ Scheduled trigger, fresh session per fire, cron `30 3 * * *` UTC (= 06:30 IDT; w
 
 ## Handoffs
 
-- weekly-opening — CEO layer (מוצ״ש): sunday-prep step 6 chains into it; the daily email renders the rocks row from `docs/ceo/weeks/`. Guardian never writes that dir.
+- weekly-opening — horizontal chief-of-staff layer (מוצ״ש): sunday-prep step 6 chains into it and they share **one** email; the daily email renders the rocks row from `docs/ceo/weeks/`. Guardian never writes that dir.
+- chief-of-staff-daily — Tom's daily layer (day-open 07:30 / day-close 17:00, Sun–Thu). **It rides this run's outputs and ⊥ re-runs the guardian's SQL** — so the 06:30 loop must leave its numbers readable in-session. Guardian didn't run or failed ⇒ day-open says so in its first line rather than simulating green.
 - plan-production-14d — Thursday ritual; guardian never re-plans the 14d horizon itself, only proposes deltas.
 - procurement-planning — quantity interview logic for purchase-session drafts.
 - factory-os-governor — any stop condition (CLAUDE.md) → HALT + route.
