@@ -44,7 +44,7 @@ The user picked this posture deliberately. Sort every candidate action into exac
 - **Mark genuinely-completed tasks done** in the session task list.
 - **Merge a PR when its *required* checks are green AND the change is verified** (tests N/N, typecheck/lint clean, or equivalent evidence the session actually produced). This is the standing autonomous-merge authority — no need to pause. A *non-required* check that is red does **not** block; name it and say why it's non-blocking (e.g. a known infra flake), then merge. After merging, the PR is terminal.
 - **Retire a webhook subscription whose PR just became terminal** (merged/closed) — it has nothing left to report.
-- **Append durable knowledge to a *non-authority* type-registry** in the brain repo (see step 4) — reversible doc appends, committed on the working branch so the knowledge lands.
+- **Append durable knowledge to a *non-authority* type-registry or domain skill** in the brain repo (see step 4) — reversible doc appends, committed on the working branch so the knowledge lands. Includes skill §LEARNED appends, self-compaction, and the CURRENT_STATE resolved-bullet sweep (deletions/pointers only).
 - **Draft** the closure report and any summary (no external effect until sent).
 - **Run read-only status checks** — PR mergeability + check state, trigger list, task list, `git status`.
 
@@ -93,26 +93,38 @@ Show the user a single, scannable checkpoint: what you already handled (SAFE, do
 
 Then stop and let them choose per item. Honor their answers exactly: act only on what they approve; leave the rest as explicitly-deferred (record it in the report so the next session sees it).
 
-### Step 4 — Preserve the knowledge (into the brain repo, by type)
+### Step 4 — Preserve the knowledge (typed routing — the self-building tier system, Tom 2026-08-01)
 
-Durable knowledge lands in the **gt-factory-os-production-brain** repo, routed to the home that matches its *type*. Don't invent a destination and don't use a personal side-registry — the brain repo already keeps type-organized registries. Read the repo's `docs/` to see the current set, then match by type. Known homes:
+The workspace runs a 3-tier knowledge architecture. Route every durable fact to the tier that matches its *decay rate* — this step is what makes the architecture grow itself, so run it every close, no exceptions:
 
-| Knowledge type | Home | Write? |
-|---|---|---|
-| A claim that overstated real readiness; a flaky / non-required check; a "false green" | `docs/false_green_registry.md` — table: Claim / Source / Actual state / How detected / Corrective note | **auto** |
-| An operational gap, open issue, or data-quality finding | `docs/gap_registry.md` — ranked table: ID / Severity / Layer / Description / Blocked by / Status / First detected | **auto** (next `GAP-###`) |
-| A non-obvious lesson that cost real rework | `docs/lessons_learned.md` — dated block: What happened / Why surprising / Corrective | **auto** |
-| A locked decision | `docs/decisions/LOCKED_DECISIONS.md` | **propose only** (authority → Tom / factory-os-governor) |
-| A schema / contract / integration rule | `docs/contracts/SCHEMA_GUIDANCE.md` | **propose only** (contract → ops-docs-curator) |
-| Live gate status / critical path / completion | `CURRENT_STATE.md` | **propose only** (authority) |
+- **Tier 0 — boot docs** (`CLAUDE.md`s, `CURRENT_STATE.md`): invariants, traps, open gaps ONLY. Loaded every session — every line here costs credits forever, so a line must earn it by being true in 3 months.
+- **Tier 1 — domain skills** (`.claude/skills/<domain>/SKILL.md`): all depth. Descriptions (~1 line) auto-load every session; bodies load only when the domain is touched. This is where knowledge is FREE until needed.
+- **Tier 2 — queries & git**: anything volatile. State is *asked*, never written; narrative lives in commit messages.
+
+| Knowledge type | Decay test | Destination | Write? |
+|---|---|---|---|
+| Domain depth — architecture, contracts, gotchas, canonical queries of one subsystem (Shopify, LionWheel, GI, planning…) | needed only when touching that domain | matching `.claude/skills/<domain>/SKILL.md` → append to **§LEARNED** (create the skill from the template below if none matches) | **auto** |
+| Global trap / invariant, backend-scoped | true in 3 months, any task | `gt-factory-os/CLAUDE.md` (Claude-writable) | **auto** |
+| Global trap / invariant, governance-scoped | " | brain `CLAUDE.md` | **propose only** (Tom sole writer) |
+| False green / overstated readiness | — | `docs/false_green_registry.md` (match schema, append) | **auto** |
+| Operational gap / data-quality finding | — | `docs/gap_registry.md` (next `GAP-###`) | **auto** |
+| Cross-domain lesson fitting no single skill | cost real rework | `docs/lessons_learned.md` (dated block) | **auto** |
+| Locked decision | — | `docs/decisions/LOCKED_DECISIONS.md` | **propose only** |
+| Schema / contract rule | — | `docs/contracts/SCHEMA_GUIDANCE.md` | **propose only** |
+| **State — status, counts, percentages, "currently X"** | stale within weeks | **⊥ write ANYWHERE.** Ensure a query answers it; add the query to the skill's §Canonical queries if missing | — |
+| Session narrative — what happened, in what order | immediately | commit messages only. ⊥ docs | — |
+
+**Skill hygiene (autonomous, no approval — skills ∉ authority docs):**
+- §LEARNED > 30 lines → distill into the skill's body sections, clear the log, stamp "Last distilled <date>" in its header.
+- Skill body > ~200 lines → split by concern (`<domain>-<concern>`); keep trigger keywords in every description — descriptions are the router.
+- New-skill template: frontmatter `name` + `description` **listing trigger keywords** (incl. Hebrew), then sections: `## Architecture` · `## Traps` · `## Canonical queries` · `## Monitoring` · `## OPEN` · `## LEARNED — append-only log` with the 30-line self-compaction note. Model: `.claude/skills/shopify-sync/SKILL.md`.
+
+**CURRENT_STATE sweep (part of every close, Tom 2026-08-01 lean mandate):** any bullet this session *resolved* → delete it or compress to a one-line pointer at the skill. Deletions/compressions of resolved items ride the session's work; **new claims or status changes remain propose-only**. A boot doc that says something a query contradicts is worse than an empty one.
 
 Rules:
-- **Read the target registry first**, match its exact schema/format, and **append** — never rewrite or reorder existing entries. Reversible appends to non-authority registries are SAFE: write them, stage *only those files* (never `git add -A`), then commit + push on the working branch so the knowledge lands.
-- **Never write an authority doc directly** (the six propose-only homes above). Draft the patch, put it in the report as a proposal, route it to the right owner. This is RISKY — it waits.
-- If a piece of knowledge fits no existing registry, note it under "worth keeping" in the report rather than inventing a new authority doc — adding authority docs needs the owner's approval.
-- Show every entry you wrote and every patch you proposed in the closure report, so what landed is visible and revertible.
-
-Match the registry's schema exactly — the value is that the knowledge is *findable by type* next time, not just recorded.
+- **Read the target first**, match its exact format, **append** — never rewrite others' entries. Stage only the files this step touched (never `git add -A`), commit + push on the working branch so the knowledge lands.
+- Authority docs (propose-only rows above): draft the patch, put it in the report, route to the owner. RISKY — waits.
+- Show every entry written and every patch proposed in the closure report — visible and revertible.
 
 ### Step 5 — Deliver the closure report
 

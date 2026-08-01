@@ -30,6 +30,7 @@ Legacy `executor-w1/w2/w4`, `governor`, `verifier` dispatchable until Wave 6. On
 
 ## 3. Decision tree — first match wins
 
+0. **Domain skill exists?** (`.claude/skills/<domain>/SKILL.md` — descriptions auto-load; e.g. `shopify-sync`) → load its body BEFORE touching the domain. Depth lives there, ⊥ in boot docs; skills grow via `close-session` §Step 4 typed routing (Tom 2026-08-01).
 1. **Stock-truth-impacting?** (`stock_ledger`, `balance_anchors`, projection table, BOM cluster) → `backend-db` + Tom-approval gate + `factory-os-governor` pre-check.
 2. **Frozen flag / code sentinel?** (`EXECUTION_POLICY.md` §Frozen flags) → `integration` + Tom written approval HARD + dry-run + ≥24h soak + RUNTIME_READY.
 3. **New module?** → `verdict: NEW_MODULE_REQUIRED`. Fill `MODULE_TEMPLATE.md`. ⊥ invoke another agent yet.
