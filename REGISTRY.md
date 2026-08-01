@@ -36,6 +36,9 @@ Legacy ↔ new are additive pairs — one active per dispatch, default new. Wave
 **Portal / integration:** `/portal-pr-review` · `/integration-dry-run`
 **UX (7):** `/ux-flow-audit` · `/ux-release-gate` · `/button-logic-review` · `/empty-error-state-audit` · `/design-system-check` · `/screen-scorecard` · `/operator-task-simulation`
 
+**Stacking:** `/gate-close` → evidence consumed by `/production-go-no-go` · `/release-check` (pre-gate) → `/production-go-no-go` (policy decision) · `/portal-pr-review` (per-PR) → `/ux-release-gate` (per-release) · `/screen-scorecard` aggregates `/ux-flow-audit` + `/button-logic-review` + `/design-system-check` + `/empty-error-state-audit`.
+**Verdict-token collision:** `HOLD` means dependency-blocked in `/production-go-no-go` but P0-finding-present in `/ux-release-gate` — same token, different cause. Read context, ⊥ assume.
+
 ## Skills (7)
 
 `daily-ops-guardian` · `daily-delivery-dispatch` · `route-print-pack` · `procurement-planning` · `plan-production-14d` · `goods-receipt-from-invoice` · `close-session`

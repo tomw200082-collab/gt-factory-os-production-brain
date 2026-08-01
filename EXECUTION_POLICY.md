@@ -43,7 +43,12 @@ UX agents are read-only, own no window, produce handoff packets `portal-producti
 - **Mode B** (auto-authorized on `RUNTIME_READY(form)`, scoped to that **one named form**): canonical portal authoring for that form. ⊥ re-authorization needed for A→B. **Exit:** back to A once local portal E2E green for that form.
 
 Mode B ⊥ generalize. Each additional form ! its own `RUNTIME_READY`. Only one form in Mode B at a time.
-All pan-form carve-outs are **retired** (Tom 2026-07-31). Any pan-form authoring now needs a fresh Tom-authorized amendment.
+All pan-form carve-outs are **retired** (Tom 2026-07-31). Any pan-form authoring now needs a fresh Tom-authorized amendment — shape (distilled from 3 retired precedents):
+1. Cites a Tom-approved plan file naming the corridor in-scope, by section.
+2. Enumerates allowed/forbidden explicitly — ⊥ inherit blanket W2 canonical rights.
+3. Exit gate is per-tranche: typecheck + build + lint + smoke on touched surfaces + role-matrix walkthrough; `active_mode.json` records exit.
+4. Names its expiry condition (e.g. "N named P0 findings all CLOSED").
+5. Single-active-variant: only one pan-form amendment live at a time, even if others are unexpired.
 
 ## Signals
 
@@ -54,6 +59,7 @@ All pan-form carve-outs are **retired** (Tom 2026-07-31). Any pan-form authoring
 - **`TOOL_FAILURE_UNCLEARED`** — W4 artifact whose same tool failure repeated after one retry. Parks the artifact. Lives inside `tool_failure` class, ⊥ a sixth class.
 
 **Rule:** A→B only on `RUNTIME_READY`, never on `FILE_READY` alone. ⊥ silently alias the two.
+**Editorial (docs-curation passes):** an older doc using `FILE_READY` loosely as "go-ahead" ! be upgraded to `RUNTIME_READY` on sight, ⊥ preserved as ambiguous history.
 
 ## Retry
 
@@ -102,7 +108,7 @@ Standing orders ⊥ override the failure taxonomy or human-checkpoint rules. Col
 
 ## Global constraints
 
-⊥ DDL outside W1 ownership · ⊥ auth wiring beyond locked decisions · ⊥ W3→canonical promotion · ⊥ reopening locked decisions · ⊥ live integration runtime beyond what `CLAUDE.md` §Authorization permits.
+⊥ DDL outside W1 ownership · ⊥ auth wiring beyond locked decisions · ⊥ W3→canonical promotion · ⊥ reopening locked decisions · ⊥ live integration runtime beyond what `CLAUDE.md` §Authorization permits · ⊥ assume a flag/bridge/gate's state before an external write — verify live; a non-terminal upstream status ! be treated as complete.
 
 > Claude tooling MAY be in the live operational path and MAY write to connected systems, per `CLAUDE.md` §Authorization (Tom 2026-06-20). Prior blanket prohibitions here are superseded.
 
@@ -117,7 +123,7 @@ Stay `false` until Tom written approval + dry-run + ≥24h soak + RUNTIME_READY.
 | `SHOPIFY_FG_SYNC_LIVE_ADAPTER_WIRED` (code sentinel, `factory_os_jobs/index.ts:87`) | `false` — Tom-locked 2026-05-07 R1. Gates every live Shopify mutation. Flip = code change + deploy, ⊥ a DB flag |
 | `SHOPIFY_FULFILLMENT_BRIDGE_LIVE_ADAPTER_WIRED` (code sentinel) | `false` |
 
-DB rows `private_core.feature_flags.shopify_fg_sync_v2_live` and `shopify_available_reconcile_live` have **no reader in code** — they ⊥ gate anything. Tracked by migration `0302`. ⊥ treat either as the live switch.
+`private_core.feature_flags.shopify_available_reconcile_live` **is** the live gate on the sole Shopify writer (Edge Fn `shopify_available_reconcile`, cron 24) — it has a reader, just not one visible from repo grep alone (was deployed-only; adopted to source 2026-08-01). `shopify_fg_sync_v2_live` gates a dormant delta-writer, flag-disabled since 0307. Detail: skill `shopify-sync`. Cost of the grep-proves-absence error: migration `0302`.
 
 ## Approval thresholds
 

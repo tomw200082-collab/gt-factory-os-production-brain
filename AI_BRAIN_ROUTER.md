@@ -24,8 +24,8 @@ Fits >1 type → take the highest in this order.
 
 ## 2. Lanes
 
-`backend-db` → `backend-db-executor` · `portal` → `portal-production-executor` · `integration` → `integration-boundary-executor` · `docs` → `ops-docs-curator` — ≤4 simultaneous, per-module scope.
-Read-only, ⊥ count as lane: `ux-audit` (5 UX agents, parallel) · `governance` → `factory-os-governor` (always-on) · `release-gate` → `release-verifier` · `source-of-truth` → `source-of-truth-auditor` (on demand).
+`backend-db` → `backend-db-executor` · `portal` → `portal-production-executor` · `integration` → `integration-boundary-executor` — **per-module** (isolated via each module's `MODULE_TEMPLATE.md` allowed-paths). `docs` → `ops-docs-curator` — **system-wide**, ⊥ per-module. ≤4 simultaneous.
+Read-only, ⊥ count as lane, all **system-wide**: `ux-audit` (5 UX agents, parallel) · `governance` → `factory-os-governor` (always-on) · `release-gate` → `release-verifier` · `source-of-truth` → `source-of-truth-auditor` (on demand).
 Legacy `executor-w1/w2/w4`, `governor`, `verifier` dispatchable until Wave 6. One lane = legacy **or** new, never both. Default new.
 
 ## 3. Decision tree — first match wins
@@ -34,7 +34,7 @@ Legacy `executor-w1/w2/w4`, `governor`, `verifier` dispatchable until Wave 6. On
 1. **Stock-truth-impacting?** (`stock_ledger`, `balance_anchors`, projection table, BOM cluster) → `backend-db` + Tom-approval gate + `factory-os-governor` pre-check.
 2. **Frozen flag / code sentinel?** (`EXECUTION_POLICY.md` §Frozen flags) → `integration` + Tom written approval HARD + dry-run + ≥24h soak + RUNTIME_READY.
 3. **New module?** → `verdict: NEW_MODULE_REQUIRED`. Fill `MODULE_TEMPLATE.md`. ⊥ invoke another agent yet.
-4. **User-visible portal surface?** → `ux-audit` (parallel) → handoff packet → `portal-production-executor`. Backend-bound surface ! `RUNTIME_READY(form)`.
+4. **User-visible portal surface?** → `ux-audit` (parallel) → handoff packet → `portal-production-executor`. Backend-bound surface ! `RUNTIME_READY(form)`. Any P0 finding → escalate `factory-os-governor` before authoring proceeds, ⊥ just noted in the packet.
 5. **Backend contract, no portal change?** → `integration-boundary-executor` authors contract → `backend-db-executor` implements.
 6. **Authority-doc reconciliation / drift audit?** → `source-of-truth-auditor` (read-only) → patch proposals → `ops-docs-curator` under governor approval. `CLAUDE.md` ! Tom.
 7. **Release / merge / deploy?** → `release-verifier` → `factory-os-governor` go/no-go. Push, merge, prod deploy & prod-DB migration apply are **Claude's to do autonomously** when gates are green, per `CLAUDE.md` §Authorization — announce, ⊥ wait.

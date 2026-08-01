@@ -75,6 +75,7 @@ Any activation touching these ! emit `assumption_failure` and surface the gap.
 6. Excel round-trip creeping back via any operator workflow that edits the workbook.
 7. Empty ≠ green — a gate query returning 0 rows may mean the query is wrong (precedent: skill staleness-gate used `item_type='COMPONENT'`, never matches live taxonomy `RM`/`PKG`/`FG`, read green for weeks).
 8. Restating a count that has a JSON source of truth → drift. Point at the file.
+9. Grep proves what's in the repo, ⊥ what's live in prod — deployed Edge Functions/cron jobs/DB flags leave no source trace (cost: `0302`, twice — 2026-07-17 flag anomaly, 2026-08-01 orphan writer). `list_edge_functions` + direct table reads before claiming "no reader"/"nothing writes X". Periodically audit governance-sensitive tables (`feature_flags`, `active_mode.json`) for writes with no corresponding migration/commit — that mismatch is itself the signal, even when the code-level gate is separately intact.
 
 ## Reference
 
