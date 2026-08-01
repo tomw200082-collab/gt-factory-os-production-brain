@@ -50,7 +50,9 @@ Open (Shopify): **none.** Coverage = every ACTIVE sellable item mapped (0311, 03
 
 ## Deferred (Tom decision, ⊥ blocking)
 
-SQL `tier` semantics (portal now classifies from trace math, underlying tier still old floor-breach logic) · `cover_days` buffer over-buffers 81/81 components sampled — needs plan-aware formula · ₪-at-risk trend needs a "previous session" definition · `--fg-subtle` light-theme contrast 3.09:1 unaudited · A11Y-003/004/010 · Dorin persona split · Maiden LionWheel driver record · Sat customer reminder · widen CI `typecheck` to `api/src` · flaky `supabase` postinstall in CI.
+SQL `tier` semantics (portal now classifies from trace math, underlying tier still old floor-breach logic) · `cover_days` buffer over-buffers 81/81 components sampled — needs plan-aware formula · ₪-at-risk trend needs a "previous session" definition · `--fg-subtle` light-theme contrast 3.09:1 unaudited · A11Y-003/004/010 · Dorin persona split · Maiden LionWheel driver record · Sat customer reminder · widen CI `typecheck` to `api/src` · flaky `supabase` postinstall in CI · PO-header parity extension to `rebuild_verifier` (UNRESOLVED-LC-5, deferred since 2026-04; recovered from pre-lean archive audit 2026-08-01 — PO corridor has run months without it, ? still wanted).
+
+Pre-lean-archive audit 2026-08-01 also verified: G-07 forecast audit-trigger & G-10 `forecast.publication` producer **built** (migrations 0026/0027) · April's `lionwheel_unknown_sku` bulk-close effectively done (~41 → 11 open, all newer instances, live in `/exceptions`) · every other pre-lean "open" item resolved, superseded, or already on a list above.
 
 ## UNRESOLVED — ⊥ silently heal
 
