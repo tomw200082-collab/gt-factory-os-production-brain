@@ -197,7 +197,7 @@ may_not_write:
   - .env*, credentials, secrets
   - PRODUCTION authority docs (CLAUDE.md, EXECUTION_POLICY.md, CURRENT_STATE.md,
       WORKSPACE_MAP.md, ACTIVE_NOW.md, AI_BRAIN_ROUTER.md)
-  - AI_BRAIN_ROUTER.md / AGENT_REGISTRY.md / COMMAND_REGISTRY.md
+  - AI_BRAIN_ROUTER.md / REGISTRY.md / REGISTRY.md
       (only factory-os-governor updates these, AFTER Tom approval)
 ```
 
@@ -332,7 +332,7 @@ Tracked in `docs/decisions/modules/sales-decisions.md` (to open on approval).
 - [ ] All §14 tests green with N/N counts; cross-module reconciliation proves zero core
       contamination.
 - [ ] Rollback (drop `sales_core`) dry-run-tested.
-- [ ] `AI_BRAIN_ROUTER.md` §3 + `AGENT_REGISTRY.md` + `COMMAND_REGISTRY.md` updated
+- [ ] `AI_BRAIN_ROUTER.md` §3 + `REGISTRY.md` + `REGISTRY.md` updated
       **by factory-os-governor** post-approval; `CURRENT_STATE.md` records module status.
 
 ---

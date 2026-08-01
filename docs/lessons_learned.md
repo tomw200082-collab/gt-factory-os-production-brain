@@ -55,6 +55,14 @@
 
 **Corrective:** When planning GT "improvements," classify each item build-vs-adopt against `CURRENT_STATE.md` + the factory-mapping rollout docs BEFORE estimating. Price the adoption gap (change-management, habit cadence), not the code. Sequence field-adoption serially (one live change at a time, next enters only when its KPI shows traction); run pure-build "lab" work in parallel since it needs no operator behaviour change.
 
+### 2026-08-01: Grep proves what is in the repo, not what runs in production
+
+**What happened:** Every Shopify write path in `gt-factory-os` is gated off by frozen sentinels, yet Shopify's numbers matched our computed available-for-sale on 50 of 51 SKUs. The writer was `shopify_available_reconcile`, an Edge Function deployed straight to prod on 2026-07-24 with no source in any repo, no migration, no CI. Migration `0302` had already acted on the opposite belief — it narrowed a feature flag on the stated premise that grep found no reader. The flag had a reader, in a function grep could not see. `0302` was harmless only because that reader happens to be scheduled by no cron job.
+
+**Why it was surprising:** "I searched the codebase and it isn't there" feels like proof of absence, and it is — for the codebase. Deployed artifacts (Edge Functions, cron jobs, dashboard-set secrets, feature-flag rows) live outside git entirely. Three of this session's refuted claims trace to the same root: reasoning about production from repo contents alone. The same session also found two env flags already set `true` in deployed secrets against `CLAUDE.md`, and a crashing job acting as the only interlock holding a second writer in shadow — neither visible from source.
+
+**Corrective:** Before claiming a capability is absent, disabled, or unused, enumerate the deployed surface: `list_edge_functions`, `cron.job`, `feature_flags`, function secrets. Treat "empty/quiet" as unproven rather than green — `cron.job_run_details` "succeeded" means the POST fired, not that the function succeeded. Domain depth of this kind now lives in `.claude/skills/shopify-sync/SKILL.md` (loads only when the domain is touched) rather than in boot docs.
+
 ---
 
 *Log initiated: 2026-04-23.*
