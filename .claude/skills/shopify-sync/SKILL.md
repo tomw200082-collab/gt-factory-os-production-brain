@@ -23,7 +23,7 @@ description: >
 - Zero clamp Tom-locked 2026-08-01: `available` = sellable count; oversell surfaces as **exception** (0308), ⊥ storefront negative.
 - Cadence truth: ⊥ real-time. 5-min cycles; Shopify order → our `available` reflects ≤ ~20 min (LionWheel mirror 15m + cycle 5m; U-AW-1 Tom-accepted 2026-05-14).
 - **Authority direction (Tom 2026-08-01): we are authoritative; Shopify = sync target.** Shopify owns only its order pipeline (`committed` on its side).
-- Retired/dead paths: `factory_os_jobs` v1 inline write (no-op) · `runShopifyAvailableWrite` (shadow; env flag false since 2026-08-01) · v2 `shopify_fg_sync_v2` (crashes on R1 guard by design, sentinel `index.ts:87` false) · `shopify_fg_push` Edge Fn (deployed, unscheduled, flag-disabled by 0307 — **delta semantics; ⊥ ever schedule against the SET reconciler**).
+- Retired/dead paths: `factory_os_jobs` v1 inline write (no-op) · `runShopifyAvailableWrite` (shadow; env flag false since 2026-08-01) · v2 `shopify_fg_sync_v2` (crashes on R1 guard by design, sentinel `index.ts:87` false) · `shopify_fg_push` Edge Fn (**tombstoned 2026-08-01** — returns HTTP 410, flag-disabled by 0307, unscheduled; source preserved in git. **delta semantics; ⊥ ever revive against the SET reconciler**). cron 16 + 19 disabled by 0312.
 
 ## Traps — each cost a real migration or a refuted claim
 
@@ -52,7 +52,7 @@ where i.status='ACTIVE' and i.supply_method in ('BOUGHT_FINISHED','MANUFACTURED'
   and not exists (select 1 from private_core.integration_sku_map m
     where m.item_id=i.item_id and m.source_channel='shopify'
       and m.approval_status='approved' and m.mapping_status='active');
--- expected: EXCLUDED-NONSTOCK (sentinel) + currently ADD-ORANGE-100G (see OPEN)
+-- expected: exactly 1 row — EXCLUDED-NONSTOCK (sentinel). Anything else = a real gap.
 
 -- Item deep-dive before touching any mapping
 select l.cycle_at, l.status, l.sku, l.on_hand, l.committed, l.available, l.http_status
@@ -70,14 +70,13 @@ Shopify side: `productVariants(query:"sku:X")` → `inventoryQuantity`, `product
 ## Frozen / needs-Tom
 
 - Env flags `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED` (false since 2026-08-01, Tom) + `SHOPIFY_GRAPHQL_SYNC_ENABLED` (still true, inert while sentinel false) + code sentinels — brain `CLAUDE.md` frozen list. ⊥ flip without Tom written approval.
-- Deleting deployed `shopify_fg_push` Edge Fn — flag-disabled instead; deletion = Tom call.
-- brain `CLAUDE.md` §Source-of-truth still carries "platform wins on disagreement" — stale vs live behavior + Tom 2026-08-01 ruling; Tom-sole-writer ∴ pending his edit.
+- Deleting deployed `shopify_fg_push` Edge Fn — tombstoned (HTTP 410, 2026-08-01); full deletion needs the Dashboard, no MCP tool exists.
 
 ## OPEN
 
-- **`ADD-ORANGE-100G`**: 29 units anchor-only, **0 ledger movements ever**, no mappings. Twin `ADD-GAR-ORA-DRY` is the live item (35 movements, mapped shopify:`AP-DRI-ORA`, syncing). Stock-truth question, ⊥ mapping: physical count → reversal/re-post onto twin, or retire item. ⊥ map both to one SKU (trap 5).
-- **~60 unmapped ACTIVE Shopify variants — ⊥ junk.** 180d sales show **~44 actively sell**, incl. top lines: `GTMX-MUZ-PRPL-1L` ₪81k · `GTMX-MUZ-TRIL-1L` ₪50k · `GTMX-MUZ-PNMM-1L` ₪42k. Mostly the Muzot/mixer family + merch. Several already `EXCLUDED-NONSTOCK` on lionwheel = sold but deliberately ⊥ stock-tracked, which is why they drift to −2675 (Shopify decrements, nothing replenishes).
-  ⊥ archive on the "junk" assumption — that removes live revenue. Per-SKU choice: map (want truth) | Shopify "don't track inventory" (sell, ⊥ track) | archive (retired). Evidence pack: `docs/shopify-unmapped-triage-2026-08-01.md`.
+- none. (`ADD-ORANGE-100G` duplicate closed by 0314 — Tom counted 29, stock re-posted onto the live twin `ADD-GAR-ORA-DRY`, orphan retired INACTIVE. Coverage = every ACTIVE sellable item mapped; the sole coverage-query row left is the `EXCLUDED-NONSTOCK` sentinel, correct by construction.)
+
+**Out of scope — ⊥ raise again (Tom 2026-08-01):** the ~60 unmapped ACTIVE Shopify variants, incl. the entire Muzot / mixer family (`GTCC-MUZ-*`, `GTMX-MUZ-*`). GT is ⊥ working these lines any more. They are ⊥ a sync gap — coverage runs system→Shopify (trap 3), and every item we sell is mapped. A future session WILL rediscover them by counting from the Shopify side; that count is meaningless here. ⊥ triage, ⊥ archive, ⊥ report.
 
 ## LEARNED — append-only log (close-session routes here)
 
@@ -86,5 +85,6 @@ Shopify side: `productVariants(query:"sku:X")` → `inventoryQuantity`, `product
 
 - 2026-08-01: Sole live writer is `shopify_available_reconcile`; every in-repo write path is sentinel-gated off. Corridor retired: cron 16+19 disabled (0312), 571 stale exceptions closed (0313), `shopify_fg_push` tombstoned (HTTP 410, source preserved in git). Live set = cron 24 (write) + 26 (health+tripwire). (evidence: 0312/0313, `cron.job`)
 - 2026-08-01: Shopify exception inbox 573 → 2. Survivors are both true: `shopify_oversell:FG-MAT-30G` (real, on_hand 0 vs committed 300) and `shopify_variant_not_found:EXCLUDED-NONSTOCK` (sentinel; cron 14 re-raises each cycle — suppressed by the `is_stock_managed` filter already committed to factory_os_jobs, pending that function's next deploy). (evidence: 0313)
+- 2026-08-01: `ADD-ORANGE-100G` / `ADD-GAR-ORA-DRY` duplicate closed (0314). COUNT_ADJUST pair, ⊥ STOCK_TRANSFER — nothing physically moved, a count established truth. `balance_key` on `stock_ledger` is GENERATED, ⊥ insertable. drift 0 after. (evidence: 0314)
 - 2026-08-01: `api/src/integrations/shopify-status-handler.ts` reads `shopify_fg_sync_history` — i.e. the status endpoint reports on the RETIRED v1 path, not the live reconciler. Defect; fix = repoint at `shopify_reconcile_log`. Blocks retiring cron 14. Needs an API deploy. (evidence: grep, 0312 header)
 - 2026-08-01: ⊥ deploy `factory_os_jobs` to fix Shopify logging noise — 8 files / 276KB that also orchestrate LionWheel + GI. Wrong risk trade for a corridor being retired. (evidence: 0312 rationale)

@@ -45,7 +45,7 @@ Paths repo-relative. ⊥ hardcode absolute machine paths. Geography: `WORKSPACE_
 | Stock events + history | `stock_ledger` — append-only; corrections via reversal rows; ⊥ UPDATE/DELETE |
 | Stock projections | `balance_anchors` + ledger projection (rebuild-verified nightly) |
 | Open orders + shipment | LionWheel mirror |
-| Shopify FG inventory | sync target only — platform wins on disagreement |
+| Shopify FG inventory | sync target — **we are authoritative**; reconciler overwrites Shopify `available` every 5 min from our truth (Tom 2026-08-01). Shopify owns only its own order pipeline → `committed` |
 | Supplier invoice evidence | Green Invoice (⊥ active prices alone; validation rules !) |
 | Workbook | transitional only. ⊥ round-trip ever |
 | Gate status / completion / critical path | `CURRENT_STATE.md` (sole) |
@@ -130,5 +130,5 @@ New module (CRM, leads, sales, marketing, finance, any surface beyond factory-os
 Uncertain → ⊥ guess. Mark assumption explicitly, halt until resolved. Live UNRESOLVED list: `CURRENT_STATE.md`.
 
 ---
-**Owner:** Tom (sole writer). **Amended:** 2026-07-24 deploy autonomy · 2026-06-20 external-action authorization.
+**Owner:** Tom (sole writer). **Amended:** 2026-08-01 Shopify FG authority direction (Tom explicit written instruction) · 2026-07-24 deploy autonomy · 2026-06-20 external-action authorization.
 **History:** `docs/archive/CLAUDE.pre-lean-2026-07-31.md` · `docs/archive/CLAUDE.md.pre-kernel-rewrite-2026-05-08.md`.
