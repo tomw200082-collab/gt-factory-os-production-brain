@@ -76,11 +76,15 @@ Shopify side: `productVariants(query:"sku:X")` → `inventoryQuantity`, `product
 ## OPEN
 
 - **`ADD-ORANGE-100G`**: 29 units anchor-only, **0 ledger movements ever**, no mappings. Twin `ADD-GAR-ORA-DRY` is the live item (35 movements, mapped shopify:`AP-DRI-ORA`, syncing). Stock-truth question, ⊥ mapping: physical count → reversal/re-post onto twin, or retire item. ⊥ map both to one SKU (trap 5).
-- ~60 unmapped ACTIVE Shopify variants (stale negatives like `GTMN-PIK-254` −2675) = storefront cleanup for Tom, ⊥ sync gap.
+- **~60 unmapped ACTIVE Shopify variants — ⊥ junk.** 180d sales show **~44 actively sell**, incl. top lines: `GTMX-MUZ-PRPL-1L` ₪81k · `GTMX-MUZ-TRIL-1L` ₪50k · `GTMX-MUZ-PNMM-1L` ₪42k. Mostly the Muzot/mixer family + merch. Several already `EXCLUDED-NONSTOCK` on lionwheel = sold but deliberately ⊥ stock-tracked, which is why they drift to −2675 (Shopify decrements, nothing replenishes).
+  ⊥ archive on the "junk" assumption — that removes live revenue. Per-SKU choice: map (want truth) | Shopify "don't track inventory" (sell, ⊥ track) | archive (retired). Evidence pack: `docs/shopify-unmapped-triage-2026-08-01.md`.
 
 ## LEARNED — append-only log (close-session routes here)
 
 > Format: `- YYYY-MM-DD: <one-line fact> (evidence: <query/migration/PR>)`
 > Self-compaction: when this section exceeds 30 lines → distill into the sections above, clear the log, stamp "Last distilled" in the header. No approval needed — this file ∉ authority docs.
 
-(empty — created 2026-08-01)
+- 2026-08-01: Sole live writer is `shopify_available_reconcile`; every in-repo write path is sentinel-gated off. Corridor retired: cron 16+19 disabled (0312), 571 stale exceptions closed (0313), `shopify_fg_push` tombstoned (HTTP 410, source preserved in git). Live set = cron 24 (write) + 26 (health+tripwire). (evidence: 0312/0313, `cron.job`)
+- 2026-08-01: Shopify exception inbox 573 → 2. Survivors are both true: `shopify_oversell:FG-MAT-30G` (real, on_hand 0 vs committed 300) and `shopify_variant_not_found:EXCLUDED-NONSTOCK` (sentinel; cron 14 re-raises each cycle — suppressed by the `is_stock_managed` filter already committed to factory_os_jobs, pending that function's next deploy). (evidence: 0313)
+- 2026-08-01: `api/src/integrations/shopify-status-handler.ts` reads `shopify_fg_sync_history` — i.e. the status endpoint reports on the RETIRED v1 path, not the live reconciler. Defect; fix = repoint at `shopify_reconcile_log`. Blocks retiring cron 14. Needs an API deploy. (evidence: grep, 0312 header)
+- 2026-08-01: ⊥ deploy `factory_os_jobs` to fix Shopify logging noise — 8 files / 276KB that also orchestrate LionWheel + GI. Wrong risk trade for a corridor being retired. (evidence: 0312 rationale)
