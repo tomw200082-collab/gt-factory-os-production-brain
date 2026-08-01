@@ -65,16 +65,31 @@ useful part.
 `ADD-ODK-MAN-1L` 197=197 · `FG-DET-1L-NS` 383=383 · `FG-MAR-PEA-300ML` 229=229 ·
 `FG-NAM-500ML` 243=243. One `current_balances` row per item, no batch/site fan-out.
 
-**Why Shopify already matches:** `shopify_available_write` (cron 19, */5) is running the
-committed-aware AfS path — 13,165 `shadow_would_set_available` + 935 `shadow_skip_no_change`
-in 24h, latest 06:25. Shopify FG inventory is being maintained by that path, ⊥ by the
-disabled v1/v2 FG sync. ∴ the FG sync being off is costing far less than assumed — quantify
-what it uniquely adds before treating its cutover as urgent.
+**Why Shopify already matches — corrected 2026-08-01.** ⊥ `shopify_available_write` (cron 19):
+that path is **shadow**, its `shadow_*` statuses mean "would have written", it calls Shopify
+never. An earlier revision of this line said it was maintaining Shopify. Wrong — 4th refuted
+inference of the session, same class as the three below.
 
-**Lesson (⊥ delete):** three claims this session were raised from inference and refuted by
-one query each — `audit_runs` "no nightly verification" (83/83 runs exist), the 2× drift, and
-the duplicate SKUs. Ad-hoc analytics queries over `integration_sku_map` **! group by
-`external_sku`** or they double. Re-derive from the production query, ⊥ hand-rolled joins.
+**Sole live writer = Edge Function `shopify_available_reconcile`** (cron 24, */5). SETs
+`available = GREATEST(0, on_hand − committed)` → converges every cycle, drift structurally
+impossible. 24,094 `set_ok` in 36h. **⊥ source in any repo** — deployed straight to prod
+2026-07-24. Adoption into `gt-factory-os` + monitoring + auth: plan `giggly-waddling-wren`.
+
+Two hazards confirmed, ⊥ yet closed:
+- `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED` + `SHOPIFY_GRAPHQL_SYNC_ENABLED` are **already
+  `true`** in deployed secrets, against `CLAUDE.md`. Only `v2_healthy=false` holds
+  `runShopifyAvailableWrite` in shadow — and that is false only because `shopify_fg_sync_v2`
+  **crashes** every 15 min on the R1 guard. A crashing job is load-bearing as an interlock.
+  Anyone who "fixes" it arms a 2nd writer on `available` with an unclamped formula.
+- `shopify_available_reconcile` is `verify_jwt:false` and cron 24 sends **no auth header** →
+  publicly callable. Idempotent, so blast radius = cost/forced convergence, ⊥ corruption.
+
+**Lesson (⊥ delete):** four claims this session were raised from inference and refuted by
+one query each — `audit_runs` "no nightly verification" (83/83 runs exist), the 2× drift,
+the duplicate SKUs, and the `shopify_available_write` attribution above. Ad-hoc analytics
+over `integration_sku_map` **! group by `external_sku`** or they double. Re-derive from the
+production query, ⊥ hand-rolled joins. **Grepping the repo ⊥ proves a flag has no reader** —
+deployed Edge Functions ∉ git. `list_edge_functions` first. Cost: `0302`.
 
 ## Deferred (Tom decision, ⊥ blocking)
 
