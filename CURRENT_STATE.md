@@ -92,9 +92,14 @@ impossible. 24,094 `set_ok` in 36h. **⊥ source in any repo** — deployed stra
 - **`0308`** — `run_shopify_sync_health()`, cron 26, */15. Auto-resolving exceptions on: stale
   cycle · variant unresolved · write fail · **oversell**. First run found `FG-MAT-30G`
   on_hand 0 / committed 300 — real, ⊥ previously reported by anything.
+- **`0309`** — hazard 2 **closed**. Cron 24 now sends the same vault-resolved service-role JWT
+  as jobs 14/16/17/19 (`cron.alter_job`, no raw secret anywhere); `shopify_available_reconcile`
+  redeployed `verify_jwt=true`, **byte-identical source** (`ezbr_sha256` unchanged — only the
+  deploy-time flag moved). Verified both directions: unauthenticated POST → `401
+  UNAUTHORIZED_NO_AUTH_HEADER`; cycle 07:40 → **51/51 `set_ok`**.
 
-**⊥ HOLD_FOR_TOM — 2 hazards remain open. Both need Supabase dashboard access this session
-lacks** (no management token, no CLI):
+**⊥ HOLD_FOR_TOM — 1 hazard remains open.** Not a tooling gap this time — `deploy_edge_function`
+and `cron.alter_job` covered hazard 2 without new access. This one needs Tom specifically:
 
 1. `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED` + `SHOPIFY_GRAPHQL_SYNC_ENABLED` are **already
    `true`** in deployed `factory_os_jobs` secrets, against `CLAUDE.md`. Only `v2_healthy=false`
@@ -103,10 +108,11 @@ lacks** (no management token, no CLI):
    Anyone who "fixes" it arms a 2nd writer on `available` with an **unclamped** formula against
    the reconciler's clamped one. **Fix: set `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED=false`** —
    restores the documented frozen value, ⊥ a flip. ! precede any work on cron 16.
-2. `shopify_available_reconcile` is `verify_jwt:false` and cron 24 sends **no auth header** →
-   publicly callable. Idempotent → blast radius = cost/forced convergence, ⊥ corruption.
-   **Fix: `verify_jwt=true` + service-role JWT in cron 24 `headers`, atomically** (either alone
-   breaks the sync).
+   **Both env vars are in `CLAUDE.md`'s frozen list** (`⊥ do` above): stay `false` until Tom
+   written approval, regardless of what tooling permits. No secrets-management tool is exposed
+   in this session either way (no `SUPABASE_ACCESS_TOKEN`, no CLI) — but even with one, this
+   flag needs Tom's word, not a standing grant. One-time dashboard edit, ~1 min: Project
+   Settings → Edge Functions → Secrets.
 
 ⊥ deleted from prod: dormant `shopify_fg_push` Edge Function (flag-disabled instead).
 
