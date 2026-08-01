@@ -51,12 +51,15 @@ An earlier revision of this section claimed a 2× quantity drift and a duplicate
 hazard. **Both were wrong. Retracted.** Recorded here because the retraction is the
 useful part.
 
-- **"2× drift" was a fan-out in the ad-hoc shadow query, ⊥ in the data.** Every FG item
-  carries **2 approved `integration_sku_map` rows** (internal id + storefront SKU, e.g.
-  `FG-DET-1L-NS` has both `FG-DET-1L-NS` and `GT-LUI-FRE-1L`). The ad-hoc query grouped by
-  `coalesce(i.sku, ism.external_sku)`, collapsing both alias rows into one group and summing
-  the same balance twice → exactly 2.000×. **Production is correct**: its query groups by
-  `ism.external_sku` explicitly, keeping the fan-out in separate groups.
+- **"2× drift" was a join fan-out in the ad-hoc query, ⊥ in the data.** Items carry **several**
+  `integration_sku_map` rows across channels and states — `FG-DET-1L-NS` has a `lionwheel` row
+  (`GT-LUI-FRE-1L`), a **`shopify`/`inactive`** row (`FG-DET-1L-NS`), and a `shopify`/`active`
+  row (`GT-LUI-FRE-1L`). The ad-hoc query joined without filtering, so one balance matched
+  multiple rows and `sum()` counted it twice → exactly 2.000×.
+  **The fix is the WHERE, ⊥ the GROUP BY** — every query over this table !
+  `source_channel='shopify' AND approval_status='approved' AND mapping_status='active'`.
+  With that filter there is exactly **one** row per item (verified: reconciler worklist = 51
+  rows for 51 items). Copy the predicate from the reconciler's `mapping` CTE.
 - **"Duplicate SKUs" are on ARCHIVED products.** `GT-LUI-FRE-1L` resolves to one ACTIVE
   variant (383) plus two ARCHIVED (0/0). The active-products cache holds active products
   only, so `skuCache` has exactly one entry per SKU. No ambiguity.
@@ -75,14 +78,37 @@ inference of the session, same class as the three below.
 impossible. 24,094 `set_ok` in 36h. **⊥ source in any repo** — deployed straight to prod
 2026-07-24. Adoption into `gt-factory-os` + monitoring + auth: plan `giggly-waddling-wren`.
 
-Two hazards confirmed, ⊥ yet closed:
-- `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED` + `SHOPIFY_GRAPHQL_SYNC_ENABLED` are **already
-  `true`** in deployed secrets, against `CLAUDE.md`. Only `v2_healthy=false` holds
-  `runShopifyAvailableWrite` in shadow — and that is false only because `shopify_fg_sync_v2`
-  **crashes** every 15 min on the R1 guard. A crashing job is load-bearing as an interlock.
-  Anyone who "fixes" it arms a 2nd writer on `available` with an unclamped formula.
-- `shopify_available_reconcile` is `verify_jwt:false` and cron 24 sends **no auth header** →
-  publicly callable. Idempotent, so blast radius = cost/forced convergence, ⊥ corruption.
+### Shipped 2026-08-01 (`0305`–`0308`, all applied to prod)
+
+- **`0305` — the one genuinely out-of-sync SKU is fixed.** `ADD-MAT-BOWL`:
+  `integration_sku_map.external_sku` was `AP-MAT-BOWL`, ⊥ exists in Shopify → the reconciler
+  logged `skip_no_active_variant` every cycle for months. `0303` fixed `items.sku`, which this
+  writer **never reads**. Verified: cycle 07:00 = **51/51 `set_ok`, 0 skips** (was 50+1);
+  Shopify `AP-BWL-MAT` **−4 → 20**.
+- **`0306`** — reconciler source adopted into `gt-factory-os`, byte-identical; log table + write
+  contract retro-documented so a rebuild-from-migrations reproduces prod.
+- **`0307`** — `shopify_fg_sync_v2_live` `enabled=false`. Disarms dormant `shopify_fg_push`
+  (delta semantics — would fight the reconciler's SET; ⊥ ever run both).
+- **`0308`** — `run_shopify_sync_health()`, cron 26, */15. Auto-resolving exceptions on: stale
+  cycle · variant unresolved · write fail · **oversell**. First run found `FG-MAT-30G`
+  on_hand 0 / committed 300 — real, ⊥ previously reported by anything.
+
+**⊥ HOLD_FOR_TOM — 2 hazards remain open. Both need Supabase dashboard access this session
+lacks** (no management token, no CLI):
+
+1. `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED` + `SHOPIFY_GRAPHQL_SYNC_ENABLED` are **already
+   `true`** in deployed `factory_os_jobs` secrets, against `CLAUDE.md`. Only `v2_healthy=false`
+   holds `runShopifyAvailableWrite` in shadow — false **only because `shopify_fg_sync_v2`
+   crashes** every 15 min on the R1 guard. A crashing job is load-bearing as an interlock.
+   Anyone who "fixes" it arms a 2nd writer on `available` with an **unclamped** formula against
+   the reconciler's clamped one. **Fix: set `SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED=false`** —
+   restores the documented frozen value, ⊥ a flip. ! precede any work on cron 16.
+2. `shopify_available_reconcile` is `verify_jwt:false` and cron 24 sends **no auth header** →
+   publicly callable. Idempotent → blast radius = cost/forced convergence, ⊥ corruption.
+   **Fix: `verify_jwt=true` + service-role JWT in cron 24 `headers`, atomically** (either alone
+   breaks the sync).
+
+⊥ deleted from prod: dormant `shopify_fg_push` Edge Function (flag-disabled instead).
 
 **Lesson (⊥ delete):** four claims this session were raised from inference and refuted by
 one query each — `audit_runs` "no nightly verification" (83/83 runs exist), the 2× drift,
