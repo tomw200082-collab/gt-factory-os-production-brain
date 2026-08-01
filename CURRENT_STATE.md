@@ -98,6 +98,32 @@ impossible. 24,094 `set_ok` in 36h. **⊥ source in any repo** — deployed stra
   deploy-time flag moved). Verified both directions: unauthenticated POST → `401
   UNAUTHORIZED_NO_AUTH_HEADER`; cycle 07:40 → **51/51 `set_ok`**.
 
+### ⊥ SIGNED OFF as "all of Shopify" — coverage is 51/113 (2026-08-01)
+
+**What IS guaranteed:** the **51** ACTIVE sellable items carrying an approved+active shopify
+mapping sync every 5 min, SET from our truth, converging, ⊥ drift. 51/51 `set_ok` verified.
+
+**What is ⊥:** Shopify has **113 ACTIVE variants**. **62 ∉ our worklist** — ⊥ mapped, so the
+reconciler never sees them and `0308` ⊥ detects them either (it only reads
+`shopify_reconcile_log`, which requires a mapping to appear in). Their values are whatever was
+last written by something else — proof: our clamp is `GREATEST(0,…)`, yet these sit at
+`GTMN-PIK-254` **−2675** · `GTCC-TRO-JAP-1L` **−1482** · `GT-GLA-MAT-PRINT` **−1400** ·
+`AP-PLA-STR-11` **−941** · `GTCC-MUZ-PNMM-1L` **−653**.
+
+Many of the 62 are **deliberately** excluded — glassware, merch, legacy bundles, retired
+cocktails, all mapped to `EXCLUDED-NONSTOCK` with `excluded_non_stock` / `excluded_legacy_bundle`.
+That is a real business decision, ⊥ a bug. But others look like live products: `AP-GAR-ANISE`
+(12 — the 0302 test SKU), `GT-MAT-BTL-RU` (28), `AP-TAP-PIN-0.6` (9), `AP-DRI-APP` (−116),
+`AP-DRI-PIN`, `AP-DRI-MAN`, `MM-DRI-CAN-*`.
+
+**! Tom triage: for each of the 62 — sell on Shopify, or ⊥?** Sell → add
+`integration_sku_map` row (`source_channel='shopify'`, approved, active) & it joins the synced
+set automatically. ⊥ sell → archive the Shopify product or map to `EXCLUDED-NONSTOCK`, so the
+gap is explicit ⊥ silent. Until triaged, "Shopify inventory is 100% synced" is **⊥ true**.
+
+Also 4 ACTIVE sellable items ⊥ shopify mapping: `ADD-ORANGE-100G` (on_hand **29**),
+`AP-DRI-PIN-1KG`, `GT-MAT-KIT`, `EXCLUDED-NONSTOCK` (sentinel, correct).
+
 **⊥ HOLD_FOR_TOM — 1 hazard remains open.** Not a tooling gap this time — `deploy_edge_function`
 and `cron.alter_job` covered hazard 2 without new access. This one needs Tom specifically:
 
