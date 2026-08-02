@@ -66,3 +66,27 @@
 ---
 
 *Log initiated: 2026-04-23.*
+
+---
+
+### 2026-08-01: INNER JOIN to `items` silently hides batch-style production plans
+
+**What happened:** Asked for next week's production schedule (2026-08-02 → 08-08), the answer returned was "only Wednesday, DETOX." The real plan had five days: DESERTEA (Sun), FRESH (Mon), NAMASTEA (Tue), DETOX (Wed), CALM (Thu). The query used `join private_core.items i on i.item_id = pp.item_id` — an INNER join. Batch-style rows in `production_plan` carry `item_id IS NULL`; their products live in the `pack_manifest` jsonb plus `base_bom_head_id`. The INNER join dropped 4 of 6 rows. The two surviving rows were legacy per-item DETOX rows, so the truncated answer looked plausible and went unchallenged. When Tom said it was wrong, the *same broken join* was re-run against a different date literal, the identical output was treated as confirmation, and the wrong answer was defended.
+
+**Why it was surprising:** A dropped-row join failure is invisible — there is no error, no null, no warning. The result set is internally consistent and reads as a complete answer. The mixed-schema state (some plans per-item, some as batches) means the join succeeds for *just enough* rows to look like real data rather than an empty result that would have prompted a second look.
+
+**Corrective:** (1) When answering "what exists" from a fact table, LEFT JOIN to dimensions, never INNER — and run an unjoined `COUNT(*)` first as a control total; a smaller post-join count is a bug until proven otherwise. (2) When a portal/API surface for the data exists, read its query and mirror it — the backend is the contract. For production plans that is `gt-factory-os/api/src/production-plan/handler.reads.ts` (LEFT JOIN + `pack_manifest` expansion). (3) A "you're wrong" from Tom means change the *method*, not the parameters; re-running a flawed query is not verification.
+
+**Canonical query — production plan for a week:**
+```sql
+select pp.plan_date,
+       coalesce(i.item_name, pp.base_bom_head_id) as what,
+       (select string_agg(mi.item_name || ' x' || m.qty::int, ', ' order by m.qty desc)
+          from jsonb_to_recordset(pp.pack_manifest) as m(item_id text, qty numeric)
+          left join private_core.items mi on mi.item_id = m.item_id) as packs
+from private_core.production_plan pp
+left join private_core.items i on i.item_id = pp.item_id   -- LEFT, always
+where pp.plan_date between $from and $to
+  and pp.cancelled_at is null
+order by pp.plan_date, pp.created_at;
+```
