@@ -579,7 +579,7 @@ def assemble(workorder_pdf, ordered_parts, out_pdf):
     os.remove(tmp)
 
 
-def build(driver, date, from_stop=None, copies=2):
+def build(driver, date, from_stop=None, copies=2, pick_marks=False):
     os.makedirs(OUT, exist_ok=True)
     import annotate
 
@@ -624,7 +624,7 @@ def build(driver, date, from_stop=None, copies=2):
             src = f"{OUT}/inv_{s['tid']}.pdf"
             if gi_fetch_invoice(s, src):
                 ann = f"{OUT}/ann_{s['tid']}.pdf"
-                annotate.annotate(s["task"], src, ann)
+                annotate.annotate(s["task"], src, ann, pick_marks=pick_marks)
                 invoice_part[s["tid"]] = ann
                 continue
         waybill_stops.append(s)                       # no invoice → needs waybill
@@ -751,9 +751,12 @@ def main():
     ap.add_argument("--date", help="YYYY-MM-DD; default tomorrow")
     ap.add_argument("--from-stop", type=int, default=None)
     ap.add_argument("--copies", type=int, default=2)
+    ap.add_argument("--pick-marks", action="store_true",
+                    help="draw the per-line V/X/partial picking badges on each "
+                         "invoice (off by default since 2026-08-02, Tom)")
     a = ap.parse_args()
     date = a.date or (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
-    build(a.driver, date, a.from_stop, a.copies)
+    build(a.driver, date, a.from_stop, a.copies, a.pick_marks)
 
 
 if __name__ == "__main__":

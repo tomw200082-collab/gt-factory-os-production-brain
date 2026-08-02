@@ -165,12 +165,19 @@ def _drop_trailing_blank_pages(doc):
         doc.delete_page(doc.page_count - 1)
 
 
-def annotate(task, src_pdf, out_pdf):
-    """Stamp marks onto a real GI invoice PDF. Lines matched by product name."""
+def annotate(task, src_pdf, out_pdf, pick_marks=False):
+    """Stamp marks onto a real GI invoice PDF. Lines matched by product name.
+
+    pick_marks: draw the per-line V / X / partial picking badges. Default OFF —
+    Tom, 2026-08-02: the invoice should carry the order-id pill and the package
+    badge, but NOT the per-product picked-vs-ordered detail. Picking shortfalls
+    are still computed and still reported in the run summary + email; they just
+    no longer print on the customer's invoice. Pass --pick-marks to restore them.
+    """
     doc = fitz.open(src_pdf)
     for pno in range(len(doc)):
         _reg(doc[pno])
-    for it in (task.get("order_items") or []):
+    for it in (task.get("order_items") or []) if pick_marks else ():
         name = it.get("name") or ""
         try:
             q = float(it["quantity"])
