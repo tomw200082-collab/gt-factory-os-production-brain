@@ -55,6 +55,38 @@
 
 **Corrective:** When planning GT "improvements," classify each item build-vs-adopt against `CURRENT_STATE.md` + the factory-mapping rollout docs BEFORE estimating. Price the adoption gap (change-management, habit cadence), not the code. Sequence field-adoption serially (one live change at a time, next enters only when its KPI shows traction); run pure-build "lab" work in parallel since it needs no operator behaviour change.
 
+### 2026-08-01: Grep proves what is in the repo, not what runs in production
+
+**What happened:** Every Shopify write path in `gt-factory-os` is gated off by frozen sentinels, yet Shopify's numbers matched our computed available-for-sale on 50 of 51 SKUs. The writer was `shopify_available_reconcile`, an Edge Function deployed straight to prod on 2026-07-24 with no source in any repo, no migration, no CI. Migration `0302` had already acted on the opposite belief — it narrowed a feature flag on the stated premise that grep found no reader. The flag had a reader, in a function grep could not see. `0302` was harmless only because that reader happens to be scheduled by no cron job.
+
+**Why it was surprising:** "I searched the codebase and it isn't there" feels like proof of absence, and it is — for the codebase. Deployed artifacts (Edge Functions, cron jobs, dashboard-set secrets, feature-flag rows) live outside git entirely. Three of this session's refuted claims trace to the same root: reasoning about production from repo contents alone. The same session also found two env flags already set `true` in deployed secrets against `CLAUDE.md`, and a crashing job acting as the only interlock holding a second writer in shadow — neither visible from source.
+
+**Corrective:** Before claiming a capability is absent, disabled, or unused, enumerate the deployed surface: `list_edge_functions`, `cron.job`, `feature_flags`, function secrets. Treat "empty/quiet" as unproven rather than green — `cron.job_run_details` "succeeded" means the POST fired, not that the function succeeded. Domain depth of this kind now lives in `.claude/skills/shopify-sync/SKILL.md` (loads only when the domain is touched) rather than in boot docs.
+
 ---
 
 *Log initiated: 2026-04-23.*
+
+---
+
+### 2026-08-01: INNER JOIN to `items` silently hides batch-style production plans
+
+**What happened:** Asked for next week's production schedule (2026-08-02 → 08-08), the answer returned was "only Wednesday, DETOX." The real plan had five days: DESERTEA (Sun), FRESH (Mon), NAMASTEA (Tue), DETOX (Wed), CALM (Thu). The query used `join private_core.items i on i.item_id = pp.item_id` — an INNER join. Batch-style rows in `production_plan` carry `item_id IS NULL`; their products live in the `pack_manifest` jsonb plus `base_bom_head_id`. The INNER join dropped 4 of 6 rows. The two surviving rows were legacy per-item DETOX rows, so the truncated answer looked plausible and went unchallenged. When Tom said it was wrong, the *same broken join* was re-run against a different date literal, the identical output was treated as confirmation, and the wrong answer was defended.
+
+**Why it was surprising:** A dropped-row join failure is invisible — there is no error, no null, no warning. The result set is internally consistent and reads as a complete answer. The mixed-schema state (some plans per-item, some as batches) means the join succeeds for *just enough* rows to look like real data rather than an empty result that would have prompted a second look.
+
+**Corrective:** (1) When answering "what exists" from a fact table, LEFT JOIN to dimensions, never INNER — and run an unjoined `COUNT(*)` first as a control total; a smaller post-join count is a bug until proven otherwise. (2) When a portal/API surface for the data exists, read its query and mirror it — the backend is the contract. For production plans that is `gt-factory-os/api/src/production-plan/handler.reads.ts` (LEFT JOIN + `pack_manifest` expansion). (3) A "you're wrong" from Tom means change the *method*, not the parameters; re-running a flawed query is not verification.
+
+**Canonical query — production plan for a week:**
+```sql
+select pp.plan_date,
+       coalesce(i.item_name, pp.base_bom_head_id) as what,
+       (select string_agg(mi.item_name || ' x' || m.qty::int, ', ' order by m.qty desc)
+          from jsonb_to_recordset(pp.pack_manifest) as m(item_id text, qty numeric)
+          left join private_core.items mi on mi.item_id = m.item_id) as packs
+from private_core.production_plan pp
+left join private_core.items i on i.item_id = pp.item_id   -- LEFT, always
+where pp.plan_date between $from and $to
+  and pp.cancelled_at is null
+order by pp.plan_date, pp.created_at;
+```

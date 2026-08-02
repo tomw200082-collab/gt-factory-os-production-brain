@@ -45,12 +45,12 @@
 
 ## BOX 2 — Canonical Runtime (two repos, one box)
 
-### Backend — `C:/Users/tomw2/Projects/gt-factory-os/`
+### Backend — `gt-factory-os/`
 Fastify API · Postgres migrations · pgTAP tests · docs · scripts  
 Railway deploy. Branches tracked at `github.com/[canonical-backend-remote]`.
 
 ### Frontend (portal) — `github.com/tomw200082-collab/gt-factory-os-portal`
-Local working copy: `C:/Users/tomw2/Projects/window2-portal-sandbox/`  
+Historical local name: `window2-portal-sandbox/` (same tree as `gt-factory-os-portal/`)  
 *(folder name is historical — "sandbox" is a misnomer; this is the live production portal)*  
 68 pages · Next.js 15 · Supabase live · Vercel deploy at `gt-factory-os-portal.vercel.app`  
 `@claude` on GitHub → targets `tomw200082-collab/gt-factory-os-portal`  
@@ -93,7 +93,7 @@ UX doctrine and locked register are split by purpose:
 ---
 
 ## Other active project (separate, not part of this system)
-`C:/Users/tomw2/Projects/gt-lionwheel-daily-route-agent/` — LionWheel route builder agent.
+`gt-lionwheel-daily-route-agent/` — LionWheel route builder agent.
 
 ---
 

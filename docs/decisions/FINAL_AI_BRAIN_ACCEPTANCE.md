@@ -15,9 +15,9 @@
 | Phase 8 Run A | 2026-05-08 | `factory-os-governor`, `release-verifier`, `source-of-truth-auditor`, 5 UX agents, 3 governance commands (DR-001..003) |
 | Phase 8 Run B | 2026-05-08 | 4 execution agents, 5 execution commands, `ACTIVE_SURFACE_REDUCTION_PLAN.md` (DR-012..016) |
 | Phase 8 Run C | 2026-05-08 | FLOW-003 P0 closed (portal commit `9e2212e`), 9 authority-doc patches (DR-017) |
-| Phase 8 Run F | 2026-05-08 | `CLAUDE.md` rewritten as thin kernel; `AI_BRAIN_ROUTER.md`, `AGENT_TEMPLATE.md`, `MODULE_TEMPLATE.md`, `AGENT_REGISTRY.md`, `COMMAND_REGISTRY.md`, `VERDICT_GLOSSARY.md`, `LOCKED_DECISIONS.md`, `SCHEMA_GUIDANCE.md` created; pre-kernel archive written |
+| Phase 8 Run F | 2026-05-08 | `CLAUDE.md` rewritten as thin kernel; `AI_BRAIN_ROUTER.md`, `AGENT_TEMPLATE.md`, `MODULE_TEMPLATE.md`, `REGISTRY.md`, `REGISTRY.md`, `VERDICT_GLOSSARY.md`, `LOCKED_DECISIONS.md`, `SCHEMA_GUIDANCE.md` created; pre-kernel archive written |
 | Phase 8 Run F.2b | 2026-05-08 | PRODUCTION pushed to private remote `gt-factory-os-production-brain` at HEAD `875424b` |
-| Phase 8 Run G | 2026-05-08 | CONFLICT-003 closed (SIGNALS.md emitter policy); CURRENT_STATE.md + ACTIVE_NOW.md state refreshed; COMMAND_REGISTRY.md count corrected; PRODUCTION-REMOTE-PLAN.md status updated; this acceptance record created |
+| Phase 8 Run G | 2026-05-08 | CONFLICT-003 closed (SIGNALS.md emitter policy); CURRENT_STATE.md + ACTIVE_NOW.md state refreshed; REGISTRY.md count corrected; PRODUCTION-REMOTE-PLAN.md status updated; this acceptance record created |
 
 ---
 
@@ -32,8 +32,8 @@
 
 ### Brain scaffolding (Run F)
 - `AI_BRAIN_ROUTER.md` — routing decision engine with 6 worked examples
-- `AGENT_REGISTRY.md` — 17 agents indexed
-- `COMMAND_REGISTRY.md` — 15 commands indexed (7 UX + 3 governance + 5 execution)
+- `REGISTRY.md` — 17 agents indexed
+- `REGISTRY.md` — 15 commands indexed (7 UX + 3 governance + 5 execution)
 - `VERDICT_GLOSSARY.md` — all verdict tokens with semantics and collision notes
 - `AGENT_TEMPLATE.md` — required structure for new agents
 - `MODULE_TEMPLATE.md` — required declaration for new modules (CRM, leads, etc.)
@@ -44,10 +44,10 @@
 - `docs/archive/CLAUDE.md.pre-kernel-rewrite-2026-05-08.md` — pre-rewrite CLAUDE.md preserved
 
 ### Agents (17 files in `.claude/agents/`)
-3 core (governance) + 5 UX (read-only) + 4 execution (Phase 8) + 5 legacy (active until Wave 6). See `AGENT_REGISTRY.md` for full inventory.
+3 core (governance) + 5 UX (read-only) + 4 execution (Phase 8) + 5 legacy (active until Wave 6). See `REGISTRY.md` for full inventory.
 
 ### Commands (15 files in `.claude/commands/`)
-7 UX + 3 governance + 5 execution. See `COMMAND_REGISTRY.md` for full inventory.
+7 UX + 3 governance + 5 execution. See `REGISTRY.md` for full inventory.
 
 ### Signals
 - `.claude/SIGNALS.md` — signal semantics; RUNTIME_READY emitter policy (closed CONFLICT-003 in Run G)
