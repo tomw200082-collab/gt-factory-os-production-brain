@@ -1,4 +1,12 @@
-# generated run output — contains real customer invoices/route data, never commit
+# Generated run output — contains real customer invoices / route data. NEVER commit.
+# Deny-by-default on artifact types rather than on one blessed directory name:
+# an ad-hoc run written somewhere else (e.g. a fill-in pack for stops added to a
+# live route) used to land outside `route_pack_out/` and show up as untracked
+# customer PDFs. Only this skill's own source is tracked.
+*.pdf
+summary.json
+summary.md
+inventory_proposals.json
 scripts/route_pack_out/
 route_pack_out/
 __pycache__/
