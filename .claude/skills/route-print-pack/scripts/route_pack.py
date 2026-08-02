@@ -88,34 +88,99 @@ def gi_link(task):
     return None
 
 
+def lw_driver_id(name):
+    """Resolve a driver name to its LionWheel id. The drivers endpoint returns the
+    whole roster (no cap), unlike the task list below."""
+    d = _get_json(f"{LW_BASE}/api/v1/drivers.json?key={urllib.parse.quote(LW_KEY)}")
+    drivers = d.get("drivers", d) if isinstance(d, dict) else d
+    want = (name or "").strip()
+    for dr in drivers:
+        full = " ".join(x for x in (dr.get("first_name"), dr.get("last_name")) if x)
+        cands = {full.strip(), (dr.get("first_name") or "").strip(),
+                 (dr.get("nick_name") or "").strip()}
+        if want in cands - {""}:
+            return dr.get("id")
+    return None
+
+
+_TR = re.compile(r"<tr[^>]*>(.*?)</tr>", re.S | re.I)
+_TD = re.compile(r"<td[^>]*>(.*?)</td>", re.S | re.I)
+
+
+def lw_route_stop_ids(driver_id, date):
+    """Ordered stop ids for driver+date, read off LionWheel's own work-order page.
+
+    This page is the AUTHORITY for both route membership and driving order — it is
+    literally the "סידור עבודה" the driver is handed as page 1 of the pack.
+
+    The REST task list must NOT be used to decide membership (bug found 2026-08-02,
+    which shipped a 10-stop pack for a 24-stop route):
+      * /api/v1/tasks.json is capped around 139 rows no matter what `limit` says,
+        and ignores `page` — a full day's route can simply fall off the end.
+      * A stop sits on the driver's plan with a driver_str, a pickup_at and a
+        daily_order while its task status is still UNASSIGNED. Filtering on
+        status == "ASSIGNED" dropped 14 of 24 stops silently.
+
+    Row shape in the work-order table is [row-number, task-id, eta, order-id, ...],
+    so the id is taken structurally from the second cell, not by digit-matching.
+    """
+    dmy = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%d/%m/%Y")
+    ck = "; ".join(f"{c['name']}={c['value']}" for c in lw_login_cookies())
+    url = (f"{LW_BASE}/visits/print_labels"
+           f"?date={urllib.parse.quote(dmy)}&driver_id={driver_id}")
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Cookie": ck})
+    html = urllib.request.urlopen(req, timeout=90).read().decode("utf-8", "ignore")
+    ids = []
+    for row in _TR.findall(html):
+        cells = [re.sub(r"<[^>]+>", "", c).strip() for c in _TD.findall(row)]
+        if len(cells) >= 2 and cells[0].isdigit() and cells[1].isdigit():
+            if cells[1] not in ids:
+                ids.append(cells[1])
+    return ids
+
+
+def _stop(t):
+    v = (t.get("visits") or [{}])[0]
+    return {
+        "tid": str(t["id"]),
+        "do": v.get("daily_order"),
+        "eta": (v.get("eta_at") or "")[11:16],
+        "recipient": v.get("recipient_name"),
+        "city": v.get("city"),
+        "wp": t.get("wp_order_id"),
+        "packages": t.get("packages_quantity"),
+        "items": len(t.get("order_items") or []),
+        "gi": gi_link(t),
+        "task": t,
+    }
+
+
 def fetch_route(driver, date):
-    """Return (driver_id, [stop,...]) sorted by daily_order for driver+date."""
-    stops, driver_id = [], None
+    """Return (driver_id, [stop,...]) in LionWheel's own driving order."""
+    driver_id = lw_driver_id(driver)
+    stops = []
+    if driver_id:
+        for tid in lw_route_stop_ids(driver_id, date):      # already in driving order
+            t = lw_task(tid)
+            if not t:
+                continue
+            if t.get("driver_str") != driver:
+                continue
+            if not (t.get("pickup_at") or "").startswith(date):
+                continue
+            stops.append(_stop(t))
+    if stops:
+        return driver_id, stops
+    # Fallback only if the work order gave us nothing (login/page failure): the old
+    # REST scan. Capped and ASSIGNED-only, so it can under-report — build() warns.
     for tid in lw_list_assigned():
         t = lw_task(tid)
-        if not t:
-            continue
-        if t.get("driver_str") != driver:
+        if not t or t.get("driver_str") != driver:
             continue
         if not (t.get("pickup_at") or "").startswith(date):
             continue
-        if t.get("status") != "ASSIGNED":
-            continue
-        v = (t.get("visits") or [{}])[0]
         driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
-        stops.append({
-            "tid": str(t["id"]),
-            "do": v.get("daily_order"),
-            "eta": eta,
-            "recipient": v.get("recipient_name"),
-            "city": v.get("city"),
-            "wp": t.get("wp_order_id"),
-            "packages": t.get("packages_quantity"),
-            "items": len(t.get("order_items") or []),
-            "gi": gi_link(t),
-            "task": t,
-        })
+        stops.append(_stop(t))
     stops.sort(key=lambda s: (s["do"] is None, s["do"]))
     return driver_id, stops
 
@@ -661,6 +726,19 @@ def build(driver, date, from_stop=None, copies=2, pick_marks=False):
         wb = f"{OUT}/wb_{s['tid']}.pdf"
         if os.path.exists(wb):
             ordered_parts.append((wb, copies))
+
+    # Cross-check before assembly: page 1 lists the whole route, so every stop on
+    # it must have a document in the pack. On 2026-08-02 a 24-stop work order went
+    # out with 10 invoices behind it and nothing complained — the mismatch was
+    # printed on page 1 and simply never compared. Never ship a silent short pack.
+    covered = {os.path.basename(p).split("_")[1].split(".")[0] for p, _ in ordered_parts}
+    missing = [s for s in stops if s["tid"] not in covered]
+    if missing:
+        raise SystemExit(
+            f"route pack INCOMPLETE: {len(stops)} stops on the work order, "
+            f"{len(ordered_parts)} documents assembled. No invoice and no waybill "
+            f"for: " + ", ".join(f"#{s['do']} {s['recipient']} (task {s['tid']})"
+                                 for s in missing))
 
     final = f"{OUT}/route_{driver}_{date}.pdf".replace(" ", "_")
     assemble(wo, ordered_parts, final)
