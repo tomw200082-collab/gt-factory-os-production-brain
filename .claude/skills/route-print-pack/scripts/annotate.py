@@ -165,12 +165,16 @@ def _drop_trailing_blank_pages(doc):
         doc.delete_page(doc.page_count - 1)
 
 
-def annotate(task, src_pdf, out_pdf):
-    """Stamp marks onto a real GI invoice PDF. Lines matched by product name."""
+def annotate(task, src_pdf, out_pdf, mark_lines=True):
+    """Stamp marks onto a real GI invoice PDF. Lines matched by product name.
+
+    mark_lines=False suppresses the per-line picking marks — used for orders that
+    were picked in full, where a column of identical green ✓ is noise the driver
+    has to read past. The order-id chip and package badge are always stamped."""
     doc = fitz.open(src_pdf)
     for pno in range(len(doc)):
         _reg(doc[pno])
-    for it in (task.get("order_items") or []):
+    for it in (task.get("order_items") or []) if mark_lines else []:
         name = it.get("name") or ""
         try:
             q = float(it["quantity"])
