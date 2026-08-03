@@ -76,7 +76,12 @@ Present in chat, compact: decisions · tasks-to-create/update table (owner, due,
 
 ## Stage 5 — Email (the beautiful part)
 
-Fill `references/email_template.html` (RTL Hebrew, guardian palette, Outlook-safe inline-table HTML — same bidi rule: wrap bare Latin/dates in `<span class="ltr">`). Sections in order: hero verdict · **מהפגישה הקודמת** (closed loop first — status per previous action item: ✓/⏳/🔴) · החלטות · משימות (owner pill, due, deep link to the Notion task) · נאמר מול המערכת (contradictions, red) · שאלות פתוחות.
+Fill `references/email_template.html` (RTL Hebrew, Outlook-safe inline-table HTML; bidi rule: wrap bare Latin/dates in `<span class="ltr">`). The template carries its own design contract in its header comment — read it before filling. Three things it will not forgive:
+- **The hero is a thesis, ⊥ a label.** `{{THESIS_HEADLINE}}` states the single most important finding as a sentence ("השבוע ממתין לשני מסמכים מאלכס"). Write it last, after extraction.
+- **The spine is earned.** The numbered dark-band sequence renders only when the meeting produced a real ordered chain with dependencies. Flat decision list → delete that section; ⊥ number things that aren't a sequence.
+- **Empty section → delete the section**, header included. A heading with nothing under it reads as a bug.
+
+Section order: hero thesis · spine (if earned) · **מהפגישה הקודמת** (closed loop) · ממתין ל־X (blockers) · רשת נושאים · מה נסגר · משימות בנושן · נאמר מול המערכת · שמור להמשך.
 
 Send via the verified guardian channel: `curl -sS -X POST "https://hook.eu1.make.com/8yie1tl89bxsq8qqp6o47qydfr8cguji" -H "Content-Type: application/json" -d '{"subject":"GT · סיכום פגישה · <date> · <title>","html":"<filled>"}'` → Make scenario `GT Guardian — Daily Email` (6439326) → tom@gteveryday.com. Confirm HTTP 200; non-200 → say so + fall back to Gmail MCP `create_draft`. Recipient is Tom (webhook-fixed); distribution to the team = Tom forwards, or a Make-side change (separate, ask first).
 
