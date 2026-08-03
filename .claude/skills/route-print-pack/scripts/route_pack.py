@@ -597,8 +597,19 @@ def assemble(workorder_pdf, ordered_parts, out_pdf):
     os.remove(tmp)
 
 
+def _is_exempt(stop, missing_exempt):
+    """True when this stop is excluded from the shortage list — the product IS
+    on the shelf for this customer even though it is short elsewhere. Matched on
+    the recipient name so the caller can name the customer, not a task id."""
+    if not missing_exempt:
+        return False
+    rec = (stop.get("recipient") or "").lower()
+    return any(e.lower() in rec for e in missing_exempt)
+
+
 def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
-          missing_products=None, all_statuses=False, workorder=True):
+          missing_products=None, all_statuses=False, workorder=True,
+          missing_exempt=None):
     os.makedirs(OUT, exist_ok=True)
     import annotate
 
@@ -628,8 +639,9 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             # Shortage-list mode: picking is still running, so picked_quantity is
             # not yet truth. The known-missing products are.
             low = [m.lower() for m in missing_products]
-            short = any(any(m in (it.get("name") or "").lower() for m in low)
-                        for it in (t.get("order_items") or []))
+            short = (not _is_exempt(s, missing_exempt)) and any(
+                any(m in (it.get("name") or "").lower() for m in low)
+                for it in (t.get("order_items") or []))
         else:
             for it in (t.get("order_items") or []):
                 try:
@@ -657,10 +669,18 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 # short, so a re-run mid-route carries no column of identical ✓ for
                 # the driver to read past. Opt-in: the locked design is the default.
                 mark_lines = True
-                if marks_only_short:
+                mn = missing_products
+                if missing_products:
+                    # Shortage-list mode owns the marks outright: never fall back
+                    # to picked_quantity, or an exempted stop would come out with
+                    # every line marked instead of none.
+                    mark_lines = False
+                    if _is_exempt(s, missing_exempt):
+                        mn = None
+                elif marks_only_short:
                     mark_lines = bool(flags.get(s["tid"], {}).get("short"))
                 annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
-                                  missing_names=missing_products)
+                                  missing_names=mn)
                 invoice_part[s["tid"]] = ann
                 continue
         waybill_stops.append(s)                       # no invoice → needs waybill
@@ -791,6 +811,9 @@ def main():
                     help="';'-separated product names known to be missing/partial. "
                          "Marks X on those lines only and ignores picked_quantity "
                          "(use while picking is still in progress).")
+    ap.add_argument("--missing-exempt", default=None,
+                    help="';'-separated customer-name substrings exempt from "
+                         "--missing (they DO have the product on their invoice).")
     ap.add_argument("--all-statuses", action="store_true",
                     help="include UNASSIGNED stops — treat the whole day as confirmed")
     ap.add_argument("--no-workorder", action="store_true",
@@ -803,7 +826,10 @@ def main():
     date = a.date or (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
     missing = [m.strip() for m in a.missing.split(";") if m.strip()] if a.missing else None
     build(a.driver, date, a.from_stop, a.copies, a.marks_only_short,
-          missing_products=missing, all_statuses=a.all_statuses,
+          missing_products=missing,
+          missing_exempt=[e.strip() for e in a.missing_exempt.split(";") if e.strip()]
+                         if a.missing_exempt else None,
+          all_statuses=a.all_statuses,
           workorder=not a.no_workorder)
 
 
