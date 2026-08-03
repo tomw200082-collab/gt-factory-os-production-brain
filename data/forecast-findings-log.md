@@ -167,4 +167,4 @@ Verdict 🔴 דחוף (URGENT): Dennis's iron rule fired again — a firmed 500 
 
 Gauges: G1 **65%** 🟡 (54 items projected, 19 with a stockout day, committed=0 across all). G2 **36%** 🔴 (141 in netting, 90 net-short, earliest bucket already 14 days past, run itself 11 days stale). G3 **0%** 🔴 (V7: `production_plan` planned_qty 500 vs `production_actual` matched output 0 — no reports at all for 02/8).
 
-Delivery evidence (V4, observed this run): rebuild_verifier=**0**; FG via `fn_compute_daily_fg_projection`; RM via `planning_run_component_netting` run `2ad307b8`; connector pre-flight logged above; email send status recorded in the chat summary for this run.
+Delivery evidence (V4, observed this run): rebuild_verifier=**0**; FG via `fn_compute_daily_fg_projection`; RM via `planning_run_component_netting` run `2ad307b8`; connector pre-flight logged above; email POSTed to Make webhook → **HTTP 200 "Accepted"**; Make execution `6e367374384548699bcf9700cf994931` (2026-08-03T03:43:04.825Z), status=1 success, 2 ops, 26,073 B — matches this run's payload; delivered to tom@gteveryday.com via scenario `6439326` → Gmail `sendAnEmail`.
