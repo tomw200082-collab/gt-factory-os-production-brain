@@ -165,29 +165,48 @@ def _drop_trailing_blank_pages(doc):
         doc.delete_page(doc.page_count - 1)
 
 
-def annotate(task, src_pdf, out_pdf, mark_lines=True):
+def _stamp(doc, name, kind, label):
+    """Draw one status mark on the first page where the product line is found."""
+    for pno in range(len(doc)):
+        pg = doc[pno]
+        rs = pg.search_for(name) or pg.search_for(" ".join(name.split()[:2]))
+        if rs:
+            _line_mark(pg, (rs[0].y0 + rs[0].y1) / 2, kind, label)
+            return True
+    return False
+
+
+def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None):
     """Stamp marks onto a real GI invoice PDF. Lines matched by product name.
 
-    mark_lines=False suppresses the per-line picking marks — used for orders that
-    were picked in full, where a column of identical green ✓ is noise the driver
-    has to read past. The order-id chip and package badge are always stamped."""
+    Three modes:
+      missing_names=[...]  shortage-list mode. Ignores picked_quantity entirely
+                           and marks ✗ on the named products only — for when
+                           picking is still in progress, so the per-line picked
+                           counts are not yet trustworthy, but the shortages are
+                           already known. Everything unmarked = in full.
+      mark_lines=True      per-line ✓/✗/partial from ordered vs picked.
+      mark_lines=False     no line marks (order picked in full).
+    The order-id chip and package badge are always stamped."""
     doc = fitz.open(src_pdf)
     for pno in range(len(doc)):
         _reg(doc[pno])
-    for it in (task.get("order_items") or []) if mark_lines else []:
-        name = it.get("name") or ""
-        try:
-            q = float(it["quantity"])
-            pq = float(it["picked_quantity"])
-        except (TypeError, ValueError, KeyError):
-            continue
-        kind, label = mark_kind(q, pq)
-        for pno in range(len(doc)):
-            pg = doc[pno]
-            rs = pg.search_for(name) or pg.search_for(" ".join(name.split()[:2]))
-            if rs:
-                _line_mark(pg, (rs[0].y0 + rs[0].y1) / 2, kind, label)
-                break
+    if missing_names:
+        low = [m.lower() for m in missing_names]
+        for it in (task.get("order_items") or []):
+            name = it.get("name") or ""
+            if any(m in name.lower() for m in low):
+                _stamp(doc, name, "X", "X")
+    elif mark_lines:
+        for it in (task.get("order_items") or []):
+            name = it.get("name") or ""
+            try:
+                q = float(it["quantity"])
+                pq = float(it["picked_quantity"])
+            except (TypeError, ValueError, KeyError):
+                continue
+            kind, label = mark_kind(q, pq)
+            _stamp(doc, name, kind, label)
     wp = task.get("wp_order_id") or ""
     last3 = "".join(c for c in wp if c.isdigit())[-3:]
     if last3:
