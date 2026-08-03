@@ -81,7 +81,9 @@ Fill `references/email_template.html` (RTL Hebrew, Outlook-safe inline-table HTM
 - **The spine is earned.** The numbered dark-band sequence renders only when the meeting produced a real ordered chain with dependencies. Flat decision list → delete that section; ⊥ number things that aren't a sequence.
 - **Empty section → delete the section**, header included. A heading with nothing under it reads as a bug.
 
-Section order: hero thesis · spine (if earned) · **מהפגישה הקודמת** (closed loop) · ממתין ל־X (blockers) · רשת נושאים · מה נסגר · משימות בנושן · נאמר מול המערכת · שמור להמשך.
+- **Tone — the summary gets forwarded to the people in it** (Tom-locked 2026-08-03). State facts, ⊥ apply pressure: "נבנה לפי המבנה שאלכס יעביר", ⊥ "חסום — ממתין לאלכס". Full rule in the template header; it governs the copy, ⊥ only the styling.
+
+Section order: hero thesis · spine (if earned) · **מהפגישה הקודמת** (closed loop) · מה מגיע מ־X · רשת נושאים · מה נסגר · משימות בנושן · נאמר מול המערכת · שמור להמשך.
 
 Send via the verified guardian channel: `curl -sS -X POST "https://hook.eu1.make.com/8yie1tl89bxsq8qqp6o47qydfr8cguji" -H "Content-Type: application/json" -d '{"subject":"GT · סיכום פגישה · <date> · <title>","html":"<filled>"}'` → Make scenario `GT Guardian — Daily Email` (6439326) → tom@gteveryday.com. Confirm HTTP 200; non-200 → say so + fall back to Gmail MCP `create_draft`. Recipient is Tom (webhook-fixed); distribution to the team = Tom forwards, or a Make-side change (separate, ask first).
 
