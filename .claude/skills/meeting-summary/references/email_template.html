@@ -1,0 +1,391 @@
+<!--
+  meeting-summary — meeting report email template
+  Design v2 (2026-08-03), proven on the 2.8 Tom&Alex summary.
+
+  Design intent — deliberately NOT the guardian alert look:
+  a meeting summary is a RECORD, not an alarm. So: warm paper (#FBFAF7 on
+  #EFECE4) instead of the cold guardian grey, no gauges, no severity badge,
+  no rounded cards. Ink is #1B1830 (warm near-black plum).
+  Type pairing: Rubik 700/900 for display, Heebo 300/400/500 for body,
+  Roboto Mono for eyebrows and numerals — all three Hebrew-safe.
+
+  THE SIGNATURE ELEMENT is the SPINE: the meeting's real sequence rendered
+  on a dark band as numbered steps joined by a vertical rail, where each
+  step's rail color carries its state (#F97316 = blocked/active,
+  #3B3663 = queued). Use it ONLY when the meeting actually produced an
+  ordered sequence with dependencies — order must carry information the
+  reader needs. A meeting that produced a flat list of decisions gets the
+  spine section removed entirely; ⊥ number things that aren't a sequence.
+
+  HERO IS A THESIS. {{THESIS_HEADLINE}} states what the meeting actually
+  produced, as a sentence ("סדר העבודה לשבוע: קטלוג, אתר, מסע לקוח"), not a
+  label ("סיכום פגישה"). Write it last, after the extraction.
+
+  TONE — Tom-locked 2026-08-03, after the first run went out too sharp.
+  This summary gets forwarded to the people named in it. State facts; ⊥ apply
+  pressure. Concretely:
+  - Name what someone will provide, ⊥ what they are holding up: "נבנה לפי
+    המבנה שאלכס יעביר", ⊥ "חסום — ממתין לאלכס". The word חסום, the framing
+    "X ממתין ל-Y", and counting someone's open items in the hero all read as
+    chasing. Keep them out.
+  - The waiting section is titled "מה מגיע מ-<שם>", styled in the neutral
+    wash (#F3F1EC) with the indigo rail (#3730A3). ⊥ dress it in the amber
+    alarm wash — amber is for a real operational exception, ⊥ for a colleague
+    who owes a document. Carry "לא דחוף" through when it was said.
+  - ⊥ invent a number to fill an eyebrow (meeting length, item counts). The
+    first run shipped a fabricated "40 דק׳". Every figure is said-in-the-room
+    or live-verified, ⊥ plausible.
+
+  Mechanics:
+  - Fill {{TOKEN}} placeholders per run. <!-- REPEAT:name --> ... <!-- /REPEAT:name -->
+    marks a repeatable block: duplicate the inner block per row, strip the markers.
+    A section with zero rows → delete the section header block too.
+  - Table-based + inline-styled only. Outlook desktop (Word engine) ignores
+    <style> blocks, flexbox and grid. Borders/rails are <td> backgrounds and
+    border-right (RTL), never box-shadow-dependent.
+  - Bidi: wrap bare Latin words, SKU/product codes and dates inside free-text
+    tokens in <span class="ltr">…</span>.
+  - Palette (fixed — ⊥ invent per run):
+      ink #1B1830 · paper #FBFAF7 · outer #EFECE4 · wash #F3F1EC
+      body text #4A4763 · muted #5C5978 · dim #8B87A8 · hairline #E7E3DA
+      amber (blocked/waiting) #F97316 · amber wash #FDF0E4 · amber text #7A5638
+      channel/topic accents: #1B1830 · #3730A3 · #7C3AED · #0F766E
+      contradiction red #B91C1C · red wash #FBEAEA
+  - Known degradation (acceptable): drop-shadows invisible in Outlook desktop;
+    the paper/ink contrast carries the layout without them.
+-->
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>GT · סיכום פגישה</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&family=Heebo:wght@300;400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!--[if mso]>
+<style type="text/css">
+  table, td, div, p, a { font-family: Tahoma, Arial, sans-serif !important; }
+</style>
+<![endif]-->
+<style>
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+  body { margin: 0; padding: 0; width: 100% !important; background: #EFECE4; }
+  a { color: #3730A3; }
+  .mono { font-family: 'Roboto Mono', 'Consolas', 'Courier New', monospace; }
+  .ltr { direction: ltr; unicode-bidi: embed; display: inline-block; }
+  @media only screen and (max-width: 600px) {
+    .container { width: 100% !important; }
+    .px { padding-left: 20px !important; padding-right: 20px !important; }
+    .thesis { font-size: 26px !important; }
+    .ch-cell { display: block !important; width: 100% !important; padding: 0 0 12px 0 !important; }
+  }
+</style>
+</head>
+<body style="margin:0; padding:0; background:#EFECE4;">
+  <div style="display:none; max-height:0; overflow:hidden; opacity:0;">
+    {{PREHEADER}}
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#EFECE4;">
+    <tr>
+      <td align="center" style="padding: 34px 12px;">
+        <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background:#FBFAF7; box-shadow: 0 2px 8px rgba(27,24,48,0.08), 0 18px 40px rgba(27,24,48,0.10);">
+
+          <!-- masthead -->
+          <tr>
+            <td style="background:#1B1830; padding: 16px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td align="right" style="font-family:'Rubik',Tahoma,Arial,sans-serif; color:#FBFAF7; font-size:12px; font-weight:700; letter-spacing:0.14em;">
+                    <span class="ltr">GT</span> &nbsp;·&nbsp; סיכום פגישה
+                  </td>
+                  <td align="left" class="mono" style="color:#8B87A8; font-size:11px; letter-spacing:0.06em;">
+                    <span class="ltr">{{DATE}}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- hero: the thesis -->
+          <tr>
+            <td style="background:#FBFAF7; padding: 40px 30px 34px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td>
+                    <div class="mono" style="font-size:11px; color:#8B87A8; letter-spacing:0.10em; padding-bottom:16px;">
+                      <span style="display:inline-block; width:22px; height:2px; background:#F97316; vertical-align:middle; margin-left:9px;">&nbsp;</span>{{PARTICIPANTS}} · {{MEETING_META}}
+                    </div>
+                    <div class="thesis" style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:33px; font-weight:900; color:#1B1830; line-height:1.28; letter-spacing:-0.01em;">
+                      {{THESIS_HEADLINE}}
+                    </div>
+                    <div style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:15px; color:#4A4763; line-height:1.75; padding-top:16px; max-width:430px;">
+                      {{THESIS_SUB}}
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- SPINE — only when the meeting produced a real ordered sequence -->
+          <tr>
+            <td style="background:#1B1830; padding: 30px 30px 34px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:11px; font-weight:700; color:#8B87A8; letter-spacing:0.14em; padding-bottom:22px;">
+                    {{SPINE_TITLE}}
+                  </td>
+                </tr>
+                <!-- REPEAT:sequence_step -->
+                <tr>
+                  <td>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                      <tr>
+                        <td width="46" valign="top">
+                          <div class="mono" style="font-size:13px; font-weight:700; color:#F97316;">{{STEP_NUM}}</div>
+                        </td>
+                        <td valign="top" style="border-right:2px solid {{STEP_RAIL}}; padding-right:20px; padding-bottom:22px;">
+                          <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:19px; font-weight:700; color:#FBFAF7; line-height:1.3;">{{STEP_TITLE}}</div>
+                          <div style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:13px; color:#A9A5C4; line-height:1.7; padding-top:6px;">
+                            {{STEP_NOTE}}
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- /REPEAT:sequence_step -->
+              </table>
+            </td>
+          </tr>
+
+          <!-- previous meeting follow-up (closed loop) -->
+          <tr>
+            <td style="background:#FBFAF7; padding: 34px 30px 4px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:11px; font-weight:700; color:#8B87A8; letter-spacing:0.14em; padding-bottom:16px;">
+                    מהפגישה הקודמת · <span class="ltr mono" style="font-size:10px;">{{PREV_DATE}}</span>
+                  </td>
+                </tr>
+                <!-- REPEAT:followup_row -->
+                <tr>
+                  <td style="padding-bottom:14px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                      <tr>
+                        <td width="4" style="background:{{FU_COLOR}}; font-size:1px;">&nbsp;</td>
+                        <td style="padding: 2px 16px;">
+                          <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:14px; font-weight:700; color:#1B1830; line-height:1.45;">{{FU_TEXT}}</div>
+                          <div style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:12px; color:#5C5978; padding-top:4px;">{{FU_OWNER}} · {{FU_STATUS}}</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- /REPEAT:followup_row -->
+              </table>
+            </td>
+          </tr>
+
+          <!-- blocked / waiting on someone -->
+          <tr>
+            <td style="background:#FBFAF7; padding: 30px 30px 8px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:11px; font-weight:700; color:#9A3412; letter-spacing:0.14em; padding-bottom:14px;">
+                    {{WAITING_TITLE}}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="background:#FDF0E4;">
+                      <tr>
+                        <td width="4" style="background:#F97316; font-size:1px;">&nbsp;</td>
+                        <td style="padding: 6px 22px 8px 22px;">
+                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                            <!-- REPEAT:waiting_row -->
+                            <tr>
+                              <td style="padding: 14px 0; border-bottom:1px solid #F3DFCB;">
+                                <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:15px; font-weight:700; color:#1B1830;">{{WAIT_TITLE}}</div>
+                                <div style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:13px; color:#7A5638; padding-top:4px;">{{WAIT_DETAIL}}</div>
+                              </td>
+                            </tr>
+                            <!-- /REPEAT:waiting_row -->
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- topic grid (channels, workstreams, options — 2 per row) -->
+          <tr>
+            <td style="background:#FBFAF7; padding: 34px 30px 4px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:11px; font-weight:700; color:#8B87A8; letter-spacing:0.14em; padding-bottom:6px;">
+                    {{GRID_TITLE}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:14px; color:#4A4763; line-height:1.75; padding-bottom:18px;">
+                    {{GRID_INTRO}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#FBFAF7; padding: 0 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <!-- REPEAT:grid_pair — one <tr> per PAIR of cards; odd count → leave the second cell empty -->
+                <tr>
+                  <td class="ch-cell" width="50%" valign="top" style="padding: 0 0 12px 6px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F3F1EC; border-top:3px solid {{CARD_A_ACCENT}};">
+                      <tr><td style="padding:16px 18px 18px 18px;">
+                        <div class="mono" style="font-size:10px; color:#8B87A8; letter-spacing:0.10em;">{{CARD_A_EYEBROW}}</div>
+                        <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:17px; font-weight:700; color:#1B1830; padding-top:5px;">{{CARD_A_TITLE}}</div>
+                        <div style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:13px; color:#5C5978; line-height:1.7; padding-top:7px;">{{CARD_A_TEXT}}</div>
+                      </td></tr>
+                    </table>
+                  </td>
+                  <td class="ch-cell" width="50%" valign="top" style="padding: 0 6px 12px 0;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F3F1EC; border-top:3px solid {{CARD_B_ACCENT}};">
+                      <tr><td style="padding:16px 18px 18px 18px;">
+                        <div class="mono" style="font-size:10px; color:#8B87A8; letter-spacing:0.10em;">{{CARD_B_EYEBROW}}</div>
+                        <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:17px; font-weight:700; color:#1B1830; padding-top:5px;">{{CARD_B_TITLE}}</div>
+                        <div style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:13px; color:#5C5978; line-height:1.7; padding-top:7px;">{{CARD_B_TEXT}}</div>
+                      </td></tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- /REPEAT:grid_pair -->
+              </table>
+            </td>
+          </tr>
+
+          <!-- decisions -->
+          <tr>
+            <td style="background:#FBFAF7; padding: 30px 30px 4px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:11px; font-weight:700; color:#8B87A8; letter-spacing:0.14em; padding-bottom:16px;">
+                    מה נסגר בפגישה
+                  </td>
+                </tr>
+                <!-- REPEAT:decision_row -->
+                <tr>
+                  <td style="padding: 0 0 16px 0; border-bottom:1px solid #E7E3DA;">
+                    <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:16px; font-weight:700; color:#1B1830; line-height:1.45;">{{DEC_TITLE}}</div>
+                    <div style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:13px; color:#5C5978; line-height:1.7; padding-top:5px;">{{DEC_DETAIL}}</div>
+                  </td>
+                </tr>
+                <tr><td style="height:16px; line-height:16px; font-size:1px;">&nbsp;</td></tr>
+                <!-- /REPEAT:decision_row -->
+              </table>
+            </td>
+          </tr>
+
+          <!-- tasks opened in Notion -->
+          <tr>
+            <td style="background:#FBFAF7; padding: 24px 30px 4px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:11px; font-weight:700; color:#8B87A8; letter-spacing:0.14em; padding-bottom:16px;">
+                    משימות שנפתחו בנושן
+                  </td>
+                </tr>
+                <!-- REPEAT:task_row -->
+                <tr>
+                  <td style="padding-bottom:14px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="background:#F3F1EC;">
+                      <tr>
+                        <td style="padding:15px 18px;">
+                          <div style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:15px; font-weight:700; color:#1B1830; line-height:1.5;">{{TASK_TEXT}}</div>
+                          <div style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:12px; color:#5C5978; padding-top:6px;">
+                            {{TASK_OWNER}} · יעד <span class="ltr mono" style="font-size:11px;">{{TASK_DUE}}</span> · {{TASK_PROJECT}}
+                          </div>
+                          <div style="padding-top:10px;">
+                            <a href="{{TASK_LINK}}" target="_blank" style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:12px; font-weight:700; color:#3730A3; text-decoration:none;">למשימה בנושן ←</a>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- /REPEAT:task_row -->
+              </table>
+            </td>
+          </tr>
+
+          <!-- said vs system -->
+          <tr>
+            <td style="background:#FBFAF7; padding: 24px 30px 4px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td style="font-family:'Rubik',Tahoma,Arial,sans-serif; font-size:11px; font-weight:700; color:#B91C1C; letter-spacing:0.14em; padding-bottom:14px;">
+                    נאמר בפגישה מול המערכת
+                  </td>
+                </tr>
+                <!-- REPEAT:contradiction_row -->
+                <tr>
+                  <td style="padding-bottom:12px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="background:#FBEAEA;">
+                      <tr>
+                        <td width="4" style="background:#B91C1C; font-size:1px;">&nbsp;</td>
+                        <td style="padding:14px 18px; font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:13px; color:#1B1830; line-height:1.7;">
+                          <span style="font-weight:700;">נאמר:</span> {{CLAIM_TEXT}}<br>
+                          <span style="font-weight:700; color:#B91C1C;">במערכת:</span> {{SYSTEM_TEXT}}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- /REPEAT:contradiction_row -->
+              </table>
+            </td>
+          </tr>
+
+          <!-- parked / open -->
+          <tr>
+            <td style="background:#FBFAF7; padding: 24px 30px 36px 30px;" class="px">
+              <!-- REPEAT:parked_row -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="border:1px solid #E7E3DA;">
+                <tr>
+                  <td style="padding: 18px 22px;">
+                    <div class="mono" style="font-size:10px; color:#8B87A8; letter-spacing:0.10em; padding-bottom:8px;">{{PARKED_EYEBROW}}</div>
+                    <div style="font-family:'Heebo',Tahoma,Arial,sans-serif; font-size:14px; color:#4A4763; line-height:1.75;">
+                      <b style="font-family:'Rubik',Tahoma,Arial,sans-serif; color:#1B1830;">{{PARKED_TITLE}}</b> — {{PARKED_TEXT}}
+                    </div>
+                  </td>
+                </tr>
+              </table>
+              <!-- /REPEAT:parked_row -->
+            </td>
+          </tr>
+
+          <!-- footer -->
+          <tr>
+            <td style="background:#1B1830; padding: 20px 30px;" class="px">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl">
+                <tr>
+                  <td align="right" class="mono" style="font-size:10px; color:#8B87A8; letter-spacing:0.06em; line-height:1.7;">
+                    {{FOOTER_LINE_1}}<br>
+                    {{FOOTER_LINE_2}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
