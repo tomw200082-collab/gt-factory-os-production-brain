@@ -261,7 +261,11 @@ def render_pages(jobs):
                 pass
 
     with sync_playwright() as p:
-        b = p.chromium.launch(args=["--no-sandbox", "--disable-dev-shm-usage"])
+        chromium_path = "/opt/pw-browsers/chromium"
+        launch_kwargs = {"args": ["--no-sandbox", "--disable-dev-shm-usage"]}
+        if os.path.exists(chromium_path):
+            launch_kwargs["executable_path"] = chromium_path
+        b = p.chromium.launch(**launch_kwargs)
         ctx = b.new_context(ignore_https_errors=True)
         ctx.add_cookies(cookies)
         for url, out, fit_one in jobs:
