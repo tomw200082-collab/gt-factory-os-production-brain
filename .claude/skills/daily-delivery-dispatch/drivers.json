@@ -8,8 +8,9 @@
   "default_route_driver": {
     "name": "מיידן",
     "name_variants": ["מיידן", "מיידן גבאי", "maiden", "maydan", "meydan", "gabay"],
-    "driver_id": null,
-    "resolution": "UNRESOLVED — on the first live run: GET /api/v1/drivers.json, match name_variants against first_name/last_name/nick_name, confirm the single match with Tom once, then write driver_id here. If LionWheel has NO driver record for Maiden (the line may historically run under Maxim 28174), STOP and ask Tom which record the route actually runs under — never guess.",
+    "driver_id": 37591,
+    "driver_str": "מיידן גבאי",
+    "resolution": "RESOLVED 2026-07-28 — GET /api/v1/drivers.json returned exactly one match for the name_variants: id 37591, first_name 'מיידן', last_name 'גבאי', phone 0544920296. Corroborated live: all 8 stops of the 2026-07-29 route carry driver_id 37591 / driver_str 'מיידן גבאי'. Tom deferred the confirmation ('תחליט בשבילי'). NOTE: LionWheel task matching is on the exact `driver_str` string — pass 'מיידן גבאי', not 'מיידן'.",
     "note": "Maiden Gabay is the daily route driver (factory mapping v3, 2026-07-22). Maxim 28174 = emergency driver only, by prior arrangement (Q16)."
   }
 }

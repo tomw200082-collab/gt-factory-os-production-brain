@@ -7,8 +7,11 @@ description: >-
   driver name + a date — and since 2026-07-22 both have defaults: driver = the
   route driver (מיידן, per ../daily-delivery-dispatch/drivers.json
   default_route_driver), date = the next working day ("מחר" on Thursday means
-  Sunday). Produces one print-ready PDF (LionWheel work order page 1,
-  then every stop in driving order: real Green Invoice ×2 with picking marks, or
+  Sunday). Also triggered by the standing phrase "מסלול של <driver> ל<date> ללא
+  פירוט חוסרים" (Tom, 2026-08-03) — same pack, stated explicitly. Produces one
+  print-ready PDF (LionWheel work order page 1,
+  then every stop in driving order: real Green Invoice ×2 — no per-line picking
+  marks since 2026-08-02, use --pick-marks to restore them — or
   official LionWheel waybill ×2), proposes any non-standard inventory movements to
   the Factory OS inbox for approval, and emails the file to production@gteveryday.com.
 ---
@@ -50,10 +53,17 @@ only, nothing invented. `build_workorder()` stays as a fallback if LionWheel doe
 not return the page.
 
 ## Invoice annotation design (formal, rounded — Tom, 2026-06-21)
-Per product line, at the **right margin, precise to the line**, a formal rounded
-status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
-- **✓ green disc** (picked in full) · **✗ terracotta disc** (not picked) ·
-  **amber `picked/ordered` pill** (partial). Vector marks, never bare letters.
+- **Per-line picking marks — OFF by default since 2026-08-02 (Tom).** The invoice
+  travels with the driver to the customer, so it no longer carries picked-vs-ordered
+  per product. Shortfalls are still read from LionWheel and still reported in
+  `summary.json`, the digest, and the email body — they just don't print.
+  `--pick-marks` re-enables them for a single run, drawing, at the **right margin,
+  precise to the line**, a formal rounded status badge (two-tone: saturated glyph on
+  a pale fill, thin same-hue ring): **✓ green disc** (picked in full) ·
+  **✗ terracotta disc** (not picked) · **amber `picked/ordered` pill** (partial).
+  Vector marks, never bare letters.
+
+Always printed:
 - **Order id** — top-right, **first page only**: a rounded GT-green pill with a
   `מס׳ הזמנה` eyebrow over the **last 3 digits** in white.
 - **Package count** — centered **directly under "מקור"**: a round GT-green
@@ -70,6 +80,11 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    - Timing: build the pack **after the 15:00 line lock** (weekdays) or **after the Sunday
      ~10:15 final sweep** — never from a still-open line (two-wave picking, mapping v3).
    `--from-stop N` only when Tom explicitly asks to start mid-route.
+   - **Standing phrase (Tom, 2026-08-03): "מסלול של \<driver\> ל\<date\> ללא פירוט חוסרים"**
+     → build with **no per-line picking marks** on the invoices. This is already the
+     default (`pick_marks=False`), so the phrase and the bare "מסלול של \<driver\> ל\<date\>"
+     currently produce the same file — the phrase is just the explicit form. Only
+     `--pick-marks` brings the ✓/✗/partial badges back, for one run.
 2. **Environment.** Ensure deps (install if missing) and confirm secrets:
    ```bash
    python3 -m pip install -q pymupdf pypdf python-bidi playwright
