@@ -176,7 +176,8 @@ def _stamp(doc, name, kind, label):
     return False
 
 
-def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None):
+def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
+             show_packages=True):
     """Stamp marks onto a real GI invoice PDF. Lines matched by product name.
 
     Three modes:
@@ -211,7 +212,7 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None):
     last3 = "".join(c for c in wp if c.isdigit())[-3:]
     if last3:
         _order_id_chip(doc[0], last3)
-    if task.get("packages_quantity"):
+    if show_packages and task.get("packages_quantity"):
         _package_count(doc, task["packages_quantity"])
     _drop_trailing_blank_pages(doc)   # save paper: no signature-only / empty tail pages
     doc.save(out_pdf)

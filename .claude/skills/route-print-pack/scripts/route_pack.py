@@ -609,7 +609,7 @@ def _is_exempt(stop, missing_exempt):
 
 def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
           missing_products=None, all_statuses=False, workorder=True,
-          missing_exempt=None):
+          missing_exempt=None, show_packages=True):
     os.makedirs(OUT, exist_ok=True)
     import annotate
 
@@ -680,7 +680,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 elif marks_only_short:
                     mark_lines = bool(flags.get(s["tid"], {}).get("short"))
                 annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
-                                  missing_names=mn)
+                                  missing_names=mn, show_packages=show_packages)
                 invoice_part[s["tid"]] = ann
                 continue
         waybill_stops.append(s)                       # no invoice → needs waybill
@@ -814,6 +814,8 @@ def main():
     ap.add_argument("--missing-exempt", default=None,
                     help="';'-separated customer-name substrings exempt from "
                          "--missing (they DO have the product on their invoice).")
+    ap.add_argument("--no-packages", action="store_true",
+                    help="omit the package-count badge (order id + marks only)")
     ap.add_argument("--all-statuses", action="store_true",
                     help="include UNASSIGNED stops — treat the whole day as confirmed")
     ap.add_argument("--no-workorder", action="store_true",
@@ -829,7 +831,7 @@ def main():
           missing_products=missing,
           missing_exempt=[e.strip() for e in a.missing_exempt.split(";") if e.strip()]
                          if a.missing_exempt else None,
-          all_statuses=a.all_statuses,
+          all_statuses=a.all_statuses, show_packages=not a.no_packages,
           workorder=not a.no_workorder)
 
 
