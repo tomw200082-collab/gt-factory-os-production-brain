@@ -165,30 +165,71 @@ def _drop_trailing_blank_pages(doc):
         doc.delete_page(doc.page_count - 1)
 
 
-def annotate(task, src_pdf, out_pdf):
-    """Stamp marks onto a real GI invoice PDF. Lines matched by product name."""
+def _stamp(doc, name, kind, label):
+    """Draw one status mark on the first page where the product line is found."""
+    for pno in range(len(doc)):
+        pg = doc[pno]
+        rs = pg.search_for(name) or pg.search_for(" ".join(name.split()[:2]))
+        if rs:
+            _line_mark(pg, (rs[0].y0 + rs[0].y1) / 2, kind, label)
+            return True
+    return False
+
+
+def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
+             show_packages=True, shortfall_only=False):
+    """Stamp marks onto a real GI invoice PDF. Lines matched by product name.
+
+    Four modes, in precedence order:
+      missing_names=[...]  shortage-list mode. Ignores picked_quantity entirely
+                           and marks ✗ on the named products only — for when
+                           picking is still in progress, so the per-line picked
+                           counts are not yet trustworthy, but the shortages are
+                           already known. Everything unmarked = in full.
+      shortfall_only=True  picking is finished: mark ONLY the lines where
+                           picked < ordered, leaving every complete line clean.
+                           This is the DEFAULT (Tom, 2026-08-04).
+      mark_lines=True      per-line ✓/✗/partial from ordered vs picked.
+      mark_lines=False     no line marks (order picked in full).
+    The order-id chip and package badge are always stamped."""
     doc = fitz.open(src_pdf)
     for pno in range(len(doc)):
         _reg(doc[pno])
-    for it in (task.get("order_items") or []):
-        name = it.get("name") or ""
-        try:
-            q = float(it["quantity"])
-            pq = float(it["picked_quantity"])
-        except (TypeError, ValueError, KeyError):
-            continue
-        kind, label = mark_kind(q, pq)
-        for pno in range(len(doc)):
-            pg = doc[pno]
-            rs = pg.search_for(name) or pg.search_for(" ".join(name.split()[:2]))
-            if rs:
-                _line_mark(pg, (rs[0].y0 + rs[0].y1) / 2, kind, label)
-                break
+    if missing_names:
+        # Explicit shortage list wins over picked_quantity: it is used precisely
+        # when picking is unfinished and those counts are not yet truth.
+        low = [m.lower() for m in missing_names]
+        for it in (task.get("order_items") or []):
+            name = it.get("name") or ""
+            if any(m in name.lower() for m in low):
+                _stamp(doc, name, "X", "X")
+    elif shortfall_only:
+        # Picking is finished, so picked_quantity IS truth — but mark only the
+        # lines that fell short. A ✓ on every complete line is ink the driver has
+        # to read past to find the one line that needs a conversation.
+        for it in (task.get("order_items") or []):
+            try:
+                q, pq = float(it["quantity"]), float(it["picked_quantity"])
+            except (TypeError, ValueError, KeyError):
+                continue
+            if pq < q:
+                kind, label = mark_kind(q, pq)
+                _stamp(doc, it.get("name") or "", kind, label)
+    elif mark_lines:
+        for it in (task.get("order_items") or []):
+            name = it.get("name") or ""
+            try:
+                q = float(it["quantity"])
+                pq = float(it["picked_quantity"])
+            except (TypeError, ValueError, KeyError):
+                continue
+            kind, label = mark_kind(q, pq)
+            _stamp(doc, name, kind, label)
     wp = task.get("wp_order_id") or ""
     last3 = "".join(c for c in wp if c.isdigit())[-3:]
     if last3:
         _order_id_chip(doc[0], last3)
-    if task.get("packages_quantity"):
+    if show_packages and task.get("packages_quantity"):
         _package_count(doc, task["packages_quantity"])
     _drop_trailing_blank_pages(doc)   # save paper: no signature-only / empty tail pages
     doc.save(out_pdf)

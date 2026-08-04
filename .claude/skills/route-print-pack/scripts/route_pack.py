@@ -10,7 +10,9 @@ Everything else is default and automatic:
   then     : every stop in driving order (visits.daily_order)
                - stop with a Green Invoice  -> real GI invoice, annotated, x2 copies
                - stop without an invoice     -> official LionWheel waybill, x2 copies
-  marks    : per line V / X / partial (see annotate.py); package count under "מקור";
+  marks    : X on the lines that fell short of the order, nothing on the rest
+             (Tom, 2026-08-04 — supersedes the 2026-06-21 mark-every-line design;
+             --mark-all-lines restores it); package count under "מקור";
              last-3 order-id digits top-right
   output   : one merged print-ready PDF
   side car : non-standard inventory movements (returns / exchanges / tastings /
@@ -88,10 +90,24 @@ def gi_link(task):
     return None
 
 
-def fetch_route(driver, date):
-    """Return (driver_id, [stop,...]) sorted by daily_order for driver+date."""
+def lw_list_open():
+    """Every task not yet delivered — ASSIGNED *and* UNASSIGNED. A route being
+    built the evening before often still has stops awaiting assignment; those are
+    real stops on the driver's day, so a pack built with all_statuses must see
+    them (a stop dropped here is an invoice the driver never gets)."""
+    url = f"{LW_BASE}/api/v1/tasks.json?key={urllib.parse.quote(LW_KEY)}&limit=1000"
+    d = _get_json(url)
+    tasks = d.get("tasks", d) if isinstance(d, dict) else d
+    return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
+
+
+def fetch_route(driver, date, all_statuses=False):
+    """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
+
+    all_statuses=True also keeps UNASSIGNED stops — use when the whole day is to
+    be treated as confirmed even though LionWheel has not finished assigning."""
     stops, driver_id = [], None
-    for tid in lw_list_assigned():
+    for tid in (lw_list_open() if all_statuses else lw_list_assigned()):
         t = lw_task(tid)
         if not t:
             continue
@@ -99,7 +115,7 @@ def fetch_route(driver, date):
             continue
         if not (t.get("pickup_at") or "").startswith(date):
             continue
-        if t.get("status") != "ASSIGNED":
+        if not all_statuses and t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
         driver_id = driver_id or t.get("driver_id")
@@ -583,15 +599,29 @@ def assemble(workorder_pdf, ordered_parts, out_pdf):
     os.remove(tmp)
 
 
-def build(driver, date, from_stop=None, copies=2):
+def _is_exempt(stop, missing_exempt):
+    """True when this stop is excluded from the shortage list — the product IS
+    on the shelf for this customer even though it is short elsewhere. Matched on
+    the recipient name so the caller can name the customer, not a task id."""
+    if not missing_exempt:
+        return False
+    rec = (stop.get("recipient") or "").lower()
+    return any(e.lower() in rec for e in missing_exempt)
+
+
+def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
+          missing_products=None, all_statuses=False, workorder=True,
+          missing_exempt=None, show_packages=True, shortfall_only=True):
     os.makedirs(OUT, exist_ok=True)
     import annotate
 
-    driver_id, stops = fetch_route(driver, date)
+    driver_id, stops = fetch_route(driver, date, all_statuses=all_statuses)
     if not stops:
-        raise SystemExit(f"No ASSIGNED stops for driver={driver!r} date={date}")
-    if from_stop:
-        stops = [s for s in stops if s["do"] and s["do"] >= from_stop]
+        raise SystemExit(f"No stops for driver={driver!r} date={date}")
+    if from_stop is not None:
+        # `s["do"] is not None`, NOT truthiness — daily_order 0 is a real first
+        # stop, and testing it as a boolean silently drops that whole invoice.
+        stops = [s for s in stops if s["do"] is not None and s["do"] >= from_stop]
 
     # per-stop flags for the work-order timeline: special handling (pickup /
     # exchange, derived from the same note hints used for the inbox proposals)
@@ -607,13 +637,21 @@ def build(driver, date, from_stop=None, copies=2):
             elif "החלפ" in text:
                 special = "החלפה"
         short = False
-        for it in (t.get("order_items") or []):
-            try:
-                if float(it["picked_quantity"]) < float(it["quantity"]):
-                    short = True
-                    break
-            except (TypeError, ValueError, KeyError):
-                continue
+        if missing_products:
+            # Shortage-list mode: picking is still running, so picked_quantity is
+            # not yet truth. The known-missing products are.
+            low = [m.lower() for m in missing_products]
+            short = (not _is_exempt(s, missing_exempt)) and any(
+                any(m in (it.get("name") or "").lower() for m in low)
+                for it in (t.get("order_items") or []))
+        else:
+            for it in (t.get("order_items") or []):
+                try:
+                    if float(it["picked_quantity"]) < float(it["quantity"]):
+                        short = True
+                        break
+                except (TypeError, ValueError, KeyError):
+                    continue
         if special or short:
             flags[s["tid"]] = {"special": special, "short": short}
 
@@ -628,7 +666,28 @@ def build(driver, date, from_stop=None, copies=2):
             src = f"{OUT}/inv_{s['tid']}.pdf"
             if gi_fetch_invoice(s, src):
                 ann = f"{OUT}/ann_{s['tid']}.pdf"
-                annotate.annotate(s["task"], src, ann)
+                # Default marks every line (the Tom-locked 2026-06-21 design).
+                # --marks-only-short narrows marks to the orders that actually fell
+                # short, so a re-run mid-route carries no column of identical ✓ for
+                # the driver to read past. Opt-in: the locked design is the default.
+                mark_lines = True
+                mn = missing_products
+                so = shortfall_only
+                if missing_products:
+                    so = False          # alternative modes, never both
+                    # Shortage-list mode owns the marks outright: never fall back
+                    # to picked_quantity, or an exempted stop would come out with
+                    # every line marked instead of none.
+                    mark_lines = False
+                    if _is_exempt(s, missing_exempt):
+                        mn = None
+                elif marks_only_short:
+                    mark_lines = bool(flags.get(s["tid"], {}).get("short"))
+                if so:
+                    mark_lines = False
+                annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
+                                  missing_names=mn, show_packages=show_packages,
+                                  shortfall_only=so)
                 invoice_part[s["tid"]] = ann
                 continue
         waybill_stops.append(s)                       # no invoice → needs waybill
@@ -638,7 +697,7 @@ def build(driver, date, from_stop=None, copies=2):
     #    is kept only as a fallback if LionWheel doesn't return the work order.
     wo = None
     jobs = []
-    if not from_stop and driver_id:
+    if workorder and from_stop is None and driver_id:
         wo = f"{OUT}/_workorder.pdf"
         dmy = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%d/%m/%Y")
         wo_url = (f"{LW_BASE}/visits/print_labels"
@@ -651,7 +710,7 @@ def build(driver, date, from_stop=None, copies=2):
 
     # 3. fallback: if the real LionWheel work order didn't render, generate one so
     #    the pack always has a page 1.
-    if not from_stop and (not wo or not os.path.exists(wo) or os.path.getsize(wo) == 0):
+    if workorder and from_stop is None and (not wo or not os.path.exists(wo) or os.path.getsize(wo) == 0):
         wo = f"{OUT}/_workorder.pdf"
         build_workorder(driver, date, stops, wo, flags)
 
@@ -755,9 +814,36 @@ def main():
     ap.add_argument("--date", help="YYYY-MM-DD; default tomorrow")
     ap.add_argument("--from-stop", type=int, default=None)
     ap.add_argument("--copies", type=int, default=2)
+    ap.add_argument("--missing", default=None,
+                    help="';'-separated product names known to be missing/partial. "
+                         "Marks X on those lines only and ignores picked_quantity "
+                         "(use while picking is still in progress).")
+    ap.add_argument("--missing-exempt", default=None,
+                    help="';'-separated customer-name substrings exempt from "
+                         "--missing (they DO have the product on their invoice).")
+    ap.add_argument("--mark-all-lines", action="store_true",
+                    help="restore the original full marking: a mark on EVERY line "
+                         "(green check / X / partial). Default since 2026-08-04 is "
+                         "shortfall-only — X on the short lines, nothing elsewhere.")
+    ap.add_argument("--no-packages", action="store_true",
+                    help="omit the package-count badge (order id + marks only)")
+    ap.add_argument("--all-statuses", action="store_true",
+                    help="include UNASSIGNED stops — treat the whole day as confirmed")
+    ap.add_argument("--no-workorder", action="store_true",
+                    help="omit the LionWheel work-order page; invoices only")
+    ap.add_argument("--marks-only-short", action="store_true",
+                    help="with --mark-all-lines: full per-line marking, but only "
+                         "on orders that fell short; fully-picked orders stay clean")
     a = ap.parse_args()
     date = a.date or (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
-    build(a.driver, date, a.from_stop, a.copies)
+    missing = [m.strip() for m in a.missing.split(";") if m.strip()] if a.missing else None
+    build(a.driver, date, a.from_stop, a.copies, a.marks_only_short,
+          missing_products=missing,
+          missing_exempt=[e.strip() for e in a.missing_exempt.split(";") if e.strip()]
+                         if a.missing_exempt else None,
+          all_statuses=a.all_statuses, show_packages=not a.no_packages,
+          shortfall_only=not a.mark_all_lines,
+          workorder=not a.no_workorder)
 
 
 if __name__ == "__main__":
