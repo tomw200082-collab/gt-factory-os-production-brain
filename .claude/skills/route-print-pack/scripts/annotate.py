@@ -177,10 +177,12 @@ def _stamp(doc, name, kind, label):
 
 
 def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
-             show_packages=True):
+             show_packages=True, shortfall_only=False):
     """Stamp marks onto a real GI invoice PDF. Lines matched by product name.
 
-    Three modes:
+    Four modes, in precedence order:
+      shortfall_only=True  picking is finished: mark ONLY the lines where
+                           picked < ordered, leaving every complete line clean.
       missing_names=[...]  shortage-list mode. Ignores picked_quantity entirely
                            and marks ✗ on the named products only — for when
                            picking is still in progress, so the per-line picked
@@ -192,7 +194,19 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
     doc = fitz.open(src_pdf)
     for pno in range(len(doc)):
         _reg(doc[pno])
-    if missing_names:
+    if shortfall_only:
+        # Picking is finished, so picked_quantity IS truth — but mark only the
+        # lines that fell short. A ✓ on every complete line is ink the driver has
+        # to read past to find the one line that needs a conversation.
+        for it in (task.get("order_items") or []):
+            try:
+                q, pq = float(it["quantity"]), float(it["picked_quantity"])
+            except (TypeError, ValueError, KeyError):
+                continue
+            if pq < q:
+                kind, label = mark_kind(q, pq)
+                _stamp(doc, it.get("name") or "", kind, label)
+    elif missing_names:
         low = [m.lower() for m in missing_names]
         for it in (task.get("order_items") or []):
             name = it.get("name") or ""
