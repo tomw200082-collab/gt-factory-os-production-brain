@@ -1,15 +1,51 @@
 # Module Declaration — `sales`
 
-> **Status: DRAFT — awaiting Tom's written approval.** This is a proposal, not
-> authority. Per `CLAUDE.md` → Future module rule and `MODULE_TEMPLATE.md`, no
-> `sales` code, schema, agents, or UX surfaces may be built until Tom approves
-> this declaration in writing and `factory-os-governor` adds the module's lane
-> row(s) to `AI_BRAIN_ROUTER.md` §3. Until then the router returns
-> `verdict: NEW_MODULE_REQUIRED` for sales work.
+> **Status: APPROVED (Tom, in writing, 2026-08-04)** for everything authored 2026-07-18.
+> **Amendment A (2026-08-04) below is NOT yet approved** — it adds entities the original
+> declaration does not model. The module is not buildable past the amendment's scope until
+> Tom approves Amendment A in writing and `factory-os-governor` adds the module's lane
+> row(s) to `AI_BRAIN_ROUTER.md` §3.
 >
 > **Authored:** 2026-07-18 (branch `claude/gt-sales-system-jnzf6k`).
 > **Owner of the declaration process:** `factory-os-governor`. **Approver:** Tom.
-> **Do not promote this file to authority. Do not update the router from it until approved.**
+
+---
+
+## Amendment A — customer journey + lean CRM (2026-08-04) · AWAITING TOM
+
+Driver: Tom's confirmed customer-journey decisions, `Sales-Machine/doctrine/decisions.md` D-006 → D-013,
+and `Sales-Machine/doctrine/customer-journey.md`.
+
+**A.1 — Missing entities.** §5 models `account`, `contact`, `touch_log`, `sleeping_signal`,
+`whitespace_map`, `dream100_target`. The journey requires three more in `sales_core`:
+
+| Table | PK | Mutable? | Audit | Note |
+|---|---|---|---|---|
+| `sales_core.lead` | UUID | mutable | change log | source channel + captured_at are columns, not metadata |
+| `sales_core.lead_event` | UUID | **append-only** | immutable | mirrors ledger doctrine — history is never edited |
+| `sales_core.assignment` | UUID | mutable | change log | lead → agent; rule-driven, not discretionary |
+| `sales_core.task` | UUID | mutable | change log | due-dated; SLA escalation opens a new row |
+
+**A.2 — Build decision (D-012).** The lean CRM is built in-house, as a new route group in
+`gt-factory-os-portal` with the `sales_core` schema. Separation is at the data and permission layer,
+not a separate application. Navigation splits at the top into Operations / Sales.
+Evaluation of record: `Sales-Machine/knowledge/market/crm-buildvsbuy-2026-08-04.md`.
+
+**A.3 — §10 UX surfaces is no longer deferred.** A sales route group ships in v1 and therefore inherits
+every portal locked decision: role-gating, UX release gate SHIP verdict, RUNTIME_READY for backend-bound
+data, and a Tom-approved Hebrew register entry for user-visible Hebrew strings.
+
+**A.4 — Pricing (D-008).** v1 uses public Shopify pricing. §17.1 (Shopify plan path) stays open but no
+longer blocks the journey. No customer-specific price list is modeled in v1.
+
+**A.5 — Outreach flag unchanged.** The stage-1 automated reply is customer-facing and therefore sits behind
+`SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` per §11 and D-005. Confirming the journey does **not** flip it.
+
+**A.6 — New Tom decisions required**, tracked in `Sales-Machine/CURRENT_STATE.md`:
+U-010 lead SLA hours · U-011 Erik's role and routing share · U-013 how the interactive catalog gates on
+live stock (4 of 8 sugared 0.5L concentrates read zero on 2026-08-04).
+
+---
 
 ---
 
