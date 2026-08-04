@@ -10,6 +10,13 @@ authority order in `CLAUDE.md` is unaffected.
 | [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) | MIT | `caveman`, `caveman-commit`, `caveman-compress`, `caveman-help`, `caveman-review`, `caveman-stats`, `cavecrew` |
 | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | MIT | `ponytail`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`, `ponytail-review` |
 | [obra/superpowers](https://github.com/obra/superpowers) | MIT | `brainstorming`, `dispatching-parallel-agents`, `executing-plans`, `finishing-a-development-branch`, `receiving-code-review`, `requesting-code-review`, `subagent-driven-development`, `systematic-debugging`, `test-driven-development`, `using-git-worktrees`, `using-superpowers`, `verification-before-completion`, `writing-plans`, `writing-skills` |
+| Anthropic `claude-plugins-official` | Apache-2.0 | `skill-creator` |
+
+`skill-creator` was already present in the container's global `~/.claude/skills`
+but that directory is ephemeral. Copying it here makes it survive session
+restarts — the same outcome `/plugin install skill-creator@claude-plugins-official`
+would produce, which is unavailable in the remote environment. Its
+`LICENSE.txt` travelled with it.
 
 Skills only. Upstream hooks, slash commands, subagent definitions, MCP servers,
 and installer scripts were **not** copied, and `settings.json` was not modified.
