@@ -10,7 +10,9 @@ Everything else is default and automatic:
   then     : every stop in driving order (visits.daily_order)
                - stop with a Green Invoice  -> real GI invoice, annotated, x2 copies
                - stop without an invoice     -> official LionWheel waybill, x2 copies
-  marks    : per line V / X / partial (see annotate.py); package count under "מקור";
+  marks    : X on the lines that fell short of the order, nothing on the rest
+             (Tom, 2026-08-04 — supersedes the 2026-06-21 mark-every-line design;
+             --mark-all-lines restores it); package count under "מקור";
              last-3 order-id digits top-right
   output   : one merged print-ready PDF
   side car : non-standard inventory movements (returns / exchanges / tastings /
@@ -609,7 +611,7 @@ def _is_exempt(stop, missing_exempt):
 
 def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
           missing_products=None, all_statuses=False, workorder=True,
-          missing_exempt=None, show_packages=True, shortfall_only=False):
+          missing_exempt=None, show_packages=True, shortfall_only=True):
     os.makedirs(OUT, exist_ok=True)
     import annotate
 
@@ -670,7 +672,9 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 # the driver to read past. Opt-in: the locked design is the default.
                 mark_lines = True
                 mn = missing_products
+                so = shortfall_only
                 if missing_products:
+                    so = False          # alternative modes, never both
                     # Shortage-list mode owns the marks outright: never fall back
                     # to picked_quantity, or an exempted stop would come out with
                     # every line marked instead of none.
@@ -679,11 +683,11 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                         mn = None
                 elif marks_only_short:
                     mark_lines = bool(flags.get(s["tid"], {}).get("short"))
-                if shortfall_only:
+                if so:
                     mark_lines = False
                 annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
                                   missing_names=mn, show_packages=show_packages,
-                                  shortfall_only=shortfall_only)
+                                  shortfall_only=so)
                 invoice_part[s["tid"]] = ann
                 continue
         waybill_stops.append(s)                       # no invoice → needs waybill
@@ -817,9 +821,10 @@ def main():
     ap.add_argument("--missing-exempt", default=None,
                     help="';'-separated customer-name substrings exempt from "
                          "--missing (they DO have the product on their invoice).")
-    ap.add_argument("--shortfall-only", action="store_true",
-                    help="mark X only on lines where picked < ordered (picking "
-                         "finished); leave every complete line unmarked")
+    ap.add_argument("--mark-all-lines", action="store_true",
+                    help="restore the original full marking: a mark on EVERY line "
+                         "(green check / X / partial). Default since 2026-08-04 is "
+                         "shortfall-only — X on the short lines, nothing elsewhere.")
     ap.add_argument("--no-packages", action="store_true",
                     help="omit the package-count badge (order id + marks only)")
     ap.add_argument("--all-statuses", action="store_true",
@@ -827,9 +832,8 @@ def main():
     ap.add_argument("--no-workorder", action="store_true",
                     help="omit the LionWheel work-order page; invoices only")
     ap.add_argument("--marks-only-short", action="store_true",
-                    help="stamp per-line picking marks only on orders with a "
-                         "shortfall; fully-picked orders stay clean (default: "
-                         "mark every line, per the locked design)")
+                    help="with --mark-all-lines: full per-line marking, but only "
+                         "on orders that fell short; fully-picked orders stay clean")
     a = ap.parse_args()
     date = a.date or (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
     missing = [m.strip() for m in a.missing.split(";") if m.strip()] if a.missing else None
@@ -838,7 +842,7 @@ def main():
           missing_exempt=[e.strip() for e in a.missing_exempt.split(";") if e.strip()]
                          if a.missing_exempt else None,
           all_statuses=a.all_statuses, show_packages=not a.no_packages,
-          shortfall_only=a.shortfall_only,
+          shortfall_only=not a.mark_all_lines,
           workorder=not a.no_workorder)
 
 

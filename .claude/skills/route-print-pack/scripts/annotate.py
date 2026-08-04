@@ -181,20 +181,29 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
     """Stamp marks onto a real GI invoice PDF. Lines matched by product name.
 
     Four modes, in precedence order:
-      shortfall_only=True  picking is finished: mark ONLY the lines where
-                           picked < ordered, leaving every complete line clean.
       missing_names=[...]  shortage-list mode. Ignores picked_quantity entirely
                            and marks ✗ on the named products only — for when
                            picking is still in progress, so the per-line picked
                            counts are not yet trustworthy, but the shortages are
                            already known. Everything unmarked = in full.
+      shortfall_only=True  picking is finished: mark ONLY the lines where
+                           picked < ordered, leaving every complete line clean.
+                           This is the DEFAULT (Tom, 2026-08-04).
       mark_lines=True      per-line ✓/✗/partial from ordered vs picked.
       mark_lines=False     no line marks (order picked in full).
     The order-id chip and package badge are always stamped."""
     doc = fitz.open(src_pdf)
     for pno in range(len(doc)):
         _reg(doc[pno])
-    if shortfall_only:
+    if missing_names:
+        # Explicit shortage list wins over picked_quantity: it is used precisely
+        # when picking is unfinished and those counts are not yet truth.
+        low = [m.lower() for m in missing_names]
+        for it in (task.get("order_items") or []):
+            name = it.get("name") or ""
+            if any(m in name.lower() for m in low):
+                _stamp(doc, name, "X", "X")
+    elif shortfall_only:
         # Picking is finished, so picked_quantity IS truth — but mark only the
         # lines that fell short. A ✓ on every complete line is ink the driver has
         # to read past to find the one line that needs a conversation.
@@ -206,12 +215,6 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
             if pq < q:
                 kind, label = mark_kind(q, pq)
                 _stamp(doc, it.get("name") or "", kind, label)
-    elif missing_names:
-        low = [m.lower() for m in missing_names]
-        for it in (task.get("order_items") or []):
-            name = it.get("name") or ""
-            if any(m in name.lower() for m in low):
-                _stamp(doc, name, "X", "X")
     elif mark_lines:
         for it in (task.get("order_items") or []):
             name = it.get("name") or ""
