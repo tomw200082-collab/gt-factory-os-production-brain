@@ -1,0 +1,370 @@
+<title>GT · הלוח של תום</title>
+<style>
+  /* ── מד השבוע · לוח הסמנכ״ל · GT Everyday ─────────────────────────────
+     Ground = stainless, cool. Accent = bottle glass (petrol), used sparingly.
+     Semantics live in their own family and never signal by hue alone —
+     every state also carries a shape, so accent ≠ status. ─────────────── */
+  :root{
+    --ground:#EAEEEF; --surface:#FFFFFF; --sunk:#E2E7E9;
+    --ink:#101617; --muted:#5A6B6E; --line:#D3DBDD;
+    --glass:#0E7C86; --glass-ink:#FFFFFF; --glass-wash:#DCEEF0;
+    --ok:#2E7D52; --ok-wash:#DFEFE6;
+    --warn:#A85D08; --warn-wash:#F7E7CF;
+    --crit:#B23A2E; --crit-wash:#F7DFDC;
+    --shadow:0 1px 2px rgba(16,22,23,.06),0 8px 24px -16px rgba(16,22,23,.28);
+  }
+  @media (prefers-color-scheme: dark){ :root{
+    --ground:#0D1214; --surface:#151C1F; --sunk:#0A0F11;
+    --ink:#E6ECEC; --muted:#86989B; --line:#243033;
+    --glass:#3FB3BE; --glass-ink:#06181A; --glass-wash:#0E2A2E;
+    --ok:#5CC48D; --ok-wash:#0D2B1E;
+    --warn:#E0A245; --warn-wash:#2E2110;
+    --crit:#E8776A; --crit-wash:#2E1614;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.8);
+  }}
+  :root[data-theme="light"]{
+    --ground:#EAEEEF; --surface:#FFFFFF; --sunk:#E2E7E9;
+    --ink:#101617; --muted:#5A6B6E; --line:#D3DBDD;
+    --glass:#0E7C86; --glass-ink:#FFFFFF; --glass-wash:#DCEEF0;
+    --ok:#2E7D52; --ok-wash:#DFEFE6;
+    --warn:#A85D08; --warn-wash:#F7E7CF;
+    --crit:#B23A2E; --crit-wash:#F7DFDC;
+    --shadow:0 1px 2px rgba(16,22,23,.06),0 8px 24px -16px rgba(16,22,23,.28);
+  }
+  :root[data-theme="dark"]{
+    --ground:#0D1214; --surface:#151C1F; --sunk:#0A0F11;
+    --ink:#E6ECEC; --muted:#86989B; --line:#243033;
+    --glass:#3FB3BE; --glass-ink:#06181A; --glass-wash:#0E2A2E;
+    --ok:#5CC48D; --ok-wash:#0D2B1E;
+    --warn:#E0A245; --warn-wash:#2E2110;
+    --crit:#E8776A; --crit-wash:#2E1614;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  html{background:var(--ground)}
+  body{
+    margin:0;background:var(--ground);color:var(--ink);line-height:1.6;
+    font-family:"Heebo","Noto Sans Hebrew","Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:22px 16px 104px;display:flex;flex-direction:column;gap:12px}
+
+  /* ── registers ── */
+  .kicker{font-size:.68rem;letter-spacing:.18em;font-weight:700;color:var(--glass)}
+  h1{font-size:2.05rem;font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:.15rem 0 .35rem;text-wrap:balance}
+  .lede{color:var(--muted);font-size:.88rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:0}
+  .data{font-variant-numeric:tabular-nums;font-weight:700}
+  h2{
+    font-size:.7rem;letter-spacing:.13em;font-weight:700;color:var(--muted);
+    margin:0 0 .7rem;display:flex;align-items:baseline;gap:.45rem;
+  }
+  h2 b{color:var(--ink);letter-spacing:.02em;font-size:.95rem}
+
+  /* ── panels ── */
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 16px;box-shadow:var(--shadow)}
+  .panel.lead{border-inline-start:3px solid var(--glass)}
+
+  /* ── SIGNATURE · מד השבוע ──────────────────────────────────────────
+     Five segments, one per working day. Elapsed fills petrol; today is
+     the taller notched one. Answers "where am I" before any reading. ── */
+  .gauge{display:flex;gap:5px;align-items:flex-end;margin:.9rem 0 .2rem;height:34px}
+  .seg{
+    flex:1;position:relative;background:var(--sunk);border-radius:4px;height:20px;
+    display:flex;align-items:flex-end;justify-content:center;overflow:hidden;
+    transition:height .18s ease;
+  }
+  .seg .fill{
+    position:absolute;inset-inline:0;bottom:0;height:0;background:var(--glass);
+    transition:height .5s cubic-bezier(.4,0,.2,1);
+  }
+  .seg.done .fill{height:100%}
+  .seg.now{height:34px;box-shadow:inset 0 0 0 2px var(--glass)}
+  .seg.now .fill{height:46%}
+  .seg .lbl{
+    position:relative;font-size:.62rem;font-weight:700;color:var(--muted);
+    padding-bottom:2px;letter-spacing:.04em;
+  }
+  .seg.done .lbl{color:var(--glass-ink);mix-blend-mode:normal}
+  .seg.now .lbl{color:var(--glass)}
+  .gauge-cap{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin:0}
+  @media (prefers-reduced-motion: reduce){ .seg,.seg .fill{transition:none} }
+
+  /* ── rocks ── */
+  .rock{display:flex;gap:.6rem;align-items:center;margin-top:.6rem}
+  .rock-num{
+    flex:none;width:1.85rem;height:1.85rem;border-radius:7px;background:var(--glass);
+    color:var(--glass-ink);font-weight:800;font-size:.95rem;
+    display:flex;align-items:center;justify-content:center
+  }
+  .rock-input{
+    flex:1;min-height:1.7rem;background:var(--sunk);border:1px solid transparent;border-radius:7px;
+    padding:.42rem .6rem;font-size:.95rem
+  }
+  .rock-input:focus{outline:2px solid var(--glass);outline-offset:1px;background:var(--surface)}
+  .rock-input:empty::before{content:attr(data-ph);color:var(--muted)}
+  /* status carries a glyph, not just a hue */
+  .st{
+    flex:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);
+    border-radius:999px;font:inherit;font-size:.72rem;font-weight:700;
+    padding:.16rem .6rem;cursor:pointer;white-space:nowrap
+  }
+  .st[data-v="1"]{background:var(--warn-wash);color:var(--warn);border-color:transparent}
+  .st[data-v="2"]{background:var(--ok-wash);color:var(--ok);border-color:transparent}
+
+  /* ── rows · status by shape + hue ── */
+  .row{
+    display:flex;gap:.6rem;align-items:baseline;justify-content:space-between;
+    padding:.42rem 0;border-top:1px solid var(--line);font-size:.9rem
+  }
+  .row:first-of-type{border-top:0}
+  .row .val{font-variant-numeric:tabular-nums;font-weight:700;text-align:start}
+  .mark{
+    display:inline-block;width:.62rem;height:.62rem;margin-inline-end:.45rem;
+    vertical-align:baseline;background:var(--muted)
+  }
+  .g .mark{background:var(--ok);border-radius:50%}                       /* circle = good */
+  .a .mark{background:var(--warn);border-radius:1px;transform:rotate(45deg)} /* diamond = watch */
+  .r .mark{background:var(--crit);border-radius:1px}                     /* square = critical */
+  .m .mark{background:var(--muted);border-radius:50%;opacity:.45}        /* faint = pending */
+
+  .note{color:var(--muted);font-size:.79rem;margin:.6rem 0 0}
+
+  /* ── projects ── */
+  .proj{display:flex;gap:.55rem;align-items:baseline;padding:.42rem 0;border-top:1px solid var(--line);font-size:.88rem}
+  .proj:first-of-type{border-top:0}
+  .chip{flex:none;font-size:.68rem;font-weight:700;border-radius:4px;padding:.1rem .45rem;letter-spacing:.02em}
+  .chip.g{background:var(--ok-wash);color:var(--ok)}
+  .chip.a{background:var(--warn-wash);color:var(--warn)}
+  .chip.q{background:var(--sunk);color:var(--muted)}
+  .proj .nm{font-weight:700}
+  .proj .ds{color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* ── tasks ── */
+  .task{display:flex;gap:.55rem;align-items:flex-start;padding:.44rem 0;border-top:1px solid var(--line);font-size:.9rem}
+  .task:first-of-type{border-top:0}
+  .task input{margin-top:.28rem;accent-color:var(--glass);width:1.05rem;height:1.05rem;flex:none}
+  .task label{flex:1}
+  .task .src{color:var(--muted);font-size:.76rem;display:block}
+
+  .pad{
+    width:100%;min-height:7rem;background:var(--sunk);border:1px solid transparent;border-radius:8px;
+    padding:.65rem;font:inherit;font-size:.94rem;color:var(--ink);box-sizing:border-box;resize:vertical
+  }
+  .pad:focus{outline:2px solid var(--glass);outline-offset:1px;background:var(--surface)}
+
+  /* ── action bar ── */
+  .bar{
+    position:fixed;bottom:0;inset-inline:0;background:var(--surface);
+    border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))
+  }
+  .bar-in{max-width:680px;margin:0 auto;display:flex;gap:.7rem;align-items:center}
+  .copy{
+    flex:none;background:var(--glass);color:var(--glass-ink);border:0;border-radius:8px;
+    font:inherit;font-weight:800;font-size:.92rem;padding:.6rem 1.1rem;cursor:pointer
+  }
+  .copy:focus-visible,.st:focus-visible,.task input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .bar .note{flex:1;margin:0}
+  .toast{position:fixed;bottom:84px;inset-inline:0;display:flex;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s}
+  .toast.on{opacity:1}
+  .toast span{background:var(--ink);color:var(--ground);border-radius:999px;padding:.4rem 1rem;font-size:.83rem;font-weight:700}
+  @media (prefers-reduced-motion: reduce){ .toast{transition:none} }
+</style>
+
+<div class="wrap" dir="rtl" id="board" data-week="2026-08-02" data-week-label="ראשון 2.8 → חמישי 6.8">
+
+  <header>
+    <div class="kicker">GT EVERYDAY · ראש המטה</div>
+    <h1>הלוח של תום</h1>
+    <p class="lede">
+      <span>שבוע <b class="data">2.8 → 6.8</b></span>
+      <span data-live="verdict">אבנים טרם ננעלו</span>
+      <span data-live="stamp">עודכן מוצ״ש 1.8</span>
+    </p>
+  </header>
+
+  <section class="panel lead" aria-label="שלוש האבנים">
+    <h2>🪨 <b>שלוש האבנים</b> · הדברים שחייבים לקרות השבוע</h2>
+
+    <div class="gauge" id="gauge" role="img" aria-label="התקדמות השבוע">
+      <div class="seg" data-d="0"><span class="fill"></span><span class="lbl">א׳</span></div>
+      <div class="seg" data-d="1"><span class="fill"></span><span class="lbl">ב׳</span></div>
+      <div class="seg" data-d="2"><span class="fill"></span><span class="lbl">ג׳</span></div>
+      <div class="seg" data-d="3"><span class="fill"></span><span class="lbl">ד׳</span></div>
+      <div class="seg" data-d="4"><span class="fill"></span><span class="lbl">ה׳</span></div>
+    </div>
+    <p class="gauge-cap"><span id="gaugeNow">השבוע מתחיל בראשון</span><span id="gaugeLeft">5 ימי עבודה</span></p>
+
+    <div class="rock"><div class="rock-num">1</div><div class="rock-input" contenteditable="true" id="rock1" data-ph="האבן הראשונה — הדבר שחייב לקרות השבוע"></div><button class="st" data-for="rock1" data-v="0">פתוח</button></div>
+    <div class="rock"><div class="rock-num">2</div><div class="rock-input" contenteditable="true" id="rock2" data-ph="האבן השנייה"></div><button class="st" data-for="rock2" data-v="0">פתוח</button></div>
+    <div class="rock"><div class="rock-num">3</div><div class="rock-input" contenteditable="true" id="rock3" data-ph="האבן השלישית"></div><button class="st" data-for="rock3" data-v="0">פתוח</button></div>
+    <p class="note" data-live="retro">רטרו שבוע קודם: אין — זו הפתיחה הראשונה.</p>
+  </section>
+
+  <section class="panel" aria-label="היום">
+    <h2>⏱ <b>היום</b> · אבן היום · בלוקים · חריגים</h2>
+    <div data-live="today">
+      <div class="row m"><span><span class="mark"></span>אבן היום</span><span class="val">ימולא ב-07:30</span></div>
+      <div class="row m"><span><span class="mark"></span>בלוקים ביומן</span><span class="val">נכתבים רק באישורך ב-17:00</span></div>
+      <div class="row m"><span><span class="mark"></span>ממתין ל…</span><span class="val">ימולא</span></div>
+    </div>
+    <p class="note">רק מה שצריך החלטה. הפירוט למטה.</p>
+  </section>
+
+  <section class="panel" aria-label="מפעל">
+    <h2><b>מפעל</b> · דופק תפעולי</h2>
+    <div data-live="factory">
+      <div class="row g"><span><span class="mark"></span>אמת מלאי</span><span class="val">rebuild = 0 · 83/83 לילות</span></div>
+      <div class="row g"><span><span class="mark"></span>סנכרון Shopify</span><span class="val">53/53 · כל 5 דק׳</span></div>
+      <div class="row a"><span><span class="mark"></span>חריגים פתוחים</span><span class="val">1 · oversell FG-MAT-30G</span></div>
+      <div class="row m"><span><span class="mark"></span>ייצור וכיסוי RM/PKG</span><span class="val">ימולא בריצת מוצ״ש</span></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="מכירות וכסף">
+    <h2><b>מכירות וכסף</b> · השבוע שהסתיים</h2>
+    <div data-live="sales">
+      <div class="row m"><span><span class="mark"></span>מכירות ₪ · הזמנות · לקוחות בולטים</span><span class="val">ימולא בריצת מוצ״ש</span></div>
+      <div class="row m"><span><span class="mark"></span>Backlog ללא תאריך</span><span class="val">ימולא</span></div>
+    </div>
+    <div data-live="money">
+      <div class="row m"><span><span class="mark"></span>חשבוניות ספקים · Green Invoice</span><span class="val">יחובר</span></div>
+    </div>
+    <p class="note">Green Invoice נבדק חי לפני הקריאה הראשונה — בלי ניחושים.</p>
+  </section>
+
+  <section class="panel" aria-label="יומן">
+    <h2><b>יומן</b> · השבוע הקרוב</h2>
+    <div data-live="calendar">
+      <div class="row m"><span><span class="mark"></span>פגישות ואירועים</span><span class="val">ימולא בריצת מוצ״ש</span></div>
+      <div class="row m"><span><span class="mark"></span>רביעי</span><span class="val">ישיבת תכנון ייצור 14 יום</span></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="פרוייקטים">
+    <h2><b>פרוייקטים</b> · המאסטר: נושן · נקרא חי 1.8</h2>
+    <div data-live="projects">
+      <div class="row a"><span><span class="mark"></span>ריכוז עומס</span><span class="val">תום על 81 מ-83 · 98%</span></div>
+      <div class="row g"><span><span class="mark"></span>באיחור · תקועים</span><span class="val">0 · 0</span></div>
+      <div class="proj"><span class="chip a">בתהליך</span><span class="nm">מנהלה — שבוע אלכס</span><span class="ds">6 פתוחות · עד 12.8</span></div>
+      <div class="proj"><span class="chip a">בתהליך</span><span class="nm">IN — סדר בשטח</span><span class="ds">28 פתוחות · עד 30.8</span></div>
+      <div class="proj"><span class="chip q">לא התחיל</span><span class="nm">IN — רכש מסודר</span><span class="ds">11 פתוחות · עד 31.8</span></div>
+      <div class="proj"><span class="chip q">לא התחיל</span><span class="nm">IN — אפס זיכויים</span><span class="ds">9 פתוחות · עד 13.9</span></div>
+      <div class="proj"><span class="chip a">בתהליך</span><span class="nm">OUT — שיווק ומסע לקוח</span><span class="ds">15 פתוחות · עד 23.9</span></div>
+      <div class="proj"><span class="chip q">לא התחיל</span><span class="nm">OUT — אתר והזמנות</span><span class="ds">6 פתוחות · עד 11.10</span></div>
+      <div class="proj"><span class="chip q">לא התחיל</span><span class="nm">OUT — החזרת לקוחות</span><span class="ds">7 פתוחות · עד 11.10</span></div>
+      <div class="proj"><span class="chip g">חי</span><span class="nm">פלטפורמה</span><span class="ds">Factory OS ~85–90% · פורטל 92/100</span></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="ממתין לך">
+    <h2><b>ממתין לך</b> · סמן מה שטופל — נכנס לסיכום</h2>
+    <div class="task"><input type="checkbox" id="t-maxim"><label for="t-maxim">מקסים — משתמש פורטל (מייל)<span class="src">tranche 137 · דניס provisioned</span></label></div>
+    <div class="task"><input type="checkbox" id="t-alex"><label for="t-alex">שיחת אלכס — החבילה מוכנה<span class="src">factory-mapping · שערים שבועות 5–6</span></label></div>
+    <div class="task"><input type="checkbox" id="t-telegram"><label for="t-telegram">Telegram bot token + chat_id להתראות</label></div>
+    <div class="task"><input type="checkbox" id="t-uuid"><label for="t-uuid">app_users uuid לייבוא ספירות</label></div>
+    <div class="task"><input type="checkbox" id="t-jobtoken"><label for="t-jobtoken">JOB_RUNNER_TOKEN + קונטיינר audit<span class="src">P2 דיווח — audit_runs ריק</span></label></div>
+    <div class="task"><input type="checkbox" id="t-railway"><label for="t-railway">אימות literal של דגל LionWheel ב-Railway</label></div>
+  </section>
+
+  <section class="panel" aria-label="מהלילה">
+    <h2>🌙 <b>מהלילה</b> · מה קלוד הריץ · לא ממוזג בלי אישורך</h2>
+    <div data-live="night">
+      <div class="row m"><span><span class="mark"></span>תור אחרון</span><span class="val">טרם רץ — נורה רק אחרי אישור ב-17:00</span></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="פנקס">
+    <h2><b>פנקס</b> · ריקון ראש — נשמר במכשיר שלך</h2>
+    <textarea class="pad" id="pad" placeholder="כל דבר — משימות חדשות, מחשבות, החלטות. הכל נכנס לסיכום המועתק."></textarea>
+  </section>
+
+  <div class="bar"><div class="bar-in">
+    <button class="copy" id="copyBtn">העתק סיכום לקלוד</button>
+    <p class="note">הדבק אצלי בסשן — ואני מעדכן נושן, כרטיס שבוע וגרדיאן.</p>
+  </div></div>
+  <div class="toast" id="toast" role="status"><span>הועתק — הדבק אצלי בסשן</span></div>
+</div>
+
+<script>
+(function(){
+  var board = document.getElementById('board');
+  var wk = board.dataset.week;
+  var K = function(id){ return 'gtceo:' + (id.indexOf('rock')===0 ? wk+':' : '') + id; };
+  var stLabels = ['פתוח','בתהליך','בוצע ✓'];
+
+  /* ── מד השבוע: elapsed working days since the card's Sunday ── */
+  (function(){
+    var parts = wk.split('-');
+    var start = new Date(+parts[0], +parts[1]-1, +parts[2]);
+    var today = new Date(); today.setHours(0,0,0,0);
+    var day = Math.floor((today - start) / 86400000);
+    var segs = document.querySelectorAll('.seg');
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    segs.forEach(function(s, i){
+      var apply = function(){
+        if(i < day) s.classList.add('done');
+        else if(i === day) s.classList.add('now');
+      };
+      reduce ? apply() : setTimeout(apply, 60 * i);
+    });
+    var nowEl = document.getElementById('gaugeNow');
+    var leftEl = document.getElementById('gaugeLeft');
+    if(day < 0){ nowEl.textContent = 'השבוע מתחיל בראשון'; leftEl.textContent = '5 ימי עבודה'; }
+    else if(day > 4){ nowEl.textContent = 'השבוע נסגר'; leftEl.textContent = 'מוצ״ש — זמן רטרו'; }
+    else {
+      nowEl.textContent = 'היום ' + ['ראשון','שני','שלישי','רביעי','חמישי'][day];
+      var left = 4 - day;
+      leftEl.textContent = left === 0 ? 'היום האחרון' : 'עוד ' + left + ' ימי עבודה';
+    }
+  })();
+
+  document.querySelectorAll('.rock-input').forEach(function(el){
+    var v = localStorage.getItem(K(el.id)); if(v) el.textContent = v;
+    el.addEventListener('input', function(){ localStorage.setItem(K(el.id), el.textContent.trim()); });
+  });
+  document.querySelectorAll('.st').forEach(function(btn){
+    var key = K(btn.dataset.for) + ':st';
+    var v = parseInt(localStorage.getItem(key) || '0', 10);
+    var render = function(){ btn.dataset.v = v; btn.textContent = stLabels[v]; };
+    render();
+    btn.addEventListener('click', function(){ v = (v+1)%3; localStorage.setItem(key, v); render(); });
+  });
+  document.querySelectorAll('.task input').forEach(function(cb){
+    cb.checked = localStorage.getItem(K(cb.id)) === '1';
+    cb.addEventListener('change', function(){ localStorage.setItem(K(cb.id), cb.checked ? '1' : '0'); });
+  });
+  var pad = document.getElementById('pad');
+  pad.value = localStorage.getItem(K('pad')) || '';
+  pad.addEventListener('input', function(){ localStorage.setItem(K('pad'), pad.value); });
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    var L = [];
+    L.push('=== GT פתיחת שבוע — סיכום דשבורד ===');
+    L.push('שבוע: ' + board.dataset.weekLabel + ' (' + wk + ')');
+    L.push('');
+    L.push('🪨 אבנים:');
+    ['rock1','rock2','rock3'].forEach(function(id, i){
+      var t = (document.getElementById(id).textContent || '').trim() || '—';
+      var s = stLabels[parseInt(localStorage.getItem(K(id)+':st') || '0', 10)];
+      L.push((i+1) + ') ' + t + ' [' + s + ']');
+    });
+    L.push('');
+    var done = [], open = [];
+    document.querySelectorAll('.task').forEach(function(t){
+      var cb = t.querySelector('input');
+      var name = t.querySelector('label').childNodes[0].textContent.trim();
+      (cb.checked ? done : open).push(name);
+    });
+    if(done.length){ L.push('✅ טופל: ' + done.join(' · ')); }
+    L.push('⬜ פתוח: ' + (open.join(' · ') || '—'));
+    L.push('');
+    L.push('📝 פנקס:');
+    L.push(pad.value.trim() || '—');
+    var txt = L.join('\n');
+    var show = function(){ var t = document.getElementById('toast'); t.classList.add('on'); setTimeout(function(){ t.classList.remove('on'); }, 2200); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(show, function(){ fallback(txt); show(); }); }
+    else { fallback(txt); show(); }
+    function fallback(s){ var ta = document.createElement('textarea'); ta.value = s; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); }
+  });
+})();
+</script>

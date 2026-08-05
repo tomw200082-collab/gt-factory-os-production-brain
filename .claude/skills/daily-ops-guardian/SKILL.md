@@ -118,6 +118,8 @@ Apply this table to every `{{G1_COLOR}}/{{G1_WASH}}`, `{{G2_COLOR}}/{{G2_WASH}}`
 - `{{G3_FILL_PCT}}` = round(100 × yesterday actual_output / planned_qty), or 100 if yesterday had no firmed plan. Color = 🔴 if V7 fired (firmed plan, no report), else 🟡 if the gap exceeds tolerance, else 🟢.
 - Hero verdict = worst severity across the G1/G2/G3 that ran.
 
+**Week-card rocks row (Tom-approved 2026-08-01 grill):** if `docs/ceo/weeks/<current-week-sunday YYYY-MM-DD>.md` exists with locked rocks, render a fixed "🪨 אבני השבוע" block directly under the hero verdict — one line per rock (text + status if the card states one). Card missing or rocks unlocked → omit the block silently. Guardian **reads** the card; `weekly-opening` is its sole writer (its V2).
+
 **On send:** strip the leading author/design `<!-- ... -->` comment (fill from `<!DOCTYPE html>` onward) — it is for skill authors, not Tom's inbox.
 
 Delivery: **real send**, no tap required (Tom-verified 2026-07-04). `Bash: curl -sS -X POST "https://hook.eu1.make.com/8yie1tl89bxsq8qqp6o47qydfr8cguji" -H "Content-Type: application/json" -d '{"subject":"GT Factory OS · בדיקת בוקר · <date>","html":"<filled template>"}'` — this triggers Make scenario `GT Guardian — Daily Email` (id 6439326, active), which calls Gmail `sendAnEmail` (app `google-email` v4, connection `new leads` id 6308857, scope `gmail.send`) and delivers straight to tom@gteveryday.com. Confirm HTTP 200 from curl; if non-200 or curl error, do not skip — say so explicitly in the summary and fall back to `mcp__Gmail__create_draft` (Gmail MCP, draft-only, one-tap) so Tom still gets something.
@@ -141,7 +143,9 @@ The Sunday-chaos killer. Draft-writes only per C1:
 2. **Sunday production draft:** committed-first + forecast for Sunday/Monday → `production_plan` drafts (`GUARD:` prefix, ⊥ touch `TEAEDD:%`), sized against current FG balances.
 3. **RM/PKG check for that draft:** explode vs `current_balances` — anything short for Sunday morning is a 🔴 headline (Tom sees it Saturday night, not Sunday 7:00).
 4. **Route preview:** Sunday = מרכז; list the weekend orders already dispatchable (wave-1 pick list for Maxim 7:30).
-5. Email (same template/palette) + short chat, so the plan is waiting at 6:00: "טיוטת ראשון מוכנה — דניס יכול להתחיל".
+5. Compose the prep content (same template/palette) so the plan is waiting at 6:00: "טיוטת ראשון מוכנה — דניס יכול להתחיל". **⊥ send it yet** — see step 6.
+6. **Chain → weekly-opening, ONE unified email (Tom-approved 2026-08-01 grill; unified locked 2026-08-01 R2):** run the `weekly-opening` skill in this same session, handing it this run's live numbers (⊥ re-derive). It appends the horizontal layer — rocks retro, 3 proposed rocks, dashboard button, exceptions — and **sends a single email**, subject `GT · מוצ״ש · <date>`, factory-for-tomorrow section included. **⊥ two emails on מוצ״ש.** Its writes are `docs/ceo/**` + Notion + calendar-on-approval; prep constraints C1 unchanged.
+   Prep failure ⊥ cancels the chain — weekly-opening still runs, still sends, and reports the gap loudly (its C5). weekly-opening unreachable ⇒ fall back to sending the prep email alone and say so.
 
 ## Weekly — Thursday handoff
 
@@ -179,6 +183,8 @@ Scheduled trigger, fresh session per fire, cron `30 3 * * *` UTC (= 06:30 IDT; w
 
 ## Handoffs
 
+- weekly-opening — horizontal chief-of-staff layer (מוצ״ש): sunday-prep step 6 chains into it and they share **one** email; the daily email renders the rocks row from `docs/ceo/weeks/`. Guardian never writes that dir.
+- chief-of-staff-daily — Tom's daily layer (day-open 07:30 / day-close 17:00, Sun–Thu). **It rides this run's outputs and ⊥ re-runs the guardian's SQL** — so the 06:30 loop must leave its numbers readable in-session. Guardian didn't run or failed ⇒ day-open says so in its first line rather than simulating green.
 - plan-production-14d — Thursday ritual; guardian never re-plans the 14d horizon itself, only proposes deltas.
 - procurement-planning — quantity interview logic for purchase-session drafts.
 - factory-os-governor — any stop condition (CLAUDE.md) → HALT + route.
