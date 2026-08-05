@@ -551,6 +551,20 @@ git push
 
 ### Task 8: Live dry-run (Phase 4)
 
+> **COMPLETE 2026-08-05 — 16/16.** Evidence table, B₀/L₀ baseline, and the six trial-row URLs
+> live in `docs/ceo/messi/2026-08-05.md` §ראיות. Two findings the run produced:
+> **(a) B₀ drifted mid-run** — 3 of the 9 baseline rows left the set between 17:05 and 17:17
+> (one completed, two archived) by someone working the board on meeting day. Every assertion was
+> evaluated as **set membership**, never as an absolute count, which is exactly what Step 0 was
+> designed for. **(b) `dup-check` matches inside words** — `%לוג%` hit **קטלוג**. The rule holds
+> but the suspicion is noisy; a ≥4-char or word-boundary keyword rule would sharpen it.
+> Both negative controls came out sharper than required: dropping `LIKE '%תום%'` from
+> `open-loops` returns T4 **and only** T4; dropping `NOT LIKE '[ארוך]%'` returns T5 **and only**
+> T5 — neither predicate is masked by the other.
+> **Trial rows were closed, ⊥ archived** — the connector has no archive/trash tool for pages.
+> Closed rows surface in no recipe; the six URLs are listed for Tom in the log and in
+> `notion_contract.md` §פריט בדיקה פתוח.
+
 **GATE: Notion authorized (Task 3 done).** Not done ⇒ BLOCKED, same message as Task 3.
 
 **Files:**
@@ -571,7 +585,7 @@ Notion takes no due dates then.
 | T4 | `בדיקת מסי — של מקסים` | **מקסים** | **R1 negative control, both recipes** — due today, never closed, **and `תאריך התחלה` set ≥3h ago**. Non-Tom **and started** ⇒ it is a candidate row for `due-today` **and** for `open-loops`; the owner predicate is the only thing keeping it out of either. Leave it unstarted and dropping `LIKE '%תום%'` from `open-loops` would pass this task clean. |
 | T5 | `[ארוך] בדיקת מסי — ארוכת טווח` | תום | **R3 negative control** — prefix exempts it |
 
-- [ ] **Step 0: Baseline the live slip set — before creating any trial row**
+- [x] **Step 0: Baseline the live slip set — before creating any trial row**
 
 Every count assertion below is a **delta**, never an absolute. Tom's real backlog legitimately
 contains due-today-not-started and stale-in-the-air rows; an executor cannot tell those apart
@@ -585,10 +599,10 @@ in the task output:
 - **B₀** = the resulting slip set — the **names**, not just the count. `|B₀|` may be 0 or 20; both fine.
 - **L₀** = `RECIPE:open-loops` row count.
 
-- [ ] **Step 1: Throw** — in-session, as Tom would: `מסי, משימת ניסיון: ספור כמה משימות פתוחות יש בנושן ותכתוב את המספר ללוג`. Follow SKILL.md exactly: `RECIPE:dup-check` → create T1 (due today, `בעל תפקיד` = תום) → 4-line ack.
+- [x] **Step 1: Throw** — in-session, as Tom would: `מסי, משימת ניסיון: ספור כמה משימות פתוחות יש בנושן ותכתוב את המספר ללוג`. Follow SKILL.md exactly: `RECIPE:dup-check` → create T1 (due today, `בעל תפקיד` = תום) → 4-line ack.
 Expected: Notion row exists (print its URL), `בעל תפקיד` reads תום, ack matches the contract shape.
 
-- [ ] **Step 2: Go ⇒ dispatch, and prove the stamp lands at dispatch (R4) with an hour (R2)**
+- [x] **Step 2: Go ⇒ dispatch, and prove the stamp lands at dispatch (R4) with an hour (R2)**
 
 Throw T2 as well, then give one go covering both. Per `messi/SKILL.md` §ביצוע the go writes
 queue rows + specs; only the row that actually launches becomes `[~]`.
@@ -603,10 +617,10 @@ queue rows + specs; only the row that actually launches becomes `[~]`.
 T1's agent is read-only: run `RECIPE:open-loops`, count open tasks, append the count to the log.
 Expected: log has תור + ספקים sections in `dispatch.md` shape; the agent returns a real number.
 
-- [ ] **Step 3: Close T1, watch T2 dispatch itself** — stamp `תאריך השלמה`, mark `[x]`, ✓ with the artifact link. One-at-a-time then launches T2, which stamps **its own** `תאריך התחלה` at that moment.
+- [x] **Step 3: Close T1, watch T2 dispatch itself** — stamp `תאריך השלמה`, mark `[x]`, ✓ with the artifact link. One-at-a-time then launches T2, which stamps **its own** `תאריך התחלה` at that moment.
 Expected: T1 shows both dates; T2's stamp time is later than T1's go time — the second proof that the stamp follows dispatch, not approval. Close T2 the same way.
 
-- [ ] **Step 4: Checkpoint rehearsal — clean, slipping, and both negative controls**
+- [x] **Step 4: Checkpoint rehearsal — clean, slipping, and both negative controls**
 
 1. **Baseline arm ("clean"):** run `mode=checkpoint` with **no trial row slipping**.
    Exactly **one new** `CHECKPOINT` line, and its slip set **= B₀ exactly**:
@@ -642,7 +656,7 @@ Expected: T1 shows both dates; T2's stamp time is later than T1's go time — th
    T5 carries **no** `תאריך יעד` of today: `[ארוך]` is exempt from the closure **sweep**,
    ⊥ from an explicit due date, so a T5 due today would legitimately surface in `due-today`.
 
-- [ ] **Step 5: Gate rehearsal — three decisions, the exemption, and the backstop**
+- [x] **Step 5: Gate rehearsal — three decisions, the exemption, and the backstop**
 
 Run the day-close שער הסגירה stage manually on today.
 
@@ -660,7 +674,7 @@ Run the day-close שער הסגירה stage manually on today.
 5. **Thursday check** (only when the rehearsal falls on a Thursday, else record N/A): the
    carried loop's משבצת lands on **Sunday**, ⊥ Friday.
 
-- [ ] **Step 6: Evidence + commit**
+- [x] **Step 6: Evidence + commit**
 
 Record in the task output as **N/16**. **B₀ and L₀ are quoted verbatim first** — every count
 below is read against them, never as an absolute.
