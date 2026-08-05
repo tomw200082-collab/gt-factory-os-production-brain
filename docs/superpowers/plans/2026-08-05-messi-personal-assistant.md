@@ -159,57 +159,101 @@ git push
 
 **Interfaces:**
 - Consumes: task DB `collection://c6604298-2afb-8258-8026-87e9538244c3`, projects DB `collection://cb704298-2afb-8226-9b23-876996b62c5d` (IDs already in the contract).
-- Produces: property `תאריך התחלה` (date, task DB) + recipe names `RECIPE:open-loops`, `RECIPE:due-today`, `RECIPE:opened-today`, `RECIPE:dup-check` — Tasks 4, 6, 8 call these by name.
+- Produces: property `תאריך התחלה` (**datetime** — Tom's ruling 2026-08-05, task DB) + recipe names `RECIPE:open-loops`, `RECIPE:due-today`, `RECIPE:opened-today`, `RECIPE:dup-check` — Tasks 4, 6, 8 call these by name.
+
+**Tom's rulings 2026-08-05 that this task encodes** (decided — do not reopen):
+- **R1 — the closure engine is scoped to `בעל תפקיד` = תום ONLY.** Other people's tasks travel the existing waiting-on path (`notion_contract.md` §חישובים + the waiting-on recipe), never the slip list. Without the predicate every non-Tom open task (~66 across the team) is permanently "slipping".
+- **R2 — `תאריך התחלה` is a DATETIME** (`is_datetime: 1`), not a date. Three rules need hour resolution: the ack prints `מ-<שעה>`, `⚠ פתוחות: X מ-09:40`, and the checkpoint slips on `באוויר ≥3 שעות בלי תזוזה`.
+- **R3 — the long-term marker is a `[ארוך]` prefix in the task title.** No new Notion property (§10 keeps `תאריך התחלה` the only schema change). Excluded inside the recipe SQL, so an unmarked task is never exempt.
 
 - [ ] **Step 1: Prove live read on both DBs**
 
 Query via the Notion MCP (querySql over each collection URL): `SELECT "שם" FROM "<collection>" LIMIT 3` for tasks and projects. Print the 3 real rows from each into the task output (evidence).
 Expected: 6 real row names total. Failure ⇒ `assumption_failure`, HALT.
 
-- [ ] **Step 2: Add the property**
+- [ ] **Step 2: Add the property — as a DATETIME (R2)**
 
-Attempt via the Notion API (database update adding `תאריך התחלה` type date). If the connector exposes no schema-update capability ⇒ ask Tom to add it manually in Notion (property name exactly `תאריך התחלה`, type Date, on מסד המשימות) and wait for his "done".
+Attempt via the Notion API (database update adding `תאריך התחלה`, type Date **with "Include time" ON**). If the connector exposes no schema-update capability ⇒ ask Tom to add it manually in Notion (property name exactly `תאריך התחלה`, type Date, **Include time = ON**, on מסד המשימות) and wait for his "done".
+Time-only-off is a silent failure: the ack would print `מ-<שעה>` with no hour and the ≥3h slip rule would have nothing to compare. Verify in Step 3 before writing the contract.
 
 - [ ] **Step 3: Write-and-revert probe (the contract's own protocol)**
 
 1. Create task `בדיקת מסי — למחיקה` with `תאריך יעד` = next Sunday.
-2. Set `תאריך התחלה` = today. Re-read; verify the value round-trips.
+2. Set `תאריך התחלה` = **now, with an hour** (`{"date:תאריך התחלה:start":"<YYYY-MM-DDTHH:MM:00+03:00>", "date:תאריך התחלה:is_datetime":1}`). Re-read; verify **the hour survives** the round-trip, not just the date. Hour lost ⇒ the property is date-only ⇒ `assumption_failure`, HALT, back to Step 2.
 3. Set `תאריך השלמה` = today. Re-read; verify.
-4. Archive the trial task (archive, ⊥ delete).
-Expected: every write read back identical. Evidence: the re-read values printed.
+4. Confirm `last_edited_time` is selectable in querySql on this DB (`SELECT "שם", last_edited_time FROM "<tasks>" LIMIT 1`) — `RECIPE:open-loops` depends on it for "בלי תזוזה". Not selectable ⇒ record the working substitute and fix the recipe before committing.
+5. Archive the trial task (archive, ⊥ delete).
+Expected: every write read back identical, hour included. Evidence: the re-read values printed.
 
 - [ ] **Step 4: Update `docs/ceo/reference/notion_contract.md`**
 
 In the tasks-schema table add the row:
 ```markdown
-| `תאריך התחלה` | date | `date:תאריך התחלה:start` — נחתם רק ע"י גו של טום למסי או "אני על זה". ריק+יש השלמה = בוצע בלי מעקב, תקין |
+| `תאריך התחלה` | date **(datetime)** | `date:תאריך התחלה:start` + `date:תאריך התחלה:is_datetime` = **1** — שעה חובה (טום 2026-08-05). נחתם רק ע"י מסי ברגע **השיגור בפועל** או "אני על זה" של טום. ריק+יש השלמה = בוצע בלי מעקב, תקין |
 ```
+And in §מתכוני כתיבה add the stamp recipe (so messi never guesses the shape) — heading
+`**חתימת התחלה** — notion-update-page · command: update_properties`, a `json` block holding
+`{ "date:תאריך התחלה:start": "YYYY-MM-DDTHH:MM:00+03:00", "date:תאריך התחלה:is_datetime": 1 }`,
+and one closing line: *שעה חובה — `is_datetime: 0` כאן = באג. השעה מזינה את `מ-<שעה>` באק;
+"בלי תזוזה" נמדד ב-`last_edited_time`, ⊥ בשדה הזה.* Use the exact value the Step-3 probe
+round-tripped, offset included.
+
 Append a new section at the end:
 ```markdown
 ## מתכוני מסי — שאילתות חתומות (אומתו חי 2026-08-05)
 
+> **תחולה: `בעל תפקיד` = תום בלבד** (טום 2026-08-05, R1). של אחרים ⇒ מסלול
+> ה-waiting-on, ⊥ מנוע הסגירה. `dup-check` היא היחידה ללא הסינון — כפילות
+> נבדקת מול **כל** הפתוחות, גם של אחרים.
+> **`[ארוך]`** בתחילת השם = ארוך-טווח (R3) ⇒ מוחרג מ-open-loops ו-opened-today.
+
 ### RECIPE:open-loops — באוויר עכשיו
-SELECT "שם", "date:תאריך התחלה:start" AS started, "בעל תפקיד", url
+SELECT "שם", "date:תאריך התחלה:start" AS started, last_edited_time AS last_move,
+       "בעל תפקיד", url
 FROM "collection://c6604298-2afb-8258-8026-87e9538244c3"
 WHERE "date:תאריך התחלה:start" IS NOT NULL AND "date:תאריך השלמה:start" IS NULL
+  AND "בעל תפקיד" LIKE '%תום%'
+  AND "שם" NOT LIKE '[ארוך]%'
 ORDER BY started;
 
 ### RECIPE:due-today — דחופות היום שלא נסגרו
 SELECT "שם", "date:תאריך התחלה:start" AS started, "בעל תפקיד", url
 FROM "collection://c6604298-2afb-8258-8026-87e9538244c3"
-WHERE date("date:תאריך יעד:start") = date('now') AND "date:תאריך השלמה:start" IS NULL;
+WHERE date("date:תאריך יעד:start") = date('now') AND "date:תאריך השלמה:start" IS NULL
+  AND "בעל תפקיד" LIKE '%תום%';
 
 ### RECIPE:opened-today — נפתחו היום (בתחולת מנוע הסגירה)
 SELECT "שם", "date:תאריך יעד:start" AS due, "date:תאריך התחלה:start" AS started, url
 FROM "collection://c6604298-2afb-8258-8026-87e9538244c3"
 WHERE date(created_time) = date('now') AND "date:תאריך השלמה:start" IS NULL
+  AND "בעל תפקיד" LIKE '%תום%'
+  AND "שם" NOT LIKE '[ארוך]%'
   AND ("date:תאריך יעד:start" IS NOT NULL OR "date:תאריך התחלה:start" IS NOT NULL);
 
 ### RECIPE:dup-check — כפילות לפני יצירה
 SELECT "שם", url FROM "collection://c6604298-2afb-8258-8026-87e9538244c3"
-WHERE "date:תאריך השלמה:start" IS NULL AND "שם" LIKE '%<מילת-מפתח>%';
+WHERE "date:תאריך השלמה:start" IS NULL
+  AND ("שם" LIKE '%<מילה1>%' OR "שם" LIKE '%<מילה2>%' OR "שם" LIKE '%<מילה3>%');
 ```
-Run each recipe once live; paste row counts as evidence. If `created_time` / `date('now')` syntax fails against the live engine, fix the recipe to the syntax that works and record the correction — the committed recipe must be the one that ran.
+
+**כלל מילות-המפתח ל-`dup-check`:** 2–3 **מילות תוכן** מהזריקה — שם עצם/פועל
+נושאיים (⊥ מילות קישור: של, את, עם, על, לי, כדי, היום, מחר). מחוברות ב-`OR`.
+**כל שורה שחוזרת = חשד** ⇒ נאמר באק (`⚠ דומה: <שם> — אותה משימה?`) ולא נוצרת
+שורה שנייה עד שטום אומר. אפס תוצאות ⇒ יוצרים בשקט. פחות מ-2 מילות תוכן
+בזריקה ⇒ מילה אחת, ובאק נכתב שהבדיקה חלשה.
+
+**`בעל תפקיד` הוא multi_select** — `LIKE '%תום%'` תופס גם משימה משותפת (תום+אלכס).
+זה הכיוון הרצוי, והוא בדיוק המראה של מתכון ה-waiting-on הקיים (`NOT LIKE '%תום%'`).
+
+Run each recipe once live; paste row counts as evidence. Sanity gates:
+`open-loops` and `opened-today` must return **0 rows owned by anyone but תום**, and
+`due-today` row count must drop versus the same query without the owner predicate
+(that delta is the ~66-task false-slip bug, proven closed).
+If `created_time` / `last_edited_time` / `date('now')` syntax fails against the live
+engine, fix the recipe to the syntax that works and record the correction — the
+committed recipe must be the one that ran. Same for the `[ארוך]` literal: verify
+`NOT LIKE '[ארוך]%'` treats `[` as a plain character on this engine; it does not ⇒
+use `SUBSTR("שם",1,6) <> '[ארוך]'` and record the substitution.
 
 - [ ] **Step 5: Commit**
 
@@ -516,13 +560,16 @@ git push
 
 - [ ] **Step 1: Create the three triggers** via `create_trigger` (fresh session per fire, this environment):
 
-| name | cron (UTC, IDT; winter +1h) | prompt |
-|---|---|---|
-| `cos-day-open` | `30 4 * * 0-4` | `Read gt-factory-os-production-brain/CLAUDE.md, then run .claude/skills/chief-of-staff-daily mode day-open. Hebrew.` |
-| `messi-checkpoint` | `0 10 * * 0-4` | `Read gt-factory-os-production-brain/CLAUDE.md, then run .claude/skills/messi mode checkpoint. Silent when clean. Hebrew.` |
-| `cos-day-close` | `0 14 * * 0-4` | `Read gt-factory-os-production-brain/CLAUDE.md, then run .claude/skills/chief-of-staff-daily mode day-close. Hebrew.` |
+| name | IL | cron summer (IDT, UTC+3) | cron winter (IST, UTC+2) | prompt |
+|---|---|---|---|---|
+| `cos-day-open` | 07:30 | `30 4 * * 0-4` | `30 5 * * 0-4` | `Read gt-factory-os-production-brain/CLAUDE.md, then run .claude/skills/chief-of-staff-daily mode day-open. Hebrew.` |
+| `messi-checkpoint` | 13:00 | `0 10 * * 0-4` | `0 11 * * 0-4` | `Read gt-factory-os-production-brain/CLAUDE.md, then run .claude/skills/messi mode checkpoint. Silent when clean. Hebrew.` |
+| `cos-day-close` | 17:00 | `0 14 * * 0-4` | `0 15 * * 0-4` | `Read gt-factory-os-production-brain/CLAUDE.md, then run .claude/skills/chief-of-staff-daily mode day-close. Hebrew.` |
+
+**These prompt strings are canonical and mirrored verbatim in `.claude/skills/chief-of-staff-daily/SKILL.md` §טריגרים** (all three rows, checkpoint included). Change one ⇒ change both in the same commit. Create with the summer cron now; the winter column is the DST swap (`update_trigger`, last Sunday of October).
 
 Connectors per firing: `["Notion","Google Calendar","Gmail","Supabase","Make"]` for the two rituals; `["Notion"]` only for messi-checkpoint (push goes via PushNotification, no connector needed).
+messi-checkpoint also needs git push rights in its environment — its log commit (`messi/SKILL.md` §ביצוע 7) is what carries the `CHECKPOINT` line to the 17:00 gate.
 
 - [ ] **Step 2: Verify** — `list_triggers` shows all three enabled with correct next_run_at (sanity: next day-open lands 07:30 IL). Night trigger is NOT created here — day-close arms it per G6.
 
