@@ -1,0 +1,264 @@
+/* GT Everyday — "what you keep from every cup" cost sheet.
+   Print target: A4 portrait, Hebrew RTL.
+
+   Direction: the catalog seduces, this sheet proves. Same palette as the deck
+   (lifted from the live pages, not invented) but the opposite temperament —
+   dense, measured, instrument-like. A concentrate business hands a café a
+   dosing chart, so this reads like one.
+
+   Palette, all five taken off the catalog pages:
+     ink   #26221a  body ink          deep #123b39  GT green
+     clay  #a8562f  terracotta        sand #6b6455  utility grey
+     paper #fbf8f2  cream stock
+
+   Type: the deck pairs a Latin serif display with a Hebrew sans. Reproduced
+   with FreeSerif (Latin only, used with restraint) + DejaVu Sans (Hebrew,
+   everything else). No third face.
+
+   Signature: the cup bar. Full width is one cup's net revenue; the clay
+   segment is what the drink costs to make. Every bar is the same length, so
+   only the split point moves and the eye can run down the column and see
+   which families are lean. Explained once in the masthead, never repeated. */
+
+@page {
+  size: A4 portrait;
+  margin: 13mm 12mm 11mm 12mm;
+}
+
+:root {
+  --ink:   #26221a;
+  --deep:  #123b39;
+  --clay:  #a8562f;
+  --sand:  #6b6455;
+  --paper: #fbf8f2;
+  --rule:  #e2dbcc;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  font-family: "DejaVu Sans", "FreeSans", sans-serif;
+  font-size: 9.4pt;
+  line-height: 1.35;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  margin: 0;
+  direction: rtl;
+  text-align: right;
+  background: var(--paper);
+}
+
+/* the sheet is a print artifact; on screen give it the same page it gets on paper */
+@media screen {
+  body {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 13mm 12mm 11mm;
+  }
+}
+
+.latin {
+  font-family: "FreeSerif", serif;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* ───────── masthead ───────── */
+
+.masthead { margin-bottom: 7mm; }
+
+.masthead-brand {
+  font-size: 7.5pt;
+  letter-spacing: 0.22em;
+  color: var(--sand);
+  margin: 0 0 3mm;
+}
+
+.masthead-title {
+  font-size: 21pt;
+  font-weight: bold;
+  color: var(--deep);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.masthead-sub {
+  font-size: 13pt;
+  color: var(--clay);
+  margin: 1.5mm 0 0;
+}
+
+/* the hero: one average cup, drawn */
+
+.hero {
+  margin: 6mm 0 0;
+  padding: 4.5mm 0 0;
+  border-top: 1.5pt solid var(--deep);
+}
+
+.hero-label {
+  font-size: 7.5pt;
+  color: var(--sand);
+  margin: 0 0 2mm;
+}
+
+.hero-bar {
+  position: relative;
+  height: 9mm;
+  background: var(--deep);
+  overflow: hidden;
+}
+
+.hero-bar-cost {
+  height: 100%;
+  background: var(--clay);
+}
+
+.hero-tag {
+  position: absolute;
+  top: 0;
+  height: 9mm;
+  display: flex;
+  align-items: center;
+  padding: 0 2.5mm;
+  font-size: 8pt;
+  color: var(--paper);
+  white-space: nowrap;
+}
+
+.hero-tag-cost  { right: 0; }
+.hero-tag-keep  { left: 0; }
+
+.hero-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 4mm;
+  margin: 2.5mm 0 0;
+  font-size: 7.5pt;
+  color: var(--sand);
+}
+
+.hero-foot-facts { display: flex; gap: 5mm; }
+.hero-foot b { color: var(--ink); font-weight: bold; }
+
+/* ───────── family band ───────── */
+
+.family { break-inside: auto; margin-top: 6mm; }
+
+.family-head {
+  break-after: avoid;
+  display: flex;
+  align-items: baseline;
+  gap: 3mm;
+  padding-bottom: 1.2mm;
+  border-bottom: 1pt solid var(--deep);
+}
+
+.family-code {
+  font-size: 8pt;
+  color: var(--clay);
+  letter-spacing: 0.06em;
+}
+
+.family-name {
+  font-size: 12pt;
+  font-weight: bold;
+  color: var(--deep);
+}
+
+.family-latin {
+  font-size: 9pt;
+  color: var(--sand);
+}
+
+.family-price {
+  margin-inline-start: auto;
+  font-size: 8pt;
+  color: var(--sand);
+  white-space: nowrap;
+}
+
+.family-price b {
+  font-size: 12.5pt;
+  color: var(--deep);
+}
+
+/* ───────── rows ───────── */
+
+.rows { width: 100%; border-collapse: collapse; }
+.rows tr { break-inside: avoid; }
+
+.rows td {
+  padding: 1.5mm 0;
+  border-bottom: 0.5pt solid var(--rule);
+  vertical-align: middle;
+}
+
+.cell-name  { width: 36%; padding-inline-end: 3mm; }
+.cell-bar   { width: 30%; padding-inline-end: 3mm; }
+.cell-cost  { width: 14%; text-align: left; padding-inline-end: 3mm; }
+.cell-keep  { width: 20%; text-align: left; }
+
+.page-ref {
+  font-size: 7pt;
+  color: var(--sand);
+  margin-inline-end: 1.8mm;
+}
+
+.drink { font-size: 9.4pt; }
+
+.bar {
+  position: relative;
+  height: 2.6mm;
+  background: var(--deep);
+}
+
+.bar-cost { height: 100%; background: var(--clay); }
+
+.bar-pct {
+  position: absolute;
+  left: -8.2mm;
+  top: -1.2mm;
+  width: 7mm;
+  text-align: left;
+  font-size: 7pt;
+  color: var(--sand);
+}
+
+.cost { font-size: 9pt; color: var(--clay); white-space: nowrap; }
+.keep { font-size: 12.5pt; font-weight: bold; color: var(--deep); white-space: nowrap; }
+.unit { font-size: 7.5pt; font-weight: normal; color: var(--sand); }
+
+.star { color: var(--sand); }
+
+/* ───────── column key + footnotes ───────── */
+
+/* stated once, under the hero — the colours carry it from there down */
+.colkey {
+  display: flex;
+  margin: 6mm 0 -3mm;
+  font-size: 7pt;
+  letter-spacing: 0.06em;
+  color: var(--sand);
+}
+
+.colkey-name { width: 36%; }
+.colkey-bar  { width: 30%; text-align: left; padding-inline-end: 3mm; }
+.colkey-cost { width: 14%; text-align: left; padding-inline-end: 3mm; }
+.colkey-keep { width: 20%; text-align: left; }
+
+.notes {
+  margin-top: 8mm;
+  padding-top: 3mm;
+  border-top: 1pt solid var(--rule);
+  font-size: 7.5pt;
+  color: var(--sand);
+  line-height: 1.75;
+}
+
+.notes p { margin: 0 0 1mm; }

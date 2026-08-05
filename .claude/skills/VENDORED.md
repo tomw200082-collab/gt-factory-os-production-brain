@@ -15,8 +15,12 @@ authority order in `CLAUDE.md` is unaffected.
 
 `frontend-design` was supplied directly by Tom on 2026-08-05, not cloned from a
 public repo. Its frontmatter says `license: Complete terms in LICENSE.txt`, but
-no `LICENSE.txt` came with the file — the reference is dangling until the
-upstream licence text is added alongside it. The identical file also lives at
+no `LICENSE.txt` came with the file, and Tom did not have it to hand when asked
+the same day — so the reference stays dangling on purpose. The two sibling
+Anthropic skills in this workspace (`skill-creator` here, `canvas-design` in the
+portal) both ship Apache-2.0, which is suggestive but not proof, so no licence
+text was copied in on that guess. Add the real one when it turns up.
+The identical file also lives at
 `gt-factory-os-portal/.claude/skills/frontend-design/SKILL.md`; the portal copy
 predates this one and was updated to match byte-for-byte.
 
