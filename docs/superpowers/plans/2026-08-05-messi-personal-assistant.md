@@ -152,6 +152,24 @@ git push
 
 ### Task 3: Notion contract — live verify + `תאריך התחלה` + recipes (Phase 1)
 
+> **COMPLETE 2026-08-05 — gate opened, ran live.** Notion connector authorized this session.
+> **The committed recipes are the ones that ran**; three engine-forced corrections are recorded
+> in `notion_contract.md` §מתכוני מסי §שלוש סטיות and mirrored into the spec:
+> `last_edited_time`/`lastEditedTime` **do not exist** (`no such column`) ⇒ dropped from
+> `open-loops`, "בלי תזוזה" now = `started ≤ now−3h` + no later event in today's log ·
+> `created_time` ⇒ **`createdTime`** · every `NOT LIKE` wrapped in `COALESCE("שם",'')`
+> because NULL-titled rows exist and `NULL NOT LIKE …` drops them silently.
+> `[` is a plain character here (1/0/0) ⇒ **no `SUBSTR` fallback needed**.
+> **Step 4's owner-predicate sanity gate did not fire and that is not a failure:**
+> `due-today` = 9 rows with and without the predicate (delta 0 today). Live distribution is
+> **68 open · 66 contain תום · 2 do not** — the plan's and spec's "~66 other-people's tasks
+> would slip" was inverted; both documents corrected. **Task 8 must derive its delta from the
+> run-day's live data, ⊥ expect a drop.**
+> **Step 5's trial row could not be archived:** the Notion connector exposes no archive/trash
+> tool for pages. It is marked complete (∴ absent from every recipe) and listed for Tom under
+> §פריט בדיקה פתוח — `3b304298-2afb-8120-8602-ca6a4138f17b`. Archiving needs Tom regardless
+> (`notion_contract.md` §גבולות).
+
 **GATE: requires the Notion connector authorized in this environment.** Not authorized ⇒ STATUS: BLOCKED, tell Tom exactly: "קונקטור נושן לא מאומת — לאשר בהגדרות connectors ב-claude.ai, ואז נמשיך", and stop this task (later tasks 4–7 may proceed; tasks 8–10 may not).
 
 **Files:**
@@ -166,17 +184,17 @@ git push
 - **R2 — `תאריך התחלה` is a DATETIME** (`is_datetime: 1`), not a date. Three rules need hour resolution: the ack prints `מ-<שעה>`, `⚠ פתוחות: X מ-09:40`, and the checkpoint slips on `באוויר ≥3 שעות בלי תזוזה`.
 - **R3 — the long-term marker is a `[ארוך]` prefix in the task title.** No new Notion property (§10 keeps `תאריך התחלה` the only schema change). Excluded inside the recipe SQL, so an unmarked task is never exempt.
 
-- [ ] **Step 1: Prove live read on both DBs**
+- [x] **Step 1: Prove live read on both DBs**
 
 Query via the Notion MCP (querySql over each collection URL): `SELECT "שם" FROM "<collection>" LIMIT 3` for tasks and projects. Print the 3 real rows from each into the task output (evidence).
 Expected: 6 real row names total. Failure ⇒ `assumption_failure`, HALT.
 
-- [ ] **Step 2: Add the property — as a DATETIME (R2)**
+- [x] **Step 2: Add the property — as a DATETIME (R2)**
 
 Attempt via the Notion API (database update adding `תאריך התחלה`, type Date **with "Include time" ON**). If the connector exposes no schema-update capability ⇒ ask Tom to add it manually in Notion (property name exactly `תאריך התחלה`, type Date, **Include time = ON**, on מסד המשימות) and wait for his "done".
 Time-only-off is a silent failure: the ack would print `מ-<שעה>` with no hour and the ≥3h slip rule would have nothing to compare. Verify in Step 3 before writing the contract.
 
-- [ ] **Step 3: Write-and-revert probe (the contract's own protocol)**
+- [x] **Step 3: Write-and-revert probe (the contract's own protocol)**
 
 1. Create task `בדיקת מסי — למחיקה` with `תאריך יעד` = next Sunday.
 2. Set `תאריך התחלה` = **now, with an hour** (`{"date:תאריך התחלה:start":"<YYYY-MM-DDTHH:MM:00+03:00>", "date:תאריך התחלה:is_datetime":1}`). Re-read; verify **the hour survives** the round-trip, not just the date. Hour lost ⇒ the property is date-only ⇒ `assumption_failure`, HALT, back to Step 2.
@@ -185,7 +203,7 @@ Time-only-off is a silent failure: the ack would print `מ-<שעה>` with no hou
 5. Archive the trial task (archive, ⊥ delete).
 Expected: every write read back identical, hour included. Evidence: the re-read values printed.
 
-- [ ] **Step 4: Update `docs/ceo/reference/notion_contract.md`**
+- [x] **Step 4: Update `docs/ceo/reference/notion_contract.md`**
 
 In the tasks-schema table add the row:
 ```markdown
@@ -257,7 +275,7 @@ committed recipe must be the one that ran. Same for the `[ארוך]` literal: ve
 `NOT LIKE '[ארוך]%'` treats `[` as a plain character on this engine; it does not ⇒
 use `SUBSTR("שם",1,6) <> '[ארוך]'` and record the substitution.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/ceo/reference/notion_contract.md
