@@ -9,6 +9,8 @@
 | **3 אבני השבוע** | `docs/ceo/weeks/<יום א׳>.md` | `weekly-opening` **בלבד** (V2) | גרדיאן (שורת בוקר) · `chief-of-staff-daily` |
 | **החלטות · רטרו · תור לילה** | אותו כרטיס שבוע | `weekly-opening` (רטרו/החלטות) · `chief-of-staff-daily` (תור לילה) | אימות הבוקר |
 | **לו״ז / בלוקים** | **Google Calendar** — `tom@gteveryday.com`, סמן `[cos-os]` | `chief-of-staff-daily` אחרי אישור טום | day-open |
+| **לולאות פתוחות / באוויר** | **נושן** — `תאריך התחלה`+`תאריך השלמה`+יעד (RECIPE:open-loops) | מסי · טום | צ'קפוינט 13:00 · שער day-close · day-open |
+| **ביצועי מסי** (ספקים, תור, תוצאות, fallback) | `docs/ceo/messi/**` | מסי בלבד | צ'קפוינט · day-open/close · אימות בוקר |
 | **מראה registry** | `docs/ceo/registry.md` — **נגזרת** | הסקילים בלבד, אוטומטית | גיבוי + הצלבה. **⊥ מקור** |
 | **הערות/צ׳קים בדשבורד** | `localStorage` במכשיר של טום, מפתחות `gtceo:*` | הדפדפן של טום | טום. הדבקה חזרה ⇒ נכנס לכרטיס/נושן |
 | **HTML של הדשבורד** | `docs/ceo/dashboard.html` | הסקילים | הארטיפקט (URL קבוע) |
