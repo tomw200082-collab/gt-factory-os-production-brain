@@ -206,6 +206,8 @@ Append a new section at the end:
 > ה-waiting-on, ⊥ מנוע הסגירה. `dup-check` היא היחידה ללא הסינון — כפילות
 > נבדקת מול **כל** הפתוחות, גם של אחרים.
 > **`[ארוך]`** בתחילת השם = ארוך-טווח (R3) ⇒ מוחרג מ-open-loops ו-opened-today.
+> **⊥ מ-due-today** — הפטור הוא מ**סריקת** הסגירה היומית, ⊥ מ**יעד** שטום קבע:
+> `[ארוך]` עם `תאריך יעד` = היום באמת דחופה היום וצפה. שתיים מוחרגות, אחת ⊥.
 
 ### RECIPE:open-loops — באוויר עכשיו
 SELECT "שם", "date:תאריך התחלה:start" AS started, last_edited_time AS last_move,
@@ -443,6 +445,13 @@ git push
 ### Task 6: Ritual amendments — closure gate + carried loops (Phase 3)
 
 > **COMPLETE — as-built snapshot (2026-08-05).** The markdown embedded below is the text this task actually wrote and that was reviewed at the time. It was **subsequently amended** by the final-review fix wave (`41d46e5..aa72835`: gate reads `⊥ מסתיים`, waiting-on exempt, provisional `נגררת`, Thursday ⇒ Sunday, previous-business-day log, 🔒 approval slot, four-state backstop, canonical trigger prompts). **The file on disk is authoritative.** Re-running this task verbatim would revert the fix wave.
+>
+> **Step 4's grep string is superseded.** `נגררות מאתמול` returns 0 against the live file —
+> the day-open heading now reads **`נגררות מיום העסקים הקודם`** (Sunday ⇒ Thursday, ⊥ Saturday),
+> and the `שער הסגירה` alternation masks the miss into a false pass. The historical Step 4 block
+> below is left as-built, on purpose. **Re-verify with the current strings instead:**
+> `grep -n "שער הסגירה" … && grep -n "נגררות מיום העסקים הקודם" … && grep -n "^## שלב 6" …`
+> — all three must hit; a zero on any one is a real regression.
 
 **Files:**
 - Modify: `.claude/skills/chief-of-staff-daily/SKILL.md`
@@ -541,8 +550,22 @@ Notion takes no due dates then.
 | T1 | `בדיקת מסי — ספירת פתוחות` | תום | the throw / execution path |
 | T2 | `בדיקת מסי — שני בתור` | תום | R4: proves a queued item is ⊥ באוויר |
 | T3 | `בדיקת מסי — מחליקה` | תום | slipping checkpoint (due today, never started) |
-| T4 | `בדיקת מסי — של מקסים` | **מקסים** | **R1 negative control** — must never slip |
+| T4 | `בדיקת מסי — של מקסים` | **מקסים** | **R1 negative control, both recipes** — due today, never closed, **and `תאריך התחלה` set ≥3h ago**. Non-Tom **and started** ⇒ it is a candidate row for `due-today` **and** for `open-loops`; the owner predicate is the only thing keeping it out of either. Leave it unstarted and dropping `LIKE '%תום%'` from `open-loops` would pass this task clean. |
 | T5 | `[ארוך] בדיקת מסי — ארוכת טווח` | תום | **R3 negative control** — prefix exempts it |
+
+- [ ] **Step 0: Baseline the live slip set — before creating any trial row**
+
+Every count assertion below is a **delta**, never an absolute. Tom's real backlog legitimately
+contains due-today-not-started and stale-in-the-air rows; an executor cannot tell those apart
+from an R1 regression, so absolutes here would fail honestly-green runs and hide real ones.
+Same technique as Task 3 Step 4's owner-predicate delta.
+
+Run `RECIPE:open-loops` + `RECIPE:due-today` and evaluate the three checkpoint criteria
+(`messi/SKILL.md` §mode=checkpoint 4) against today's log **as it stands now**. Record verbatim
+in the task output:
+
+- **B₀** = the resulting slip set — the **names**, not just the count. `|B₀|` may be 0 or 20; both fine.
+- **L₀** = `RECIPE:open-loops` row count.
 
 - [ ] **Step 1: Throw** — in-session, as Tom would: `מסי, משימת ניסיון: ספור כמה משימות פתוחות יש בנושן ותכתוב את המספר ללוג`. Follow SKILL.md exactly: `RECIPE:dup-check` → create T1 (due today, `בעל תפקיד` = תום) → 4-line ack.
 Expected: Notion row exists (print its URL), `בעל תפקיד` reads תום, ack matches the contract shape.
@@ -567,20 +590,39 @@ Expected: T1 shows both dates; T2's stamp time is later than T1's go time — th
 
 - [ ] **Step 4: Checkpoint rehearsal — clean, slipping, and both negative controls**
 
-1. **Clean:** run `mode=checkpoint` with nothing slipping. Exactly one line appended:
-   `CHECKPOINT <HH:MM> clean`. Zero push. Then confirm §ביצוע 7 ran — `git log -1` shows the
-   log commit and the push landed. **No commit ⇒ FAIL**: this is the whole reason the 17:00
-   gate can see the 13:00 run at all.
+1. **Baseline arm ("clean"):** run `mode=checkpoint` with **no trial row slipping**.
+   Exactly **one new** `CHECKPOINT` line, and its slip set **= B₀ exactly**:
+   - `B₀ = ∅` ⇒ the line is literally `CHECKPOINT <HH:MM> clean`, **zero push**.
+   - `B₀ ≠ ∅` ⇒ the line is `CHECKPOINT <HH:MM> slipping |B₀|: …` naming **exactly** B₀'s
+     members and no one else, and **one** push. That is still the clean arm passing:
+     quiet-when-clean is proven by the trial rows adding **nothing**, ⊥ by an absolute zero.
+   - Either way **a member ∉ B₀ ⇒ FAIL**, and a member of B₀ going missing ⇒ FAIL.
+   Then confirm §ביצוע 7 ran — `git log -1` shows the log commit and the push landed.
+   **No commit ⇒ FAIL**: this is the whole reason the 17:00 gate can see the 13:00 run at all.
 2. **Slipping:** create T3 (תום, due today, never started). Rerun.
-   Expected: one push, and the log line reads
+   Expected: **slip set = B₀ ∪ {T3}**, count `|B₀|+1`, one push, and T3's own entry reads
+   `בדיקת מסי — מחליקה (דחופה-היום שלא התחילה)`. `|B₀| = 0` ⇒ the line is the familiar
    `CHECKPOINT <HH:MM> slipping 1: בדיקת מסי — מחליקה (דחופה-היום שלא התחילה)`.
-3. **R1 negative control:** create T4 (**מקסים**, due today, never started). Rerun.
-   Expected: still `slipping 1`, still only T3. **T4 appearing ⇒ FAIL** — the owner predicate
-   is not in the recipe and the ~66-task false-slip bug is live.
-4. **R3 negative control:** create T5 (תום) and set its `תאריך התחלה` to a time ≥3h ago.
-   Expected: T5 is absent from `RECIPE:open-loops` output and from the slip list. Present ⇒
-   the `[ארוך]` predicate is missing or the engine treats `[` as a pattern class — apply the
-   `SUBSTR` fallback recorded in Task 3 Step 4 and rerun.
+3. **R1 negative control:** create T4 (**מקסים**, due today, never closed, `תאריך התחלה`
+   set ≥3h ago). Rerun.
+   Expected: **slip set unchanged — still exactly B₀ ∪ {T3}**, count still `|B₀|+1`.
+   **T4 appearing ⇒ FAIL** — the owner predicate is not in the recipe and the ~66-task
+   false-slip bug is live. T4 is deliberately a candidate on **both** axes: due-today
+   (criterion 2) and ≥3h in the air with no movement (criterion 1), so this arm exercises
+   `LIKE '%תום%'` in `due-today` **and** in `open-loops` at once.
+4. **R1, the open-loops half, asserted directly:** `RECIPE:open-loops` row count is back to
+   **exactly L₀** — each trial row is excluded for its own reason (T1/T2 closed in Step 3,
+   T3 never started, **T4 by the owner predicate**, T5 by `[ארוך]`) — and **T4 is absent from
+   the returned rows** even though its `תאריך התחלה` is set. T4 present ⇒ `open-loops` lost
+   its owner predicate; the slip list happened to stay clean only because `due-today` still
+   had one. This is the assertion that makes dropping `LIKE '%תום%'` from `open-loops` alone
+   a visible failure.
+5. **R3 negative control:** create T5 (תום) and set its `תאריך התחלה` to a time ≥3h ago.
+   Expected: T5 is absent from `RECIPE:open-loops` output and the slip set is **still**
+   B₀ ∪ {T3}. Present ⇒ the `[ארוך]` predicate is missing or the engine treats `[` as a
+   pattern class — apply the `SUBSTR` fallback recorded in Task 3 Step 4 and rerun.
+   T5 carries **no** `תאריך יעד` of today: `[ארוך]` is exempt from the closure **sweep**,
+   ⊥ from an explicit due date, so a T5 due today would legitimately surface in `due-today`.
 
 - [ ] **Step 5: Gate rehearsal — three decisions, the exemption, and the backstop**
 
@@ -602,26 +644,36 @@ Run the day-close שער הסגירה stage manually on today.
 
 - [ ] **Step 6: Evidence + commit**
 
-Record in the task output as **N/14**:
+Record in the task output as **N/16**. **B₀ and L₀ are quoted verbatim first** — every count
+below is read against them, never as an absolute.
 
 | # | check | proves |
 |---|---|---|
-| 1 | T1 row created, `בעל תפקיד` = תום, URL printed | throw → Notion |
-| 2 | ack matches the 4-line contract shape | §3 |
-| 3 | T2 `תאריך התחלה` NULL while queued | **R4** |
-| 4 | T1 `תאריך התחלה` non-null with a real `HH:MM` | **R2 + R4** |
-| 5 | log shape — תור + ספקים + `שוגר <שעה>` | `dispatch.md` |
-| 6 | T1 closed: both dates, `[x]`, artifact link | G3 |
-| 7 | exactly one `CHECKPOINT <HH:MM> clean`, zero push | silence when clean |
-| 8 | log commit + push landed | **I5** |
-| 9 | `CHECKPOINT <HH:MM> slipping 1: …` + one push | slip path |
-| 10 | T4 (מקסים) absent from the slip list | **R1** |
-| 11 | T5 (`[ארוך]`) absent from `RECIPE:open-loops` | **R3** |
-| 12 | T4 absent from the gate; present on the waiting-on path | exemption |
-| 13 | provisional `נגררת` + blocker + `GATE` line + ritual proceeds | **I3** |
-| 14 | backstop: missing ⇒ "לא רץ" · `FAILURE` ⇒ "נפל" | backstop |
+| 1 | B₀ (names) + L₀ recorded **before** any trial row exists | delta baseline |
+| 2 | T1 row created, `בעל תפקיד` = תום, URL printed | throw → Notion |
+| 3 | ack matches the 4-line contract shape | §3 |
+| 4 | T2 `תאריך התחלה` NULL while queued | **R4** |
+| 5 | T1 `תאריך התחלה` non-null with a real `HH:MM` | **R2 + R4** |
+| 6 | log shape — תור + ספקים + `שוגר <שעה>` | `dispatch.md` |
+| 7 | T1 closed: both dates, `[x]`, artifact link | G3 |
+| 8 | one new `CHECKPOINT` line, slip set = B₀ exactly (∅ ⇒ literal `clean` + zero push) | silence when clean |
+| 9 | log commit + push landed | **I5** |
+| 10 | slip set = B₀ ∪ {T3}, count `\|B₀\|+1`, one push | slip path |
+| 11 | slip set **unchanged** after T4 (מקסים) lands — T4 ∉ it | **R1**, `due-today` half |
+| 12 | `RECIPE:open-loops` = L₀; T4 absent though `תאריך התחלה` set ≥3h ago | **R1**, `open-loops` half |
+| 13 | T5 (`[ארוך]`) absent from `RECIPE:open-loops`; slip set still B₀ ∪ {T3} | **R3** |
+| 14 | T4 absent from the gate; present on the waiting-on path | exemption |
+| 15 | provisional `נגררת` + blocker + `GATE` line + ritual proceeds | **I3** |
+| 16 | backstop: missing ⇒ "לא רץ" · `FAILURE` ⇒ "נפל" | backstop |
 
-Archive **all five** trial rows (archive, ⊥ delete — `notion_contract.md` §גבולות).
+Archive **all five** trial rows (archive, ⊥ delete).
+**Authority = Tom's go on this dry-run** — ⊥ `notion_contract.md` §גבולות, which reads
+`מחיקה / ארכוב | טום, תמיד` and is **unchanged by this plan**. The claim is narrow and stated
+plainly: the five `בדיקת מסי —` rows are enumerated in this task's trial table and exist only
+because this run created them, so approving the dry-run approves cleaning them up. **No Tom go
+on record ⇒ ⊥ archive**: leave all five, list them with their URLs in the task output, and ask.
+Rows this run did not create are never in scope, under any reading.
+
 ```bash
 git add docs/ceo/messi/<today>.md
 git commit -m "test(messi): live dry-run evidence — dispatch-time stamp, Tom-scoped slip list, gate + backstop"
@@ -634,7 +686,7 @@ git push
 
 - [ ] **Step 1:** Update PR ‎#102 body checklist (spec ✓, plan ✓, phases ✓), mark ready-for-review.
 - [ ] **Step 2:** Verify mergeable + checks state via the GitHub MCP (`pull_request_read` method `get`). This repo has no CI checks — the merge gate is the Task 8 evidence being present in the PR.
-- [ ] **Step 3:** Merge ‎#102 (merge commit, house default). Brain policy: autonomous merge allowed — checks green (vacuously) & change verified (Task 8 N/6).
+- [ ] **Step 3:** Merge ‎#102 (merge commit, house default). Brain policy: autonomous merge allowed — checks green (vacuously) & change verified (**Task 8 N/16**, evidence table at Task 8 Step 6 — including B₀/L₀).
 - [ ] **Step 4:** Comment + close ‎#85: "Superseded by ‎#102 — CoS v2 merged there together with messi." (with the Claude Code attribution footer).
 
 ---
