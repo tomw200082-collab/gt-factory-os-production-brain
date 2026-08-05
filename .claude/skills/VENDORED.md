@@ -11,6 +11,14 @@ authority order in `CLAUDE.md` is unaffected.
 | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | MIT | `ponytail`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`, `ponytail-review` |
 | [obra/superpowers](https://github.com/obra/superpowers) | MIT | `brainstorming`, `dispatching-parallel-agents`, `executing-plans`, `finishing-a-development-branch`, `receiving-code-review`, `requesting-code-review`, `subagent-driven-development`, `systematic-debugging`, `test-driven-development`, `using-git-worktrees`, `using-superpowers`, `verification-before-completion`, `writing-plans`, `writing-skills` |
 | Anthropic `claude-plugins-official` | Apache-2.0 | `skill-creator` |
+| Anthropic (supplied by Tom, 2026-08-05) | see note | `frontend-design` |
+
+`frontend-design` was supplied directly by Tom on 2026-08-05, not cloned from a
+public repo. Its frontmatter says `license: Complete terms in LICENSE.txt`, but
+no `LICENSE.txt` came with the file — the reference is dangling until the
+upstream licence text is added alongside it. The identical file also lives at
+`gt-factory-os-portal/.claude/skills/frontend-design/SKILL.md`; the portal copy
+predates this one and was updated to match byte-for-byte.
 
 `skill-creator` was already present in the container's global `~/.claude/skills`
 but that directory is ephemeral. Copying it here makes it survive session
