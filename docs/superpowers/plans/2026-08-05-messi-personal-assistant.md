@@ -267,6 +267,8 @@ git push
 
 ### Task 4: The messi skill (Phase 2a)
 
+> **COMPLETE — as-built snapshot (2026-08-05).** The markdown embedded below is the text this task actually wrote and that was reviewed at the time. It was **subsequently amended** by the final-review fix wave (`41d46e5..aa72835`: R1 owner scope, R3 `[ארוך]`, R4 dispatch-time stamp, §גבולות, log commit+push). **The file on disk is authoritative.** Re-running this task verbatim would revert the fix wave.
+
 **Files:**
 - Create: `.claude/skills/messi/SKILL.md`
 
@@ -376,6 +378,8 @@ git push
 
 ### Task 5: Dispatch protocol reference (Phase 2b)
 
+> **COMPLETE — as-built snapshot (2026-08-05).** The markdown embedded below is the text this task actually wrote and that was reviewed at the time. It was **subsequently amended** by the final-review fix wave (`41d46e5..aa72835`: mandatory `גבולות`, canonical `CHECKPOINT` grammar, `GATE` line, `verification.md` §א' reconciliation, R4 stamp rule). **The file on disk is authoritative.** Re-running this task verbatim would revert the fix wave.
+
 **Files:**
 - Create: `.claude/skills/messi/reference/dispatch.md`
 
@@ -438,6 +442,8 @@ git push
 
 ### Task 6: Ritual amendments — closure gate + carried loops (Phase 3)
 
+> **COMPLETE — as-built snapshot (2026-08-05).** The markdown embedded below is the text this task actually wrote and that was reviewed at the time. It was **subsequently amended** by the final-review fix wave (`41d46e5..aa72835`: gate reads `⊥ מסתיים`, waiting-on exempt, provisional `נגררת`, Thursday ⇒ Sunday, previous-business-day log, 🔒 approval slot, four-state backstop, canonical trigger prompts). **The file on disk is authoritative.** Re-running this task verbatim would revert the fix wave.
+
 **Files:**
 - Modify: `.claude/skills/chief-of-staff-daily/SKILL.md`
 
@@ -493,6 +499,8 @@ git push
 
 ### Task 7: State contract rows (Phase 3)
 
+> **COMPLETE — as-built snapshot (2026-08-05).** The two rows embedded below are the text this task actually wrote and that was reviewed at the time. They were **subsequently amended** by the final-review fix wave (`41d46e5..aa72835`), which closed this task's parked finding: `תאריך התחלה` is owned by messi alone, row 8 excludes it, row 12 is a query cut ⊥ a second home, and row 13's writer column now names the rituals' `inbox-fallback` drain and `GATE` lines. **The file on disk is authoritative.** Re-running this task verbatim would revert the fix wave.
+
 **Files:**
 - Modify: `docs/ceo/reference/state_contract.md`
 
@@ -521,25 +529,102 @@ git push
 **Files:**
 - Runtime evidence: `docs/ceo/messi/<today>.md` (created by the run itself)
 
-- [ ] **Step 1: Throw** — in-session, as Tom would: `מסי, משימת ניסיון: ספור כמה משימות פתוחות יש בנושן ותכתוב את המספר ללוג`. Follow SKILL.md exactly: dup-check → create Notion task (due today) → 4-line ack.
-Expected: Notion row exists (print its URL), ack matches the contract shape.
+**This task tests the POST-fix-wave semantics** (R1–R4, commits `41d46e5..aa72835`). The
+skill files on disk are authoritative; the assertions below exist to prove the behavior
+they describe actually happens end-to-end. Run on a weekday — Fri/Sat are silent and
+Notion takes no due dates then.
 
-- [ ] **Step 2: Go** — stamp `תאריך התחלה`, write the spec to today's log per `dispatch.md`, dispatch a background agent (read-only: run `RECIPE:open-loops` + count open tasks, append the count to the log).
-Expected: log file exists with תור + ספק sections; agent returns a real number.
+**Trial rows — five, all named with the `בדיקת מסי —` prefix, all archived in Step 6:**
 
-- [ ] **Step 3: Close** — stamp `תאריך השלמה`, mark `[x]`, ✓ line with the artifact link.
-Expected: Notion shows both dates on the trial task.
+| # | `שם` | `בעל תפקיד` | purpose |
+|---|---|---|---|
+| T1 | `בדיקת מסי — ספירת פתוחות` | תום | the throw / execution path |
+| T2 | `בדיקת מסי — שני בתור` | תום | R4: proves a queued item is ⊥ באוויר |
+| T3 | `בדיקת מסי — מחליקה` | תום | slipping checkpoint (due today, never started) |
+| T4 | `בדיקת מסי — של מקסים` | **מקסים** | **R1 negative control** — must never slip |
+| T5 | `[ארוך] בדיקת מסי — ארוכת טווח` | תום | **R3 negative control** — prefix exempts it |
 
-- [ ] **Step 4: Checkpoint rehearsal** — run mode=checkpoint manually. With nothing slipping it must print exactly one `CHECKPOINT <ts> clean` line to the log and push nothing. Then set one extra trial task due-today-not-started, rerun, expect a push draft with one slipping item; archive that trial task after.
+- [ ] **Step 1: Throw** — in-session, as Tom would: `מסי, משימת ניסיון: ספור כמה משימות פתוחות יש בנושן ותכתוב את המספר ללוג`. Follow SKILL.md exactly: `RECIPE:dup-check` → create T1 (due today, `בעל תפקיד` = תום) → 4-line ack.
+Expected: Notion row exists (print its URL), `בעל תפקיד` reads תום, ack matches the contract shape.
 
-- [ ] **Step 5: Gate rehearsal** — run the day-close שער הסגירה stage manually on today: the two trial tasks must appear, both resolvable as נסגרה ✓.
+- [ ] **Step 2: Go ⇒ dispatch, and prove the stamp lands at dispatch (R4) with an hour (R2)**
+
+Throw T2 as well, then give one go covering both. Per `messi/SKILL.md` §ביצוע the go writes
+queue rows + specs; only the row that actually launches becomes `[~]`.
+
+1. After the go, before anything completes: the log shows T1 as `[~] … שוגר <שעה>` and T2 as
+   `- [ ] … ממתין (אחד-אחד)`.
+2. Read both rows from Notion. **T1 `תאריך התחלה` is non-null and carries a real `HH:MM`**
+   (not `00:00`, not date-only). **T2 `תאריך התחלה` is NULL** — it is approved but ⊥ באוויר.
+   T2 non-null ⇒ the stamp is still firing at go ⇒ FAIL, R4 not implemented.
+3. `RECIPE:open-loops` returns T1 and **not** T2.
+
+T1's agent is read-only: run `RECIPE:open-loops`, count open tasks, append the count to the log.
+Expected: log has תור + ספקים sections in `dispatch.md` shape; the agent returns a real number.
+
+- [ ] **Step 3: Close T1, watch T2 dispatch itself** — stamp `תאריך השלמה`, mark `[x]`, ✓ with the artifact link. One-at-a-time then launches T2, which stamps **its own** `תאריך התחלה` at that moment.
+Expected: T1 shows both dates; T2's stamp time is later than T1's go time — the second proof that the stamp follows dispatch, not approval. Close T2 the same way.
+
+- [ ] **Step 4: Checkpoint rehearsal — clean, slipping, and both negative controls**
+
+1. **Clean:** run `mode=checkpoint` with nothing slipping. Exactly one line appended:
+   `CHECKPOINT <HH:MM> clean`. Zero push. Then confirm §ביצוע 7 ran — `git log -1` shows the
+   log commit and the push landed. **No commit ⇒ FAIL**: this is the whole reason the 17:00
+   gate can see the 13:00 run at all.
+2. **Slipping:** create T3 (תום, due today, never started). Rerun.
+   Expected: one push, and the log line reads
+   `CHECKPOINT <HH:MM> slipping 1: בדיקת מסי — מחליקה (דחופה-היום שלא התחילה)`.
+3. **R1 negative control:** create T4 (**מקסים**, due today, never started). Rerun.
+   Expected: still `slipping 1`, still only T3. **T4 appearing ⇒ FAIL** — the owner predicate
+   is not in the recipe and the ~66-task false-slip bug is live.
+4. **R3 negative control:** create T5 (תום) and set its `תאריך התחלה` to a time ≥3h ago.
+   Expected: T5 is absent from `RECIPE:open-loops` output and from the slip list. Present ⇒
+   the `[ארוך]` predicate is missing or the engine treats `[` as a pattern class — apply the
+   `SUBSTR` fallback recorded in Task 3 Step 4 and rerun.
+
+- [ ] **Step 5: Gate rehearsal — three decisions, the exemption, and the backstop**
+
+Run the day-close שער הסגירה stage manually on today.
+
+1. T1/T2 appear and resolve as **נסגרה ✓**.
+2. **Exemption:** T4 (מקסים) does **not** appear in the gate at all — waiting-on rows travel
+   their own path. It should instead surface on the day-open waiting-on list with a nudge draft.
+3. **Provisional נגררת:** leave T3 unresolved, as if only Tom could classify it. Expected: the
+   gate assigns `נגררת` with blocker **`ממתין להכרעת טום`**, writes
+   `GATE <HH:MM> נגררת: בדיקת מסי — מחליקה · חוסם ממתין להכרעת טום` to today's log, puts it on
+   the 🔒 line of שלב 5, and **proceeds to שלב 3**. A ritual that stalls waiting for Tom ⇒ FAIL.
+4. **Backstop, both arms:** delete the `CHECKPOINT` line from the log and rerun the stage ⇒ it
+   must report `צ'קפוינט 13:00 לא רץ`. Then replace it with
+   `CHECKPOINT <HH:MM> FAILURE <סיבה>` and rerun ⇒ it must report
+   `צ'קפוינט 13:00 נפל: <סיבה>`, **not** treat the run as fine. Restore the real line after.
+5. **Thursday check** (only when the rehearsal falls on a Thursday, else record N/A): the
+   carried loop's משבצת lands on **Sunday**, ⊥ Friday.
 
 - [ ] **Step 6: Evidence + commit**
 
-Record in the task output: 6 checks (row created · ack shape · start stamp · log shape · clean checkpoint · slipping checkpoint) as N/6. Archive both trial Notion tasks (archive, ⊥ delete).
+Record in the task output as **N/14**:
+
+| # | check | proves |
+|---|---|---|
+| 1 | T1 row created, `בעל תפקיד` = תום, URL printed | throw → Notion |
+| 2 | ack matches the 4-line contract shape | §3 |
+| 3 | T2 `תאריך התחלה` NULL while queued | **R4** |
+| 4 | T1 `תאריך התחלה` non-null with a real `HH:MM` | **R2 + R4** |
+| 5 | log shape — תור + ספקים + `שוגר <שעה>` | `dispatch.md` |
+| 6 | T1 closed: both dates, `[x]`, artifact link | G3 |
+| 7 | exactly one `CHECKPOINT <HH:MM> clean`, zero push | silence when clean |
+| 8 | log commit + push landed | **I5** |
+| 9 | `CHECKPOINT <HH:MM> slipping 1: …` + one push | slip path |
+| 10 | T4 (מקסים) absent from the slip list | **R1** |
+| 11 | T5 (`[ארוך]`) absent from `RECIPE:open-loops` | **R3** |
+| 12 | T4 absent from the gate; present on the waiting-on path | exemption |
+| 13 | provisional `נגררת` + blocker + `GATE` line + ritual proceeds | **I3** |
+| 14 | backstop: missing ⇒ "לא רץ" · `FAILURE` ⇒ "נפל" | backstop |
+
+Archive **all five** trial rows (archive, ⊥ delete — `notion_contract.md` §גבולות).
 ```bash
-git add docs/ceo/messi/
-git commit -m "test(messi): live dry-run evidence — throw→notion→go→execute→close, checkpoint clean+slipping"
+git add docs/ceo/messi/<today>.md
+git commit -m "test(messi): live dry-run evidence — dispatch-time stamp, Tom-scoped slip list, gate + backstop"
 git push
 ```
 
