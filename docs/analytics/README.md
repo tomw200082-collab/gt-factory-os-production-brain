@@ -20,6 +20,31 @@ snapshot as current.
 Client code already solving auth/token refresh:
 `gt-factory-os/api/src/integrations/greeninvoice/client.ts`.
 
+## Customer notes — living memory (read this BEFORE rebuilding)
+
+`Sales-Machine/knowledge/accounts/customer-notes.yaml` is the tracker's memory
+between rebuilds: identity decisions, closed businesses, churn reasons, ops
+notes. Append-only; every entry carries key, date, by, grade.
+
+The loop:
+
+1. **Rebuild reads the file first.** Identity answers (tag `identity`) decide
+   merges/splits before customer grouping; `closed` suppresses rescue-call
+   moves; everything else is context. Apply judgment — the notes are input,
+   not decoration.
+2. **Every note is baked into the payload** (`notes` map, keyed `tax:<ח.פ>` /
+   `nm:<name>` / `prod:<product name>`) and rendered on the customer/product
+   card, with a dot on radar rows.
+3. **Tom writes new notes in the dashboard.** They persist in the device's
+   localStorage and queue behind the cloud chip in the top bar. The sync panel
+   produces a paste-ready block (or a downloadable file via the artifact
+   `downloads` capability); any Claude session appends it to the YAML —
+   append-only, `grade: user_confirmed`, bump `updated:` — then rebuilds.
+4. On the next load the page auto-clears pending entries that now exist in the
+   baked payload (matched by key + text hash).
+
+Never edit or delete existing entries; corrections are newer entries.
+
 ## Green Invoice extraction
 
 `POST /v1/documents/search` with `{page, pageSize:100, fromDate, toDate, sort:'documentDate'}`.
