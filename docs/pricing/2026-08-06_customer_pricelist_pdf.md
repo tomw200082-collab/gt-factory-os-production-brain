@@ -1,8 +1,29 @@
-# Customer-facing pricelist PDF (ex-VAT) — V2
+# Customer-facing pricelist PDF (ex-VAT) — V3
 
-**Date:** 2026-08-06 (V2, same day — V1 rejected by Tom on elegance + product photos)
+**Date:** 2026-08-06 (V3 — third pass the same day, after Tom's V2 notes)
 **Deliverable:** `docs/pricing/pricelist_pdf/GT_pricelist_2026-08-06.pdf` — 4 pages,
-A4 210×297 mm, 11.2 MB, fully self-contained (fonts + images embedded base64).
+A4 210×297 mm, **1.7 MB**, fully self-contained (fonts + images embedded base64).
+
+## Tom's V3 corrections (2026-08-06, all applied)
+
+1. **Bold type is now Rubik** (500/600) — rounded terminals, elegant; it carries
+   the cover title, band titles, section titles, product names, prices, kickers
+   and folios. Heebo 300 stays for the quiet sub-lines. Frank Ruhl dropped.
+2. **MATCHA 50 g removed** — not sold.
+3. **מקציף קוקטיילים removed** from the tools page.
+4. **Powders band replaced** — the terracotta-arches crop is gone; the band is
+   now the matcha still-life (whisks · iced matcha · MATCHA bag) from
+   `CATALOG/MATCHA UBE HOJICHA/…135246…` — product-focused like the other pages.
+
+Designer's polish pass, same commit: pages 2–3 get taller tiles and looser row
+leading (`.roomy`) now that they carry fewer rows; footer optically centred;
+band scrim deepened .62→.68; sub-lines up 7.6→7.8 pt; price ₪ mark rebalanced.
+
+**Size discipline:** every cutout sits on the flat paper colour, so alpha buys
+nothing — cutouts are composited onto PAPER and embedded as JPEG (`b64png`),
+and the cover PNG became JPEG q88. PDF: 11.2 MB → **1.7 MB**, no visible change.
+
+## Superseded V2 record
 **Purpose:** a pricelist Tom sends directly to a HoReCa customer, product photo
 beside every priced row.
 
@@ -27,7 +48,7 @@ beside every priced row.
 | 02 | `hf…100249` terracotta arches | מאצ׳ה ואבקות (7) + מחיות פרי (3) |
 | 03 | `hf…100640` travertine shelf | מוצרים משלימים (10) |
 
-31 rows, 42 priced figures (V1's 32nd row was the removed GT Elita).
+**V3 count: 29 rows, 40 priced figures** (V2 minus MATCHA 50 g and מקציף קוקטיילים).
 
 ## Price sources
 
@@ -39,10 +60,10 @@ beside every priced row.
 Final verification output:
 
 ```
-figures checked: 42 | PRICE MISMATCHES vs TSV: NONE
-all expected figures present in PDF text: True
-contains "ללא מע״מ": True · "בש״ח": False · "משלוח": False
-pages: 4 | 210×297 mm | overflow guard: clean
+V3: figures checked: 40 | mismatches vs TSV: NONE | all present: True
+removed absent — 50g: True · cocktail frother: True · Elita: True
+ללא מע״מ: True · בש״ח: False · משלוח: False
+pages: 4 | 210×297 mm | 1.71 MB | overflow guard: clean
 ```
 
 ## Photography
@@ -104,6 +125,6 @@ or ₪ and column order flip.
 
 ## Left for Tom
 
-- 3 rows still have no photograph anywhere: ערכת מאצ׳ה · מקציף קוקטיילים ·
-  קנקן נפוליטן (+ the 22-sachet box exists only as a 229 px thumbnail).
+- 2 rows still have no photograph anywhere: ערכת מאצ׳ה · קנקן נפוליטן
+  (+ the 22-sachet box exists only as a 229 px thumbnail).
 - Shopify infra/catalog task for מסי is in Notion (created 2026-08-06).
