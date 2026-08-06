@@ -90,3 +90,15 @@ where pp.plan_date between $from and $to
   and pp.cancelled_at is null
 order by pp.plan_date, pp.created_at;
 ```
+
+---
+
+### 2026-08-06: A Notion task nobody can see is worse than no task
+
+**What happened:** Ten task rows were written into the GT tasks database with owner recorded in `בעל תפקיד` (a multi-select). Tom looked at the tracking page and reported the tasks were missing. They were not missing — every view on that page keys on `אחראי`, a **person** property: "המשימה שלי" filters `אחראי contains me`, "לפי מקבל המשימה" groups by it, and "בהמתנה" sorts by `תאריך יעד`, which the new rows also lacked. Rows with neither field are filtered out or sink below the fold. The write succeeded and the outcome still failed.
+
+**Why it was surprising:** Every API call returned success, the rows queried back correctly by SQL, and the two fields have near-identical Hebrew meanings. Nothing in the write path signals that one of them is load-bearing for visibility and the other is decorative.
+
+**Corrective:** After writing to any Notion database, **read the destination page's view configuration, not just the row**. A row is only delivered when it satisfies the filters and sorts of the view the human actually opens. For the GT tasks DB (`collection://c6604298-2afb-8258-8026-87e9538244c3`) every new row needs `אחראי` (person id — Tom is `323d872b-594c-81b0-b17a-00023fb025b3`), `תאריך יעד`, and `פרויקטים`; `בעל תפקיד` is labelling only. Related: that DB has **no status property** — completion is expressed solely by filling `תאריך השלמה`, so there is no "in progress" state to set.
+
+**Second, smaller trap from the same session:** the Notion connector exposes no delete or archive call. Removing rows from a database means `notion-move-pages` to a plain page, which preserves the page and its content but **drops every database property** (wave, project, dates). Fine for junk, lossy for anything that might come back.
