@@ -104,6 +104,34 @@ with empty operations; commit is irreversible and a committed transaction cannot
 be reused. Commit every few pages and keep a ledger on disk — a lost transaction
 costs every uncommitted page in it.
 
+### Building a NEW page — the line-metrics trap (2026-08-06)
+
+The connector cannot set fonts, so every `add_text` lands in Canva's default
+`YACgEZ1cb1Q`. That font's line box depends on the **scripts present in the
+line**, which breaks any multi-column layout built from separate text blocks:
+
+| Line contains | Rendered pitch |
+|---|---|
+| Latin letters, digits, or `₪` | `1.96 × font_size × line_height` |
+| Hebrew only | `1.00 × font_size × line_height` |
+
+Two blocks stay row-aligned **only if every line in both uses the same script
+mix**. A names column of `ENGLISH · עברית` lines aligns with a `₪NN` price
+column at equal `line_height`; a Hebrew-only names column drifts, and the drift
+is *per line*, so no single `line_height` fixes it. The fix that works is to
+make every row the same shape — give each Hebrew row a real Latin token (the
+product's actual English name, never an invented one), not to tune leading.
+
+Measure, don't eyeball: the edit response returns a thumbnail URL. `curl` it and
+scan dark-pixel row bands with Pillow to get true pitch and per-row offsets. CDF
+`size` heights are *nominal* and disagree with the render — they cannot be used
+to verify alignment.
+
+Also: `pos: A,B` is `top,left` (confirmed live). `insert_shape` returns no
+reusable id in the same batch. `add_page` gives no page id — re-read
+`design_content` with the open `transaction_id` to get it. A brand-new page has
+no thumbnail until committed, so the transaction thumbnail is the only preview.
+
 ## Design
 
 The sheet is deliberately not a spreadsheet dump. Two structural facts drive it,
