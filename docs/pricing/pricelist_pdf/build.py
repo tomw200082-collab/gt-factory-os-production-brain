@@ -47,7 +47,6 @@ TEAS = [
 POWDERS = [
     ("MATCHA שיזואוקה", "מאצ׳ה טקסית יפנית · שקית 500 גרם",     "matcha",   590),
     ("MATCHA שיזואוקה", "מאצ׳ה טקסית יפנית · 22 שקיות 18 גרם",  None,       590),
-    ("MATCHA שיזואוקה", "מאצ׳ה טקסית יפנית · שקית 50 גרם",      "matcha",    65),
     ("HOJICHA",         "מאצ׳ה שחורה קלויה · 500 גרם",          "hojicha",  375),
     ("UBE",             "אבקת שורש יאם סגול · 1 ק״ג",           "ube",      340),
     ("UBE",             "אבקת שורש יאם סגול · 500 גרם",         "ube",      175),
@@ -63,7 +62,6 @@ PUREES = [
 TOOLS = [
     ("קערת מאצ׳ה קרמית",     "צ׳אוואן מסורתי",      "bowl",    118),
     ("מקציף מאצ׳ה חשמלי",    "מקציף ידני נטען",     "frother", 100),
-    ("מקציף קוקטיילים",      "מקציף מקצועי",        None,       75),
     ("מטרפת במבוק",          "צ׳אסן · 100 שיניים",  "whisk",    37),
     ("קנקן זכוכית עם מסננת", "קנקן נפוליטן",        None,       36),
     ("כוס זכוכית 600 מ״ל",   "כוס מדידה מחוסמת",    "beaker",   30),
@@ -79,17 +77,30 @@ def b64(path, mime):
     return f'data:{mime};base64,' + base64.b64encode(pathlib.Path(path).read_bytes()).decode()
 
 
-def b64png(path, max_px):
-    """Embed a cutout at print resolution, not capture resolution.
+def b64png(path, max_px, q=84):
+    """Embed a cutout at print resolution, flattened onto the page colour.
 
-    A 24 mm tile at 300 dpi is 284 px; embedding the 1400 px working files
-    quadrupled the shipped PDF for pixels no printer would ever see."""
+    Two size levers, both invisible on the page: (1) a 24 mm tile at 300 dpi is
+    284 px, so nothing above ~600 px survives; (2) every cutout sits on the flat
+    paper colour, so its alpha channel buys nothing — compositing onto PAPER and
+    saving JPEG replaces a ~350 KB lossless PNG with a ~30 KB JPEG per tile.
+    The whole PDF drops from 11 MB to under 3."""
     import io
     from PIL import Image
-    im = Image.open(path)
+    im = Image.open(path).convert('RGBA')
     im.thumbnail((max_px, max_px), Image.LANCZOS)
-    buf = io.BytesIO(); im.save(buf, 'PNG', optimize=True)
-    return 'data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode()
+    bg = Image.new('RGB', im.size, PAPER)
+    bg.paste(im, (0, 0), im)
+    buf = io.BytesIO(); bg.save(buf, 'JPEG', quality=q)
+    return 'data:image/jpeg;base64,' + base64.b64encode(buf.getvalue()).decode()
+
+
+def b64jpg(path, q=88):
+    import io
+    from PIL import Image
+    im = Image.open(path).convert('RGB')
+    buf = io.BytesIO(); im.save(buf, 'JPEG', quality=q)
+    return 'data:image/jpeg;base64,' + base64.b64encode(buf.getvalue()).decode()
 
 
 def font_face(name, weight, file):
@@ -100,11 +111,10 @@ def font_face(name, weight, file):
 FONTS = "".join([
     font_face('Heebo', 300, 'heebo-400.woff'),
     font_face('Heebo', 500, 'heebo-500.woff'),
-    font_face('Heebo', 700, 'heebo-700.woff'),
-    font_face('Heebo', 900, 'heebo-900.woff'),
-    font_face('Frank', 400, 'frank-400.woff'),
-    font_face('Frank', 500, 'frank-500.woff'),
-    font_face('Frank', 700, 'frank-700.woff'),
+    font_face('Rubik', 400, 'rubik-400.woff'),
+    font_face('Rubik', 500, 'rubik-500.woff'),
+    font_face('Rubik', 600, 'rubik-600.woff'),
+    font_face('Rubik', 700, 'rubik-700.woff'),
 ])
 
 LOGO = b64(HERE / 'logo_b.png', 'image/png')          # gt mark, brand green
@@ -182,41 +192,41 @@ body{{font-family:'Heebo',sans-serif;color:{INK};-webkit-font-smoothing:antialia
      text-align:center}}
 .cv .mark{{width:27mm;opacity:.94}}
 .cv .hair{{width:14mm;height:.5px;background:{INK};opacity:.32;margin:9mm 0 8mm}}
-.cv h1{{font-family:'Frank',serif;font-weight:700;font-size:31pt;line-height:1.12;letter-spacing:-.01em}}
+.cv h1{{font-family:'Rubik',sans-serif;font-weight:600;font-size:29pt;line-height:1.14;letter-spacing:.015em}}
 .cv .sub{{margin-top:5.5mm;font-weight:300;font-size:9.2pt;letter-spacing:.055em;color:{MUTED};line-height:1.9}}
-.cv .tag{{margin-top:7mm;font-weight:500;font-size:8.2pt;letter-spacing:.20em;color:{CORAL}}}
-.cv .yr{{margin-top:9mm;font-family:'Frank',serif;font-size:10.5pt;letter-spacing:.34em;
+.cv .tag{{margin-top:7mm;font-family:'Rubik',sans-serif;font-weight:500;font-size:8.2pt;letter-spacing:.20em;color:{CORAL}}}
+.cv .yr{{margin-top:9mm;font-family:'Rubik',sans-serif;font-weight:500;font-size:10pt;letter-spacing:.36em;
          color:{INK};opacity:.5}}
 
 /* ── page furniture ──────────────────────────────────────────────────── */
 .foot{{position:absolute;bottom:9mm;right:17mm;left:17mm;display:flex;justify-content:space-between;
-       align-items:flex-end;font-size:6.8pt;letter-spacing:.14em;color:{MUTED}}}
+       align-items:center;font-size:6.8pt;letter-spacing:.14em;color:{MUTED}}}
 .foot .mid{{display:flex;flex-direction:column;align-items:center;gap:1.4mm}}
 .foot .mid img{{display:block;width:8.5mm;height:auto;opacity:.62}}
-.foot .pg{{font-family:'Frank',serif;font-size:6.4pt;letter-spacing:.26em;opacity:.85}}
+.foot .pg{{font-family:'Rubik',sans-serif;font-weight:500;font-size:6.4pt;letter-spacing:.26em;opacity:.85}}
 
 /* ── opening band ────────────────────────────────────────────────────── */
 .band{{position:relative;width:210mm;height:45mm;overflow:hidden;margin-bottom:5mm}}
 .band img{{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}}
 .band::after{{content:'';position:absolute;inset:0;
-  background:linear-gradient(to left,rgba(20,14,8,.62) 0%,rgba(20,14,8,.30) 46%,rgba(20,14,8,0) 78%)}}
+  background:linear-gradient(to left,rgba(20,14,8,.68) 0%,rgba(20,14,8,.32) 46%,rgba(20,14,8,0) 78%)}}
 .band-t{{position:absolute;right:17mm;bottom:8mm;z-index:2;text-align:right;color:#fff}}
-.band-t .bk{{display:block;font-size:7pt;font-weight:500;letter-spacing:.30em;opacity:.85}}
-.band-t .bt{{display:block;font-family:'Frank',serif;font-weight:500;font-size:20pt;margin-top:1.5mm}}
+.band-t .bk{{display:block;font-family:'Rubik',sans-serif;font-size:7pt;font-weight:500;letter-spacing:.30em;opacity:.85}}
+.band-t .bt{{display:block;font-family:'Rubik',sans-serif;font-weight:600;font-size:18.5pt;letter-spacing:.02em;margin-top:1.5mm}}
 .band-t .bn{{display:block;font-size:7.4pt;font-weight:300;letter-spacing:.05em;opacity:.8;margin-top:1.5mm}}
 
 /* ── section head (in-page) ──────────────────────────────────────────── */
 .body{{padding:0 17mm}}
 .sec{{position:relative;padding-right:5mm;margin:6.5mm 0 3mm}}
 .sec::before{{content:'';position:absolute;right:0;top:.8mm;bottom:.8mm;width:1.4px;background:{CORAL}}}
-.sec-t{{display:block;font-family:'Frank',serif;font-weight:500;font-size:15pt;color:{GREEN}}}
-.sec-k{{display:block;font-size:6.6pt;font-weight:500;letter-spacing:.30em;color:{MUTED};margin-top:1mm}}
+.sec-t{{display:block;font-family:'Rubik',sans-serif;font-weight:600;font-size:14pt;letter-spacing:.02em;color:{GREEN}}}
+.sec-k{{display:block;font-family:'Rubik',sans-serif;font-size:6.6pt;font-weight:500;letter-spacing:.30em;color:{MUTED};margin-top:1mm}}
 
 /* ── rows ────────────────────────────────────────────────────────────── */
 .cols{{display:flex;align-items:flex-end;padding:0 0 1.6mm 0;border-bottom:.6px solid {RULE}}}
 .cols .tile{{height:0}}
 .cols .ch{{width:26mm;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-           gap:1.1mm;font-size:6.6pt;font-weight:500;letter-spacing:.16em;color:{MUTED}}}
+           gap:1.1mm;font-family:'Rubik',sans-serif;font-size:6.6pt;font-weight:500;letter-spacing:.16em;color:{MUTED}}}
 .row{{display:flex;align-items:center;gap:0;padding:1.05mm 0;border-bottom:.6px solid {RULE}}}
 .row:last-child{{border-bottom:0}}
 
@@ -229,22 +239,24 @@ body{{font-family:'Heebo',sans-serif;color:{INK};-webkit-font-smoothing:antialia
 .tile-pair .ts{{height:64%;width:auto}}
 
 .nm{{flex:1 1 auto;padding-right:5mm;min-width:0}}
-.nm b{{display:block;font-weight:500;font-size:10.4pt;letter-spacing:.055em;line-height:1.22}}
-.nm i{{display:block;font-style:normal;font-weight:300;font-size:7.6pt;color:{MUTED};
+.nm b{{display:block;font-family:'Rubik',sans-serif;font-weight:500;font-size:10pt;letter-spacing:.04em;line-height:1.22}}
+.nm i{{display:block;font-style:normal;font-weight:300;font-size:7.8pt;color:{MUTED};
        letter-spacing:.02em;margin-top:.7mm}}
 
 .pp{{flex:0 0 auto;display:flex;direction:ltr}}
-.p{{width:26mm;text-align:center;font-weight:700;font-size:14pt;line-height:1;
+.p{{width:26mm;text-align:center;font-family:'Rubik',sans-serif;font-weight:600;font-size:13.5pt;line-height:1;
     font-variant-numeric:tabular-nums;white-space:nowrap}}
-.p .cur{{font-size:9pt;font-weight:500;color:{CORAL};margin-right:.6mm;vertical-align:.12em}}
+.p .cur{{font-size:8.5pt;font-weight:500;color:{CORAL};margin-right:.7mm;vertical-align:.1em}}
 
 .note{{margin-top:6mm;font-size:7.2pt;font-weight:300;color:{MUTED};letter-spacing:.04em}}
+.roomy .row{{padding:2.3mm 0}}
+.roomy .tile{{flex-basis:26mm;height:18.5mm}}
 """
 
 
 def page_cover():
     return f"""<div class="page cover">
-  <img src="{b64(HERE / 'src' / 'cover.png', 'image/png')}" alt="">
+  <img src="{b64jpg(HERE / 'src' / 'cover.png', 88)}" alt="">
   <div class="cv">
     <img class="mark" src="{LOGO_K}" alt="GT EVERYDAY">
     <span class="hair"></span>
@@ -266,7 +278,7 @@ def furniture(n):
 def build():
     # Page-top photographs — Tom's picks, folder CATALOG/2 slide (2026-08-06).
     b1 = band_strip(HERE / 'hd' / 'h14.png', 0.56, 'band1.jpg')   # bottles + drinks, terrace
-    b2 = band_strip(HERE / 'hd' / 'h09.png', 0.26, 'band2.jpg')   # terracotta arches
+    b2 = band_strip(HERE / 'pw' / 'p23.png', 0.42, 'band2.jpg')   # whisks · iced matcha · MATCHA bag
     b3 = band_strip(HERE / 'hd' / 'h12.png', 0.52, 'band3.jpg')   # travertine shelf
 
     # RTL flips flex order, so the price block reads [500 ml, 1 L] left to right
@@ -290,7 +302,7 @@ def build():
 
     p2 = f"""<div class="page">{furniture('02')}
   {band(b2, 'MATCHA  ·  POWDERS', 'מאצ׳ה ואבקות')}
-  <div class="body">
+  <div class="body roomy">
     <div style="margin-top:-2mm"></div>
     {''.join(row(n, s, k, [p]) for n, s, k, p in POWDERS)}
     {section('FRUIT  PURÉES', 'מחיות פרי')}
@@ -299,7 +311,7 @@ def build():
 
     p3 = f"""<div class="page">{furniture('03')}
   {band(b3, 'TOOLS  ·  SERVEWARE', 'מוצרים משלימים')}
-  <div class="body">
+  <div class="body roomy">
     {''.join(row(n, s, k, [p]) for n, s, k, p in TOOLS)}
   </div></div>"""
 
