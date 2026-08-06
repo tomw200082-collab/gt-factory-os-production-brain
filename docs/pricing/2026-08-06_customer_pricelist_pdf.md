@@ -14,6 +14,8 @@ A4 210×297 mm, **1.7 MB**, fully self-contained (fonts + images embedded base64
 4. **Powders band replaced** — the terracotta-arches crop is gone; the band is
    now the matcha still-life (whisks · iced matcha · MATCHA bag) from
    `CATALOG/MATCHA UBE HOJICHA/…135246…` — product-focused like the other pages.
+5. **קנקן זכוכית עם מסננת (Neapolitan jug, ₪36) removed** — not relevant here
+   (Tom, 2026-08-06). It was also one of the two rows with no photograph.
 
 Designer's polish pass, same commit: pages 2–3 get taller tiles and looser row
 leading (`.roomy`) now that they carry fewer rows; footer optically centred;
@@ -48,7 +50,7 @@ beside every priced row.
 | 02 | `hf…100249` terracotta arches | מאצ׳ה ואבקות (7) + מחיות פרי (3) |
 | 03 | `hf…100640` travertine shelf | מוצרים משלימים (10) |
 
-**V3 count: 29 rows, 40 priced figures** (V2 minus MATCHA 50 g and מקציף קוקטיילים).
+**V3 count: 28 rows, 39 priced figures** (V2 minus MATCHA 50 g, מקציף קוקטיילים and קנקן נפוליטן).
 
 ## Price sources
 
@@ -60,10 +62,10 @@ beside every priced row.
 Final verification output:
 
 ```
-V3: figures checked: 40 | mismatches vs TSV: NONE | all present: True
-removed absent — 50g: True · cocktail frother: True · Elita: True
+V3: figures checked: 39 | mismatches vs TSV: NONE | all present: True
+removed absent — 50g · cocktail frother · Elita · Neapolitan jug: all True
 ללא מע״מ: True · בש״ח: False · משלוח: False
-pages: 4 | 210×297 mm | 1.71 MB | overflow guard: clean
+pages: 4 | 210×297 mm | 1.70 MB | overflow guard: clean
 ```
 
 ## Photography
@@ -78,9 +80,8 @@ pages: 4 | 210×297 mm | 1.71 MB | overflow guard: clean
 - **ODK purées (3):** `CATALOG/ODK/` clean packshots.
 - **Accessories (8):** `AI YASTREBOVA/small products/` — bowl, frother, whisk,
   beaker, stand, jigger, scoop; brown 500 ml bottle from the same set.
-- **Monogram fallback (3 rows only):** מאצ׳ה 22 שקיות (only a 229 px thumbnail
-  exists anywhere) · ערכת מאצ׳ה · מקציף קוקטיילים · קנקן נפוליטן — no photo in
-  Dropbox or Shopify.
+- **Monogram fallback (2 rows only):** מאצ׳ה 22 שקיות (only a 229 px thumbnail
+  exists anywhere) · ערכת מאצ׳ה — no photo in Dropbox or Shopify.
 
 ## Build kit — `docs/pricing/pricelist_pdf/`
 
@@ -125,6 +126,6 @@ or ₪ and column order flip.
 
 ## Left for Tom
 
-- 2 rows still have no photograph anywhere: ערכת מאצ׳ה · קנקן נפוליטן
+- 1 row still has no photograph anywhere: ערכת מאצ׳ה
   (+ the 22-sachet box exists only as a 229 px thumbnail).
 - Shopify infra/catalog task for מסי is in Notion (created 2026-08-06).
