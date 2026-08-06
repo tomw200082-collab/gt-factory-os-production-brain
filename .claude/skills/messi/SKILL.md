@@ -7,7 +7,10 @@ description: >-
   "יש לי משימה", "תכניס למשימות", "תזכיר לי", "מה נשאר היום", "תבנה לי לוז",
   "אני על זה", "סגרתי את", a pasted voice-note transcript, or a whiteboard photo
   of todos. Also mode=checkpoint (13:00 trigger): silent open-loops sweep —
-  quiet when clean, one targeted push when something slips. NOT for factory-os
+  quiet when clean, one targeted push when something slips. Also mode=worker
+  (09:00/11:00/15:00 triggers): drains docs/ceo/messi/queue.md — work handed to
+  מסי by other sessions to run on the side; silent on success, escalates only
+  what crosses §גבולות. NOT for factory-os
   code/schema/portal work (router+executors), meeting summaries (meeting-summary),
   or the fixed rituals (chief-of-staff-daily, weekly-opening).
 ---
@@ -75,8 +78,8 @@ git add docs/ceo/messi/<תאריך>.md          # + docs/ceo/messi/inbox-fallbac
 git commit -m "log(messi): <תאריך> — <מה השתנה>" && git push origin HEAD
 ```
 
-**יעד ה-push = הענף שהסשן כבר עליו** (`origin HEAD`). עד מיזוג ‎#102 זה
-`claude/personal-assistant-scope-fmbhc2`; אחריו הטריגרים רצים על `main` והלוג נוחת שם.
+**יעד ה-push = הענף שהסשן כבר עליו** (`origin HEAD`). ‎#102 מוזג (2026-08-06, `068b48c`)
+∴ הטריגרים רצים על `main` והלוג נוחת שם.
 ⊥ ענף אחר · ⊥ `--force` · ⊥ ענף ייעודי ללוג (day-open ⊥ ימצא אותו).
 
 ## §גבולות
@@ -86,7 +89,8 @@ git commit -m "log(messi): <תאריך> — <מה השתנה>" && git push origi
 אוטונומיים. ∴ הרשימה הממצה למטה ! מצוטטת בכל ספק כותב (`reference/dispatch.md` חוק 2).
 
 - **כתיבות מותרות (רשימה ממצה — נתיב ∉ כאן ⇒ ⊥ כתיב, למסי ולסוכניו כאחד):** `docs/ceo/messi/<YYYY-MM-DD>.md` ·
-  `docs/ceo/messi/inbox-fallback.md` · נושן לפי `notion_contract.md` §גבולות (G2) ·
+  `docs/ceo/messi/inbox-fallback.md` · `docs/ceo/messi/queue.md` (§mode=worker) ·
+  נושן לפי `notion_contract.md` §גבולות (G2) ·
   התגובה בצ'אט / ה-push לטום · `git add` **בנתיבים המפורשים האלה** + commit + push.
 - **⊥ לעולם:** **merge · deploy · מיגרציית פרוד** · `production_plan` / firm / place ·
   ledger/projections · דגלים קפואים · מערכות חיצוניות (Shopify/LionWheel/Green Invoice) ·
@@ -129,6 +133,61 @@ git commit -m "log(messi): <תאריך> — <מה השתנה>" && git push origi
 5. שגיאת סכימה/קונקטור ⇒ `assumption_failure`: push על הכשל עצמו + שורת
    `CHECKPOINT <HH:MM> FAILURE <סיבה>` ללוג. ⊥ להיעלם בשקט.
 6. **תמיד** — קומיט+push של הלוג (§ביצוע 7). בלי זה השורה ⊥ מגיעה לשער 17:00.
+
+## mode=worker — עבודה שנמסרת מסשן אחר
+
+טריגר: `0 6,8,12 * * 0-4` UTC (09:00 · 11:00 · 15:00 IL קיץ; **חורף `0 7,9,13`**), סשן טרי.
+השעות נבחרו כך שלא ייפלו על day-open (04:30) · checkpoint (10:00) · day-close (14:00) —
+שתי ריצות מסי במקביל ⇒ שתי כתיבות לאותו לוג ⇒ קונפליקט push.
+
+**למה קובץ ו⊥ צ'אט:** הטריגר פותח **סשן טרי בלי זיכרון**. סשן אחר ⊥ יכול לדבר עם
+הוורקר — הוא יכול רק **להשאיר לו עבודה בריפו**. ∴ `docs/ceo/messi/queue.md` הוא הערוץ
+**היחיד**, ומה שלא נדחף לגיט ⊥ קיים לוורקר. זה גם מה שהופך את הערוץ לבר-ביקורת:
+כל מסירה = commit עם מקור, שעה ותוכן.
+
+### `docs/ceo/messi/queue.md` — שורת המסירה
+
+```
+- [ ] <משימה, שורה אחת> · מקור <מי/מה> · נזרק <YYYY-MM-DDTHH:MM+03:00> · done: <קריטריון מכני> · ריפו: <נתיב | "קריאה בלבד">
+```
+
+`done:` ו-`ריפו:` **חובה למשימה כותבת** — בלעדיהם ⊥ ניתן לכתוב ספק תקין
+(`reference/dispatch.md` חוק 2), ∴ השורה ⊥ משוגרת אלא **מוסבת למשימה בנושן** לטום.
+קריאה-בלבד ⇒ `done:` לבד מספיק.
+
+### הלולאה
+
+1. `git pull` — התור נכתב ע"י סשנים אחרים; בלי pull הוורקר עובד על עותק מת.
+2. קרא `queue.md`. אפס `- [ ]` ⇒ **שקט מוחלט**: שורת `WORKER <HH:MM> empty` ללוג היום, קומיט, סוף.
+3. ∀ שורה פתוחה — **למיין לפני שמשגרים:**
+
+| מצב השורה | פעולה |
+|---|---|
+| בתוך §גבולות · `done:` מכני · ריפו מפורש | **משוגרת** — ספק + `[~]` + סוכן רקע |
+| חוצה §גבולות (merge · deploy · פרוד · מערכת חיצונית · הודעה לעובד) | ⊥ מבוצעת ⇒ משימה בנושן + שורה רועשת |
+| `done:` חסר או רך · ריפו חסר · משמעות ⊥ ברורה | ⊥ מבוצעת ⇒ משימה בנושן לטום |
+
+4. **אחד-אחד חל כרגיל** (§ביצוע 4–5): `[~]` יחיד. השאר נשארות `- [ ]` ומחכות לריצה
+   הבאה — ⊥ נדחפות במקביל.
+5. סיום ⇒ `[x]` בתור **וגם** בלוג היום + `תאריך השלמה` בנושן אם יש שורה מקושרת.
+   כשל/45 דק' ⇒ `[!]` בשניהם + `FAILURE` באירועים.
+6. `queue.md` ⊥ נמחק ו⊥ נגזם — שורות סגורות נשארות (אותה סמנטיקה כמו `inbox-fallback.md`).
+7. קומיט+push (§ביצוע 7): `git add docs/ceo/messi/<תאריך>.md docs/ceo/messi/queue.md`.
+
+### הרעש
+
+הוורקר **⊥ מדווח על עבודה שהצליחה** — זה כל הרעיון ב"לרוץ מהצד". push לטום רק על:
+שורה שסורבה (חוצה גבולות / ⊥ ברורה) · `[!]` כשל · 3+ שורות פתוחות שלא נגעו בהן שתי
+ריצות ברצף (התור נסתם).
+
+### למה זה בטוח להריץ אוטונומית
+
+התור הוא ערוץ שכל סשן כותב אליו, ∴ **משטח הזרקה**. מה שמגן הוא ⊥ אמון בכותב אלא
+**רוחב הפגיעה**: הוורקר יורש את §גבולות במלואו — ⊥ merge · ⊥ deploy · ⊥ מיגרציית פרוד ·
+⊥ `production_plan`/firm/place · ⊥ ledger · ⊥ מערכות חיצוניות · ⊥ הודעות לעובדים ·
+וכתיבה **רק** לשלושת הנתיבים ב-§גבולות. שורה שמבקשת יותר ⊥ רצה (שלב 3) — היא הופכת
+למשימה לטום. ∴ הגרוע ביותר שהתור יכול לחולל = שורת לוג מיותרת ומשימה מיותרת בנושן.
+שתיהן הפיכות, שתיהן חתומות בגיט.
 
 ## כשלים
 
