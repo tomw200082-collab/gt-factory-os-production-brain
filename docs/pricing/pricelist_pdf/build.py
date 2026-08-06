@@ -1,264 +1,315 @@
 #!/usr/bin/env python3
-"""GT Everyday — wholesale pricelist PDF. Direction ב ("המדף"), ex-VAT."""
-import base64, os, json, datetime
+"""GT Everyday — wholesale pricelist, A4, Hebrew RTL, all prices ex-VAT.
 
-D = os.path.dirname(os.path.abspath(__file__))
+Design DNA is taken from Tom's Canva products catalog (DAHQrpThEBE), not
+invented: every page there is a full-bleed photograph with white type over it,
+the `gt` mark sits at the top, product names are letterspaced Latin caps beside
+Hebrew, and a hairline rule does the structural work. This sheet keeps all four
+and adds the one thing a pricelist needs and a catalog does not — a price column
+you can run your eye down.
 
-def b64(p, mime):
-    with open(os.path.join(D, p), 'rb') as f:
-        return f"data:{mime};base64," + base64.b64encode(f.read()).decode()
+Palette is sampled from the catalog and the cover photograph:
+  paper  #EFE6D6  the cover photograph's own wall
+  ink    #241C15  the bottle cap
+  green  #263B18  the logo
+  coral  #FA6E4D  the catalog's own accent page
+  rule   #D8CCB4  kraft, lightened
 
-def img(name):
-    p = f"assets/{name}.png"
-    return b64(p, "image/png") if os.path.exists(os.path.join(D, p)) else None
+Prices: 27 of 31 rows come straight from
+docs/pricing/2026-08-05_shopify_products_exvat.tsv (column price_ils_exvat,
+matched by SKU). The rest are Tom's, flagged in FIGURES.
+"""
+import base64, os, pathlib
 
-FONT = {w: b64(f"fonts/heebo-{w}.woff", "font/woff") for w in (400, 500, 700, 900)}
-FRANK = {w: b64(f"fonts/frank-{w}.woff", "font/woff") for w in (400, 500, 700)}
-LOGO_W = b64("assets/logo-white.png", "image/png")
-LOGO_B = b64("assets/logo-black.png", "image/png")
+HERE = pathlib.Path(__file__).parent
+CUT = HERE / 'cut'
 
-# ── data ─────────────────────────────────────────────────────────────────────
-# price = ex-VAT, from the 2026-08-05 Shopify snapshot. AMERICAN + HOJICHA: Tom.
+# ─── palette ────────────────────────────────────────────────────────────────
+PAPER, INK, GREEN, CORAL = '#EFE6D6', '#241C15', '#263B18', '#FA6E4D'
+RULE, MUTED = '#D8CCB4', '#7C6E58'
+
+# ─── data ───────────────────────────────────────────────────────────────────
+# (english, hebrew sub, cutout key, prices…)   price = ex-VAT shekels
 TEAS = [
-    ("FRESH",         "חליטה תאילנדית · היביסקוס וליים",        "fresh",         65, 33),
-    ("FRESH · ללא סוכר", "חליטה תאילנדית · ללא תוספת סוכר",     "fresh_sf",      65, 33),
-    ("DETOX",         "חליטה ישראלית · תה ירוק, לואיזה ונענע",  "detox",         65, 33),
-    ("DETOX · ללא סוכר", "חליטה ישראלית · ללא תוספת סוכר",      "detox_sf",      65, 33),
-    ("ENERGY",        "חליטת שנגחאי · תה ירוק ולמון גראס",      "energy",        65, 33),
-    ("CALM",          "חליטה צרפתית · קמומיל, תפוח וציפורן",    "calm",          65, 33),
-    ("CONSCIOUSNESS", "חליטה קוריאנית · יסמין וליצ׳י",          "consciousness", 65, 33),
-    ("REVIVE",        "חליטה יפנית · סנצ׳ה ופסיפלורה",          "revive",        65, 33),
-    ("DESERTEA",      "חליטה מדברית · חמישה צמחי בר",           "desertea",      65, 33),
-    ("NAMASTEA",      "חליטה הודית · צ׳אי מסאלה",               "namastea",      65, 33),
-    ("AMERICAN",      "חליטה אמריקאית · תה שחור, יוזו והדרים",  None,            65, 33),
+    ("FRESH",           "חליטה תאילנדית · היביסקוס וליים",       "fresh",        65, 33),
+    ("FRESH  ללא סוכר", "חליטה תאילנדית · ללא תוספת סוכר",       "fresh_sf",     65, 33),
+    ("DETOX",           "חליטה ישראלית · תה ירוק, לואיזה ונענע", "detox",        65, 33),
+    ("DETOX  ללא סוכר", "חליטה ישראלית · ללא תוספת סוכר",        "detox_sf",     65, 33),
+    ("ENERGY",          "חליטת שנגחאי · תה ירוק ולמון גראס",     "energy",       65, 33),
+    ("CALM",            "חליטה צרפתית · קמומיל, תפוח וציפורן",   "calm",         65, 33),
+    ("CONSCIOUSNESS",   "חליטה קוריאנית · יסמין וליצ׳י",         "conscious",    65, 33),
+    ("REVIVE",          "חליטה יפנית · סנצ׳ה ופסיפלורה",         "revive",       65, 33),
+    ("DESERTEA",        "חליטה מדברית · חמישה צמחי בר",          "desertea",     65, 33),
+    ("NAMASTEA",        "חליטה הודית · צ׳אי מסאלה",              "namastea",     65, 33),
+    ("AMERICAN",        "חליטה אמריקאית · תה שחור, יוזו והדרים", "american",     65, 33),
 ]
 
 POWDERS = [
-    ("MATCHA שיזואוקה", "מאצ׳ה טקסית יפנית · שקית 500 גרם",   "matcha500", 590),
-    ("MATCHA שיזואוקה", "מאצ׳ה טקסית יפנית · 22 שקיות 18 גרם", "matcha22",  590),
-    ("MATCHA שיזואוקה", "מאצ׳ה טקסית יפנית · שקית 50 גרם",     None,        65),
-    ("GT ELITA",        "מאצ׳ה בפחית · 30 גרם",                None,        38),
-    ("HOJICHA",         "מאצ׳ה שחורה קלויה · 500 גרם",         None,        375),
-    ("UBE",             "אבקת שורש יאם סגול · 1 ק״ג",          "ube1kg",    340),
-    ("UBE",             "אבקת שורש יאם סגול · 500 גרם",        None,        175),
-    ("MATCHA KIT",      "ערכת מאצ׳ה מלאה להכנה",               None,        170),
+    ("MATCHA שיזואוקה", "מאצ׳ה טקסית יפנית · שקית 500 גרם",     "matcha",   590),
+    ("MATCHA שיזואוקה", "מאצ׳ה טקסית יפנית · 22 שקיות 18 גרם",  None,       590),
+    ("MATCHA שיזואוקה", "מאצ׳ה טקסית יפנית · שקית 50 גרם",      "matcha",    65),
+    ("HOJICHA",         "מאצ׳ה שחורה קלויה · 500 גרם",          "hojicha",  375),
+    ("UBE",             "אבקת שורש יאם סגול · 1 ק״ג",           "ube",      340),
+    ("UBE",             "אבקת שורש יאם סגול · 500 גרם",         "ube",      175),
+    ("MATCHA KIT",      "ערכת מאצ׳ה מלאה להכנה",                None,       170),
 ]
 
 PUREES = [
-    ("SMOOTHIE מנגו",   "מחית פרי 50% · 1 ליטר", "odk_man", 60),
-    ("SMOOTHIE תות",    "מחית פרי 50% · 1 ליטר", "odk_str", 60),
-    ("SMOOTHIE אפרסק",  "מחית פרי 50% · 1 ליטר", "odk_pea", 60),
+    ("SMOOTHIE מנגו",  "מחית פרי 50% · 1 ליטר", "odk_man", 60),
+    ("SMOOTHIE תות",   "מחית פרי 50% · 1 ליטר", "odk_str", 60),
+    ("SMOOTHIE אפרסק", "מחית פרי 50% · 1 ליטר", "odk_pea", 60),
 ]
 
 TOOLS = [
-    ("קערת מאצ׳ה קרמית",     "צ׳אוואן מסורתי",             "bowl",     118),
-    ("מקציף מאצ׳ה חשמלי",    "מקציף ידני נטען",            None,       100),
-    ("מקציף קוקטיילים",      "מקציף מקצועי",               None,       75),
-    ("מטרפת במבוק",          "צ׳אסן · 100 שיניים",         "whisk",    37),
-    ("קנקן זכוכית עם מסננת", "קנקן נפוליטן",               None,       36),
-    ("כוס זכוכית 600 מ״ל",   "כוס מדידה מחוסמת",           "glasspot", 30),
-    ("מעמד למטרפה",          "צ׳אסן טאטה",                 "stand",    25),
-    ("כוס מדידה",            "כוס מדידה מזכוכית",          None,       20),
-    ("כף מדידה במבוק",       "צ׳אשאקו",                    "scoop",    11),
-    ("בקבוק מאצ׳ה 500 מ״ל",  "בקבוק זכוכית כהה",           None,       10),
+    ("קערת מאצ׳ה קרמית",     "צ׳אוואן מסורתי",      "bowl",    118),
+    ("מקציף מאצ׳ה חשמלי",    "מקציף ידני נטען",     "frother", 100),
+    ("מקציף קוקטיילים",      "מקציף מקצועי",        None,       75),
+    ("מטרפת במבוק",          "צ׳אסן · 100 שיניים",  "whisk",    37),
+    ("קנקן זכוכית עם מסננת", "קנקן נפוליטן",        None,       36),
+    ("כוס זכוכית 600 מ״ל",   "כוס מדידה מחוסמת",    "beaker",   30),
+    ("מעמד למטרפה",          "צ׳אסן טאטה",          "stand",    25),
+    ("כוס מדידה",            "ג׳יגר מודפס",         "jigger",   20),
+    ("כף מדידה במבוק",       "צ׳אשאקו",             "scoop",    11),
+    ("בקבוק מאצ׳ה 500 מ״ל",  "בקבוק זכוכית כהה",    "bottle",   10),
 ]
 
-TODAY = "06.08.2026"
 
-# ── helpers ──────────────────────────────────────────────────────────────────
+# ─── assets ─────────────────────────────────────────────────────────────────
+def b64(path, mime):
+    return f'data:{mime};base64,' + base64.b64encode(pathlib.Path(path).read_bytes()).decode()
+
+
+def b64png(path, max_px):
+    """Embed a cutout at print resolution, not capture resolution.
+
+    A 24 mm tile at 300 dpi is 284 px; embedding the 1400 px working files
+    quadrupled the shipped PDF for pixels no printer would ever see."""
+    import io
+    from PIL import Image
+    im = Image.open(path)
+    im.thumbnail((max_px, max_px), Image.LANCZOS)
+    buf = io.BytesIO(); im.save(buf, 'PNG', optimize=True)
+    return 'data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode()
+
+
+def font_face(name, weight, file):
+    return (f"@font-face{{font-family:'{name}';font-style:normal;font-weight:{weight};"
+            f"src:url({b64(HERE / 'fonts' / file, 'font/woff')}) format('woff');}}")
+
+
+FONTS = "".join([
+    font_face('Heebo', 300, 'heebo-400.woff'),
+    font_face('Heebo', 500, 'heebo-500.woff'),
+    font_face('Heebo', 700, 'heebo-700.woff'),
+    font_face('Heebo', 900, 'heebo-900.woff'),
+    font_face('Frank', 400, 'frank-400.woff'),
+    font_face('Frank', 500, 'frank-500.woff'),
+    font_face('Frank', 700, 'frank-700.woff'),
+])
+
+LOGO = b64(HERE / 'logo_b.png', 'image/png')          # gt mark, brand green
+LOGO_K = b64(HERE / 'logo_a.png', 'image/png')        # gt mark, black
+
+
+BAND_RATIO = 210 / 48          # page width : band height
+
+
+def band_strip(src, y_frac, out, w=1700):
+    """Full-width strip out of a photograph, top edge at `y_frac` of its height."""
+    from PIL import Image
+    im = Image.open(src).convert('RGB')
+    W, H = im.size
+    sh = int(W / BAND_RATIO)
+    y = min(int(H * y_frac), H - sh)
+    c = im.crop((0, y, W, y + sh)).resize((w, int(w / BAND_RATIO)), Image.LANCZOS)
+    c.save(HERE / out, quality=92)
+    return HERE / out
+
+
 def tile(key):
-    src = img(key) if key else None
-    if src:
-        return f'<div class="tile"><img src="{src}" alt=""></div>'
-    return f'<div class="tile tile--mark"><img src="{LOGO_B}" alt=""></div>'
+    if key and (CUT / f't_{key}.png').exists():
+        return f'<span class="tile"><img src="{b64png(CUT / f"t_{key}.png", 620)}" alt=""></span>'
+    return f'<span class="tile tile--mark"><img src="{LOGO}" alt=""></span>'
 
 
-def row(name, sub, key, prices):
-    cells = "".join(f'<div class="p"><span class="cur">₪</span>{p}</div>' for p in prices)
-    return f"""<div class="row">
-      {tile(key)}
-      <div class="nm"><h4>{name}</h4><p>{sub}</p></div>
-      <div class="lead"></div>
-      <div class="prices">{cells}</div>
-    </div>"""
+def tile_pair(key):
+    """1 L bottle with its 500 ml carafe standing beside it, shared baseline."""
+    big = b64png(CUT / f't_{key}.png', 560)
+    sml = b64png(CUT / f't_sm_{key}.png', 420)
+    return (f'<span class="tile tile-pair"><img class="tb" src="{big}" alt="">'
+            f'<img class="ts" src="{sml}" alt=""></span>')
 
 
-def section(num, title, kicker, rows_html, heads=None):
-    h = ""
-    if heads:
-        h = '<div class="colhead">' + "".join(f"<span>{x}</span>" for x in heads) + "</div>"
-    return f"""<section class="sec">
-      <div class="sechead">
-        <div class="sectitle"><span class="num">{num}</span><h3>{title}</h3></div>
-        <span class="kicker">{kicker}</span>
-      </div>
-      {h}
-      <div class="rows">{rows_html}</div>
-    </section>"""
+def money(v):
+    return f'<span class="p"><span class="cur">₪</span>{v}</span>'
 
 
-tea_rows = "".join(row(n, s, k, [a, b]) for n, s, k, a, b in TEAS)
-pow_rows = "".join(row(n, s, k, [p]) for n, s, k, p in POWDERS)
-pur_rows = "".join(row(n, s, k, [p]) for n, s, k, p in PUREES)
-tool_rows = "".join(row(n, s, k, [p]) for n, s, k, p in TOOLS)
+def row(name, sub, key, prices, pair=False):
+    t = tile_pair(key) if pair else tile(key)
+    return (f'<div class="row">{t}'
+            f'<span class="nm"><b>{name}</b><i>{sub}</i></span>'
+            f'<span class="pp">{"".join(money(p) for p in prices)}</span></div>')
 
-lineup = "".join(
-    f'<img src="{img("cv_"+k)}" alt="">'
-    for k in ["fresh", "detox", "energy", "calm", "consciousness", "revive"]
-)
 
-HTML = f"""<!doctype html>
-<html lang="he" dir="rtl"><head><meta charset="utf-8">
-<title>GT Everyday · מחירון סיטונאי</title>
-<style>
-@font-face{{font-family:Heebo;src:url({FONT[400]}) format('woff');font-weight:400}}
-@font-face{{font-family:Heebo;src:url({FONT[500]}) format('woff');font-weight:500}}
-@font-face{{font-family:Heebo;src:url({FONT[700]}) format('woff');font-weight:700}}
-@font-face{{font-family:Heebo;src:url({FONT[900]}) format('woff');font-weight:900}}
-@font-face{{font-family:Frank;src:url({FRANK[400]}) format('woff');font-weight:400}}
-@font-face{{font-family:Frank;src:url({FRANK[500]}) format('woff');font-weight:500}}
-@font-face{{font-family:Frank;src:url({FRANK[700]}) format('woff');font-weight:700}}
+def section(kicker, title, note=''):
+    return (f'<div class="sec"><span class="sec-t">{title}</span>'
+            f'<span class="sec-k">{kicker}</span>'
+            + (f'<span class="sec-n">{note}</span>' if note else '') + '</div>')
 
-:root{{
-  --ink:#14342F; --paper:#F7F4ED; --rule:#DDD6C7; --muted:#756E5D;
-  --gold:#A8823C; --deep:#0E2622;
-}}
-*{{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+def band(img, kicker, title, note=''):
+    return (f'<div class="band"><img src="{b64(img, "image/jpeg")}" alt="">'
+            f'<div class="band-t"><span class="bk">{kicker}</span>'
+            f'<span class="bt">{title}</span>'
+            + (f'<span class="bn">{note}</span>' if note else '') + '</div></div>')
+
+
+CSS = f"""
+*{{margin:0;padding:0;box-sizing:border-box}}
+{FONTS}
 @page{{size:A4;margin:0}}
-html{{font-family:Heebo,sans-serif}}
-body{{background:var(--paper);color:var(--ink)}}
-.page{{width:210mm;height:297mm;position:relative;overflow:hidden;background:var(--paper);
-  page-break-after:always;padding:16mm 15mm 14mm}}
+html,body{{background:{PAPER}}}
+body{{font-family:'Heebo',sans-serif;color:{INK};-webkit-font-smoothing:antialiased}}
+
+.page{{position:relative;width:210mm;height:297mm;overflow:hidden;background:{PAPER};
+       page-break-after:always;direction:rtl}}
 .page:last-child{{page-break-after:auto}}
 
-/* ── cover ── */
-.cover{{background:var(--deep);color:#F7F4ED;padding:0;display:flex;flex-direction:column}}
-.cover .frame{{position:absolute;inset:9mm;border:1px solid rgba(247,244,237,.16)}}
-.cover .top{{padding:40mm 18mm 0;text-align:center;position:relative;z-index:2}}
-.cover img.logo{{width:26mm;opacity:.97}}
-.cover .eyebrow{{margin-top:11mm;font:500 8.5pt/1 Heebo;letter-spacing:.42em;
-  color:rgba(247,244,237,.62)}}
-.cover h1{{font:700 41pt/1.06 Frank;margin-top:6mm;letter-spacing:-.01em}}
-.cover .sub{{margin-top:5mm;font:400 11pt/1.7 Heebo;color:rgba(247,244,237,.72);max-width:118mm;
-  margin-inline:auto}}
-.cover .vat{{margin-top:10mm;display:inline-block;border:1px solid rgba(168,130,60,.55);
-  color:#D9B570;border-radius:999px;padding:2.6mm 7mm;font:700 10pt/1 Heebo;letter-spacing:.06em}}
-.cover .shelf{{position:absolute;bottom:0;left:0;right:0;height:118mm;z-index:1}}
-.cover .shelf .line{{position:absolute;bottom:29mm;left:9mm;right:9mm;height:1px;
-  background:rgba(247,244,237,.22)}}
-.cover .shelf .bottles{{position:absolute;bottom:29mm;left:0;right:0;display:flex;
-  justify-content:center;align-items:flex-end;gap:1.5mm;padding:0 12mm}}
-.cover .shelf img{{width:28.5mm;height:auto;object-fit:contain;object-position:bottom;
-  filter:drop-shadow(0 2mm 3.5mm rgba(0,0,0,.5))}}
-.cover .foot{{position:absolute;bottom:12mm;left:0;right:0;text-align:center;
-  font:400 8pt/1 Heebo;letter-spacing:.28em;color:rgba(247,244,237,.5);z-index:2}}
+/* ── cover ───────────────────────────────────────────────────────────── */
+.cover{{padding:0}}
+.cover>img{{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%}}
+.cv{{position:absolute;inset:0;padding:33mm 22mm;display:flex;flex-direction:column;align-items:center;
+     text-align:center}}
+.cv .mark{{width:27mm;opacity:.94}}
+.cv .hair{{width:14mm;height:.5px;background:{INK};opacity:.32;margin:9mm 0 8mm}}
+.cv h1{{font-family:'Frank',serif;font-weight:700;font-size:31pt;line-height:1.12;letter-spacing:-.01em}}
+.cv .sub{{margin-top:5.5mm;font-weight:300;font-size:9.2pt;letter-spacing:.055em;color:{MUTED};line-height:1.9}}
+.cv .tag{{margin-top:7mm;font-weight:500;font-size:8.2pt;letter-spacing:.20em;color:{CORAL}}}
+.cv .yr{{margin-top:9mm;font-family:'Frank',serif;font-size:10.5pt;letter-spacing:.34em;
+         color:{INK};opacity:.5}}
 
-/* ── content ── */
-.masthead{{display:flex;align-items:baseline;justify-content:space-between;
-  border-bottom:1.6px solid var(--ink);padding-bottom:3mm;margin-bottom:7mm}}
-.masthead .mh-r{{font:700 13pt/1 Frank;letter-spacing:.01em}}
-.masthead .mh-l{{font:500 7.6pt/1 Heebo;letter-spacing:.24em;color:var(--muted)}}
+/* ── page furniture ──────────────────────────────────────────────────── */
+.foot{{position:absolute;bottom:9mm;right:17mm;left:17mm;display:flex;justify-content:space-between;
+       align-items:flex-end;font-size:6.8pt;letter-spacing:.14em;color:{MUTED}}}
+.foot .mid{{display:flex;flex-direction:column;align-items:center;gap:1.4mm}}
+.foot .mid img{{display:block;width:8.5mm;height:auto;opacity:.62}}
+.foot .pg{{font-family:'Frank',serif;font-size:6.4pt;letter-spacing:.26em;opacity:.85}}
 
-.sec{{margin-bottom:7mm}}
-.sec:last-child{{margin-bottom:0}}
-.sechead{{display:flex;align-items:baseline;justify-content:space-between;
-  border-bottom:1px solid var(--ink);padding-bottom:1.8mm;margin-bottom:1mm}}
-.sectitle{{display:flex;align-items:baseline;gap:3mm}}
-.sectitle .num{{font:700 8pt/1 Heebo;color:var(--gold);letter-spacing:.1em}}
-.sectitle h3{{font:700 14pt/1 Frank;letter-spacing:0}}
-.kicker{{font:400 8pt/1 Heebo;color:var(--muted);letter-spacing:.14em}}
+/* ── opening band ────────────────────────────────────────────────────── */
+.band{{position:relative;width:210mm;height:45mm;overflow:hidden;margin-bottom:5mm}}
+.band img{{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}}
+.band::after{{content:'';position:absolute;inset:0;
+  background:linear-gradient(to left,rgba(20,14,8,.62) 0%,rgba(20,14,8,.30) 46%,rgba(20,14,8,0) 78%)}}
+.band-t{{position:absolute;right:17mm;bottom:8mm;z-index:2;text-align:right;color:#fff}}
+.band-t .bk{{display:block;font-size:7pt;font-weight:500;letter-spacing:.30em;opacity:.85}}
+.band-t .bt{{display:block;font-family:'Frank',serif;font-weight:500;font-size:20pt;margin-top:1.5mm}}
+.band-t .bn{{display:block;font-size:7.4pt;font-weight:300;letter-spacing:.05em;opacity:.8;margin-top:1.5mm}}
 
-.colhead{{display:flex;justify-content:flex-end;gap:0;margin:1.6mm 0 .4mm}}
-.colhead span{{width:23mm;text-align:center;font:500 7pt/1 Heebo;letter-spacing:.16em;
-  color:var(--muted)}}
+/* ── section head (in-page) ──────────────────────────────────────────── */
+.body{{padding:0 17mm}}
+.sec{{position:relative;padding-right:5mm;margin:6.5mm 0 3mm}}
+.sec::before{{content:'';position:absolute;right:0;top:.8mm;bottom:.8mm;width:1.4px;background:{CORAL}}}
+.sec-t{{display:block;font-family:'Frank',serif;font-weight:500;font-size:15pt;color:{GREEN}}}
+.sec-k{{display:block;font-size:6.6pt;font-weight:500;letter-spacing:.30em;color:{MUTED};margin-top:1mm}}
 
-.row{{display:flex;align-items:center;gap:4.5mm;padding:2.45mm 0;
-  border-bottom:.6px solid var(--rule)}}
-.row:last-child{{border-bottom:none}}
-.tile{{width:16mm;height:16mm;flex:0 0 16mm;display:flex;align-items:center;
-  justify-content:center;background:#FFFDF8;border:.6px solid var(--rule);border-radius:50%;
-  overflow:hidden}}
-.tile img{{width:86%;height:86%;object-fit:contain}}
-.tile--mark{{background:#F0EBE0;border-color:#E4DDCD}}
-.tile--mark img{{width:46%;height:46%;opacity:.2}}
-.nm{{min-width:0}}
-.nm h4{{font:700 11pt/1.25 Heebo;letter-spacing:-.005em}}
-.nm p{{font:400 8.4pt/1.35 Heebo;color:var(--muted);margin-top:.4mm}}
-.lead{{flex:1;height:1px;border-bottom:.6px dotted #CFC7B4;margin:0 2mm;
-  transform:translateY(3px)}}
-.prices{{display:flex;gap:0}}
-.p{{direction:ltr;width:23mm;text-align:center;font:700 15pt/1 Heebo;color:var(--ink);
-  font-variant-numeric:tabular-nums;white-space:nowrap}}
-.cur{{font-size:9.5pt;font-weight:500;color:var(--gold);margin-left:.7mm}}
+/* ── rows ────────────────────────────────────────────────────────────── */
+.cols{{display:flex;align-items:flex-end;padding:0 0 1.6mm 0;border-bottom:.6px solid {RULE}}}
+.cols .tile{{height:0}}
+.cols .ch{{width:26mm;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+           gap:1.1mm;font-size:6.6pt;font-weight:500;letter-spacing:.16em;color:{MUTED}}}
+.row{{display:flex;align-items:center;gap:0;padding:1.05mm 0;border-bottom:.6px solid {RULE}}}
+.row:last-child{{border-bottom:0}}
 
-.pagefoot{{position:absolute;bottom:9mm;left:15mm;right:15mm;display:flex;
-  justify-content:space-between;align-items:center;border-top:.6px solid var(--rule);
-  padding-top:2.2mm;font:400 7.4pt/1.5 Heebo;color:var(--muted)}}
-.pagefoot b{{font-weight:700;color:var(--ink)}}
-.pagefoot .pg{{font:500 7.4pt/1 Heebo;letter-spacing:.14em}}
-</style></head><body>
+.tile{{flex:0 0 24mm;height:16.6mm;display:flex;align-items:flex-end;justify-content:center}}
+.tile img{{max-width:100%;max-height:100%;object-fit:contain}}
+.tile--mark{{align-items:center}}
+.tile--mark img{{width:8.5mm;opacity:.16}}
+.tile-pair{{gap:1mm}}
+.tile-pair .tb{{height:100%;width:auto}}
+.tile-pair .ts{{height:64%;width:auto}}
 
-<div class="page cover">
-  <div class="frame"></div>
-  <div class="top">
-    <img class="logo" src="{LOGO_W}" alt="GT Everyday">
-    <div class="eyebrow">מחירון סיטונאי</div>
-    <h1>תמציות, מאצ׳ה<br>ומוצרים משלימים</h1>
-    <div class="sub">בקבוק אחד של תמצית GT הוא 20–25 כוסות משקה.<br>
-      כל המחירים בעמודים הבאים הם מחירי סיטונאות לבית עסק.</div>
-    <div class="vat">כל המחירים ללא מע״מ</div>
+.nm{{flex:1 1 auto;padding-right:5mm;min-width:0}}
+.nm b{{display:block;font-weight:500;font-size:10.4pt;letter-spacing:.055em;line-height:1.22}}
+.nm i{{display:block;font-style:normal;font-weight:300;font-size:7.6pt;color:{MUTED};
+       letter-spacing:.02em;margin-top:.7mm}}
+
+.pp{{flex:0 0 auto;display:flex;direction:ltr}}
+.p{{width:26mm;text-align:center;font-weight:700;font-size:14pt;line-height:1;
+    font-variant-numeric:tabular-nums;white-space:nowrap}}
+.p .cur{{font-size:9pt;font-weight:500;color:{CORAL};margin-right:.6mm;vertical-align:.12em}}
+
+.note{{margin-top:6mm;font-size:7.2pt;font-weight:300;color:{MUTED};letter-spacing:.04em}}
+"""
+
+
+def page_cover():
+    return f"""<div class="page cover">
+  <img src="{b64(HERE / 'src' / 'cover.png', 'image/png')}" alt="">
+  <div class="cv">
+    <img class="mark" src="{LOGO_K}" alt="GT EVERYDAY">
+    <span class="hair"></span>
+    <h1>מחירון סיטונאי</h1>
+    <span class="sub">תמציות תה · מאצ׳ה ואבקות<br>מחיות פרי · מוצרים משלימים</span>
+    <span class="tag">כל המחירים ללא מע״מ</span>
+    <span class="yr">2026</span>
   </div>
-  <div class="shelf">
-    <div class="bottles">{lineup}</div>
-    <div class="line"></div>
-  </div>
-  <div class="foot">GTEVERYDAY.COM · {TODAY}</div>
-</div>
+</div>"""
 
-<div class="page">
-  <div class="masthead">
-    <div class="mh-r">מחירון סיטונאי · GT Everyday</div>
-    <div class="mh-l">כל המחירים בש״ח, ללא מע״מ</div>
-  </div>
-  {section("01", "תמציות תה", "בקבוק = 20–25 כוסות", tea_rows, ["1 ליטר", "500 מ״ל"])}
-  <div class="pagefoot">
-    <div>מחירי סיטונאות לבית עסק · <b>ללא מע״מ</b> · נכון ל־{TODAY}</div>
-    <div class="pg">1 / 3</div>
-  </div>
-</div>
 
-<div class="page">
-  <div class="masthead">
-    <div class="mh-r">מחירון סיטונאי · GT Everyday</div>
-    <div class="mh-l">כל המחירים בש״ח, ללא מע״מ</div>
-  </div>
-  {section("02", "מאצ׳ה ואבקות", "יבוא ישיר", pow_rows)}
-  {section("03", "מחיות פרי", "50% פרי", pur_rows)}
-  <div class="pagefoot">
-    <div>מחירי סיטונאות לבית עסק · <b>ללא מע״מ</b> · נכון ל־{TODAY}</div>
-    <div class="pg">2 / 3</div>
-  </div>
-</div>
+def furniture(n):
+    return (f'<div class="foot"><span>כל המחירים ללא מע״מ</span>'
+            f'<span class="mid"><img src="{LOGO}" alt="GT EVERYDAY">'
+            f'<span class="pg">{n}</span></span>'
+            f'<span>gteveryday.com · 054-398-2444</span></div>')
 
-<div class="page">
-  <div class="masthead">
-    <div class="mh-r">מחירון סיטונאי · GT Everyday</div>
-    <div class="mh-l">כל המחירים בש״ח, ללא מע״מ</div>
-  </div>
-  {section("04", "מוצרים משלימים", "כלי הכנה והגשה", tool_rows)}
-  <div class="pagefoot">
-    <div>להזמנות: <b>054-398-2444</b> · info@gteveryday.com · gteveryday.com</div>
-    <div class="pg">3 / 3</div>
-  </div>
-</div>
 
-</body></html>"""
+def build():
+    # Page-top photographs — Tom's picks, folder CATALOG/2 slide (2026-08-06).
+    b1 = band_strip(HERE / 'hd' / 'h14.png', 0.56, 'band1.jpg')   # bottles + drinks, terrace
+    b2 = band_strip(HERE / 'hd' / 'h09.png', 0.26, 'band2.jpg')   # terracotta arches
+    b3 = band_strip(HERE / 'hd' / 'h12.png', 0.52, 'band3.jpg')   # travertine shelf
 
-open(os.path.join(D, "pricelist.html"), "w", encoding="utf-8").write(HTML)
-n = len(TEAS) + len(POWDERS) + len(PUREES) + len(TOOLS)
-missing = [r[0] + " · " + r[1] for r in TEAS if r[2] is None]
-missing += [r[0] + " · " + r[1] for r in POWDERS if r[2] is None]
-missing += [r[0] + " · " + r[1] for r in TOOLS if r[2] is None]
-print(f"rows={n}  with-photo={n-len(missing)}  no-photo={len(missing)}")
-for m in missing:
-    print("   no photo:", m)
+    # RTL flips flex order, so the price block reads [500 ml, 1 L] left to right
+    # inside its own direction:ltr context — the headers must be built the same
+    # way or they land over the wrong column. Above each label stands the bottle
+    # it prices, so the size→price mapping is visible before any text is read.
+    kb = b64png(CUT / 't_fresh.png', 200)
+    ks = b64png(CUT / 't_sm_fresh.png', 160)
+    hdr = ('<div class="cols"><span class="tile"></span><span class="nm"></span>'
+           f'<span class="pp"><span class="ch"><img src="{ks}" style="height:5.4mm" alt="">'
+           '<span>500 מ״ל</span></span>'
+           f'<span class="ch"><img src="{kb}" style="height:8mm" alt="">'
+           '<span>1 ליטר</span></span></span></div>')
+
+    p1 = f"""<div class="page">{furniture('01')}
+  {band(b1, 'TEA  EXTRACTS', 'תמציות תה', 'בקבוק אחד = 20–25 כוסות משקה')}
+  <div class="body">
+    {hdr}
+    {''.join(row(n, s, k, [p5, p1_], pair=True) for n, s, k, p1_, p5 in TEAS)}
+  </div></div>"""
+
+    p2 = f"""<div class="page">{furniture('02')}
+  {band(b2, 'MATCHA  ·  POWDERS', 'מאצ׳ה ואבקות')}
+  <div class="body">
+    <div style="margin-top:-2mm"></div>
+    {''.join(row(n, s, k, [p]) for n, s, k, p in POWDERS)}
+    {section('FRUIT  PURÉES', 'מחיות פרי')}
+    {''.join(row(n, s, k, [p]) for n, s, k, p in PUREES)}
+  </div></div>"""
+
+    p3 = f"""<div class="page">{furniture('03')}
+  {band(b3, 'TOOLS  ·  SERVEWARE', 'מוצרים משלימים')}
+  <div class="body">
+    {''.join(row(n, s, k, [p]) for n, s, k, p in TOOLS)}
+  </div></div>"""
+
+    html = (f'<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
+            f'<title>GT Everyday — מחירון סיטונאי</title><style>{CSS}</style></head>'
+            f'<body>{page_cover()}{p1}{p2}{p3}</body></html>')
+    (HERE / 'pricelist.html').write_text(html, encoding='utf-8')
+    print('pricelist.html', round((HERE / 'pricelist.html').stat().st_size / 1e6, 2), 'MB')
+    print('rows', len(TEAS) + len(POWDERS) + len(PUREES) + len(TOOLS))
+
+
+if __name__ == '__main__':
+    build()

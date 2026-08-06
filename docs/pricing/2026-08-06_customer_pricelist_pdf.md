@@ -1,124 +1,109 @@
-# Customer-facing pricelist PDF (ex-VAT)
+# Customer-facing pricelist PDF (ex-VAT) — V2
 
-**Date:** 2026-08-06
-**Deliverable:** `docs/pricing/pricelist_pdf/GT_pricelist_2026-08-06.pdf` — 4 pages, A4 210×297 mm, 8.47 MB, fully self-contained (fonts + images embedded base64, no network needed to view).
-**Purpose:** a pricelist Tom can send directly to a HoReCa customer, with a product photo beside every priced row.
-**Direction chosen by Tom:** "ב" — *המדף*, quiet/classic. Prices stay **ללא מע״מ**.
+**Date:** 2026-08-06 (V2, same day — V1 rejected by Tom on elegance + product photos)
+**Deliverable:** `docs/pricing/pricelist_pdf/GT_pricelist_2026-08-06.pdf` — 4 pages,
+A4 210×297 mm, 11.2 MB, fully self-contained (fonts + images embedded base64).
+**Purpose:** a pricelist Tom sends directly to a HoReCa customer, product photo
+beside every priced row.
+
+## Tom's V2 corrections (2026-08-06, all applied)
+
+1. **Page tops are photographs, not compositions.** One lifestyle photo from
+   Dropbox `AI YASTREBOVA/CATALOG/2 slide/` per price page — no more cutting
+   products to build the header strip.
+2. **GT Elita 30g can removed** — "זה לא אמור להיות שם".
+3. **No shipping mention anywhere.**
+4. **No "בש״ח"** — redundant; only "ללא מע״מ" stays.
+5. **Half-liter bottle stands beside the liter bottle** in every tea row, and a
+   bottle of each size stands above its own price column, so size→price is
+   visible before any text is read.
 
 ## Structure
 
-| Page | Content |
-|---|---|
-| Cover | deep green `#0E2622`, gold GT monogram, "תמציות, מאצ׳ה ומוצרים משלימים", pill `כל המחירים ללא מע״מ`, six bottle cutouts standing on a hairline shelf |
-| 1/3 | `01 תמציות תה` — 11 flavours, two price columns (`1 ליטר` · `500 מ״ל`) |
-| 2/3 | `02 מאצ׳ה ואבקות` (8) + `03 מחיות פרי` (3) |
-| 3/3 | `04 מוצרים משלימים` (10) |
+| Page | Band photo (`CATALOG/2 slide/`) | Content |
+|---|---|---|
+| Cover | `hf_20260717_103013…` (Tom's pick) | gt mark, מחירון סיטונאי, כל המחירים ללא מע״מ, 2026 |
+| 01 | `hf…094541` terrace: NAMASTEA·FRESH·DETOX + drinks | תמציות תה — 11 flavours × (1 ליטר ₪65 · 500 מ״ל ₪33), pair tile per row |
+| 02 | `hf…100249` terracotta arches | מאצ׳ה ואבקות (7) + מחיות פרי (3) |
+| 03 | `hf…100640` travertine shelf | מוצרים משלימים (10) |
 
-32 rows, 43 priced figures. Same scope and the same numbers as Canva page 26 of
-`DAHQrpThEBE` (see `2026-08-05_products_pricelist_page.md`).
+31 rows, 42 priced figures (V1's 32nd row was the removed GT Elita).
 
-## Price sources — unchanged from the Canva page
+## Price sources
 
-- 40 of 43 figures: `docs/pricing/2026-08-05_shopify_products_exvat.tsv`, column
-  `price_ils_exvat`, matched by SKU. No conversion, no rounding.
-- 3 figures supplied by Tom on 2026-08-05 (no active Shopify SKU):
-  `AMERICAN` ₪65 / 1 L and ₪33 / 500 ml · `HOJICHA` ₪375 / 500 g.
+- TSV-backed: `docs/pricing/2026-08-05_shopify_products_exvat.tsv`,
+  `price_ils_exvat`, matched by SKU — **0 mismatches** on every keyed row.
+- Tom-supplied (2026-08-05, no active Shopify SKU): `AMERICAN` ₪65/1L + ₪33/500ml ·
+  `HOJICHA` ₪375/500g.
 
-Verification run against the TSV after the final build:
+Final verification output:
 
 ```
-priced rows checked: 43  TSV-backed: 40  Tom-supplied: 3
-PRICE MISMATCHES: NONE
-figures in PDF vs expected: MATCH
-  contains "ללא מע״מ": True
-  contains "מחירון סיטונאי": True
-  contains "054-398-2444": True
-pages: 4 | size mm: 210 x 297
-overflow guard: text blocks below the footer band = 0 on all 4 pages
+figures checked: 42 | PRICE MISMATCHES vs TSV: NONE
+all expected figures present in PDF text: True
+contains "ללא מע״מ": True · "בש״ח": False · "משלוח": False
+pages: 4 | 210×297 mm | overflow guard: clean
 ```
 
 ## Photography
 
-21 of 32 rows carry a real photograph; 11 fall back to a GT-monogram tile.
-
-**Bottle cutouts (10)** — Dropbox `/Data Center/Data Center GT/03_MARKETING_BRAND/תמונות בקבוקים חדשים.zip`.
-File → product, established by opening each image:
-
-| Source file | Product |
-|---|---|
-| `…5588` | FRESH |
-| `…5610` | CALM |
-| `…5616` | DESERTEA |
-| `…5627` | ENERGY |
-| `…5636` | DETOX |
-| `…5645` | REVIVE |
-| `…5656` | NAMASTEA |
-| `…5671` | FRESH ללא סוכר |
-| `…5688` | DETOX ללא סוכר |
-| `…5699` | CONSCIOUSNESS |
-
-**Packshots (11)** — Shopify CDN, URLs listed in `pricelist_pdf/fetch.py`.
-
-Logos: `/Data Center/PRODUCTION 2/B-BAGEL-Tea-Programme/assets/gt-logo-black.png`
-and `/New/ARCHIVE/…/Logos/GT_Logo_White.png`.
-
-### The 11 rows with no photograph anywhere
-
-AMERICAN · מאצ׳ה 50 גרם · GT Elita 30 גרם · HOJICHA · UBE 500 גרם ·
-ערכת מאצ׳ה · מקציף מאצ׳ה חשמלי · מקציף קוקטיילים · קנקן זכוכית עם מסננת ·
-כוס מדידה · בקבוק מאצ׳ה 500 מ״ל.
-
-Neither Dropbox nor Shopify carries an image for these. They render the
-monogram tile, which reads as deliberate rather than missing — but a photo of
-each is the one thing between this and a fully photographed pricelist.
+- **Band photos + cover:** Dropbox `CATALOG/2 slide/` (Tom's link, 2026-08-06).
+- **1 L bottles (11):** `AI YASTREBOVA/all bottles/` — `fresh.jpg`, `fresh +.jpg`,
+  `detox.jpg`, `detox +.jpg`, `energy.jpg`, `calm.jpg`, `consiusness.jpg`,
+  `revive.jpg`, `desert tea.jpg`, `namastea.jpg`, `american.png`.
+- **500 ml carafes (11):** same folder, the `* small` files — every flavour has one.
+- **Powders (3):** `CATALOG/MATCHA UBE HOJICHA/` — matcha (black bag), hojicha
+  (gold bag), ube (white bag).
+- **ODK purées (3):** `CATALOG/ODK/` clean packshots.
+- **Accessories (8):** `AI YASTREBOVA/small products/` — bowl, frother, whisk,
+  beaker, stand, jigger, scoop; brown 500 ml bottle from the same set.
+- **Monogram fallback (3 rows only):** מאצ׳ה 22 שקיות (only a 229 px thumbnail
+  exists anywhere) · ערכת מאצ׳ה · מקציף קוקטיילים · קנקן נפוליטן — no photo in
+  Dropbox or Shopify.
 
 ## Build kit — `docs/pricing/pricelist_pdf/`
 
 | File | Job |
 |---|---|
-| `getfonts.py` | Heebo 400/500/700/900 + Frank Ruhl Libre 400/500/700 as full-charset WOFF |
-| `fetch.py` | Shopify CDN packshots → `raw/` |
-| `prep3.py` / `prep4.py` | white-background cutout extraction → `assets/` |
-| `build.py` | data tables + HTML/CSS → `pricelist.html` |
-| `fonts/` | the seven WOFF files, committed (Google Fonts is UA-dependent, see below) |
+| `getfonts.py` | Heebo + Frank Ruhl Libre full-charset WOFF (Firefox-27 UA trick) |
+| `cut.py` | packshot → transparent cutout (see findings below) |
+| `build.py` | data + HTML/CSS → `pricelist.html`; band crops from the source photos |
+| `fonts/` | the seven WOFF files, committed |
 
-`assets/` and `raw/` are **not** committed — they are regenerable byte-for-byte
-from `fetch.py` + `prep4.py` plus the Dropbox zip named above.
+Source photos are **not** committed (Dropbox is their home); `build.py` headers
+name every path.
 
 ```bash
-python3 getfonts.py && python3 fetch.py && python3 prep4.py && python3 build.py
-/opt/pw-browsers/chromium-1194/chrome-linux/chrome --headless --disable-gpu \
-  --no-sandbox --no-pdf-header-footer --virtual-time-budget=20000 \
+python3 getfonts.py            # once
+python3 -c 'import cut; …'     # per-image calls are listed in build history
+python3 build.py
+chrome --headless --disable-gpu --no-sandbox --no-pdf-header-footer \
   --print-to-pdf=GT_pricelist.pdf pricelist.html
 ```
 
-## Three findings worth keeping
+## Findings worth keeping (new in V2)
 
-**Google Fonts serves a different file per User-Agent.** A modern Chrome UA
-returns Latin-only subset woff2 — Hebrew renders as tofu. An IE UA returns EOT,
-unusable. `Mozilla/5.0 (Windows NT 6.1; rv:27.0) Gecko/20100101 Firefox/27.0`
-returns a **single full-charset WOFF per weight**; each file verified to carry
-50–53 Hebrew glyphs plus `₪` before use.
+**`ImageDraw.floodfill` is a silent no-op in Pillow 12.3.0** (mode-L images).
+Any mask cleanup built on it inverts or deletes nothing — replaced with numpy
+label propagation (`keep_blobs`, `fill_holes` in `cut.py`).
 
-**Cutting a product out of a white background without a halo.** Thresholding
-luminance alone eats the cream labels; thresholding saturation alone keeps the
-grey drop-shadow. Keeping *dark OR colourful* does both:
+**Two mask families, not one.** Bottles on a grey sweep: keep DARK∨SATURATED
+pixels. White bags on a cream/white sweep: keep pixels far from a **separable
+backdrop model** (horizontal lighting profile × per-row scale, sampled from the
+frame's own margins) — a flat threshold either eats the bag or keeps the shadow.
+Holes punched through white products are closed topologically: flood the
+background from the frame edge; unreachable background = enclosed hole = object.
 
-```python
-dark = L.point(lambda v: 255 if v < 205 else 0)
-col  = sat.point(lambda v: 255 if v > 14 else 0)
-m = ImageChops.lighter(dark, col)
-m = m.filter(MaxFilter(5)).filter(MinFilter(5)).filter(GaussianBlur(0.6))
-```
+**Embed at print resolution.** A 24 mm tile at 300 dpi is 284 px; embedding
+1400 px working files shipped a 28 MB PDF. Downscaling embeds (`b64png`) cut it
+to 11.2 MB with zero visible change.
 
-**RTL flips column order, not glyph order.** In `direction: rtl` the first flex
-child renders rightmost, so the header array must be written
-`["1 ליטר", "500 מ״ל"]` to appear as `500 מ״ל | 1 ליטר`. Price cells need
-`direction: ltr` of their own or `₪` lands on the wrong side of the digits.
+**RTL flex order** (unchanged from V1): first child renders rightmost; price
+cells and column headers must be built inside their own `direction:ltr` context
+or ₪ and column order flip.
 
 ## Left for Tom
 
-- Photograph the 11 products above (or confirm the monogram tile is fine).
-- The pricelist carries **ex-VAT** prices — matches the Canva page and Tom's
-  instruction. If it ever goes to a consumer rather than a business, the basis
-  changes and the footnote must change with it.
+- 3 rows still have no photograph anywhere: ערכת מאצ׳ה · מקציף קוקטיילים ·
+  קנקן נפוליטן (+ the 22-sachet box exists only as a 229 px thumbnail).
+- Shopify infra/catalog task for מסי is in Notion (created 2026-08-06).
