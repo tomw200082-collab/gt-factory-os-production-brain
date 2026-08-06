@@ -73,6 +73,15 @@ per-invoice attribution is lost. Logged as an exception.
 - **Currency**: one USD invoice exists. Multiply by `currencyRate` for ILS.
 - **Shipping**: barely invoiced (₪830 over 20 months, 2 lines). Excluded by
   description to honour the "מחזור excludes shipping" definition.
+- **Product families are classified from the invoice description**, because the
+  Green Invoice `catalogNum` is a barcode and does not join to `items.sku`. The
+  classifier must match Hebrew descriptions, not just English: matcha is sold as
+  `Maruei טקסית, שקית אלומיניום 500 גרם` and `Shizuoka טקסית…`, and DESERTEA
+  ships as `Desert Infusion 1000ml`. Matching only on the English family names
+  stranded ₪354K in an "אחר" bucket, ₪202K of it matcha. Non-product lines
+  (`התחשבנות`, `שירותי צילום`, `עלות מיקסר`) are classified separately rather
+  than counted as products. Classification regroups revenue only — it never
+  changes any total.
 - **VAT**: never multiply or divide by 1.18 to reconcile the two systems.
   Shopify `net_sales` and Green Invoice `amountExcludeVat` are both already
   net of VAT.
