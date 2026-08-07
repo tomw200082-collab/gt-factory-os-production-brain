@@ -320,6 +320,10 @@ section{{scroll-margin-top:calc(var(--head) + 50px)}}
 .foot{{margin:8px var(--gut) 0; padding:40px 0 30px; text-align:center; color:var(--muted); font-size:13px; letter-spacing:.02em}}
 .foot img{{width:40px; margin:0 auto 16px; opacity:.62}}
 .foot .l{{margin-top:7px}}
+.foot .dl{{margin-top:16px}}
+.foot .dl a{{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;
+  border:1px solid var(--rule); text-decoration:none; color:var(--ink);
+  font-family:'Rubik',sans-serif; font-weight:600; font-size:13.5px; letter-spacing:.01em}}
 .foot .yr{{margin-top:16px; font-family:'Rubik',sans-serif; font-weight:600; font-size:12px;
   letter-spacing:.36em; opacity:.55}}
 
@@ -507,6 +511,7 @@ def render():
   <img src="{img('logo_green.png')}" alt="GT Everyday">
   <p>כל המחירים ללא מע״מ</p>
   <p class="l">gteveryday.com · {TEL}</p>
+  {'<p class="dl"><a href="GT_pricelist_mobile.pdf" download>הורדת המחירון · PDF</a></p>' if MODE == 'site' else ''}
   <p class="yr">2026</p>
 </footer>
 

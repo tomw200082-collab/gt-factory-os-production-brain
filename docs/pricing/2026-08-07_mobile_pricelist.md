@@ -120,3 +120,57 @@ carry it.
 and faces as the page, because the link will mostly be opened out of a WhatsApp
 message and the card is the first thing a buyer sees. `icon-180.png` covers
 add-to-home-screen; `icon-32.png` the browser tab.
+
+## Phone-shaped PDF — `pricelist_mobile/GT_pricelist_mobile.pdf`
+
+**9 pages · 90 × 160 mm (exactly 9:16) · 0.49 MB.** Built by `build_pdf.py`.
+
+A PDF is what a buyer keeps — it survives in a WhatsApp thread, opens without a
+signal, and gets forwarded to a partner. The A4 sheet does none of that well on
+a phone: it arrives as a page you pinch and pan. Here the page *is* the phone,
+so every page fills the screen at full width and a swipe is a whole new screen.
+
+### It argues where the web page answers
+
+The web page is operated — "what does X cost", three seconds, so every row
+carries its own price. The PDF is read, so it is built the other way:
+
+- **Eleven teas at one price do not need the price printed eleven times.** The
+  pair is stated once at the head of the section (`1 ליטר ₪65 · 500 מ״ל ₪33`)
+  and the rows are then free to be what actually sells them — the label art and
+  the infusion. Same for the three purées at ₪60.
+- Only the sections whose prices genuinely differ set a price per row: powders
+  and tools.
+- No tinted panels, no chips. Hairlines and paper.
+
+### Page 2 — the one derived figure
+
+Everything on this sheet is quoted from `build_mobile.py` except one line:
+
+```
+₪2.60 – ₪3.25   עלות התמצית בכוס
+₪65 ÷ 25 כוסות = ₪2.60   ·   ₪65 ÷ 20 כוסות = ₪3.25
+```
+
+It is arithmetic on two figures the print sheet already carries — ₪65 a litre
+and 20–25 cups a bottle — and the division is printed underneath so nothing is
+claimed that those two numbers do not already say. It is the page most likely
+to make a café owner order, and it is also the one line to delete if that
+framing is unwanted: `CUPS_LOW` / `CUPS_HIGH` in `build_pdf.py`.
+
+### Overflow guard
+
+Page splits (tea 5 + 6, tools 5 + 3) are set by what fits, not by the
+catalogue. A row pushed past the page edge would be *invisible* — the page count
+would not change and the product would simply vanish — so the build measures
+every row against the page and **fails** rather than emitting a short sheet:
+
+```
+GT_pricelist_mobile.pdf  0.49 MB  ·  9 pages  ·  90mm×160mm  ·  overflow guard clean
+```
+
+Verified after build: 9 pages, 28 products, all 16 distinct prices present,
+`ללא מע״מ` stated, no VAT-inclusive wording, four subset faces embedded.
+
+The PDF is copied into `site/` and linked from the page footer, so
+`pricelist.gteveryday.com` both shows the catalogue and hands over the file.

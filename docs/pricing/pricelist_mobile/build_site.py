@@ -95,6 +95,10 @@ def build():
 }
 """, encoding='utf-8')
 
+    pdf = HERE / 'GT_pricelist_mobile.pdf'
+    if pdf.exists():
+        shutil.copy2(pdf, SITE / pdf.name)
+
     (SITE / 'robots.txt').write_text(
         'User-agent: *\nDisallow: /\n' if not bm.INDEXABLE
         else f'User-agent: *\nAllow: /\nSitemap: {bm.SITE_URL}/\n', encoding='utf-8')
