@@ -93,26 +93,44 @@ TOOLS = [
 
 
 # ─── embedding ──────────────────────────────────────────────────────────────
+# Two delivery modes off one source. 'inline' bakes every byte into the file, so
+# the page survives being forwarded, saved or opened offline — that is the whole
+# point of the sendable edition. 'site' links assets instead, because a hosted
+# page wants them cached separately and the HTML parsed in one small chunk.
+MODE = 'inline'
+FONT_EXT = 'woff'          # site mode subsets to woff2; inline keeps the woff it embeds
+
+FACES = [
+    ('Heebo', 400, 'heebo-400.woff'),
+    ('Rubik', 500, 'rubik-500.woff'),
+    ('Rubik', 600, 'rubik-600.woff'),
+    ('Rubik', 700, 'rubik-700.woff'),
+]
+
+
 def data_uri(path, mime):
     return f'data:{mime};base64,' + base64.b64encode(path.read_bytes()).decode()
 
 
 def img(name):
+    if MODE == 'site':
+        return f'assets/{name}'
     mime = 'image/png' if name.endswith('.png') else 'image/jpeg'
     return data_uri(ASSETS / name, mime)
 
 
 def face(family, weight, file):
+    stem = file.rsplit('.', 1)[0]
+    if MODE == 'site':
+        src, fmt = f'fonts/{stem}.{FONT_EXT}', FONT_EXT
+    else:
+        src, fmt = data_uri(FONTS / file, 'font/woff'), 'woff'
     return (f"@font-face{{font-family:'{family}';font-style:normal;font-weight:{weight};"
-            f"font-display:swap;src:url({data_uri(FONTS / file, 'font/woff')}) format('woff')}}")
+            f"font-display:swap;src:url({src}) format('{fmt}')}}")
 
 
-FONT_FACES = "".join([
-    face('Heebo', 400, 'heebo-400.woff'),
-    face('Rubik', 500, 'rubik-500.woff'),
-    face('Rubik', 600, 'rubik-600.woff'),
-    face('Rubik', 700, 'rubik-700.woff'),
-])
+def font_faces():
+    return "".join(face(*f) for f in FACES)
 
 
 # ─── markup helpers ─────────────────────────────────────────────────────────
@@ -165,8 +183,8 @@ def sec_head(title, kicker, count, span, note=''):
 
 
 # ─── stylesheet ─────────────────────────────────────────────────────────────
-CSS = f"""
-{FONT_FACES}
+def css():
+    return f"""{font_faces()}
 *,*::before,*::after{{margin:0;padding:0;box-sizing:border-box}}
 :root{{
   --paper:{PAPER}; --ink:{INK}; --green:{GREEN}; --coral:{CORAL};
@@ -336,6 +354,7 @@ section{{scroll-margin-top:calc(var(--head) + 50px)}}
 }}
 """
 
+
 JS = """
 (function(){
   var rows=document.querySelectorAll('.row');
@@ -385,7 +404,7 @@ TEL_SVG = ('<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><pat
            '1.24.2 2.44.57 3.57.11.35.03.75-.25 1.03l-2.22 2.2Z"/></svg>')
 
 
-def build():
+def render():
     teas = "".join(tea_row(n, s, k, i) for i, (n, s, k) in enumerate(TEAS))
     powders = "".join(row(n, s, k, v, i) for i, (n, s, k, v) in enumerate(POWDERS))
     purees = "".join(row(n, s, k, v, i) for i, (n, s, k, v) in enumerate(PUREES))
@@ -399,7 +418,7 @@ def build():
 <meta name="theme-color" content="{PAPER}">
 <meta name="description" content="GT Everyday — מחירון סיטונאי 2026. תמציות תה, מאצ׳ה ואבקות, מחיות פרי ומוצרים משלימים. כל המחירים ללא מע״מ.">
 <title>GT Everyday · מחירון סיטונאי 2026</title>
-<style>{CSS}</style>
+<style>{css()}</style>
 </head>
 <body>
 
@@ -472,6 +491,11 @@ def build():
 </body>
 </html>"""
 
+    return html
+
+
+def build():
+    html = render()
     out = HERE / 'GT_pricelist_mobile.html'
     out.write_text(html, encoding='utf-8')
 
@@ -481,7 +505,7 @@ def build():
     body = html.split('<body>', 1)[1].rsplit('</body>', 1)[0]
     (HERE / 'artifact.html').write_text(
         '<title>GT Everyday · מחירון סיטונאי 2026</title>\n'
-        f'<style>html,body{{direction:rtl}}{CSS}</style>\n{body}',
+        f'<style>html,body{{direction:rtl}}{css()}</style>\n{body}',
         encoding='utf-8')
     rows = len(TEAS) + len(POWDERS) + len(PUREES) + len(TOOLS)
     figures = len(TEAS) * 2 + len(POWDERS) + len(PUREES) + len(TOOLS)
