@@ -28,11 +28,18 @@ scenarios, **all inactive, all with `executions: 0` — none has ever run**:
 
 Nothing had to be built from scratch. The alert path existed and was broken.
 
-## 3. Root cause of "no leads since June"
+## 3. Why lead intake appears to have stopped in June
 
-**The Facebook OAuth connection expired on `2026-06-07T20:37:12Z`. The last lead in the
-sheet is dated `07/06/2026`.** Same day. Lead intake did not decay — it was cut at the moment
-the token died.
+> **Superseded in part — read §6a first.** This section originally claimed the expired Make
+> Facebook connection *caused* the stop. Tom then confirmed Facebook writes to Sheets
+> **directly, with Make not in that path** — in which case a dead Make connection could not
+> have stopped intake. The date coincidence below is real and still worth explaining, but it
+> is **correlation, not an established cause**. Stated plainly rather than left implied.
+
+**The Facebook OAuth connection in Make expired on `2026-06-07T20:37:12Z`. The last lead in
+the sheet is dated `07/06/2026`.** Same day. Two readings survive: both broke at once (e.g. a
+single Facebook-side authorization revocation cascading to every integration), or the ad
+campaign simply ended then. **Not resolved here.**
 
 All three Facebook connections on the team are expired:
 
@@ -122,16 +129,53 @@ design of the original email was preserved as-is.
 **Not caused by this change:** `isinvalid: true` was already set before the edit — it is
 visible in the first inventory of the folder, prior to any write.
 
+## 6a. Correction after Tom's answer (same day)
+
+Tom confirmed: **Facebook writes directly to Google Sheets. Make is not in that path.** This
+resolves the §5 unknown about who wrote the ~248 rows, and it changes the conclusion:
+
+- **The sheet-row trigger is the correct design**, not a workaround. `watchRows` fires on any
+  new row regardless of who wrote it, which is exactly what is wanted.
+- **The Facebook connection is no longer needed for this alert.** §7 previously listed
+  reconnecting Facebook as a prerequisite; it is not. The alert needs only Sheets (read) and
+  Gmail (send). Facebook mattered only to `GT Leads — Instant` (5174396), which Tom's answer
+  makes redundant for this purpose.
+
+## 6b. Second blocker found — every Google connection in Make is revoked
+
+Attempting to enumerate the spreadsheet's tabs via Make's `rpcSheet` RPC failed on every
+Sheets-capable connection on team `1240098`:
+
+| Connection | ID | Result |
+|---|---|---|
+| `My Google connection` — **used by the alert** | 6228582 | `invalid_grant` |
+| `לידים GT` | 6520212 | `invalid_grant` |
+| `My Google connection` | 6520125 | `invalid_grant` |
+| `My Google connection` | 6520267 | `invalid_grant` |
+| MCP credentials | 8762451 | authenticates, but lacks Sheets scope |
+
+**This — not the template defects — is what makes the scenario `isinvalid`.** It cannot read
+the sheet at all. These connections carry `expire: null`, so they do not appear expired in a
+connection listing; the refresh token is revoked, which only surfaces on use.
+
+Gmail (6308857) is unaffected and demonstrably working — the Guardian daily email delivered as
+recently as 2026-08-05. The send side is fine; the read side is dead.
+
 ## 7. Blocked on Tom — cannot be done from here
 
-1. **Reconnect Facebook.** OAuth re-authorization happens in a browser session. Until then no
-   Facebook-triggered scenario can run, whatever else is fixed.
+1. **Reconnect Google in Make** (§6b). Browser OAuth. Facebook is *not* required (§6a).
 2. **Set the trigger's starting row, then activate.** A `watchRows` trigger has no starting
    pointer until one is chosen, and that pointer has no field in the blueprint — it is only
    settable in the Make UI. This is also the safety gate: choosing **"from now on"** rather
-   than the first row is what prevents ~51 historical rows from firing ~51 emails at once.
+   than the first row is what prevents historical rows from firing a burst of emails at once.
    This is why activation was deliberately left undone rather than automated.
-3. **Decide the system-of-record tab** (§5), so writer and watcher agree.
+3. **Confirm which tab Facebook writes into** (§5). Unresolved here: the tab list could not be
+   read (§6b) and Drive metadata does not expose tab names. The alert currently watches
+   `לידים נכנסים`. If Facebook actually writes to the curated tab, the trigger must be
+   re-pointed **and every field re-mapped** — the two layouts share no column order.
+
+**Note:** the spreadsheet's `modifiedTime` is `2026-08-07T14:21:22Z` — it is still being
+edited today, despite carrying no lead row newer than 07/06/2026.
 
 ## 8. Governance
 
