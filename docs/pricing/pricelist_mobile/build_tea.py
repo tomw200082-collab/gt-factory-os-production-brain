@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 """GT Everyday — tea collection, phone-shaped PDF. No prices.
 
-Not a pricelist — a shop window. Eleven infusions, two to a page, each with
-both bottles (1 L + 500 ml) and one spoken-Hebrew line that sells it. The
+Not a pricelist — a shop window. Eleven infusions, two to a page, each as a
+framed studio photograph with one spoken-Hebrew line that sells it. The
 sheet's job is to make someone want the tasting, not to close the numbers;
 the numbers live in GT_pricelist_mobile.pdf.
 
-Names, origin lines and photography come from build_mobile.py. The only text
-authored here is the marketing line per flavour, in PITCH below.
+Photography is the original studio set (Dropbox `AI YASTREBOVA/all bottles`,
+2026-07-17), cropped to a uniform 3:4 around the bottle and kept on its own
+clean backdrop — framed, not cut out (Tom, 2026-08-07). Names and origin lines
+come from build_mobile.py. The only text authored here is PITCH below.
+
+AMERICAN is not yet on sale — its page carries a coming-soon badge and closes
+the book as a teaser rather than an offer.
 
 Pages: cover · 5 × pairs (base + sugar-free share a page) · AMERICAN solo
 finale · order page = 8, at 90 × 160 mm (9:16, the phone's own shape).
@@ -22,21 +27,22 @@ import build_mobile as bm
 HERE = pathlib.Path(__file__).parent
 NODE_PW = '/opt/node22/lib/node_modules/playwright/index.mjs'
 PAGE_W, PAGE_H = '90mm', '160mm'
+TEL_TOM = '053-725-2858'          # Tom's own line — this catalog only (Tom, 2026-08-07)
 
 # One selling line per flavour — spoken Hebrew, keyed by the flavour's display
 # name so a rename in build_mobile.py fails the build instead of dropping copy.
 PITCH = {
-    'FRESH':          'היביסקוס וליים על קרח — חמצמץ, צבעוני, והדבר הראשון שנגמר במקרר.',
-    'FRESH ללא סוכר': 'כל הרעננות של FRESH, בלי טיפת סוכר. חמצמץ נקי שמתוק רק מהפרי.',
-    'DETOX':          'תה ירוק, לואיזה ונענע — טעם של בוקר נקי, גדל כאן בישראל.',
-    'DETOX ללא סוכר': 'הגרסה שהגוף אומר לה תודה — אותו ניקיון, בלי תוספת סוכר בכלל.',
-    'ENERGY':         'תה ירוק ולמון גראס שמעירים באמת — הקפה הקר של עולם התה.',
-    'CALM':           'קמומיל, תפוח וציפורן — הכוס שמורידה את הווליום בסוף היום.',
-    'CONSCIOUSNESS':  'יסמין וליצ׳י — פרחוני, מתוק בעדינות, הכוס שכולם שואלים עליה.',
-    'REVIVE':         'סנצ׳ה יפנית ופסיפלורה — מדויק ומרענן, קיץ בתוך בקבוק.',
-    'DESERTEA':       'חמישה צמחי בר מהמדבר — טעם שלא טעמתם בשום מקום אחר.',
-    'NAMASTEA':       'צ׳אי מסאלה אמיתי — תבלינים חמים שעובדים מדהים גם על קרח.',
-    'AMERICAN':       'תה שחור, יוזו והדרים — אייס טי כמו שצריך, בלי להתנצל.',
+    'FRESH':          'היביסקוס וליים שנפתחים לאדום עמוק בכוס. אצל הלקוחות שלנו זה הבקבוק שנגמר ראשון.',
+    'FRESH ללא סוכר': 'אותו ליים, אותו היביסקוס, בלי סוכר. מי שטועם לא מרגיש שחסר משהו.',
+    'DETOX':          'לואיזה ונענע על תה ירוק. קליל וצמחי, מהסוג שאפשר לשתות כל היום בלי להתעייף ממנו.',
+    'DETOX ללא סוכר': 'למי שרוצה נקי עד הסוף. רק הצמחים והתה, שום דבר מעבר.',
+    'ENERGY':         'למון גראס ותה ירוק עם בעיטה. השעה ארבע אחר הצהריים של אנשים שלא שותים קפה.',
+    'CALM':           'קמומיל, תפוח וקצת ציפורן. חם בערב, קר בצהריים — הראש יורד הילוך.',
+    'CONSCIOUSNESS':  'יסמין וליצ׳י. נשמע מוזר עד הלגימה הראשונה, ואז מבינים למה שואלים עליו כל הזמן.',
+    'REVIVE':         'סנצ׳ה יפנית עם פסיפלורה. עדין וחמצמץ, ועל קרח עם עלה נענע — קיץ.',
+    'DESERTEA':       'חמישה צמחי בר מהמדבר הישראלי. כוס שאף תפריט אחר בארץ לא מגיש.',
+    'NAMASTEA':       'מסאלה צ׳אי עם הל, קינמון וג׳ינג׳ר. עם חלב מוקצף חם — קשה לחזור אחורה.',
+    'AMERICAN':       'תה שחור עם יוזו והדרים. אייס טי אמריקאי קלאסי — נוחת אצלנו ממש בקרוב.',
 }
 _names = {n for n, _, _ in bm.TEAS}
 assert set(PITCH) == _names, f'PITCH out of sync with TEAS: {set(PITCH) ^ _names}'
@@ -77,13 +83,14 @@ body{{font-family:'Heebo',sans-serif;color:{bm.INK};-webkit-font-smoothing:antia
 
 /* ── flavour pages: two tall blocks, one hairline between ─────────────── */
 .half{{position:absolute;right:9mm;left:9mm;height:69mm;display:flex;align-items:center;
-  gap:5mm}}
+  gap:5.5mm}}
 .half.a{{top:7mm}}
 .half.b{{top:81mm;border-top:.5px solid {bm.RULE};padding-top:0}}
-.half .ph{{flex:0 0 26mm;height:56mm;display:flex;align-items:flex-end;justify-content:center;
-  gap:1.6mm}}
-.half .ph .l{{height:100%;width:auto}}
-.half .ph .s{{height:64%;width:auto}}
+/* the photograph keeps its own studio backdrop; the frame is a hairline with a
+   narrow paper-white matte, like a print in a gallery */
+.half .ph{{flex:0 0 34mm;background:#fff;border:.5px solid {bm.RULE};padding:1.3mm;
+  box-shadow:0 .8mm 2.4mm rgba(36,28,21,.10)}}
+.half .ph img{{display:block;width:100%;height:auto}}
 .half .tx{{flex:1 1 auto;min-width:0}}
 .half .no{{font-family:'Rubik',sans-serif;font-weight:600;font-size:6.4pt;letter-spacing:.3em;
   color:{bm.CORAL_INK}}}
@@ -98,9 +105,12 @@ body{{font-family:'Heebo',sans-serif;color:{bm.INK};-webkit-font-smoothing:antia
 /* ── finale: one flavour, full stage ──────────────────────────────────── */
 .solo{{position:absolute;inset:0;padding:0 11mm;display:flex;flex-direction:column;
   justify-content:center;align-items:center;text-align:center}}
-.solo .ph{{height:74mm;display:flex;align-items:flex-end;gap:2.5mm}}
-.solo .ph .l{{height:100%;width:auto}}
-.solo .ph .s{{height:64%;width:auto}}
+.solo .ph{{width:52mm;background:#fff;border:.5px solid {bm.RULE};padding:1.6mm;
+  box-shadow:0 1mm 3mm rgba(36,28,21,.12);position:relative}}
+.solo .ph img{{display:block;width:100%;height:auto}}
+.solo .soon{{position:absolute;top:4mm;left:-3mm;background:{bm.CORAL};color:{bm.INK};
+  font-family:'Rubik',sans-serif;font-weight:700;font-size:7.6pt;letter-spacing:.16em;
+  padding:2mm 4.4mm;box-shadow:0 .6mm 2mm rgba(36,28,21,.18)}}
 .solo .no{{margin-top:7mm;font-family:'Rubik',sans-serif;font-weight:600;font-size:7pt;
   letter-spacing:.34em;color:{bm.CORAL_INK}}}
 .solo h2{{margin-top:2mm;font-family:'Rubik',sans-serif;font-weight:700;font-size:22pt}}
@@ -146,10 +156,14 @@ def show(name):
     return f'<span{size}>{name}</span>{qual}'
 
 
+def ph(key):
+    return f'data:image/jpeg;base64,' + __import__('base64').b64encode(
+        (HERE / 'assets' / 'tea' / f'ph_{key}.jpg').read_bytes()).decode()
+
+
 def block(pos, idx, name, origin, key):
     return f"""<div class="half {pos}">
-  <span class="ph"><img class="l" src="{bm.img(f'big_{key}.jpg')}" alt="">
-    <img class="s" src="{bm.img(f'sml_{key}.jpg')}" alt=""></span>
+  <span class="ph"><img src="{ph(key)}" alt="{name}"></span>
   <span class="tx">
     <span class="no">N°{idx:02d}</span>
     <h2>{show(name)}</h2>
@@ -186,13 +200,12 @@ def build():
     name, origin, key = FINALE
     finale = f"""<div class="p">
   <div class="solo">
-    <span class="ph"><img class="l" src="{bm.img(f'big_{key}.jpg')}" alt="">
-      <img class="s" src="{bm.img(f'sml_{key}.jpg')}" alt=""></span>
-    <span class="no">N°11</span>
+    <span class="ph"><img src="{ph(key)}" alt="{name}">
+      <span class="soon">בקרוב</span></span>
+    <span class="no">N°11 · COMING&nbsp;SOON</span>
     <h2>{name}</h2>
     <span class="or">{origin}</span>
     <p class="say">{PITCH[name]}</p>
-    <span class="sz">1 ליטר · 500 מ״ל</span>
   </div>
   {foot(7)}
 </div>"""
@@ -201,8 +214,8 @@ def build():
   <div class="order">
     <img class="mark" src="{bm.img('logo_green.png')}" alt="GT EVERYDAY">
     <h2>רוצים לטעום?</h2>
-    <p class="sub">כל טעם מגיע בבקבוק ליטר או חצי ליטר<br>כותבים לנו — ומרכיבים יחד את המקרר שלכם</p>
-    <div class="cta"><small>בוואטסאפ או בטלפון</small>{bm.TEL}</div>
+    <p class="sub">כל טעם מגיע בבקבוק ליטר או חצי ליטר<br>מדברים עם תום — ומרכיבים יחד את התפריט שלכם</p>
+    <div class="cta"><small>תום · בוואטסאפ או בטלפון</small>{TEL_TOM}</div>
     <span class="site">{bm.SITE_URL.replace('https://', '')}</span>
   </div>
 </div>"""
