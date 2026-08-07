@@ -9,8 +9,9 @@ So the page is the phone: 90 × 160 mm, exactly 9:16. Every page fills the scree
 at full width, and a swipe is a whole new screen rather than a scroll position.
 
 Figures, names, sub-lines and photography come from `build_mobile.py`. Nothing
-here recomputes a price. One line is derived rather than quoted, and it is
-marked in the code where it is set.
+here recomputes a *price*. What it does compute is what one serving costs — the
+only number a café owner actually decides on — and every one of those is a
+division of a published price by a published pack size, set in SERVINGS below.
 
 Where this differs from the web page, and why:
 
@@ -21,6 +22,9 @@ Where this differs from the web page, and why:
     are then free to be what actually sells them — the label art and the
     infusion. Same for the three purées.
   * Only the sections whose prices genuinely differ set a price per row.
+  * Cost per serving rides along one line under the price it comes from,
+    never on a page of its own. A buyer looking at MATCHA at ₪590 wants
+    ₪2.12 a cup in the same glance, not four swipes later.
   * No tinted panels, no chips, no sticky anything. Hairlines and paper.
 
 Build:  python3 build_pdf.py   →  GT_pricelist_mobile.pdf
@@ -35,11 +39,37 @@ NODE_PW = '/opt/node22/lib/node_modules/playwright/index.mjs'
 
 PAGE_W, PAGE_H = '90mm', '160mm'
 
-# Cups per bottle is the print sheet's own line. The per-cup figure is the only
-# number on this sheet that is not quoted from build_mobile.py: it is ₪65 ÷ 25
-# and ₪65 ÷ 20, shown as a range and with its arithmetic printed underneath, so
-# nothing is claimed that the two published figures do not already carry.
+# ─── cost per serving ───────────────────────────────────────────────────────
+# The catalogue prices a pack; a café owner buys a cup. Every figure below is
+# that division and nothing else — a published price over a published pack size.
+#
+# Cups per bottle is the print sheet's own line (20–25). Serving weights are
+# Tom's, 2026-08-07: מאצ׳ה 1.8 g · הוג׳יצ׳ה 1.8 g · אובה 2 g.
 CUPS_LOW, CUPS_HIGH = 20, 25
+
+MATCHA_G, HOJICHA_G, UBE_G = 1.8, 1.8, 2.0
+
+# Keyed by the row's sub-line so a copy change in build_mobile.py fails the
+# build here instead of silently dropping a figure. (pack grams, serving grams)
+SERVINGS = {
+    'מאצ׳ה טקסית יפנית · שקית 500 גרם':    (500,  MATCHA_G),
+    'מאצ׳ה טקסית יפנית · 22 שקיות 18 גרם': (22 * 18, MATCHA_G),
+    'מאצ׳ה שחורה קלויה · 500 גרם':         (500,  HOJICHA_G),
+    'אבקת שורש יאם סגול · 1 ק״ג':          (1000, UBE_G),
+    'אבקת שורש יאם סגול · 500 גרם':        (500,  UBE_G),
+}
+_subs = {sub for _, sub, _, _ in bm.POWDERS}
+assert set(SERVINGS) <= _subs, f'SERVINGS key not in POWDERS: {set(SERVINGS) - _subs}'
+
+
+def per_serving(sub_line, price):
+    """₪ per serving, or None where a serving is not a meaningful unit."""
+    if sub_line not in SERVINGS:
+        return None
+    pack_g, serve_g = SERVINGS[sub_line]
+    return f'{price / (pack_g / serve_g):.2f}'
+
+
 CUP_LOW = f'{bm.TEA_L / CUPS_HIGH:.2f}'
 CUP_HIGH = f'{bm.TEA_L / CUPS_LOW:.2f}'
 
@@ -77,21 +107,6 @@ body{{font-family:'Heebo',sans-serif;color:{bm.INK};-webkit-font-smoothing:antia
   font-family:'Rubik',sans-serif;font-weight:500;font-size:7pt;letter-spacing:.1em;color:#fff;
   opacity:.92}}
 
-/* ── argument page ────────────────────────────────────────────────────── */
-.arg{{display:flex;flex-direction:column;justify-content:center;padding:0 11mm}}
-.arg .k{{font-family:'Rubik',sans-serif;font-weight:600;font-size:7pt;letter-spacing:.3em;
-  color:{bm.MUTED}}}
-.arg .big{{margin-top:5mm;font-family:'Rubik',sans-serif;font-weight:700;font-size:34pt;
-  line-height:1;letter-spacing:-.02em;direction:ltr;text-align:right;
-  font-variant-numeric:tabular-nums}}
-.arg .big .cur{{font-size:.46em;font-weight:600;color:{bm.CORAL_INK};margin-right:.06em;
-  vertical-align:.14em}}
-.arg .lead{{margin-top:4mm;font-family:'Rubik',sans-serif;font-weight:600;font-size:12.5pt;
-  line-height:1.35}}
-.arg .rule{{width:16mm;height:1.2px;background:{bm.CORAL};margin:8mm 0}}
-.arg .maths{{font-size:8.2pt;line-height:2;color:{bm.MUTED}}}
-.arg .maths b{{font-family:'Rubik',sans-serif;font-weight:600;color:{bm.INK}}}
-
 /* ── section head ─────────────────────────────────────────────────────── */
 .band{{position:relative;width:{PAGE_W};height:26mm;overflow:hidden}}
 .band img{{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}}
@@ -122,6 +137,15 @@ body{{font-family:'Heebo',sans-serif;color:{bm.INK};-webkit-font-smoothing:antia
 .oneprice .v .cur{{font-size:.55em;font-weight:600;color:{bm.CORAL_INK};margin-right:.08em;
   vertical-align:.12em}}
 
+/* What one cup costs, on the line under the price it is divided from. */
+.cup{{margin-top:2.4mm;font-size:7pt;letter-spacing:.02em;color:{bm.MUTED}}}
+.cup .b{{display:inline-block;direction:ltr;unicode-bidi:isolate;
+  font-family:'Rubik',sans-serif;font-weight:700;font-size:8.4pt;color:{bm.INK};
+  font-variant-numeric:tabular-nums}}
+.cup .cur{{font-size:.62em;font-weight:600;color:{bm.CORAL_INK};margin-right:.08em;
+  vertical-align:.1em}}
+.serve{{margin-top:3.2mm;font-size:6.6pt;letter-spacing:.02em;color:{bm.MUTED}}}
+
 /* ── rows ─────────────────────────────────────────────────────────────── */
 .list{{margin-top:1mm}}
 .r{{display:flex;align-items:center;gap:4mm;padding:2.6mm 0;border-bottom:.5px solid {bm.RULE}}}
@@ -138,10 +162,20 @@ body{{font-family:'Heebo',sans-serif;color:{bm.INK};-webkit-font-smoothing:antia
   line-height:1;direction:ltr;font-variant-numeric:tabular-nums;white-space:nowrap}}
 .r .v .cur{{font-size:.55em;font-weight:600;color:{bm.CORAL_INK};margin-right:.1em;
   vertical-align:.12em}}
+.r .pv{{flex:0 0 auto;text-align:left}}
+.r .pv .per{{display:block;margin-top:1.2mm;font-family:'Heebo',sans-serif;font-weight:400;
+  font-size:6.4pt;line-height:1;color:{bm.MUTED};direction:rtl;white-space:nowrap}}
+.r .pv .per .b{{display:inline-block;direction:ltr;unicode-bidi:isolate;
+  font-family:'Rubik',sans-serif;font-weight:600;font-size:7.2pt;color:{bm.INK};
+  font-variant-numeric:tabular-nums}}
+.r .pv .per .cur{{font-size:.62em;font-weight:600;color:{bm.CORAL_INK};margin-right:.06em;
+  vertical-align:.1em}}
 .roomy .r{{padding:5mm 0}}
 .roomy .r .sh{{flex-basis:19mm;height:19mm}}
 .dense .r{{padding:2.2mm 0}}
 .dense .r .sh{{flex-basis:11.5mm;height:11.5mm}}
+.tea .r{{padding:2mm 0}}
+.tea .r .sh{{flex-basis:12.5mm;height:12.5mm}}
 
 /* ── order page ───────────────────────────────────────────────────────── */
 .order{{display:flex;flex-direction:column;justify-content:center;padding:0 11mm;text-align:center;
@@ -192,11 +226,13 @@ def flavour(name, sub, key):
             f'<span class="m"><b>{name}</b><i>{sub}</i></span></div>')
 
 
-def priced(name, sub, key, value):
+def priced(name, sub, key, value, serving=True):
     sh = (f'<span class="sh"><img src="{bm.img(key + ".jpg")}" alt=""></span>' if key
           else f'<span class="sh sh--mark"><img src="{bm.img("logo_green.png")}" alt=""></span>')
+    cup = per_serving(sub, value) if serving else None
+    per = (f'<span class="per">{money(cup, "b")} למנה</span>' if cup else '')
     return (f'<div class="r">{sh}<span class="m"><b>{name}</b><i>{sub}</i></span>'
-            f'{money(value)}</div>')
+            f'<span class="pv">{money(value)}{per}</span></div>')
 
 
 def build():
@@ -215,23 +251,12 @@ def build():
   <span class="url">{bm.SITE_URL.replace('https://', '')}</span>
 </div>"""
 
-    argument = f"""<div class="p arg">
-  <span class="k">COST&nbsp;&nbsp;PER&nbsp;&nbsp;CUP</span>
-  <div class="big">{money(f'{CUP_LOW}–{CUP_HIGH}', 'x')}</div>
-  <p class="lead">זו עלות התמצית<br>בכוס משקה אחת.</p>
-  <span class="rule"></span>
-  <p class="maths">
-    בקבוק <b>1 ליטר</b> = <b>{CUPS_LOW}–{CUPS_HIGH} כוסות</b><br>
-    {money(bm.TEA_L, 'x2')} ÷ {CUPS_HIGH} כוסות = {money(CUP_LOW, 'x2')} לכוס<br>
-    {money(bm.TEA_L, 'x2')} ÷ {CUPS_LOW} כוסות = {money(CUP_HIGH, 'x2')} לכוס
-  </p>
-  {foot(2)}
-</div>"""
-
     tea_bar = (f'<div class="oneprice">'
                f'<span class="u"><span class="sz">1 ליטר</span>{money(bm.TEA_L, "v")}</span>'
                f'<span class="u"><span class="sz">500 מ״ל</span>{money(bm.TEA_ML, "v")}</span>'
-               f'</div>')
+               f'</div>'
+               f'<p class="cup">{CUPS_LOW}–{CUPS_HIGH} כוסות מבקבוק ליטר · '
+               f'{money(f"{CUP_LOW}–{CUP_HIGH}", "b")} לכוס</p>')
 
     # Splits are set by the page, not by the catalogue: five flavours clear the
     # band on the opening page, six fit where there is no band. The guard below
@@ -242,23 +267,24 @@ def build():
     p3 = f"""<div class="p">
   {band('band_tea.jpg', 'TEA&nbsp;&nbsp;EXTRACTS', 'תמציות תה')}
   <div class="in">{sec('תמציות תה', 'כל הטעמים · אותו מחיר')}
-    {tea_bar}<div class="list">{tea_a}</div></div>
-  {foot(3)}
+    {tea_bar}<div class="list tea">{tea_a}</div></div>
+  {foot(2)}
 </div>"""
 
     p4 = f"""<div class="p">
   <div class="in" style="padding-top:12mm">
     <span class="cont">תמציות תה · המשך</span>
-    {tea_bar}<div class="list">{tea_b}</div></div>
-  {foot(4)}
+    {tea_bar}<div class="list tea">{tea_b}</div></div>
+  {foot(3)}
 </div>"""
 
     p5 = f"""<div class="p">
   {band('band_powder.jpg', 'MATCHA&nbsp;&nbsp;·&nbsp;&nbsp;POWDERS', 'מאצ׳ה ואבקות')}
   <div class="in">{sec('מאצ׳ה ואבקות', 'MATCHA&nbsp;&nbsp;·&nbsp;&nbsp;POWDERS')}
-    <div class="list dense" style="margin-top:4mm">
+    <p class="serve">מנת מאצ׳ה והודג׳יצ׳ה {MATCHA_G:g} גרם · מנת אובה {UBE_G:g} גרם</p>
+    <div class="list dense" style="margin-top:3mm">
       {"".join(priced(n, s, k, v) for n, s, k, v in bm.POWDERS)}</div></div>
-  {foot(5)}
+  {foot(4)}
 </div>"""
 
     puree_bar = (f'<div class="oneprice"><span class="u">'
@@ -271,7 +297,7 @@ def build():
       {"".join(f'<div class="r"><span class="sh"><img src="{bm.img(k + ".jpg")}" alt=""></span>'
                f'<span class="m"><b>{n}</b><i>{s}</i></span></div>'
                for n, s, k, _ in bm.PUREES)}</div></div>
-  {foot(6)}
+  {foot(5)}
 </div>"""
 
     p7 = f"""<div class="p">
@@ -279,7 +305,7 @@ def build():
   <div class="in">{sec('מוצרים משלימים', 'TOOLS&nbsp;&nbsp;·&nbsp;&nbsp;SERVEWARE')}
     <div class="list" style="margin-top:3mm">
       {"".join(priced(n, s, k, v) for n, s, k, v in bm.TOOLS[:5])}</div></div>
-  {foot(7)}
+  {foot(6)}
 </div>"""
 
     p8 = f"""<div class="p">
@@ -287,7 +313,7 @@ def build():
     <span class="cont">מוצרים משלימים · המשך</span>
     <div class="list roomy" style="margin-top:4mm">
       {"".join(priced(n, s, k, v) for n, s, k, v in bm.TOOLS[5:])}</div></div>
-  {foot(8)}
+  {foot(7)}
 </div>"""
 
     order = f"""<div class="p order">
@@ -301,7 +327,7 @@ def build():
 
     html = (f'<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
             f'<title>GT Everyday — מחירון סיטונאי</title><style>{css()}</style></head>'
-            f'<body>{cover}{argument}{p3}{p4}{p5}{p6}{p7}{p8}{order}</body></html>')
+            f'<body>{cover}{p3}{p4}{p5}{p6}{p7}{p8}{order}</body></html>')
 
     src = HERE / '.pdf-src.html'
     src.write_text(html, encoding='utf-8')
@@ -318,7 +344,7 @@ const over = await p.evaluate(() => {{
   return [...document.querySelectorAll('.p')].map((pg, i) => {{
     const top = pg.getBoundingClientRect().top, lim = pg.clientHeight - RESERVE;
     let worst = 0;
-    for (const el of pg.querySelectorAll('.list > *, .oneprice, .cta, .fine'))
+    for (const el of pg.querySelectorAll('.list > *, .oneprice, .cup, .cta, .fine'))
       worst = Math.max(worst, el.getBoundingClientRect().bottom - top);
     return {{ page: i + 1, over: Math.round(worst - lim) }};
   }}).filter(r => r.over > 0);
@@ -336,7 +362,7 @@ await b.close();
         raise SystemExit(f'{r.stderr.strip()}\n(source kept at {src} for inspection)')
     src.unlink()
     shot.unlink()
-    print(f'{out.name}  {out.stat().st_size / 1e6:.2f} MB  ·  9 pages  ·  {PAGE_W}×{PAGE_H}'
+    print(f'{out.name}  {out.stat().st_size / 1e6:.2f} MB  ·  8 pages  ·  {PAGE_W}×{PAGE_H}'
           f'  ·  overflow guard clean')
 
 

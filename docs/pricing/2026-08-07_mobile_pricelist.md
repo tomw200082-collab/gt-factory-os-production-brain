@@ -123,7 +123,7 @@ add-to-home-screen; `icon-32.png` the browser tab.
 
 ## Phone-shaped PDF — `pricelist_mobile/GT_pricelist_mobile.pdf`
 
-**9 pages · 90 × 160 mm (exactly 9:16) · 0.49 MB.** Built by `build_pdf.py`.
+**8 pages · 90 × 160 mm (exactly 9:16) · 0.49 MB.** Built by `build_pdf.py`.
 
 A PDF is what a buyer keeps — it survives in a WhatsApp thread, opens without a
 signal, and gets forwarded to a partner. The A4 sheet does none of that well on
@@ -143,20 +143,34 @@ carries its own price. The PDF is read, so it is built the other way:
   and tools.
 - No tinted panels, no chips. Hairlines and paper.
 
-### Page 2 — the one derived figure
+### Cost per serving
 
-Everything on this sheet is quoted from `build_mobile.py` except one line:
+The catalogue prices a pack; a café owner buys a cup. That division is the
+number the decision actually turns on, so it rides one line under the price it
+comes from — never on a page of its own (a dedicated page was built first and
+cut, Tom 2026-08-07: a buyer looking at MATCHA at ₪590 wants ₪2.12 a cup in the
+same glance, not four swipes later).
 
-```
-₪2.60 – ₪3.25   עלות התמצית בכוס
-₪65 ÷ 25 כוסות = ₪2.60   ·   ₪65 ÷ 20 כוסות = ₪3.25
-```
+Serving weights are Tom's, 2026-08-07 — מאצ׳ה 1.8 g · הודג׳יצ׳ה 1.8 g ·
+אובה 2 g — and they are stated once, as a line under the powders section head.
 
-It is arithmetic on two figures the print sheet already carries — ₪65 a litre
-and 20–25 cups a bottle — and the division is printed underneath so nothing is
-claimed that those two numbers do not already say. It is the page most likely
-to make a café owner order, and it is also the one line to delete if that
-framing is unwanted: `CUPS_LOW` / `CUPS_HIGH` in `build_pdf.py`.
+| Row | Pack | Serving | Per serving |
+|---|---|---|---|
+| MATCHA שיזואוקה · שקית | 500 g @ ₪590 | 1.8 g | **₪2.12** |
+| MATCHA שיזואוקה · 22 × 18 g | 396 g @ ₪590 | 1.8 g | **₪2.68** |
+| HOJICHA | 500 g @ ₪375 | 1.8 g | **₪1.35** |
+| UBE 1 ק״ג | 1000 g @ ₪340 | 2 g | **₪0.68** |
+| UBE 500 גרם | 500 g @ ₪175 | 2 g | **₪0.70** |
+| תמציות תה | 1 L @ ₪65 | 20–25 cups | **₪2.60 – ₪3.25** |
+
+Every one of those is a published price over a published pack size, computed in
+`SERVINGS` in `build_pdf.py` — nothing is typed in twice. The table is keyed by
+each row's sub-line and asserted against `build_mobile.POWDERS` at import, so a
+copy change there fails the build here instead of silently dropping a figure.
+
+MATCHA KIT carries no per-serving line: a kit is not measured in servings. The
+purées carry none either — no serving size has been set for them; give one and
+they fall into the same table.
 
 ### Overflow guard
 
@@ -166,11 +180,12 @@ would not change and the product would simply vanish — so the build measures
 every row against the page and **fails** rather than emitting a short sheet:
 
 ```
-GT_pricelist_mobile.pdf  0.49 MB  ·  9 pages  ·  90mm×160mm  ·  overflow guard clean
+GT_pricelist_mobile.pdf  0.49 MB  ·  8 pages  ·  90mm×160mm  ·  overflow guard clean
 ```
 
-Verified after build: 9 pages, 28 products, all 16 distinct prices present,
-`ללא מע״מ` stated, no VAT-inclusive wording, four subset faces embedded.
+Verified after build: 8 pages, 28 products, all 16 distinct prices present, all
+six derived figures present, `ללא מע״מ` stated, no VAT-inclusive wording, four
+subset faces embedded.
 
 The PDF is copied into `site/` and linked from the page footer, so
 `pricelist.gteveryday.com` both shows the catalogue and hands over the file.
