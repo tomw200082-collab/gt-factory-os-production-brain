@@ -26,6 +26,7 @@ import subprocess
 import sys
 
 import build_mobile as bm
+import build_og
 
 HERE = pathlib.Path(__file__).parent
 SITE = HERE / 'site'
@@ -93,6 +94,11 @@ def build():
   ]
 }
 """, encoding='utf-8')
+
+    (SITE / 'robots.txt').write_text(
+        'User-agent: *\nDisallow: /\n' if not bm.INDEXABLE
+        else f'User-agent: *\nAllow: /\nSitemap: {bm.SITE_URL}/\n', encoding='utf-8')
+    build_og.build()
 
     total = sum(f.stat().st_size for f in SITE.rglob('*') if f.is_file())
     print(f'site/  {len(glyphs)} glyphs  ·  fonts {before // 1024} KB → {after // 1024} KB'

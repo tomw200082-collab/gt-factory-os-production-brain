@@ -82,3 +82,41 @@ that supply their own `<head>`. It is generated, not tracked.
 - The fixed bar opens a WhatsApp thread to 054-398-2444. If orders should go to
   a different number or to a form, that is a one-line change in
   `build_mobile.py`.
+
+## Hosting — pricelist.gteveryday.com
+
+Tom's call, 2026-08-07: own subdomain, served from this repo through Vercel.
+
+`site/` is the deploy root. Vercel project settings:
+
+| Setting | Value |
+|---|---|
+| Repository | `tomw200082-collab/gt-factory-os-production-brain` |
+| Root Directory | `docs/pricing/pricelist_mobile/site` |
+| Framework Preset | Other |
+| Build Command | *(none — the folder is already built)* |
+| Domain | `pricelist.gteveryday.com` |
+
+DNS is GoDaddy (`ns27/ns28.domaincontrol.com`). The `pricelist` record is added
+there, with the exact target Vercel prints after the domain is attached — do not
+assume it, Vercel varies the value.
+
+Every later `python3 build_site.py` that is committed and pushed redeploys
+itself, because Vercel builds from git and `index.html` is `must-revalidate`.
+
+### Not indexed, on purpose
+
+These are ex-VAT wholesale prices, and the same catalogue sells at retail on the
+Shopify store. A shopper who finds this sheet through Google is comparing a
+trade price to a shelf price. The page therefore ships `noindex,nofollow` plus a
+`robots.txt` disallow: anyone with the link reads it, search engines do not
+carry it.
+
+`build_mobile.INDEXABLE` flips both together. Nothing else needs touching.
+
+### Link preview
+
+`og.jpg` (1200×630) is built by `build_og.py` from the same photograph, palette
+and faces as the page, because the link will mostly be opened out of a WhatsApp
+message and the card is the first thing a buyer sees. `icon-180.png` covers
+add-to-home-screen; `icon-32.png` the browser tab.

@@ -48,6 +48,13 @@ CORAL_INK, TINT, RULE, MUTED = '#C6421F', '#E4D7BE', '#D8CCB4', '#6A5D48'
 
 WA = '972543982444'
 TEL = '054-398-2444'
+SITE_URL = 'https://pricelist.gteveryday.com'
+
+# Wholesale prices are ex-VAT and are not the shelf price. The link is meant to
+# be sent to a buyer, not found by a shopper comparing against the Shopify
+# store, so the hosted page asks search engines to stay out. Flip both this and
+# site/robots.txt together if the sheet should ever be indexed.
+INDEXABLE = False
 
 # ─── data — figures identical to ../pricelist_pdf/build.py ──────────────────
 TEAS = [
@@ -404,6 +411,27 @@ TEL_SVG = ('<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><pat
            '1.24.2 2.44.57 3.57.11.35.03.75-.25 1.03l-2.22 2.2Z"/></svg>')
 
 
+def head_extra():
+    """Link-preview and indexing tags — only meaningful for the hosted edition."""
+    if MODE != 'site':
+        return ''
+    robots = '' if INDEXABLE else '<meta name="robots" content="noindex,nofollow">\n'
+    return (robots +
+            f'<link rel="canonical" href="{SITE_URL}/">\n'
+            f'<link rel="icon" href="icon-32.png" sizes="32x32">\n'
+            f'<link rel="apple-touch-icon" href="icon-180.png">\n'
+            f'<meta property="og:type" content="website">\n'
+            f'<meta property="og:locale" content="he_IL">\n'
+            f'<meta property="og:site_name" content="GT Everyday">\n'
+            f'<meta property="og:title" content="GT Everyday · מחירון סיטונאי 2026">\n'
+            f'<meta property="og:description" content="תמציות תה, מאצ׳ה ואבקות, מחיות פרי ומוצרים משלימים. כל המחירים ללא מע״מ.">\n'
+            f'<meta property="og:url" content="{SITE_URL}/">\n'
+            f'<meta property="og:image" content="{SITE_URL}/og.jpg">\n'
+            f'<meta property="og:image:width" content="1200">\n'
+            f'<meta property="og:image:height" content="630">\n'
+            f'<meta name="twitter:card" content="summary_large_image">\n')
+
+
 def render():
     teas = "".join(tea_row(n, s, k, i) for i, (n, s, k) in enumerate(TEAS))
     powders = "".join(row(n, s, k, v, i) for i, (n, s, k, v) in enumerate(POWDERS))
@@ -418,7 +446,7 @@ def render():
 <meta name="theme-color" content="{PAPER}">
 <meta name="description" content="GT Everyday — מחירון סיטונאי 2026. תמציות תה, מאצ׳ה ואבקות, מחיות פרי ומוצרים משלימים. כל המחירים ללא מע״מ.">
 <title>GT Everyday · מחירון סיטונאי 2026</title>
-<style>{css()}</style>
+{head_extra()}<style>{css()}</style>
 </head>
 <body>
 
