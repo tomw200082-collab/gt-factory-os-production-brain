@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 """GT Everyday — tea collection, phone-shaped PDF. No prices.
 
-Not a pricelist — a shop window. Eleven infusions, two to a page, each as a
-framed studio photograph with one spoken-Hebrew line that sells it. The
-sheet's job is to make someone want the tasting, not to close the numbers;
-the numbers live in GT_pricelist_mobile.pdf.
+Eleven infusions, two to a page: a framed studio photograph, the name, the
+infusion type, and what is in the bottle. Nothing else — no selling lines, no
+cups-per-bottle, no prices (those live in GT_pricelist_mobile.pdf). Tom,
+2026-08-07: "אל תהיה שיווקי בכלל. תכתוב רק את המרכיבים לכל בקבוק."
+
+INGREDIENTS below is the botanical composition already published on the
+pricelist's own origin lines, split into type and contents. It is deliberately
+not a regulated ingredient declaration — water, sugar and acidity regulators
+are not listed here because no verified source for them exists in this repo.
 
 Photography is the original studio set (Dropbox `AI YASTREBOVA/all bottles`,
 2026-07-17), cropped to a uniform 3:4 around the bottle and kept on its own
-clean backdrop — framed, not cut out (Tom, 2026-08-07). Names and origin lines
-come from build_mobile.py. The only text authored here is PITCH below.
+clean backdrop — framed, not cut out (Tom, 2026-08-07).
 
-AMERICAN is not yet on sale — its page carries a coming-soon badge and closes
-the book as a teaser rather than an offer.
+AMERICAN is not yet on sale — its page carries a coming-soon badge.
 
 Pages: cover · 5 × pairs (base + sugar-free share a page) · AMERICAN solo
 finale · order page = 8, at 90 × 160 mm (9:16, the phone's own shape).
@@ -29,23 +32,30 @@ NODE_PW = '/opt/node22/lib/node_modules/playwright/index.mjs'
 PAGE_W, PAGE_H = '90mm', '160mm'
 TEL_TOM = '053-725-2858'          # Tom's own line — this catalog only (Tom, 2026-08-07)
 
-# One selling line per flavour — spoken Hebrew, keyed by the flavour's display
-# name so a rename in build_mobile.py fails the build instead of dropping copy.
-PITCH = {
-    'FRESH':          'היביסקוס וליים שנפתחים לאדום עמוק בכוס. אצל הלקוחות שלנו זה הבקבוק שנגמר ראשון.',
-    'FRESH ללא סוכר': 'אותו ליים, אותו היביסקוס, בלי סוכר. מי שטועם לא מרגיש שחסר משהו.',
-    'DETOX':          'לואיזה ונענע על תה ירוק. קליל וצמחי, מהסוג שאפשר לשתות כל היום בלי להתעייף ממנו.',
-    'DETOX ללא סוכר': 'למי שרוצה נקי עד הסוף. רק הצמחים והתה, שום דבר מעבר.',
-    'ENERGY':         'למון גראס ותה ירוק עם בעיטה. השעה ארבע אחר הצהריים של אנשים שלא שותים קפה.',
-    'CALM':           'קמומיל, תפוח וקצת ציפורן. חם בערב, קר בצהריים — הראש יורד הילוך.',
-    'CONSCIOUSNESS':  'יסמין וליצ׳י. נשמע מוזר עד הלגימה הראשונה, ואז מבינים למה שואלים עליו כל הזמן.',
-    'REVIVE':         'סנצ׳ה יפנית עם פסיפלורה. עדין וחמצמץ, ועל קרח עם עלה נענע — קיץ.',
-    'DESERTEA':       'חמישה צמחי בר מהמדבר הישראלי. כוס שאף תפריט אחר בארץ לא מגיש.',
-    'NAMASTEA':       'מסאלה צ׳אי עם הל, קינמון וג׳ינג׳ר. עם חלב מוקצף חם — קשה לחזור אחורה.',
-    'AMERICAN':       'תה שחור עם יוזו והדרים. אייס טי אמריקאי קלאסי — נוחת אצלנו ממש בקרוב.',
+# What is in the bottle. Taken from the pricelist's own origin lines; the two
+# sugar-free rows say only "ללא תוספת סוכר" there, so they carry their base
+# flavour's contents plus that note. Keyed by display name so a rename in
+# build_mobile.py fails the build instead of dropping a line.
+INGREDIENTS = {
+    'FRESH':          'היביסקוס · ליים',
+    'FRESH ללא סוכר': 'היביסקוס · ליים · ללא תוספת סוכר',
+    'DETOX':          'תה ירוק · לואיזה · נענע',
+    'DETOX ללא סוכר': 'תה ירוק · לואיזה · נענע · ללא תוספת סוכר',
+    'ENERGY':         'תה ירוק · למון גראס',
+    'CALM':           'קמומיל · תפוח · ציפורן',
+    'CONSCIOUSNESS':  'יסמין · ליצ׳י',
+    'REVIVE':         'סנצ׳ה · פסיפלורה',
+    'DESERTEA':       'חמישה צמחי בר',
+    'NAMASTEA':       'צ׳אי מסאלה',
+    'AMERICAN':       'תה שחור · יוזו · הדרים',
 }
 _names = {n for n, _, _ in bm.TEAS}
-assert set(PITCH) == _names, f'PITCH out of sync with TEAS: {set(PITCH) ^ _names}'
+assert set(INGREDIENTS) == _names, f'INGREDIENTS out of sync: {set(INGREDIENTS) ^ _names}'
+
+
+def kind(origin):
+    """'חליטה תאילנדית · היביסקוס וליים' → 'חליטה תאילנדית'."""
+    return origin.split(' · ')[0]
 
 # Page order: each sugar-free beside its base, AMERICAN closes alone.
 PAIRS = [bm.TEAS[0:2], bm.TEAS[2:4], bm.TEAS[4:6], bm.TEAS[6:8], bm.TEAS[8:10]]
@@ -96,9 +106,9 @@ body{{font-family:'Heebo',sans-serif;color:{bm.INK};-webkit-font-smoothing:antia
   color:{bm.CORAL_INK}}}
 .half h2{{margin-top:1.6mm;font-family:'Rubik',sans-serif;font-weight:700;font-size:13pt;
   line-height:1.12;letter-spacing:.01em;white-space:nowrap}}
-.half .or{{margin-top:1.8mm;font-family:'Rubik',sans-serif;font-weight:500;font-size:6.8pt;
+.half .or{{margin-top:1.6mm;font-family:'Rubik',sans-serif;font-weight:500;font-size:6.8pt;
   letter-spacing:.04em;color:{bm.MUTED}}}
-.half .say{{margin-top:3mm;font-size:8.6pt;line-height:1.7;color:{bm.INK}}}
+.half .ing{{margin-top:3.4mm;font-size:10pt;line-height:1.55;color:{bm.INK}}}
 .half .sz{{margin-top:3mm;font-family:'Rubik',sans-serif;font-weight:600;font-size:6.6pt;
   letter-spacing:.14em;color:{bm.MUTED};white-space:nowrap}}
 
@@ -116,23 +126,21 @@ body{{font-family:'Heebo',sans-serif;color:{bm.INK};-webkit-font-smoothing:antia
 .solo h2{{margin-top:2mm;font-family:'Rubik',sans-serif;font-weight:700;font-size:22pt}}
 .solo .or{{margin-top:2mm;font-family:'Rubik',sans-serif;font-weight:500;font-size:7.6pt;
   letter-spacing:.06em;color:{bm.MUTED}}}
-.solo .say{{margin-top:4mm;max-width:58mm;font-size:9.4pt;line-height:1.75}}
+.solo .ing{{margin-top:4mm;max-width:58mm;font-size:11.5pt;line-height:1.6}}
 .solo .sz{{margin-top:4mm;font-family:'Rubik',sans-serif;font-weight:600;font-size:7pt;
   letter-spacing:.14em;color:{bm.MUTED}}}
 
 /* ── order page ───────────────────────────────────────────────────────── */
 .order{{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
   align-items:center;text-align:center;padding:0 11mm}}
-.order .mark{{width:16mm}}
-.order h2{{margin-top:8mm;font-family:'Rubik',sans-serif;font-weight:700;font-size:18pt;
-  line-height:1.2}}
-.order .sub{{margin-top:4mm;font-size:8.6pt;line-height:1.85;color:{bm.MUTED}}}
-.order .cta{{margin-top:9mm;width:100%;background:{bm.GREEN};color:{bm.PAPER};padding:4.6mm 0;
-  font-family:'Rubik',sans-serif;font-weight:700;font-size:13pt;direction:ltr}}
-.order .cta small{{display:block;font-weight:500;font-size:6.6pt;letter-spacing:.22em;
-  opacity:.8;margin-bottom:1.4mm;direction:rtl}}
-.order .site{{margin-top:6mm;font-family:'Rubik',sans-serif;font-weight:600;font-size:8pt;
-  letter-spacing:.06em;color:{bm.CORAL_INK}}}
+.order .mark{{width:30mm}}
+.order h2{{margin-top:11mm;font-family:'Rubik',sans-serif;font-weight:700;font-size:27pt;
+  line-height:1.14}}
+.order h2 span{{display:block;font-size:.74em;margin-top:1.6mm}}
+.order .cta{{margin-top:11mm;width:100%;background:{bm.GREEN};color:{bm.PAPER};padding:5mm 0;
+  font-family:'Rubik',sans-serif;font-weight:700;font-size:15pt;direction:ltr}}
+.order .cta small{{display:block;font-weight:500;font-size:6.8pt;letter-spacing:.22em;
+  opacity:.8;margin-bottom:1.6mm;direction:rtl}}
 
 .foot{{position:absolute;bottom:6mm;right:9mm;left:9mm;display:flex;
   justify-content:space-between;font-size:5.6pt;letter-spacing:.12em;color:{bm.MUTED}}}
@@ -167,8 +175,8 @@ def block(pos, idx, name, origin, key):
   <span class="tx">
     <span class="no">N°{idx:02d}</span>
     <h2>{show(name)}</h2>
-    <span class="or">{origin}</span>
-    <p class="say">{PITCH[name]}</p>
+    <span class="or">{kind(origin)}</span>
+    <p class="ing">{INGREDIENTS[name]}</p>
     <span class="sz">1 ליטר · 500 מ״ל</span>
   </span>
 </div>"""
@@ -183,9 +191,8 @@ def build():
   <div class="cv">
     <img class="mark" src="{bm.img('logo_ink.png')}" alt="GT EVERYDAY">
     <span class="hair"></span>
-    <h1>אחד עשר טעמים.<br>עולם שלם בבקבוק.</h1>
-    <p class="sub">תמציות תה טבעיות להכנה קרה או חמה<br>מוזגים, מוסיפים מים וקרח — מוכן</p>
-    <span class="tag">בקבוק אחד = 20–25 כוסות משקה</span>
+    <h1>תמציות תה</h1>
+    <p class="sub">אחד עשר טעמים<br>1 ליטר · 500 מ״ל</p>
   </div>
 </div>"""
 
@@ -204,8 +211,8 @@ def build():
       <span class="soon">בקרוב</span></span>
     <span class="no">N°11 · COMING&nbsp;SOON</span>
     <h2>{name}</h2>
-    <span class="or">{origin}</span>
-    <p class="say">{PITCH[name]}</p>
+    <span class="or">{kind(origin)}</span>
+    <p class="ing">{INGREDIENTS[name]}</p>
   </div>
   {foot(7)}
 </div>"""
@@ -213,10 +220,8 @@ def build():
     order = f"""<div class="p">
   <div class="order">
     <img class="mark" src="{bm.img('logo_green.png')}" alt="GT EVERYDAY">
-    <h2>רוצים לטעום?</h2>
-    <p class="sub">כל טעם מגיע בבקבוק ליטר או חצי ליטר<br>מדברים עם תום — ומרכיבים יחד את התפריט שלכם</p>
-    <div class="cta"><small>תום · בוואטסאפ או בטלפון</small>{TEL_TOM}</div>
-    <span class="site">{bm.SITE_URL.replace('https://', '')}</span>
+    <h2>להזמנות<span>תום</span></h2>
+    <div class="cta"><small>בוואטסאפ או בטלפון</small>{TEL_TOM}</div>
   </div>
 </div>"""
 
