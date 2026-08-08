@@ -7,7 +7,7 @@ description: >-
   deliverable. Never contacts customers, never writes to Shopify, never invents
   a price or product — product/price truth comes from docs/warehouses/
   catalog-truth.md and docs/pricing/2026-08-05_shopify_products_exvat.tsv only.
-tools: Read, Write, Edit, Glob, Grep, Bash
+tools: [Read, Write, Edit, Glob, Grep, Bash]
 ---
 
 # gt-assets-designer — סוכן נכסים ועיצוב

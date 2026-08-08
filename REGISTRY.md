@@ -53,7 +53,7 @@ Skill creation threshold: `docs/phase8/decisions/STEP4-SKILLS-DECISION.md`. ⊥ 
 
 ## Drift check
 
-`ls .claude/agents/*.md | wc -l` = 17 · `find .claude/commands -name '*.md' | wc -l` = 15 · `ls -d .claude/skills/*/ | wc -l` = 7.
+`ls .claude/agents/*.md | wc -l` = 18 · `find .claude/commands -name '*.md' | wc -l` = 15 · `ls -d .claude/skills/*/ | wc -l` = 7.
 Counts diverge → `/source-truth-audit` flags it.
 
 ---
