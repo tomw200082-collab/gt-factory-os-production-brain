@@ -18,8 +18,10 @@ The wording is frozen. What this file designs is how it *looks*:
     are declared per flavour, never guessed from the string.
   * The mark sits on every page, and every page carries a live WhatsApp link
     to Tom, so a reader can order from wherever they stopped reading.
-  * The cover opens on the collection itself: the eleven label colours as one
-    band across the foot of the photograph.
+  * The cover carries the photograph, the mark and four lines of type. An
+    ornament row and a colour band were built there and cut (Tom, 2026-08-07):
+    the bottles on that photograph are already the collection, and anything
+    laid over them competed with it.
 
 Photography is the original studio set (Dropbox `AI YASTREBOVA/all bottles`,
 2026-07-17), cropped to a uniform 3:4 around the bottle and kept on its own
@@ -98,21 +100,10 @@ GLYPHS = {
     'AMERICAN':       ('blacktea', 'citrus'),
 }
 
-# One representative mark per flavour for the cover row — chosen so no two
-# repeat, which a first-glyph rule would not give (four flavours start on tea).
-COVER_MARK = {
-    'FRESH': 'hibiscus', 'FRESH ללא סוכר': 'lime', 'DETOX': 'mint',
-    'DETOX ללא סוכר': 'verbena', 'ENERGY': 'lemongrass', 'CALM': 'chamomile',
-    'CONSCIOUSNESS': 'jasmine', 'REVIVE': 'passion', 'DESERTEA': 'sprig',
-    'NAMASTEA': 'anise', 'AMERICAN': 'citrus',
-}
-assert len(set(COVER_MARK.values())) == len(COVER_MARK), 'cover marks repeat'
-
 _names = {n for n, _, _ in bm.TEAS}
 _keys = {k for _, _, k in bm.TEAS}
 assert set(INGREDIENTS) == _names, f'INGREDIENTS out of sync: {set(INGREDIENTS) ^ _names}'
 assert set(GLYPHS) == _names, f'GLYPHS out of sync: {set(GLYPHS) ^ _names}'
-assert set(COVER_MARK) == _names, f'COVER_MARK out of sync: {set(COVER_MARK) ^ _names}'
 assert set(PALETTE) == _keys, f'PALETTE out of sync: {set(PALETTE) ^ _keys}'
 
 # Minimal single-colour marks, 24×24, drawn in the flavour's accent.
@@ -252,8 +243,6 @@ def show(name):
 
 
 def css():
-    bands = "".join(
-        f'.sp i:nth-child({i + 1}){{background:{c}}}' for i, c in enumerate(SPECTRUM))
     return f"""
 {bm.font_faces()}
 *,*::before,*::after{{margin:0;padding:0;box-sizing:border-box}}
@@ -278,19 +267,12 @@ a{{color:inherit;text-decoration:none}}
 .cv .hair{{width:14mm;height:.5px;background:{bm.INK};opacity:.3;margin:7mm 0 6mm}}
 .cv h1{{font-family:'Rubik',sans-serif;font-weight:700;font-size:33pt;line-height:1.06;
   letter-spacing:-.012em}}
-.cv .sub{{margin-top:4.4mm;font-size:8.8pt;line-height:1.9;color:{bm.MUTED};letter-spacing:.02em}}
-.cv .idx{{margin-top:9mm;padding-top:6mm;border-top:.5px solid {rgba(bm.INK, .16)};
-  width:100%;display:flex;direction:ltr;justify-content:space-between;align-items:center}}
-.cv .idx svg{{width:4.7mm;height:4.7mm;display:block}}
+.cv .sub{{margin-top:4mm;font-family:'Rubik',sans-serif;font-weight:600;font-size:8pt;
+  letter-spacing:.22em;color:{bm.CORAL_INK}}}
+.cv .lede{{margin-top:7mm;padding-top:6mm;border-top:.5px solid {rgba(bm.INK, .16)};
+  max-width:62mm;font-size:8.6pt;line-height:1.95;color:{bm.MUTED};letter-spacing:.01em}}
 .cover .yr{{position:absolute;z-index:3;top:9mm;right:9mm;font-family:'Rubik',sans-serif;
   font-weight:600;font-size:7.4pt;letter-spacing:.42em;opacity:.5}}
-/* the collection itself, as a band of its own eleven label colours */
-.sp{{position:absolute;z-index:3;left:0;right:0;bottom:0;height:9mm;display:flex;
-  direction:ltr}}
-.sp i{{flex:1 1 0}}
-.sp::before{{content:'';position:absolute;left:0;right:0;bottom:9mm;height:11mm;
-  background:linear-gradient(180deg,rgba(20,14,8,0),rgba(20,14,8,.26))}}
-{bands}
 
 /* ── flavour blocks ───────────────────────────────────────────────────── */
 .half{{position:absolute;right:0;left:0;height:69mm;display:flex;align-items:center;
@@ -351,11 +333,15 @@ a{{color:inherit;text-decoration:none}}
 .order h2{{margin-top:11mm;font-family:'Rubik',sans-serif;font-weight:700;font-size:27pt;
   line-height:1.14}}
 .order h2 span{{display:block;font-size:.74em;margin-top:1.6mm}}
-.order .cta{{margin-top:11mm;width:100%;background:{bm.GREEN};color:{bm.PAPER};padding:5mm 0;
-  font-family:'Rubik',sans-serif;font-weight:700;font-size:15pt;direction:ltr;
-  display:block;box-shadow:0 1mm 3mm rgba(38,59,24,.22)}}
-.order .cta small{{display:block;font-weight:500;font-size:6.8pt;letter-spacing:.22em;
-  opacity:.85;margin-bottom:1.6mm;direction:rtl}}
+.order .cta{{margin-top:11mm;width:100%;background:{bm.GREEN};color:{bm.PAPER};
+  padding:4.4mm 0 5mm;display:block;box-shadow:0 1mm 3mm rgba(38,59,24,.22)}}
+.order .cta small{{display:flex;align-items:center;justify-content:center;gap:1.8mm;
+  font-family:'Rubik',sans-serif;font-weight:600;font-size:7pt;letter-spacing:.14em;
+  opacity:.92;margin-bottom:2.4mm}}
+.order .cta small svg{{width:4.2mm;height:4.2mm;display:block}}
+.order .cta b{{display:block;font-family:'Rubik',sans-serif;font-weight:700;font-size:15pt;
+  direction:ltr;text-decoration:underline;text-underline-offset:1.4mm;
+  text-decoration-thickness:.4mm;text-decoration-color:{rgba(bm.PAPER, .55)}}}
 .band{{position:absolute;z-index:2;left:0;right:0;bottom:0;height:6mm;display:flex;
   direction:ltr}}
 .band i{{flex:1 1 0}}
@@ -367,9 +353,10 @@ a{{color:inherit;text-decoration:none}}
 .foot .id{{display:flex;align-items:center;gap:2mm}}
 .foot .id img{{width:8.4mm;height:auto;opacity:.88}}
 .foot .end{{display:flex;align-items:center;gap:2.6mm}}
-.foot .wa{{display:flex;align-items:center;justify-content:center;width:5.6mm;height:5.6mm;
-  border-radius:50%;background:{bm.GREEN};color:{bm.PAPER}}}
-.foot .wa svg{{width:3.6mm;height:3.6mm;display:block}}
+.foot .wa{{display:inline-flex;align-items:center;gap:1.4mm;padding:1.2mm 2.8mm 1.2mm 2mm;
+  border-radius:9mm;background:{bm.GREEN};color:{bm.PAPER};
+  font-family:'Rubik',sans-serif;font-weight:600;font-size:5.4pt;letter-spacing:.06em}}
+.foot .wa svg{{width:3.4mm;height:3.4mm;display:block}}
 .foot .pg{{font-family:'Rubik',sans-serif;font-weight:600;letter-spacing:.24em;opacity:.85}}
 """
 
@@ -377,7 +364,7 @@ a{{color:inherit;text-decoration:none}}
 def foot(n):
     return f"""<div class="foot">
   <span class="id"><img src="{bm.img('logo_green.png')}" alt="GT EVERYDAY">gteveryday.com</span>
-  <span class="end"><a class="wa" href="{WA_TOM}">{WA_MARK}</a>
+  <span class="end"><a class="wa" href="{WA_TOM}">{WA_MARK}הזמנה בוואטסאפ</a>
     <span class="pg">{n:02d}</span></span>
 </div>"""
 
@@ -404,9 +391,6 @@ def block(pos, idx, name, origin, key):
 def build():
     bm.MODE, bm.FONT_EXT = 'inline', 'woff'
 
-    index_row = "".join(
-        f'<svg viewBox="0 0 24 24" fill="currentColor" style="color:{PALETTE[k][0]}">'
-        f'{MARK[COVER_MARK[n]]}</svg>' for n, _, k in bm.TEAS)
     cover = f"""<div class="p cover">
   <img src="{bm.img('cover.jpg')}" alt="">
   <span class="yr">2026</span>
@@ -414,10 +398,10 @@ def build():
     <img class="mark" src="{bm.img('logo_ink.png')}" alt="GT EVERYDAY">
     <span class="hair"></span>
     <h1>תמציות תה</h1>
-    <p class="sub">אחד עשר טעמים<br>1 ליטר · 500 מ״ל</p>
-    <span class="idx">{index_row}</span>
+    <p class="sub">11 טעמים</p>
+    <p class="lede">תמציות איכותיות, מיוצרות במפעל בוטיק בישראל
+      ונמכרות בבקבוק ליטר או חצי ליטר.</p>
   </div>
-  <span class="sp">{''.join('<i></i>' for _ in SPECTRUM)}</span>
 </div>"""
 
     pages, n = [], 0
@@ -447,7 +431,8 @@ def build():
   <div class="order">
     <img class="mark" src="{bm.img('logo_green.png')}" alt="GT EVERYDAY">
     <h2>להזמנות<span>תום</span></h2>
-    <a class="cta" href="{WA_TOM}"><small>בוואטסאפ או בטלפון</small>{TEL_TOM}</a>
+    <a class="cta" href="{WA_TOM}"><small>{WA_MARK}לחצו לשיחת וואטסאפ</small>
+      <b>{TEL_TOM}</b></a>
   </div>
   <span class="band">{''.join(f'<i style="background:{c}"></i>' for c in SPECTRUM)}</span>
 </div>"""
