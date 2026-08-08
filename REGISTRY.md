@@ -30,6 +30,13 @@
 Legacy ↔ new are additive pairs — one active per dispatch, default new. Wave 6 archival per `docs/phase8/deprecation/ACTIVE_SURFACE_REDUCTION_PLAN.md`, each step ! Tom approval.
 `release-verifier` ≠ replacement for `verifier` — it is pre-merge/pre-deploy gating; `verifier` stays.
 
+## Business agents (wave 1, 2026-08-06)
+
+| Agent | Dispatched by | Write | Allowed write paths |
+|---|---|---|---|
+| `gt-assets-designer` | messi evening run / Tom ad-hoc | autonomous within paths | `docs/pricing/**`, `docs/warehouses/marketing-assets.md`, scratchpad |
+| `gt-catalog-truth` | messi evening run (Sundays) / on correction | autonomous within paths | `docs/warehouses/catalog-truth.md` |
+
 ## Commands (15)
 
 **Governance / release:** `/gate-close` · `/production-go-no-go` · `/release-check` · `/source-truth-audit` · `/incident-triage` · `/docs-hygiene-check`
@@ -47,7 +54,7 @@ Skill creation threshold: `docs/phase8/decisions/STEP4-SKILLS-DECISION.md`. ⊥ 
 
 ## Drift check
 
-`ls .claude/agents/*.md | wc -l` = 17 · `find .claude/commands -name '*.md' | wc -l` = 15 · `ls -d .claude/skills/*/ | wc -l` = 7.
+`ls .claude/agents/*.md | wc -l` = 19 · `find .claude/commands -name '*.md' | wc -l` = 15 · `ls -d .claude/skills/*/ | wc -l` = 7.
 Counts diverge → `/source-truth-audit` flags it.
 
 ---

@@ -7,7 +7,10 @@ description: >-
   "יש לי משימה", "תכניס למשימות", "תזכיר לי", "מה נשאר היום", "תבנה לי לוז",
   "אני על זה", "סגרתי את", a pasted voice-note transcript, or a whiteboard photo
   of todos. Also mode=checkpoint (13:00 trigger): silent open-loops sweep —
-  quiet when clean, one targeted push when something slips. NOT for factory-os
+  quiet when clean, one targeted push when something slips.
+  Also mode=evening (20:00 trigger): the nightly run — gather open tasks,
+  dispatch to the professional agents, build tomorrow's calendar, arm the
+  06:25 morning email (reference/evening-run.md). NOT for factory-os
   code/schema/portal work (router+executors), meeting summaries (meeting-summary),
   or the fixed rituals (chief-of-staff-daily, weekly-opening).
 ---
@@ -66,7 +69,8 @@ RECIPE:*) · `people_rhythm.md` (אנשים, שעות, שבוע) · `luz_rules.m
 5. סיום ⇒ `[x]` + ✓ + `תאריך השלמה` + לינק (G3). תקוע >45 דק'/כשל ⇒ **`[!]`** בלוג
 (כשל, עדיין פתוח) + שורה רועשת; נשאר באוויר בנושן, עולה בשער 17:00. `[!]` מפנה את
 משבצת ה-`[~]` — הבא בתור משוגר **רק אחרי** הסימון (`reference/dispatch.md` חוקים 5–6).
-6. לא-ליום (ארוך/דורש שקט) ⇒ הצעה לתור הלילה ב-day-close. ⊥ מנוע לילה משלנו.
+6. לא-ליום (ארוך/דורש שקט) ⇒ לתור ריצת הערב 20:00 (`reference/evening-run.md`) —
+   זה מנוע הלילה שלנו מאז 2026-08-06; ⊥ תור לילה נפרד ב-day-close.
 7. **קומיט+push בסוף כל ריצה** (⊥ אופציונלי — הטריגרים פותחים סשן טרי, ולוג
 שלא נדחף מת עם הסשן; בלעדיו שער 17:00 מדווח "צ'קפוינט לא רץ" בשקר, כל יום):
 
@@ -93,8 +97,12 @@ git commit -m "log(messi): <תאריך> — <מה השתנה>" && git push origi
   authority docs (`CLAUDE.md`, `CURRENT_STATE.md`, `EXECUTION_POLICY.md`) · קוד
   factory-os/פורטל · **הודעות לעובדים** (טיוטות בלבד — טום שולח).
   בקשה כזאת ⇒ ניתוב ללֵיין דרך `AI_BRAIN_ROUTER.md`, ⊥ ביצוע כאן.
-- **יומן: מסי ⊥ כותב, גם ⊥ `[cos-os]`.** בקשת לו"ז/בלוק ⇒ נאספת ומנותבת לשער G5
-  של `chief-of-staff-daily` (day-close). הכתיבה קורית שם, אחרי אישור טום.
+- **יומן: מסי כותב אוטונומית — בלוקים הנושאים את סמן `[cos-os]` בגוף האירוע
+  בלבד, לפי מוסכמת `docs/ceo/reference/luz_rules.md` (כותרת `GT · `)** (טום
+  2026-08-06, ספק agent-org-wave1 §2.4+§2.7; מחליף את "מסי ⊥ כותב יומן").
+  אירועים בלי הסמן — קריאה בלבד, ⊥ זז, ⊥ נערך, ⊥ נמחק. הכתיבה קורית
+  בריצת הערב (`reference/evening-run.md` §4); זריקת-לו"ז ביום מחכה לערב
+  אלא אם טום אמר "עכשיו".
 - **לקוחות / המוני / בלתי-הפיך ⇒ שאלה לטום קודם.** מחיקה בנושן — טום בלבד, ארכוב עדיף.
 - **`git add -A` / `git add .` — ⊥ לעולם.** נתיבים מפורשים בלבד (`CLAUDE.md` stop-condition 5).
 - **תנאי עצירה** (`CLAUDE.md` §Stop conditions) ⇒ HALT + שורה רועשת + ניתוב
@@ -129,6 +137,11 @@ git commit -m "log(messi): <תאריך> — <מה השתנה>" && git push origi
 5. שגיאת סכימה/קונקטור ⇒ `assumption_failure`: push על הכשל עצמו + שורת
    `CHECKPOINT <HH:MM> FAILURE <סיבה>` ללוג. ⊥ להיעלם בשקט.
 6. **תמיד** — קומיט+push של הלוג (§ביצוע 7). בלי זה השורה ⊥ מגיעה לשער 17:00.
+
+## mode=evening — 20:00, א'–ה'
+
+הבעלים של הפרוצדורה: `reference/evening-run.md`. ⊥ לנסח כאן מחדש.
+טריגר self-bind אל סשן משרד-מסי (⊥ סשן טרי — אין קונקטורים).
 
 ## כשלים
 
