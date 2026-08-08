@@ -35,6 +35,7 @@ Legacy ↔ new are additive pairs — one active per dispatch, default new. Wave
 | Agent | Dispatched by | Write | Allowed write paths |
 |---|---|---|---|
 | `gt-assets-designer` | messi evening run / Tom ad-hoc | autonomous within paths | `docs/pricing/**`, `docs/warehouses/marketing-assets.md`, scratchpad |
+| `gt-catalog-truth` | messi evening run (Sundays) / on correction | autonomous within paths | `docs/warehouses/catalog-truth.md` |
 
 ## Commands (15)
 
@@ -53,7 +54,7 @@ Skill creation threshold: `docs/phase8/decisions/STEP4-SKILLS-DECISION.md`. ⊥ 
 
 ## Drift check
 
-`ls .claude/agents/*.md | wc -l` = 18 · `find .claude/commands -name '*.md' | wc -l` = 15 · `ls -d .claude/skills/*/ | wc -l` = 7.
+`ls .claude/agents/*.md | wc -l` = 19 · `find .claude/commands -name '*.md' | wc -l` = 15 · `ls -d .claude/skills/*/ | wc -l` = 7.
 Counts diverge → `/source-truth-audit` flags it.
 
 ---
