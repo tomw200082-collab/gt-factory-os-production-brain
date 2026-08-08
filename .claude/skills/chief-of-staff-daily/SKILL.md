@@ -6,9 +6,9 @@ description: >-
   in fresh context, and sends one Level-1 email: today's rock, today's calendar blocks, at most
   three exceptions, and the waiting-on that matured today. "day-close" (17:00 IL) runs the day's
   retro (planned vs actual + "what do we stop?"), sweeps matured tasks and newly-stuck projects,
-  builds tomorrow's schedule under blocking validation, drafts the night queue with mechanical
-  done-criteria, and asks Tom for ONE approval that writes the calendar blocks and arms the night
-  run. Fires from its own triggers, or when Tom says "פתיחת יום", "בוקר טוב", "סגירת יום",
+  proposes tomorrow's shape and hands the queue to Messi's 20:00 evening run, which builds and
+  writes the calendar autonomously and dispatches the work (Tom 2026-08-06).
+  Fires from its own triggers, or when Tom says "פתיחת יום", "בוקר טוב", "סגירת יום",
   "day-open", "day-close", "מה היום", "מה עשינו היום". Notion is the master for tasks and projects.
   Never merges, deploys, sends to employees, or writes to ledger/plans/external systems.
 ---
@@ -25,14 +25,14 @@ description: >-
 
 - **G4:** שני מצבים — `day-open` **07:30** · `day-close` **17:00**, **א׳–ה׳ בלבד**.
 - **שישי/שבת: שקט מלא.** ⊥ ריצה, ⊥ מייל, ⊥ התראה. רק המוצ״ש שובר את השקט.
-- **G6: מנוע הלילה נורה רק אחרי אישור טום ב-day-close.** אין אישור ⇒ אין ריצה. תוצרים = ענפים/טיוטות/נושן. **שער הבוקר הוא האישור.**
-- **G5:** בלוקים נכתבים ליומן **רק אחרי אישור**, לפי `luz_rules.md`.
+- **G6 — הוחלף (טום 2026-08-06, ספק agent-org-wave1 §2):** מנוע הלילה הוא ריצת הערב של מסי (20:00, `messi/reference/evening-run.md`), רצה ללא שער אישור ב-day-close. תוצרים = ענפים/טיוטות/נושן ברמת 80%. **שער הבוקר נשאר נקודת הביקורת.**
+- **G5 — הוחלף (טום 2026-08-06):** בניית הלו״ז וכתיבת הבלוקים עברו לריצת הערב של מסי (`messi/reference/evening-run.md` §4) — אוטונומית, לפי `luz_rules.md` וחוק הבעלות שבו. day-close ⊥ כותב ליומן.
 - **עקרון 15 — תשומת הלב של טום = חלון קונטקסט.** המסך הראשון מציג **Level 1 בלבד**: אבן היום · הבלוקים · ≤3 חריגים. כל השאר בהמשך המייל או בדשבורד.
 - **עקרון 13 — מיקוד אחד.** day-open מציג **עדיפות ראשית אחת**. סגירת היום כוללת **תמיד** את השאלה ״מה מפסיקים לעשות?״.
 
 ## §C — גבולות
 
-- **כתיבות מותרות:** `docs/ceo/**` · נושן (`notion_contract.md` §גבולות) · Google Calendar — **רק** אירועי `[cos-os]`, **רק** אחרי אישור · הארטיפקט · המייל לטום · commit/push של הנתיבים האלה — **חובה, ⊥ רשות** (day-close שלב 6; נתיבים מפורשים, ⊥ `git add -A`).
+- **כתיבות מותרות:** `docs/ceo/**` · נושן (`notion_contract.md` §גבולות) · הארטיפקט · המייל לטום · commit/push של הנתיבים האלה — **חובה, ⊥ רשות** (day-close שלב 6; נתיבים מפורשים, ⊥ `git add -A`). Google Calendar — **הועבר לריצת הערב של מסי** (טום 2026-08-06); day-close ⊥ כותב ליומן.
 - **⊥ לעולם:** merge · deploy · מיגרציית פרוד · `production_plan` / firm / place · ledger/projections · דגלים קפואים · מערכות חיצוניות · **הודעות לעובדים** (טיוטות בלבד — טום שולח).
 - **⊥ להמציא מספר.** מקור לא זמין ⇒ ״לא זמין״ + סיבה. מספר בלי שאילתה חיה = באג.
 - **⊥ no-op שקט.** ריצה בלי קונקטורים ⇒ כישלון רועש (V9 של הגרדיאן): צ׳אט/push + טיוטת Gmail + שורת `FAILURE` בלוג הלילה. ואז HALT.
@@ -152,25 +152,28 @@ day-open + טיוטת nudge). כל לולאה **בתחולה** מקבלת **אח
 לבנות לפי `luz_rules.md` §סדר הבנייה, ואז להריץ **L1–L8**.
 **נפילה ⇒ לתקן ולהריץ שוב. ⊥ להציג לו״ז שלא עבר.** אין חלון עומק מחר ⇒ להגיד את זה מפורש ולהזיז את האבן ליום אחר.
 
-## שלב 4 — תור לילה
+## שלב 4 — תור הערב (נמסר לריצת 20:00 של מסי)
 
 לכל פריט: ספק מלא לפי `verification.md` §א׳ — מטרה · נתיבים · **done-criterion מכני** · גבולות · פרויקט בנושן.
 **⊥ ניתן לנסח קריטריון מכני ⇒ ⊥ נכנס לתור** — הופך לבלוק עומק של טום. זו התשובה הנכונה.
+התור **⊥ משוגר כאן** — הוא נאסף ע״י ריצת הערב (`messi/reference/evening-run.md` §1),
+שמסווגת ומשגרת (טום 2026-08-06).
 
-## שלב 5 — שער טום (הודעה אחת)
+## שלב 5 — תמונת המחר לטום (הודעה אחת, ⊥ שער אישור)
 
 ```
 מחר <תאריך>
-⏱  <שעה — בלוק> ×N          ← נכתב ליומן רק באישור
-🌙 תור לילה: N משימות
+⏱  <שעה — בלוק> ×N          ← ייבנה וייכתב בריצת הערב 20:00
+🌙 תור הערב (20:00): N משימות
    1. <כותרת> — done: <קריטריון>
    …
 🔒 לולאות להכרעה: <שם> — ארוכת-טווח? / נגררת עם חוסם <X>?   ← משלב 2.5, רק כשיש
 מה מפסיקים: <מהרטרו>
 ```
 
-**אישור ⇒** (א) `create_event` לכל בלוק · (ב) חימוש `run_once` ללילה · (ג) עדכוני נושן.
-**אין תשובה עד 21:00 ⇒ ⊥ נכתב כלום**, ואין ריצת לילה. הבוקר פותח ב״הלו״ז של אתמול לא אושר״. **שתיקה ⊥ אישור.**
+ההודעה היא **תמונת מצב, ⊥ בקשת אישור** (טום 2026-08-06): הכתיבה ליומן והשיגור
+קורים בריצת הערב ב-20:00 בלי להמתין לתשובה. day-close עצמו מבצע רק את עדכוני הנושן.
+טום מגיב ⇒ התגובה נאספת כזריקה לריצת הערב. שתיקה ⇒ הערב רץ כרגיל, ומייל הבוקר מציג מה נכתב.
 
 ## שלב 6 — קומיט+push (⊥ אופציונלי)
 
@@ -197,7 +200,7 @@ git commit -m "log(cos-daily): day-close <תאריך> — שער סגירה + ת
 ## §V — אינוואריאנטים
 
 - **V1** ∀ ריצה → פלט גלוי. ⊥ no-op שקט, אף פעם.
-- **V2** ⊥ בלוק ליומן בלי אישור טום. ⊥ ריצת לילה בלי אישור טום.
+- **V2** כתיבת יומן — רק בריצת הערב של מסי, לפי `luz_rules.md` וחוק הבעלות (טום 2026-08-06). day-close ⊥ כותב יומן ו-⊥ משגר ריצת לילה.
 - **V3** אימות הבוקר רץ בקונטקסט טרי. **דיווח עצמי של סוכן ⊥ עדות.**
 - **V4** ∀ פריט בתור ⊇ done-criterion מכני. אין ⇒ ⊥ בתור.
 - **V5** Level 1 בלבד במסך הראשון. סעיף חדש ⇒ משהו יוצא.
@@ -225,5 +228,7 @@ git commit -m "log(cos-daily): day-close <תאריך> — שער סגירה + ת
   הוא הכותב את שורת ה-`CHECKPOINT` ששלב 2.5 מחפש. ⊥ רץ ⇒ שער הסגירה מדווח.
 - day-close: `0 14 * * 0-4` UTC (17:00 IL קיץ; חורף `0 15`), סשן טרי, prompt:
   `Read gt-factory-os-production-brain/CLAUDE.md, then run .claude/skills/chief-of-staff-daily mode day-close. Hebrew.`
-- לילה: **⊥ רוטינה קבועה.** נוצר דינמית ע״י day-close אחרי אישור, `run_once` לאותו לילה.
+- ערב (מנוע הלילה): `messi-evening` — `0 17 * * 0-4` UTC (20:00 IL קיץ; חורף `0 18`),
+  **self-bind אל סשן משרד-מסי הקיים** (⊥ סשן טרי — אין קונקטורים). ⊥ נוצר ע״י day-close
+  ו-⊥ מותנה באישור (טום 2026-08-06). הפרוצדורה: `messi/reference/evening-run.md`.
 - מוצ״ש: `sunday-prep` הקיים כבר משרשר את `weekly-opening`. ⊥ ליצור כפול.
