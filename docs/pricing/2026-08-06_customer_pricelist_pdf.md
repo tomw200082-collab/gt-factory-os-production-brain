@@ -46,9 +46,11 @@ beside every priced row.
 | Page | Band photo (`CATALOG/2 slide/`) | Content |
 |---|---|---|
 | Cover | `hf_20260717_103013…` (Tom's pick) | gt mark, מחירון סיטונאי, כל המחירים ללא מע״מ, 2026 |
-| 01 | `hf…094541` terrace: NAMASTEA·FRESH·DETOX + drinks | תמציות תה — 11 flavours × (1 ליטר ₪65 · 500 מ״ל ₪33), pair tile per row |
-| 02 | `hf…100249` terracotta arches | מאצ׳ה ואבקות (7) + מחיות פרי (3) |
-| 03 | `hf…100640` travertine shelf | מוצרים משלימים (10) |
+| 01 | `hf_20260717_095305_735f0e22…` terrace: NAMASTEA·FRESH·DETOX + drinks | תמציות תה — 11 flavours × (1 ליטר ₪65 · 500 מ״ל ₪33), pair tile per row |
+| 02 | `PRODUCT PHOTOS/hf_20260727_113138_1cc0f989…` terracotta arches | מאצ׳ה ואבקות (7) + מחיות פרי (3) |
+| 03 | `hf_20260717_091636_5647e772…` travertine shelf | מוצרים משלימים (10) |
+
+(שמות קבצי הבאנד אומתו ב-hash מול דרופבוקס 2026-08-06 — הגרסה הקודמת של הטבלה נשאה שמות מהזיכרון.)
 
 **V3 count: 28 rows, 39 priced figures** (V2 minus MATCHA 50 g, מקציף קוקטיילים and קנקן נפוליטן).
 
