@@ -378,6 +378,13 @@ def _render_one(pg, url, out, fit_one):
 MOVE_HINTS_STRONG = ["החלפ", "החזר", "טעימ", "איסוף", "אסוף", "מתנה", "דגימ"]
 MOVE_HINTS_WEAK = ["קבל"]
 
+# A collection stop can be about money, not goods — "איסוף צ'קים", "לאסוף בבקשה
+# צק". Those trip the pickup hint but move no stock, so they would file bogus
+# approvals into Tom's inbox. Money words veto the hint UNLESS a goods word is
+# also present (a stop can collect a cheque AND take back product).
+MONEY_ONLY = ["צ'ק", "צ׳ק", "צק", "שיק", "המחאה", "מזומן"]
+GOODS_WORDS = ["סחורה", "בקבוק", "ארגז", "מלאי", "מוצר", "הזמנה", "משטח"]
+
 # note-text hint → (kind, Hebrew action label for the concise approval summary)
 KIND_HINTS = [
     ("החלפ", "exchange", "החלפת סחורה"),
@@ -409,8 +416,11 @@ def detect_inventory_moves(stops):
         note = (t.get("notes") or "").strip()
         recip = s.get("recipient") or ""
         text = f"{recip} {note}"
-        strong = any(h in text for h in MOVE_HINTS_STRONG)
-        weak = any(h in text for h in MOVE_HINTS_WEAK) and not s.get("gi")
+        money_only = (any(m in text for m in MONEY_ONLY)
+                      and not any(g in text for g in GOODS_WORDS))
+        strong = any(h in text for h in MOVE_HINTS_STRONG) and not money_only
+        weak = (any(h in text for h in MOVE_HINTS_WEAK) and not s.get("gi")
+                and not money_only)
         if strong or weak:
             kind, label = classify_move(text)
             recip_short = recip.split("(")[0].strip() or recip
