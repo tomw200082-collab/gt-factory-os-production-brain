@@ -164,39 +164,66 @@ def _gi_page(page, hdr, page_size=100):
 def gi_fetch_invoice(stop, out_path, max_pages=30):
     """Download the real GI invoice for a stop. Returns True on success.
 
-    Primary: the direct greeninvoice link stamped on the LionWheel task.
-    Fallback: match the order id against the GI document list. A route can carry
-    orders days-to-weeks old, and Green Invoice holds >12k documents, so the
-    newest page alone misses them (the old 50-row window silently dropped older
-    orders to waybills). The order id is stamped in each document's `remarks`
-    ("מספר הזמנה באתר: #GT…"); scan deeper — pages cached — and match the exact
-    `#GT…` token so GT13483 never collides with GT134830."""
+    Primary: match the order id against the GI document list. The order id is
+    stamped in each document's `remarks` ("מספר הזמנה באתר: #GT…"), so this is an
+    exact identity match; the exact `#GT…` token is matched so GT13483 never
+    collides with GT134830. A route can carry orders days-to-weeks old and Green
+    Invoice holds >12k documents, so the newest page alone misses them (the old
+    50-row window silently dropped older orders to waybills) — scan deeper,
+    pages cached.
+
+    Fallback: the direct greeninvoice link stamped on the LionWheel task. It is
+    NOT the primary source: the stamped link is unverifiable (a GI PDF carries no
+    order id) and has been observed pointing at another customer's invoice
+    (2026-08-09, task 26822430 / #GT14056 served נונומימי's #63887 — wrong name,
+    ח.פ, address and prices handed to the wrong customer). Used only when the
+    order id finds nothing.
+
+    When both resolve and disagree, the API document wins and the disagreement is
+    recorded on the stop as `gi_link_mismatch` — the stamped link is what the
+    driver's own LionWheel app shows him, so a mismatch is a live data bug that
+    must reach Tom, not be silently papered over here."""
     link = stop.get("gi")
+    wp = (stop.get("wp") or "").lstrip("#")
+    base = GI_BASE.rstrip("/")
+
+    if wp:
+        hdr = {"Authorization": f"Bearer {gi_token()}"}
+        needle = "#" + wp
+        for page in range(1, max_pages + 1):
+            items = _gi_page(page, hdr)
+            if not items:
+                break
+            doc = next((d for d in items
+                        if needle in json.dumps(d, ensure_ascii=False)), None)
+            if not doc:
+                continue
+            meta = json.loads(_get(base + f"/documents/{doc.get('id')}", hdr).decode("utf-8"))
+            pdf = (((meta.get("url") or {}).get("origin"))
+                   or ((meta.get("files") or {}).get("origin")))
+            if not pdf:
+                break
+            body = _get(pdf)
+            with open(out_path, "wb") as f:
+                f.write(body)
+            stop["gi_source"] = f"api:{needle}"
+            stop["gi_doc"] = doc.get("number")
+            if link:
+                try:
+                    if _get(link) != body:
+                        stop["gi_link_mismatch"] = {
+                            "order": needle, "used": doc.get("number"),
+                            "used_client": (doc.get("client") or {}).get("name"),
+                            "link": link}
+                except Exception:                      # link dead → nothing to compare
+                    pass
+            return True
+
     if link:
         with open(out_path, "wb") as f:
             f.write(_get(link))
+        stop["gi_source"] = "task-link (unverified)"
         return True
-    wp = (stop.get("wp") or "").lstrip("#")
-    if not wp:
-        return False
-    base = GI_BASE.rstrip("/")
-    hdr = {"Authorization": f"Bearer {gi_token()}"}
-    needle = "#" + wp
-    for page in range(1, max_pages + 1):
-        items = _gi_page(page, hdr)
-        if not items:
-            break
-        for doc in items:
-            if needle in json.dumps(doc, ensure_ascii=False):   # order id on the doc
-                did = doc.get("id")
-                meta = json.loads(_get(base + f"/documents/{did}", hdr).decode("utf-8"))
-                pdf = (((meta.get("url") or {}).get("origin"))
-                       or ((meta.get("files") or {}).get("origin")))
-                if pdf:
-                    with open(out_path, "wb") as f:
-                        f.write(_get(pdf))
-                    return True
-                return False
     return False
 
 
@@ -340,12 +367,29 @@ def _render_one(pg, url, out, fit_one):
 # --------------------------------------------------------------------------- #
 # non-standard inventory movements -> proposals for the Factory OS inbox
 # --------------------------------------------------------------------------- #
-MOVE_HINTS = ["החלפ", "החזר", "טעימ", "איסוף סחורה", "קבל", "מתנה", "דגימ"]
+# Hints that a stop moves stock outside normal picking. STRONG hints stand on
+# their own: a stop can be a normal invoiced delivery AND still carry goods back
+# (2026-08-09, לה פרינה #GT14056 — "לאסוף מהם את ההזמנה מחמישי ולספק את זו" — a
+# whole order returning, previously invisible because the stop had an invoice).
+# WEAK hints only count when the stop has no invoice, or "קבלת סחורה עד 14:00" on
+# an ordinary delivery would file a proposal for every second stop.
+# "אסוף" is listed beside "איסוף" on purpose: the imperative Tom actually writes
+# is "לאסוף מהם", which does NOT contain the noun "איסוף".
+MOVE_HINTS_STRONG = ["החלפ", "החזר", "טעימ", "איסוף", "אסוף", "מתנה", "דגימ"]
+MOVE_HINTS_WEAK = ["קבל"]
+
+# A collection stop can be about money, not goods — "איסוף צ'קים", "לאסוף בבקשה
+# צק". Those trip the pickup hint but move no stock, so they would file bogus
+# approvals into Tom's inbox. Money words veto the hint UNLESS a goods word is
+# also present (a stop can collect a cheque AND take back product).
+MONEY_ONLY = ["צ'ק", "צ׳ק", "צק", "שיק", "המחאה", "מזומן"]
+GOODS_WORDS = ["סחורה", "בקבוק", "ארגז", "מלאי", "מוצר", "הזמנה", "משטח"]
 
 # note-text hint → (kind, Hebrew action label for the concise approval summary)
 KIND_HINTS = [
     ("החלפ", "exchange", "החלפת סחורה"),
     ("איסוף", "pickup", "איסוף סחורה"),
+    ("אסוף", "pickup", "איסוף סחורה"),
     ("החזר", "return", "החזרת סחורה"),
     ("טעימ", "tasting", "טעימה"),
     ("דגימ", "tasting", "דגימה"),
@@ -372,7 +416,12 @@ def detect_inventory_moves(stops):
         note = (t.get("notes") or "").strip()
         recip = s.get("recipient") or ""
         text = f"{recip} {note}"
-        if any(h in text for h in MOVE_HINTS) and not s.get("gi"):
+        money_only = (any(m in text for m in MONEY_ONLY)
+                      and not any(g in text for g in GOODS_WORDS))
+        strong = any(h in text for h in MOVE_HINTS_STRONG) and not money_only
+        weak = (any(h in text for h in MOVE_HINTS_WEAK) and not s.get("gi")
+                and not money_only)
+        if strong or weak:
             kind, label = classify_move(text)
             recip_short = recip.split("(")[0].strip() or recip
             summary = f"{label} — {recip_short}" if recip_short else label
@@ -744,6 +793,13 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 disc.append({"stop": s["do"], "recipient": s["recipient"],
                              "item": it["name"], "ordered": int(q), "picked": int(pq)})
 
+    # Stops whose LionWheel-stamped GI link served a different document than the
+    # order id resolves to. The pack itself is correct (order id wins) — but the
+    # driver's app shows him that same bad link, so this has to reach Tom.
+    link_bugs = [{"stop": s["do"], "tid": s["tid"], "recipient": s["recipient"],
+                  **s["gi_link_mismatch"]}
+                 for s in stops if s.get("gi_link_mismatch")]
+
     summary = {
         "driver": driver, "date": date,
         "stops": len(stops),
@@ -751,6 +807,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         "waybills": sum(1 for p, _ in ordered_parts if "wb_" in p),
         "copies": copies,
         "discrepancies": disc,
+        "gi_link_mismatches": link_bugs,
         "inventory_proposals": len(proposals),
         "file": final,
     }
@@ -793,6 +850,17 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
         for d in disc:
             L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
                      f"picked {d['picked']} of {d['ordered']}")
+    else:
+        L.append("- None.")
+    L.append("")
+    L.append("## Wrong Green Invoice link on the LionWheel task")
+    if summary.get("gi_link_mismatches"):
+        for m in summary["gi_link_mismatches"]:
+            L.append(f"- Stop {m['stop']} **{m['recipient']}** (task {m['tid']}): "
+                     f"the GI link stamped on the task serves a DIFFERENT document "
+                     f"than {m['order']}. Pack used the order-id match — invoice "
+                     f"{m['used']} ({m['used_client']}). The driver's own app still "
+                     f"shows the stamped link: fix it in LionWheel.")
     else:
         L.append("- None.")
     L.append("")

@@ -23,11 +23,20 @@ the **driver name** and the **day**; everything else is default and automatic.
    fitted to a single A4 portrait page.
 2. **Then, every stop in driving order** (`visits.daily_order`):
    - stop **with** a Green Invoice → the **real GI invoice**, annotated, **×2 copies**.
+   - **The order id picks the invoice — never the link stamped on the task.**
+     The GI match scans the **full document history** (paginated, newest-first)
+     for the exact `#GT…` order id stamped in the document `remarks`. The
+     `driver_note` link is a *fallback only*, used when the order id finds
+     nothing: a GI PDF carries no order id, so that link is unverifiable, and on
+     2026-08-09 task `26822430` (#GT14056, לה פרינה) carried a link to
+     נונומימי's invoice #63887 — another customer's name, ח.פ, address and
+     prices, one stop away from being handed over. When both resolve and
+     disagree, the order-id document wins and the run reports
+     `gi_link_mismatches` (the driver's own app shows him that same bad link, so
+     the mismatch is a live LionWheel data bug that has to reach Tom).
    - **Invoices are the rule — a waybill is a genuine last resort.** Every stop
      that has *any* Green Invoice document gets that invoice, even when the order
-     is days/weeks old: the GI match scans the **full document history** (paginated,
-     newest-first), not just the most recent page, and matches the exact `#GT…`
-     order id stamped in the document `remarks`. A stop only falls back to the
+     is days/weeks old. A stop only falls back to the
      **official LionWheel waybill** (`print_waybill`, ×2) when the order genuinely
      has **no** Green Invoice document (true pickup / exchange). Never let a stock
      order that *does* have an invoice degrade to a waybill.
@@ -170,8 +179,10 @@ terminal LionWheel status.)
   סידור עבודה (use this for page 1; the `/drivers/{id}/daily_route_plan` SPA renders
   app chrome + only the on-screen rows, do not print it directly);
   waybill `GET /tasks/{id}/print_waybill`.
-- Green Invoice: token `POST /account/token {id,secret}`; fallback document match
-  `POST /documents/search` (paginate newest-first through the **full** history —
-  ~12k+ docs — until the `#GT…` order id in `remarks` matches; do NOT stop at the
-  first page or the order goes to a waybill by mistake) then `GET /documents/{id}`
-  for the PDF link.
+- Green Invoice: token `POST /account/token {id,secret}`; **primary** document
+  match `POST /documents/search` (paginate newest-first through the **full**
+  history — ~12k+ docs — until the `#GT…` order id in `remarks` matches; do NOT
+  stop at the first page or the order goes to a waybill by mistake) then
+  `GET /documents/{id}` for the PDF link. The `driver_note` link on the LionWheel
+  task is the fallback, not the source of truth — it has been observed pointing at
+  a different customer's invoice.
