@@ -124,29 +124,45 @@ Confirmed by Tom in this session, 2026-08-10.
 | D7 | Reliability is **webhook + reconciliation poll + heartbeat**, never webhook alone | 36-hour retry then permanent loss; and the real failure of the old pipeline was silence, not breakage |
 | D8 | Only MIT/Apache-licensed open source may be copied. AGPL (Twenty, EspoCRM, Odoo) and GPL (Frappe) are excluded. Visual inspiration is unrestricted | AGPL network copyleft is incompatible with a closed portal |
 
+Added 2026-08-10 after a second pass whose brief was: does this design drag us into
+a programming project instead of something good that works from day one?
+
+| # | Decision | What it removes |
+|---|---|---|
+| D9 | **Polling only. No Meta webhook.** One scheduled function reads `GET /{form_id}/leads` by time cursor every ~10 minutes | The verification endpoint, HMAC signature validation, `subscribed_apps` setup, Meta webhook configuration and 36-hour retry semantics. The poll *is* the reconciliation layer, so resilience stops being a separate component. Cost: lead latency ≤10 min instead of ~1 min, which is nothing for a lead called back within hours |
+| D10 | **No Make anywhere in this module** (Tom, 2026-08-10). Email is sent directly from our function via **Resend** — one HTTPS POST with a non-expiring API key | The third party in the middle of the alert path, and with it the whole class of failure that killed the pipeline on 2026-06-07: a silently dying OAuth token. Verified: the repository has no other mail sender today, so something had to replace Make either way. Free tier covers ~3,000/month against our ~2/day. Sending *from* `gteveryday.com` needs one-time SPF/DKIM DNS records; until then Resend permits sending to the account owner's address, which is our only recipient |
+| D11 | **The heartbeat rides the same daily job and the same sender** — one short email: leads in the last 24h, age of the most recent lead, poll status | A separate alerting mechanism, its schedule and its delivery path. (The existing daily-ops-guardian email keeps using Make for now — different lane. If Resend proves out, that is the natural next thing to migrate) |
+| D12 | **Statuses are `new` / `working` / `lost` (+reason). "Won" is not clickable** — it is written only by Shopify order evidence | A status transition users can fake, and the UI to fake it with |
+| D13 | **Import the Meta export only in v1.** The spreadsheets are deferred | Drive access work and cross-source deduplication. The sheets' human columns are stale anyway — that task list stood at 237 overdue items nobody worked |
+
 ## 4. Architecture
 
 ```
-Facebook Lead Ads ──webhook──► Edge Function: meta-leads-webhook
-                                  │ (verify signature, fetch GET /{leadgen_id})
-Any other source ────POST─────► Edge Function: sales-lead-ingest
-                                  │ (bearer token, same write path)
-Scheduled job ──poll /{form_id}/leads──┤   reconciliation + heartbeat
-                                       ▼
-                    ingest core: normalise → match org → write
-                                       │
-                         Postgres schema sales_core
-                         org · lead · lead_event (append-only)
-                                  │                │
-                    POST webhook  │                │  read models
-                                  ▼                ▼
-              Make "GT — Lead Alert" (Gmail)   portal /sales/leads
-                     → tom@gteveryday.com
+Meta Graph API ◄──poll every ~10 min──  Edge Function: sales-leads-poll
+  GET /{form_id}/leads?filtering=time            │
+                                                 │   (same function, POST route:
+Any other source ──POST /ingest──────────────────┤    manual entry, website, WhatsApp)
+                                                 ▼
+                       ingest core: normalise → match org (Shopify lookup) → write
+                                                 │
+                                  Postgres schema sales_core
+                                  org · lead · lead_event (append-only)
+                        ┌────────────────────────┼────────────────────────┐
+                        ▼                        ▼                        ▼
+                 Resend API                portal /sales/leads     daily close-the-loop job
+             → tom@gteveryday.com                                  (open leads → Shopify orders)
+                                                                     + heartbeat, same sender
 ```
 
-Every write path — webhook, generic endpoint, reconciliation poll, CSV import — passes
-through one shared ingest core so normalisation, matching, deduplication and event writing
-cannot drift between entry points.
+One function, one write path, one sender, no third party in the middle. Every entry point —
+poll, generic POST, import — passes through the same ingest core, so normalisation,
+matching, deduplication and event writing cannot drift apart.
+
+**Where customer truth lives.** Shopify customers are not stored in our Postgres; the
+customer/product tracker computes them live from Shopify into dated snapshots
+(`docs/analytics/README.md`). That confirms D3's reference-not-copy rule and dictates the
+mechanics: matching is a live Shopify lookup at ingest, and the org stores the customer id
+plus a dated context snapshot, never a mirrored customer record.
 
 ## 5. Data model — schema `sales_core`
 
@@ -180,7 +196,7 @@ U-002). `org` is a branch-level business.
 | `external_id text` | `leadgen_id` where available; otherwise a stable hash (§8) |
 | `contact_name`, `phone_e164`, `email` | As submitted, phone normalised |
 | `campaign_name`, `ad_name`, `form_id`, `form_name`, `platform`, `is_organic` | Populated when the source provides them |
-| `status text` | `new` · `contacted` · `in_progress` · `won` · `lost` |
+| `status text` | `new` · `working` · `lost`. **`won` is not settable by a user** — it is written only by the close-the-loop job from order evidence (D12) |
 | `lost_reason text null` | Required when status is `lost` |
 | `assignee text null` | Exists now, unused until a second person joins |
 | `next_touch_at timestamptz null` | D4: an open lead without one floats to the top |
@@ -216,29 +232,43 @@ transaction.
 
 ## 6. Ingestion
 
-### 6.1 `meta-leads-webhook` (Supabase Edge Function)
+### 6.1 `sales-leads-poll` (Supabase Edge Function, scheduled ~every 10 minutes)
 
-`GET` answers Meta's verification challenge using `META_VERIFY_TOKEN`. `POST` validates
-`X-Hub-Signature-256` against the app secret, acknowledges quickly with 200, then for each
-`leadgen` entry fetches `GET /{leadgen_id}`, maps `field_data`, and calls the ingest core.
-Idempotent on `leadgen_id`.
+Reads `GET /{form_id}/leads` filtered on `created_time` greater than the stored cursor,
+maps each lead, and calls the ingest core. The cursor is advanced only after a successful
+write, so a failed run re-reads rather than skips. Idempotent on `leadgen_id` via
+`unique (source, external_id)`, which makes overlap harmless and lets the window overlap
+deliberately.
 
-Field mapping is derived from a real fetched lead before any mapping is written — §2.3 is
-the reason. No field name is assumed.
+This single mechanism replaces both the webhook and the separate reconciliation job (D9).
+An outage of any length self-heals on the next run, bounded only by Meta's 90-day
+retention. Meta's rate limit — 200 × 24 × leads in the past 90 days, per page, per 24h —
+is orders of magnitude above a 10-minute poll at GT's volume.
 
-### 6.2 `sales-lead-ingest` (Supabase Edge Function)
+Field mapping is derived from one real fetched lead before any mapping is written — §2.3
+is the reason. No field name is assumed.
 
-Generic `POST`, bearer `LEAD_INGEST_TOKEN`, same ingest core. Covers manual entry, a future
-website form and WhatsApp, and serves as the fallback target if the Make Facebook module is
-ever needed as Plan B.
+### 6.2 `POST /ingest` (same function, second route)
 
-### 6.3 Reconciliation poll and heartbeat
+Bearer `LEAD_INGEST_TOKEN`, same ingest core. Covers manual entry from the portal, a future
+website form and WhatsApp. Sharing the function keeps one deployment and one code path.
 
-A scheduled job reads `GET /{form_id}/leads` filtered by time and inserts anything missing.
-It closes the 36-hour retry gap, any Edge Function outage, and any silently unsubscribed
-page. The heartbeat is the other half: if campaigns are active and no lead has arrived for
-N days (N configurable, default 3), Tom gets an email. The old pipeline's real failure was
-that nobody knew — this is the fix.
+### 6.3 Close-the-loop job and heartbeat (daily)
+
+One job, two jobs' worth of value:
+
+1. **Conversion check.** For **open leads only**, ask Shopify whether the matched customer
+   has ordered. If yes: status `won`, `converted_order_ref` set, `lead_event(converted)`
+   written with the order and amount as evidence. Scanning only open leads keeps this a
+   small query set no matter how the lead table grows.
+2. **Heartbeat.** If the poll has not run, or campaigns are active and no lead has arrived
+   for N days (default 3), email Tom. The old pipeline's real failure was that nobody
+   knew for two months — this line is the fix, and it costs one `if`.
+
+What this unlocks with no further code, and the reason the loop is worth closing:
+lead-to-customer conversion rate, days from lead to first order, and revenue per campaign
+against ad spend. It is also the seam the churn radar attaches to later, using the
+own-rhythm methodology already documented in `docs/analytics/README.md`.
 
 ### 6.4 Enrichment
 
@@ -248,19 +278,21 @@ Anything uncertain is surfaced in the portal for Tom to confirm, never written a
 
 ### 6.5 Secrets (Tom provides; the build stops here and asks)
 
-`META_VERIFY_TOKEN`, `META_APP_SECRET`, `META_PAGE_ACCESS_TOKEN` (from a Business Manager
-**System User**, non-expiring — this is what prevents a repeat of 2026-06-07),
-`LEAD_INGEST_TOKEN`, `MAKE_LEAD_ALERT_WEBHOOK_URL`.
+- `META_PAGE_ACCESS_TOKEN` — from a Business Manager **System User**, non-expiring. This is
+  the single credential that prevents a repeat of 2026-06-07. Tom is Admin of the
+  GTeveryday portfolio, so he can create it. Polling needs no verify token and no app
+  secret, which is two fewer secrets than the webhook design.
+- `LEAD_INGEST_TOKEN` — bearer for the generic route.
+- `RESEND_API_KEY` — non-expiring.
 
 ## 7. Alerting
 
-A new Make scenario "GT — Lead Alert": CustomWebHook → Gmail `sendAnEmail` on connection
-6308857, recipient `tom@gteveryday.com`. Same proven pattern as Guardian daily. The old
-lead scenarios stay retired.
+The ingest core sends directly through **Resend**, recipient `tom@gteveryday.com`. No Make,
+no OAuth, no scenario to maintain (D10). All the old lead scenarios stay retired.
 
 After a successful insert of a genuinely new lead (not an import, not a duplicate), the
-ingest core posts to the hook and writes `lead_event(alert_sent)`. At most one alert per
-lead.
+core sends the email and writes `lead_event(alert_sent)`. At most one alert per lead; the
+event is what enforces it.
 
 Subject: `🟢 ליד חדש: {business_or_contact_name}`, or, when the org is a known customer,
 `🔁 ליד מלקוח קיים: {name}`. The body is Hebrew RTL, based on the corrected template from
@@ -273,15 +305,14 @@ not to a spreadsheet.
 
 ## 8. Historical import
 
-Two sources, both `source`-tagged so provenance is never lost:
+**v1 imports one source** (D13): the **Meta Leads Center export of 2026-08-10** — 188 rows,
+`source='import_meta_export'`. It recovers the ~60 unseen leads and carries history back to
+2023.
 
-1. **Meta Leads Center export, 2026-08-10** — 188 rows, `source='import_meta_export'`.
-   This is the authoritative recovery of the ~60 unseen leads plus history back to 2023.
-2. **The spreadsheets** — `GT Sales Pipeline CRM` / `LEADS_RAW` (the live destination of
-   the dead scenario) and the `לידים GT` sheet named in the masterprompt.
-   `source='import_sheets'`. Their added value over source 1 is the human columns the
-   export lacks: status, notes, owner. Rows that duplicate source 1 merge into the same
-   org and are flagged, not duplicated.
+The spreadsheets are deferred. Their only advantage is the human columns the export lacks
+(status, notes, owner), and those are stale: the sheet's own task list stood at 237 overdue
+items nobody worked. If Tom says those notes matter, importing them later is another import
+run tagged `source='import_sheets'`, not an architectural change.
 
 `external_id` is the `leadgen_id` when present, otherwise a stable hash of
 (normalised phone + submission date). **Imports never send email.** The import reports:
@@ -296,15 +327,22 @@ Scope is the minimum that is genuinely usable. **Visual design is out of scope h
 decided in its own phase, on real data.** This section fixes behaviour and information
 architecture only.
 
-- **`/sales/leads`** — inbox. Tabs by status; a row shows business (or contact), city when
-  known, campaign, lead age, SLA badge before first touch only, next-touch date, and a
-  customer badge when the org is already a Shopify customer. Default sort puts new and
-  overdue-next-touch at the top.
-- **`/sales/leads/[id]`** — lead detail. All fields, the `lead_event` timeline, and the
-  actions: change status, set next touch, add note, assign, and `tel:` / `wa.me` /
-  `mailto:` links. Every action is a mutation that writes a `lead_event`.
-- **`/sales/orgs/[id]`** — thin business view: the org's leads, its Shopify link when
-  present. This is the seam the churn radar and account value plug into later.
+**One route in v1** — `/sales/leads`. Detail opens as a drawer over the list, not a second
+page. This removes a route, a layout and a navigation level, and it matches how the screen
+is actually used: scan, open, act, close, next.
+
+- **The list** — tabs by status; a row shows business (or contact), city when known,
+  campaign, lead age, SLA badge before first touch only, next-touch date, and a customer
+  badge when the org is already a Shopify customer. New and overdue-next-touch sort to the
+  top.
+- **The drawer** — all fields, the `lead_event` timeline, and the actions: set status
+  (`working` / `lost` + reason), set next touch, add note, and `tel:` / `wa.me` /
+  `mailto:` links. Every action is a mutation that writes a `lead_event`. `won` appears
+  here as evidence, never as a button.
+- **Org context** — shown inline as a badge with the customer's dated snapshot and a link
+  out to Shopify. A dedicated `/sales/orgs/[id]` page waits until the churn radar needs it;
+  the `org` table exists from day one either way, which is the part that would have been
+  expensive to add late.
 
 Hebrew, RTL, per `portal_ux_standard.md`, and the Hebrew register must be registered in the
 portal's authorised-surface table before any string ships.
@@ -321,13 +359,13 @@ code is taken.
 
 | Failure | Detection | Response |
 |---|---|---|
-| Token expires or is revoked | Reconciliation poll returns auth error; heartbeat sees silence | Alert to Tom naming the credential. System User token makes this unlikely |
-| Edge Function down | Meta retries 36h; poll backfills afterwards | No lead lost inside the 90-day window |
-| Page subscription silently removed | Heartbeat: campaigns active, zero leads | Alert; re-subscribe |
-| Meta form fields change again | Ingest records unmapped field names instead of discarding them | Alert on first unknown field |
-| Duplicate webhook delivery | `unique (source, external_id)` | Insert ignored, no second email |
+| Token expires or is revoked | Poll returns an auth error; heartbeat sees silence | Alert naming the credential. A System User token makes this unlikely by construction |
+| Function or database down | Cursor is not advanced | Next run re-reads the same window. Self-healing up to Meta's 90-day retention |
+| Poll itself stops running | Heartbeat: no poll run recorded | Daily email to Tom |
+| Meta form fields change again (it already happened once) | Ingest records unmapped field names instead of discarding them | Alert on the first unknown field |
+| Same lead read twice by overlapping windows | `unique (source, external_id)` | Insert ignored, no second email |
 | Malformed payload | Rejected and logged with the raw body | Never a silent drop |
-| Alert webhook fails | `alert_sent` event absent | Retry, then surface in the portal |
+| Resend call fails | `alert_sent` event absent | Retried next run; the lead is already safely stored, so the email is never the thing that loses data |
 
 ## 11. Evidence plan
 
@@ -345,12 +383,16 @@ code is taken.
 | Phase | Delivers on its own | Exit evidence |
 |---|---|---|
 | 0 · Governance | Amendment A approval recorded; lane confirmed | Declaration updated; PR #98 noted |
-| 1 · Schema | `sales_core` exists with append-only guarantees | pgTAP N/N |
-| 2 · Import | Every lead ever received is visible in one place, including the ~60 lost ones | Import report: accepted / merged / rejected |
-| 3 · Intake + alert | No future lead is lost; Tom is notified within minutes | Real test lead through Meta's testing tool, all six layers |
-| 4 · Reliability | The pipeline cannot die silently again | Simulated outage recovered by poll; heartbeat fires on induced silence |
-| 5 · Portal | Leads are workable, not just stored | Playwright on the critical path |
+| 1 · Schema | `sales_core` exists with append-only guarantees | pgTAP N/N on the five rules that can break: dedupe, phone normalisation, append-only, match order, one alert per lead |
+| 2 · Import | Every lead GT ever received sits in one place, matched against Shopify — including the ~60 nobody saw | Import report: accepted / merged / rejected, with reasons |
+| 3 · Poll + alert | No future lead is lost, and Tom is told within ~10 minutes with customer context attached | A real test lead through Meta's testing tool, all six layers |
+| 4 · Close the loop | Conversion is recorded from order evidence; the pipeline can no longer die quietly | Induced silence fires the heartbeat; a real order converts its lead |
+| 5 · Portal | Leads are workable, not merely stored | Playwright on the critical path |
 | 6 · Design | The surface is worth looking at | Separate phase, own gate, real data |
+
+Phases 1–2 block on nobody and can start immediately. Phase 3 blocks on Tom for two
+credentials. Phases 1–4 are small: one migration, one function, one import script, one
+daily job.
 
 ## 13. Open questions
 
