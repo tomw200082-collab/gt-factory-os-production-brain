@@ -216,12 +216,77 @@ calculation · a second catalog source of truth.
 - Draft total = displayed total ±₪0.05, and never ×1.18.
 - ח.פ check digit accepts real numbers and rejects transposed ones.
 
+## Roles and the approval screen — decided 2026-08-10
+
+Tom: stand it up first, sort fine-grained permissions later. Admin is Tom; everyone
+else on the commercial side wears the sales hat; operations keeps what it has.
+
+The portal has four roles today (`admin`, `planner`, `operator`, `viewer`). **One new
+role: `sales`.** No other role changes. Operations routes are untouched.
+
+| Role | Web orders |
+|---|---|
+| `admin` (Tom) | everything |
+| `sales` | see the queue, correct prices, release the payment link |
+| `planner` / `operator` / `viewer` | no access to the queue; the resulting order appears in the normal pipeline as any order does |
+
+**The approval screen is a portal route — `/sales/web-orders` — not Shopify admin.**
+That is the whole point of it: the screen shows, per line, what this customer last
+actually paid (`order-intake/engine/pricing.ts`, discount-aware, with same-tier
+sibling inference) and applies it in one tap. In Shopify admin a human would have to
+open order history by hand for every line, which is exactly the error the manual step
+exists to prevent.
+
+`/sales/*` becomes a new route group — the first-level sales / operations split Tom
+asked for. English UI, per the portal standard; only the public page is Hebrew.
+
+## New customers — decided 2026-08-10
+
+A brand-new business may order without anyone at GT having spoken to them first. They
+pay list price by definition, so there is nothing to correct.
+
+**After payment everything is automatic**: the draft becomes a real paid order,
+Shopify commits the stock through its own pipeline, and the Green Invoice app issues
+the חשבונית מס/קבלה. No human touches it again. The page only ever sells what the
+reconciler says is available, so a new customer cannot buy what is not there.
+
+**Before payment, a human still releases the link in v1 — one tap, seconds.** Not
+caution for its own sake; there is a specific legal unknown behind it:
+
+> An invoice at or above **₪5,000 ex-VAT** requires a Tax Authority allocation number
+> (מספר הקצאה), or the buyer cannot deduct the VAT. Whether the Green Invoice Shopify
+> app fetches that number automatically is **recorded as unverified** in the
+> predecessor design and has not been checked since. Auto-releasing links would let an
+> over-threshold order pay before anyone confirms it.
+
+Auto-release is phase 2 and is unblocked by exactly four things, all already specified
+in the predecessor design: the `orders/paid` → session correlation token (C1), link
+idempotency (C2), the ₪5,000 gate computed ex-VAT (C3, C4) — and verifying the
+allocation-number behaviour. When those land, the hybrid gate can auto-release the
+common case (new customer, list price, under threshold, everything priced and in
+stock) and keep the rest human.
+
+## Hosting — decided 2026-08-10
+
+**Same Vercel account as the portal, two projects.**
+
+- **Public page** — its own Vercel project on `pricelist.gteveryday.com`. No auth, no
+  portal bundle, no session cookie on a public marketing surface. It can go live as
+  the static pricelist today and grow into the order page without changing hostname.
+- **Approval screen** — inside the existing portal app, behind portal auth.
+
+One account keeps billing and access in one place; two projects keep a public
+unauthenticated surface from sharing a deployment with the authenticated portal.
+
 ## Open decisions for Tom
 
-Tracked in the declaration §17. The ones that block the build:
-
-1. Where DNS for `gteveryday.com` is managed, so the CNAME can be created.
-2. Who receives and approves web orders — Doreen, Tom, or both — and where the
-   approval screen lives (portal route vs Shopify admin + a tag).
-3. Whether a brand-new customer may submit at all before a human has spoken to them,
-   or whether the page collects the enquiry and GT opens the account first.
+1. DNS — GoDaddy holds `gteveryday.com` (`ns27/ns28.domaincontrol.com`). One CNAME
+   `pricelist` → `cname.vercel-dns.com`. **Tom's task; a reminder now runs each
+   weekday morning and stops itself once the record resolves.**
+2. *(closed 2026-08-10 — roles and approval screen, above)*
+3. *(closed 2026-08-10 — new customers, above)*
+4. *(closed 2026-08-10 — hosting, above)*
+5. Hebrew copy register entry for the public page — drafted with the build, Tom
+   approves the wording.
+6. `items.case_pack` for the 17 items missing it — batched separately, not on this
+   rule's path.

@@ -106,7 +106,16 @@ may_not_read:
 | Route | Gating | Notes |
 |---|---|---|
 | `pricelist.gteveryday.com` (public) | none | Hebrew + RTL by nature — customer-facing marketing surface, outside the portal's English-first rule. Needs its own copy register entry. |
-| portal approval screen (path TBD, §17) | admin / planner | English per portal standard |
+| `/sales/web-orders` (portal) | `sales`, `admin` | English per portal standard. New `/sales/*` route group — the first-level sales / operations split. |
+
+**One new role, `sales`,** alongside the existing `admin` / `planner` / `operator` /
+`viewer`. Tom is `admin`; the commercial side is `sales`; operations roles are
+untouched (Tom, 2026-08-10 — stand it up now, refine permissions later).
+
+The approval screen is a portal route, not Shopify admin, because it must show each
+line's real last-paid price from `order-intake/engine/pricing.ts` and apply it in one
+tap. Doing it in Shopify would mean looking up history by hand per line — the exact
+error the manual step exists to prevent.
 
 Hebrew copy for the public page needs a Tom-approved register entry before build.
 
@@ -161,14 +170,15 @@ ordinary Shopify drafts and stay valid.
 
 ## 17. Tom decisions required
 
-| # | Decision | Blocking |
+| # | Decision | State |
 |---|---|---|
-| 1 | Where DNS for `gteveryday.com` is managed, so `pricelist` can get a CNAME | yes — and the printed link is dead until it is done |
-| 2 | Who approves web orders (Doreen / Tom / both), and whether the approval screen is a portal route or Shopify admin + the `needs-review` tag | yes |
-| 3 | May a brand-new customer submit an order before a human has spoken to them, or does the page open an account request first? | yes |
-| 4 | Hebrew copy register entry for the public page | before Gate 4 |
-| 5 | Hosting: same Vercel account as the portal, or separate | before Gate 2 |
-| 6 | `items.case_pack` for the 17 items missing it | no — not on the rule's path |
+| 1 | CNAME `pricelist` → `cname.vercel-dns.com` at GoDaddy | **open — Tom's task.** The printed pricelist link is dead until it exists. A weekday-morning reminder runs and stops itself once the record resolves |
+| 2 | Roles and approval screen | **closed 2026-08-10** — new `sales` role; approval at `/sales/web-orders` in the portal |
+| 3 | New customer may order unseen | **closed 2026-08-10** — yes; list price, human releases the link in v1, everything after payment automatic |
+| 4 | Hosting | **closed 2026-08-10** — same Vercel account as the portal, two projects |
+| 5 | Hebrew copy register entry for the public page | delegated to Claude to draft; Tom approves wording before Gate 4 |
+| 6 | `items.case_pack` for the 17 items missing it | batched separately — not on this rule's path |
+| 7 | Auto-release of the payment link (phase 2) | blocked on C1–C4 **and** verifying whether the Green Invoice Shopify app fetches the ₪5,000 allocation number |
 
 ## 18. Definition of done
 
