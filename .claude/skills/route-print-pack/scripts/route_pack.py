@@ -101,6 +101,39 @@ def lw_list_open():
     return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
 
 
+def task_driver_str(t):
+    """Driver name for a task. LionWheel moved `driver_str` off the task root and
+    onto `visits[]` (verified live 2026-08-16 — no task in the open set carries a
+    root-level `driver_str`). Read both so old and new shapes work."""
+    if t.get("driver_str"):
+        return t["driver_str"]
+    for v in (t.get("visits") or []):
+        if v.get("driver_str"):
+            return v["driver_str"]
+    return None
+
+
+def driver_matches(driver_str, wanted):
+    """Exact name, or the wanted name as the leading word(s) of the full name —
+    LionWheel returns 'מיידן גבאי' where the route is dispatched as 'מיידן'.
+    Never a substring match: that would collide across drivers."""
+    if not driver_str or not wanted:
+        return False
+    a, b = driver_str.strip(), wanted.strip()
+    return a == b or a.startswith(b + " ")
+
+
+def norm_date(s):
+    """LionWheel serves dates as DD/MM/YYYY (verified live 2026-08-16); older
+    payloads used ISO. Normalise both to YYYY-MM-DD."""
+    if not s:
+        return ""
+    m = re.match(r"^(\d{2})/(\d{2})/(\d{4})", str(s))
+    if m:
+        return f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+    return str(s)[:10]
+
+
 def fetch_route(driver, date, all_statuses=False):
     """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
 
@@ -111,15 +144,19 @@ def fetch_route(driver, date, all_statuses=False):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        if not driver_matches(task_driver_str(t), driver):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        v0 = (t.get("visits") or [{}])[0]
+        if norm_date(t.get("pickup_at") or v0.get("visit_at")) != date:
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
-        v = (t.get("visits") or [{}])[0]
-        driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        v = v0
+        driver_id = driver_id or t.get("driver_id") or v.get("driver_id")
+        # eta_at is a bare "HH:MM" in the live payload (2026-08-16); it used to be
+        # a full ISO timestamp. Accept both instead of slicing blindly.
+        raw_eta = str(v.get("eta_at") or "")
+        eta = raw_eta if re.fullmatch(r"\d{2}:\d{2}", raw_eta) else raw_eta[11:16]
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
@@ -132,7 +169,16 @@ def fetch_route(driver, date, all_statuses=False):
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    # daily_order first when LionWheel supplies it. When it does not (the field is
+    # absent from every visit in the live payload as of 2026-08-16), fall back to
+    # the visit ETA and then the task id, so the pack is at least deterministic —
+    # and say so in the summary rather than passing it off as LionWheel's order.
+    # Tie-break by task id, NOT by anything cleverer (geography, same-recipient
+    # grouping): page 1 of the pack is LionWheel's own work order, which lists the
+    # stops in exactly this order. Any re-sequencing here makes the invoice stack
+    # disagree with the sheet the driver reads first. Re-sequence in LionWheel.
+    stops.sort(key=lambda s: (s["do"] is None, s["do"] if s["do"] is not None else 0,
+                              s["eta"] or "99:99", int(s["tid"])))
     return driver_id, stops
 
 
