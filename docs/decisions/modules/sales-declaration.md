@@ -1,15 +1,68 @@
 # Module Declaration — `sales`
 
-> **Status: DRAFT — awaiting Tom's written approval.** This is a proposal, not
-> authority. Per `CLAUDE.md` → Future module rule and `MODULE_TEMPLATE.md`, no
-> `sales` code, schema, agents, or UX surfaces may be built until Tom approves
-> this declaration in writing and `factory-os-governor` adds the module's lane
-> row(s) to `AI_BRAIN_ROUTER.md` §3. Until then the router returns
-> `verdict: NEW_MODULE_REQUIRED` for sales work.
+> **Status: APPROVED (Tom, in writing, 2026-08-04)** for everything authored 2026-07-18.
+> **Amendment A: APPROVED (Tom, in writing, 2026-08-17)** — approval given by Tom pasting
+> the 2026-08-17 sales-workspace masterprompt
+> (`docs/plans/2026-08-17-sales-portal-ui-masterprompt.md` §3.2), which that file states
+> constitutes written approval; the amendment was first proposed 2026-08-04 (PR #98) and
+> its approval path was defined in the 2026-08-07 leads-pipeline masterprompt
+> (`docs/plans/2026-08-07-leads-pipeline-masterprompt.md`, branch
+> `claude/auto-email-leads-updates-1ojqwa`).
 >
 > **Authored:** 2026-07-18 (branch `claude/gt-sales-system-jnzf6k`).
 > **Owner of the declaration process:** `factory-os-governor`. **Approver:** Tom.
-> **Do not promote this file to authority. Do not update the router from it until approved.**
+
+---
+
+## Amendment A — customer journey + lean CRM (proposed 2026-08-04 · APPROVED 2026-08-17)
+
+Driver: Tom's confirmed customer-journey decisions, `Sales-Machine/doctrine/decisions.md` D-006 → D-013,
+and `Sales-Machine/doctrine/customer-journey.md`.
+
+**A.1 — Missing entities.** §5 models `account`, `contact`, `touch_log`, `sleeping_signal`,
+`whitespace_map`, `dream100_target`. The journey requires more entities in `sales_core`:
+
+| Table | PK | Mutable? | Audit | Note |
+|---|---|---|---|---|
+| `sales_core.lead` | UUID | mutable | change log | source channel + captured_at are columns, not metadata |
+| `sales_core.lead_event` | UUID | **append-only** | immutable | mirrors ledger doctrine — history is never edited |
+| `sales_core.assignment` | UUID | mutable | change log | lead → agent; rule-driven, not discretionary |
+| `sales_core.task` | UUID | mutable | change log | due-dated; SLA escalation opens a new row |
+
+*As built (2026-08-17):* the schema that landed (gt-factory-os PR #219, migrations
+0318–0321) carries `org` / `lead` / `lead_event`; `assignment` and `task` were superseded
+by the `lead.assignee` and `lead.next_touch_at` columns per the 2026-08-10 design spec
+(`docs/superpowers/specs/2026-08-10-sales-leads-pipeline-design.md`, D2/D4) — same intent,
+fewer tables. This substitution is covered by the same approval.
+
+**A.2 — Build decision (D-012).** The lean CRM is built in-house, as a new route group in
+`gt-factory-os-portal` with the `sales_core` schema. Separation is at the data and permission layer,
+not a separate application. Navigation splits at the top into Operations / Sales.
+Evaluation of record: `Sales-Machine/knowledge/market/crm-buildvsbuy-2026-08-04.md`.
+
+**A.3 — §10 UX surfaces is no longer deferred.** A sales route group ships in v1 and therefore inherits
+every portal locked decision: role-gating, UX release gate SHIP verdict, RUNTIME_READY for backend-bound
+data, and a Tom-approved Hebrew register entry for user-visible Hebrew strings.
+
+**A.4 — Pricing (D-008).** v1 uses public Shopify pricing. §17.1 (Shopify plan path) stays open but no
+longer blocks the journey. No customer-specific price list is modeled in v1.
+
+**A.5 — Outreach flag unchanged.** The stage-1 automated reply is customer-facing and therefore sits behind
+`SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` per §11 and D-005. Confirming the journey does **not** flip it.
+
+**A.6 — New Tom decisions required**, tracked in `Sales-Machine/CURRENT_STATE.md`:
+U-010 lead SLA hours · U-011 Erik's role and routing share · U-013 how the interactive catalog gates on
+live stock (4 of 8 sugared 0.5L concentrates read zero on 2026-08-04).
+
+---
+
+## Build record
+
+| Date | Build | Where | Evidence |
+|---|---|---|---|
+| 2026-08-10 → 2026-08-17 | `sales_core` schema (org / lead / lead_event, append-only trigger, phone normalisation, `ingest_lead`) + historical import of the 2026-08-10 Meta export (188/188, 43/43 pgTAP) | gt-factory-os PR #219 (merged 2026-08-17), migrations 0318–0321 | `gt-factory-os/docs/integrations/sales-leads-import-2026-08-10.md` |
+| 2026-08-10 → 2026-08-17 | Design spec — leads pipeline + sales module foundation | production-brain PR #127 (merged 2026-08-17) | `docs/superpowers/specs/2026-08-10-sales-leads-pipeline-design.md` |
+| 2026-08-17 | **GT Sales Workspace — BUILT.** Data layer: migrations 0322 (outcome-loop mutation functions, `app_setting`, additive event types) + 0323 (five `api_read.v_sales_*` views), granted to `service_role` only because lead rows are PII; admin-gated Fastify endpoints under `api/src/sales/**`. Portal: `/apps` switchboard + `(sales)` route group — Today queue with the one-tap outcome loop, leads table + drawer, orgs, quick-add, ⌘K search, scoped PWA, settings. Hebrew RTL, admin-only, on the live 188-lead data | gt-factory-os PR #220 · gt-factory-os-portal PR #213 (tranche 162) · plan: `docs/superpowers/plans/2026-08-17-sales-workspace-implementation.md` | pgTAP 24/24 + 16/16, 11/11 regression on the neighbouring invariants, handler SQL 10/10 against prod, vitest 1351/1351, playwright 62/62 `@mocked`, Next build green, eslint 0 errors. UX release gate: run 1 HOLD (4 P0 / 21 P1) → three fix iterations → run 2 **0 P0**, visual and copy GREEN, every named P1 closed. Regression sentinel PASS (0 critical / 0 high). Factory scorecard unchanged (94), no role's rail moved |
 
 ---
 
