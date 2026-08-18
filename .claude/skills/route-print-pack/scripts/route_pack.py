@@ -107,22 +107,32 @@ def fetch_route(driver, date, all_statuses=False):
     all_statuses=True also keeps UNASSIGNED stops — use when the whole day is to
     be treated as confirmed even though LionWheel has not finished assigning."""
     stops, driver_id = [], None
+    # LionWheel serves the driver name on the VISIT (`visits[].driver_str`), and
+    # `pickup_at` as DD/MM/YYYY — the task-level driver_str / ISO date this used
+    # to read are not in the payload, so both are matched leniently here.
+    y, m, d = date.split("-")
+    date_dmy = f"{d}/{m}/{y}"
     for tid in (lw_list_open() if all_statuses else lw_list_assigned()):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        v = (t.get("visits") or [{}])[0]
+        names = [n for n in (t.get("driver_str"), v.get("driver_str")) if n]
+        if not any(driver == n or driver in n for n in names):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        pickup = (t.get("pickup_at") or "") or (v.get("visit_at") or "")
+        if not (pickup.startswith(date) or pickup.startswith(date_dmy)):
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
-        v = (t.get("visits") or [{}])[0]
-        driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        driver_id = driver_id or t.get("driver_id") or v.get("driver_id")
+        eta = (v.get("eta_at") or "")[11:16] or (v.get("early_eta_at") or "")[11:16]
         stops.append({
             "tid": str(t["id"]),
+            # daily_order is absent from the current payload; the planned ETA is
+            # LionWheel's own driving order, so it stands in as the sort key.
             "do": v.get("daily_order"),
+            "eta_sort": (v.get("early_eta_at") or v.get("eta_at") or ""),
             "eta": eta,
             "recipient": v.get("recipient_name"),
             "city": v.get("city"),
@@ -132,7 +142,12 @@ def fetch_route(driver, date, all_statuses=False):
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    if all(s["do"] is None for s in stops):
+        stops.sort(key=lambda s: (s["eta_sort"] == "", s["eta_sort"]))
+        for i, s_ in enumerate(stops, 1):
+            s_["do"] = i
+    else:
+        stops.sort(key=lambda s: (s["do"] is None, s["do"]))
     return driver_id, stops
 
 
