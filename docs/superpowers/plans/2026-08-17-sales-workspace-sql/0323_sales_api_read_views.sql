@@ -56,7 +56,13 @@ select
   l.converted_order_ref,
   l.converted_amount,
   l.created_at,
-  (o.shopify_customer_id is not null)              as is_existing_customer,
+  -- An org counts as an existing customer when it carries either a Shopify
+  -- customer reference (set by ingest_lead when a live match is made) or a
+  -- dated tracker snapshot. The 2026-08-10 import matched its three customers
+  -- by the tracker's customer_key and set only the snapshot, so keying this on
+  -- shopify_customer_id alone would leave the returning-customer card dead.
+  (o.shopify_customer_id is not null
+     or o.shopify_snapshot_at is not null)         as is_existing_customer,
   o.shopify_customer_id,
   o.shopify_snapshot,
   o.shopify_snapshot_at,
@@ -102,7 +108,8 @@ select
   o.email_domain,
   o.city,
   o.shopify_customer_id,
-  (o.shopify_customer_id is not null)          as is_existing_customer,
+  (o.shopify_customer_id is not null
+     or o.shopify_snapshot_at is not null)     as is_existing_customer,
   o.shopify_snapshot,
   o.shopify_snapshot_at,
   o.created_at,
@@ -134,7 +141,8 @@ select
     when l.status = 'won'
      and c.converted_at >= now() - interval '7 days' then 'conversion'
     when l.status = 'new' and l.first_touch_at is null
-     and o.shopify_customer_id is not null            then 'returning_customer'
+     and (o.shopify_customer_id is not null
+          or o.shopify_snapshot_at is not null)       then 'returning_customer'
     when l.status = 'new' and l.first_touch_at is null then 'new_lead'
     else 'due_follow_up'
   end                                              as item_type,
@@ -150,7 +158,13 @@ select
   l.next_touch_at,
   l.first_touch_at,
   l.created_at,
-  (o.shopify_customer_id is not null)              as is_existing_customer,
+  -- An org counts as an existing customer when it carries either a Shopify
+  -- customer reference (set by ingest_lead when a live match is made) or a
+  -- dated tracker snapshot. The 2026-08-10 import matched its three customers
+  -- by the tracker's customer_key and set only the snapshot, so keying this on
+  -- shopify_customer_id alone would leave the returning-customer card dead.
+  (o.shopify_customer_id is not null
+     or o.shopify_snapshot_at is not null)         as is_existing_customer,
   o.shopify_snapshot,
   o.shopify_snapshot_at,
   l.converted_order_ref,
