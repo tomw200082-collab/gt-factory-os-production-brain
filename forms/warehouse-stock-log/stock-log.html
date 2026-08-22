@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GT EVERYDAY · Stock Control Document — Finished Goods In / Out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F1E7;          /* engineering cream */
+    --ink:#15241D;            /* near-black green */
+    --ink-soft:#69736A;
+    --hair:#CDC6B4;           /* hairline grid */
+    --rule:#1c3a30;           /* heavy rule */
+    --out:#A8323F;  --out-bg:#F5E1E0;  --out-zebra:#efd4d3;
+    --in:#1C6F62;   --in-bg:#DFEDE8;   --in-zebra:#d2e6df;
+    --num:#9aa39a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#e8e3d6; color:var(--ink);
+    font-family:"Archivo","Segoe UI",sans-serif; -webkit-font-smoothing:antialiased;}
+  body{padding:18px 0;}
+
+  /* grain overlay (screen only) */
+  .grain{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  .sheet{position:relative; z-index:1; width:190mm; min-height:277mm; margin:0 auto;
+    background:var(--paper); padding:11mm 9mm 8mm;
+    box-shadow:0 24px 60px -28px rgba(20,36,29,.55);}
+
+  /* corner registration marks */
+  .reg{position:absolute; width:7mm; height:7mm; z-index:3;}
+  .reg::before,.reg::after{content:""; position:absolute; background:var(--rule);}
+  .reg::before{width:7mm; height:1px; top:0;}
+  .reg::after{height:7mm; width:1px; left:0;}
+  .reg.tl{top:4mm; left:4mm}
+  .reg.tr{top:4mm; right:4mm; transform:scaleX(-1)}
+  .reg.bl{bottom:4mm; left:4mm; transform:scaleY(-1)}
+  .reg.br{bottom:4mm; right:4mm; transform:scale(-1)}
+
+  /* ---------- Masthead ---------- */
+  .bar{height:4px; background:linear-gradient(90deg,var(--out) 0 33%,var(--rule) 33% 67%,var(--in) 67% 100%);}
+  .head{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-top:11px;}
+  .lockup .kicker{font-family:"JetBrains Mono",monospace; font-weight:700; font-size:9.5px;
+    letter-spacing:4px; color:var(--ink-soft); display:flex; align-items:center; gap:8px;}
+  .lockup .kicker .sq{width:8px;height:8px;background:var(--in);}
+  h1{font-family:"Archivo"; font-weight:900; font-size:33px; line-height:.92; letter-spacing:-1.4px;
+    text-transform:uppercase; margin-top:6px;}
+  h1 em{font-style:normal; color:var(--out);}
+  h1 .slash{color:var(--ink-soft); font-weight:700;}
+  .tag{font-family:"JetBrains Mono",monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--ink-soft);
+    margin-top:7px; text-transform:uppercase;}
+
+  /* control-panel meta fields (instrument look) */
+  .panel{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; min-width:74mm;}
+  .cell{border:1px solid var(--rule); background:#fff;}
+  .cell .k{font-family:"JetBrains Mono",monospace; font-size:8px; font-weight:700; letter-spacing:1.6px;
+    text-transform:uppercase; color:#fff; background:var(--rule); padding:3px 7px;}
+  .cell .v{height:17px;}
+  .cell.span2{grid-column:span 2;}
+
+  .directive{margin-top:14px; border-top:1.5px solid var(--rule); border-bottom:1.5px solid var(--rule);
+    padding:7px 2px; display:flex; align-items:center; gap:10px; font-size:12px; font-weight:500;}
+  .directive .flag{font-family:"JetBrains Mono",monospace; font-weight:800; font-size:9px; letter-spacing:1px;
+    color:#fff; background:var(--out); padding:4px 8px; text-transform:uppercase; flex:0 0 auto;}
+  .directive b{font-weight:800;}
+
+  /* ---------- Table ---------- */
+  table{width:100%; border-collapse:collapse; margin-top:13px; table-layout:fixed;}
+  col.w-num{width:7mm}    col.w-date{width:16mm}  col.w-name{width:26mm}
+  col.w-prod{width:35mm}  col.w-out{width:12mm}   col.w-in{width:12mm}
+  col.w-unit{width:20mm}  col.w-reason{width:35mm} col.w-chk{width:9mm}
+
+  thead th{font-family:"JetBrains Mono",monospace; font-weight:700; font-size:9px; letter-spacing:.6px;
+    text-transform:uppercase; color:var(--ink); text-align:left; vertical-align:bottom;
+    padding:6px 5px; border-bottom:2px solid var(--rule);}
+  thead th .h{display:block; font-family:"Archivo"; font-weight:500; font-size:7.5px;
+    letter-spacing:0; text-transform:none; color:var(--ink-soft); margin-top:2px;}
+  th.c-num{color:var(--num); text-align:center;}
+  th.c-out{background:var(--out); color:#fff; text-align:center; border-bottom-color:var(--out);}
+  th.c-in {background:var(--in);  color:#fff; text-align:center; border-bottom-color:var(--in);}
+  th.c-out .h,th.c-in .h{color:rgba(255,255,255,.82);}
+  th.c-unit,th.c-chk{text-align:center;}
+
+  tbody td{height:9mm; border-bottom:1px solid var(--hair); padding:0 5px; font-size:11px; vertical-align:middle;}
+  td.c-num{font-family:"JetBrains Mono",monospace; font-size:9px; color:var(--num); text-align:center;}
+  tbody tr:nth-child(even) td{background:rgba(205,198,180,.16);}
+  td.c-out{background:var(--out-bg); border-left:1.5px solid var(--out);}
+  td.c-in {background:var(--in-bg);  border-right:1.5px solid var(--in);}
+  tbody tr:nth-child(even) td.c-out{background:var(--out-zebra);}
+  tbody tr:nth-child(even) td.c-in {background:var(--in-zebra);}
+  td.c-unit{text-align:center;}
+  .uopt{font-family:"JetBrains Mono",monospace; font-size:8.5px; font-weight:700; letter-spacing:.3px; color:var(--ink-soft);}
+  .uopt span{display:inline-block; padding:1.5px 5px; border:1px solid var(--hair); border-radius:11px; margin:0 1px; background:#fff;}
+  td.c-chk{text-align:center;}
+  .box{display:inline-block; width:13px; height:13px; border:1.5px solid var(--ink-soft);}
+
+  /* ---------- Legend / key ---------- */
+  .key{margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:6px 22px;
+    font-size:9.5px; color:var(--ink-soft); line-height:1.55;}
+  .key b{color:var(--ink); font-weight:700;}
+  .sw{display:inline-block; width:9px;height:9px; vertical-align:middle; margin-right:4px; transform:translateY(-1px);}
+  .sw.o{background:var(--out)} .sw.i{background:var(--in)}
+  .key .mono{font-family:"JetBrains Mono",monospace; font-weight:700; color:var(--ink);}
+
+  .foot{margin-top:11px; border-top:1.5px solid var(--rule); padding-top:8px;
+    display:flex; justify-content:space-between; align-items:flex-end; gap:16px;}
+  .sign{font-size:10px; color:var(--ink-soft);}
+  .sign .line{display:inline-block; width:62mm; border-bottom:1px dotted var(--ink-soft); height:14px; margin-left:6px;}
+  .docid{font-family:"JetBrains Mono",monospace; font-size:8.5px; letter-spacing:1px; color:var(--ink-soft); text-align:right; text-transform:uppercase;}
+  .docid b{color:var(--ink);}
+
+  /* ---------- Print ---------- */
+  @page{size:A4 portrait; margin:0;}
+  @media print{
+    html,body{background:#fff; padding:0;}
+    .grain{display:none;}
+    .sheet{width:auto; min-height:auto; margin:0; box-shadow:none; padding:9mm 8mm;}
+    *{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="sheet">
+    <i class="reg tl"></i><i class="reg tr"></i><i class="reg bl"></i><i class="reg br"></i>
+
+    <div class="bar"></div>
+
+    <!-- Masthead -->
+    <div class="head">
+      <div class="lockup">
+        <div class="kicker"><span class="sq"></span> GT&nbsp;EVERYDAY &nbsp;·&nbsp; FINISHED-GOODS WAREHOUSE</div>
+        <h1>Stock <em>Out</em> <span class="slash">/</span> <em style="color:var(--in)">In</em> Log</h1>
+        <div class="tag">Manual movement record · collected &amp; entered weekly</div>
+      </div>
+      <div class="panel">
+        <div class="cell span2"><div class="k">Week of</div><div class="v"></div></div>
+        <div class="cell"><div class="k">Sheet&nbsp;#</div><div class="v"></div></div>
+        <div class="cell span2"><div class="k">Warehouse / dept</div><div class="v"></div></div>
+        <div class="cell"><div class="k">Page</div><div class="v"></div></div>
+      </div>
+    </div>
+
+    <!-- Directive band -->
+    <div class="directive">
+      <span class="flag">Rule</span>
+      <span>Take or return <b>any product without an order</b> — write your <b>name</b> and the <b>amount</b> on a line. No blanks, no guessing.</span>
+    </div>
+
+    <!-- Ledger -->
+    <table>
+      <colgroup>
+        <col class="w-num"><col class="w-date"><col class="w-name"><col class="w-prod">
+        <col class="w-out"><col class="w-in"><col class="w-unit"><col class="w-reason"><col class="w-chk">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="c-num">#</th>
+          <th>Date</th>
+          <th>Name<span class="h">who took / returned</span></th>
+          <th>Product</th>
+          <th class="c-out">OUT<span class="h">qty taken</span></th>
+          <th class="c-in">IN<span class="h">qty returned</span></th>
+          <th class="c-unit">Unit<span class="h">circle one</span></th>
+          <th>Reason / Note</th>
+          <th class="c-chk">&#10003;<span class="h">office</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="c-num">01</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">02</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">03</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">04</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">05</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">06</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">07</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">08</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">09</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">10</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">11</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">12</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">13</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">14</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">15</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">16</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">17</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">18</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">19</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">20</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">21</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+        <tr><td class="c-num">22</td><td></td><td></td><td></td><td class="c-out"></td><td class="c-in"></td><td class="c-unit"><span class="uopt"><span>Btl</span><span>Case</span></span></td><td></td><td class="c-chk"><span class="box"></span></td></tr>
+      </tbody>
+    </table>
+
+    <!-- Key -->
+    <div class="key">
+      <div><span class="sw o"></span><b>OUT</b> — product <b>leaves</b> the warehouse (taken).
+        &nbsp; <span class="sw i"></span><b>IN</b> — product <b>comes back</b> (returned). Fill one side per line.</div>
+      <div><b>Unit</b> — circle <span class="mono">Btl</span> for single bottles, <span class="mono">Case</span> for full cartons.</div>
+      <div><b>Reason examples:</b> tasting · sample · gift · event · staff · personal · damaged · return / fix.</div>
+      <div><span class="mono">&#10003;</span> <b>column — leave empty.</b> Office ticks it once the line is entered into the system.</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="foot">
+      <div class="sign">Filled in by (warehouse): <span class="line"></span></div>
+      <div class="docid"><b>GT&nbsp;EVERYDAY</b> · DOC GT-WH-LOG · REV 1 · A4</div>
+    </div>
+
+  </div>
+</body>
+</html>

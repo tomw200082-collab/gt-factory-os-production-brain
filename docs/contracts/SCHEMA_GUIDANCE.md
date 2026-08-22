@@ -75,6 +75,7 @@ The system is designed as these layers:
 
 ### Purchased finished goods
 - Do not duplicate `BOUGHT_FINISHED` items into components
+  - **Clarification (Tom-approved 2026-06-17, narrow reading):** this forbids creating a *new* component row that mirrors a `BOUGHT_FINISHED` item and carries its own *duplicate stock balance*, and duplicating the *purchasing* side (still single-homed via the `supplier_items` polymorphic trigger). It does **not** forbid a single physical substance being both a sold `BOUGHT_FINISHED` item and an already-existing recipe component, **provided** the two are explicitly linked (`components.fg_twin_item_id` + `fg_twin_units_per_inv_uom`) and stock is **moved** between the two balance keys via an audited `STOCK_TRANSFER` (never duplicated/double-counted). See `docs/superpowers/specs/2026-06-17-odk-dual-role-stock-design.md` (Stance D). Pilot: ODK strawberry (`RAW-STRAWBERRY-ODK-SYRUP` ⇄ `ADD-ODK-STR-1L`).
 - `items.supply_method` enum (exact legacy values, not normalized): `('MANUFACTURED','BOUGHT_FINISHED','REPACK')`
   - `MANUFACTURED` — produced from a BOM
   - `BOUGHT_FINISHED` — resold as-is; direct supplier mapping via `supplier_items.item_id`
