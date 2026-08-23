@@ -101,7 +101,32 @@ def lw_list_open():
     return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
 
 
-def fetch_route(driver, date, all_statuses=False):
+def _date_match(pickup_at, date):
+    """True when LionWheel's pickup_at is the requested YYYY-MM-DD day.
+
+    LionWheel serves pickup_at in two shapes and has switched between them:
+    ISO ("2026-08-11T…") and Israeli ("17/08/2026"). Matching only the ISO
+    prefix silently returns an empty route — a whole day of invoices the driver
+    never gets — so accept both rather than trust one."""
+    s = pickup_at or ""
+    if s.startswith(date):
+        return True
+    y, m, d = date.split("-")
+    return s.startswith(f"{d}/{m}/{y}")
+
+
+def _driver_match(task, driver, driver_id_hint=None):
+    """True when the task belongs to the named driver.
+
+    driver_str lives on the visit; the task-level copy is not always populated,
+    so check the visit first and fall back to the numeric driver_id."""
+    v = (task.get("visits") or [{}])[0]
+    if driver in (task.get("driver_str"), v.get("driver_str")):
+        return True
+    return driver_id_hint is not None and task.get("driver_id") == driver_id_hint
+
+
+def fetch_route(driver, date, all_statuses=False, driver_id_hint=None):
     """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
 
     all_statuses=True also keeps UNASSIGNED stops — use when the whole day is to
@@ -111,15 +136,17 @@ def fetch_route(driver, date, all_statuses=False):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        if not _driver_match(t, driver, driver_id_hint):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        if not _date_match(t.get("pickup_at"), date):
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
         driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        # eta_at comes either as a full ISO stamp or already as "HH:MM".
+        raw_eta = v.get("eta_at") or ""
+        eta = raw_eta if len(raw_eta) == 5 and ":" in raw_eta else raw_eta[11:16]
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
@@ -128,11 +155,19 @@ def fetch_route(driver, date, all_statuses=False):
             "city": v.get("city"),
             "wp": t.get("wp_order_id"),
             "packages": t.get("packages_quantity"),
+            "pick_status": t.get("pick_status"),
             "items": len(t.get("order_items") or []),
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    # Driving order: daily_order when LionWheel still sends it, ETA otherwise.
+    # The visit payload has dropped daily_order, and sorting on a field that is
+    # None for every stop leaves the pack in fetch order — invoices out of
+    # sequence for the driver. ETA is the same order the printed work order uses.
+    stops.sort(key=lambda s: (s["do"] is None, s["do"] or 0, s["eta"] or "99:99"))
+    for i, s in enumerate(stops):
+        if s["do"] is None:
+            s["do"] = i
     return driver_id, stops
 
 
@@ -609,13 +644,25 @@ def _is_exempt(stop, missing_exempt):
     return any(e.lower() in rec for e in missing_exempt)
 
 
+def _unpicked(stop, respect_pick_status):
+    """True when LionWheel says this stop has not been picked yet.
+
+    pick_status is per task: NEW (nothing picked), PARTIALLY_PICKED, PICKED.
+    An unpicked stop still ships its invoice — dropping it would cost the
+    driver a delivery — but carries no package count and no picking marks,
+    because neither is known yet (Tom, 2026-08-16)."""
+    return respect_pick_status and (stop.get("pick_status") or "NEW") == "NEW"
+
+
 def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
           missing_products=None, all_statuses=False, workorder=True,
-          missing_exempt=None, show_packages=True, shortfall_only=True):
+          missing_exempt=None, show_packages=True, shortfall_only=True,
+          respect_pick_status=False, driver_id_hint=None):
     os.makedirs(OUT, exist_ok=True)
     import annotate
 
-    driver_id, stops = fetch_route(driver, date, all_statuses=all_statuses)
+    driver_id, stops = fetch_route(driver, date, all_statuses=all_statuses,
+                                   driver_id_hint=driver_id_hint)
     if not stops:
         raise SystemExit(f"No stops for driver={driver!r} date={date}")
     if from_stop is not None:
@@ -652,6 +699,12 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                         break
                 except (TypeError, ValueError, KeyError):
                     continue
+            # LionWheel dropped picked_quantity from order_items; the per-task
+            # pick_status is what still carries picking truth. PARTIALLY_PICKED
+            # says the stop is short without saying which line — enough to flag
+            # the stop, never enough to mark a line.
+            if s.get("pick_status") == "PARTIALLY_PICKED":
+                short = True
         if special or short:
             flags[s["tid"]] = {"special": special, "short": short}
 
@@ -673,7 +726,13 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 mark_lines = True
                 mn = missing_products
                 so = shortfall_only
-                if missing_products:
+                sp = show_packages
+                if _unpicked(s, respect_pick_status):
+                    # Not picked yet: invoice only. No marks, no package badge —
+                    # printing either would state as fact something picking has
+                    # not decided.
+                    mark_lines, mn, so, sp = False, None, False, False
+                elif missing_products:
                     so = False          # alternative modes, never both
                     # Shortage-list mode owns the marks outright: never fall back
                     # to picked_quantity, or an exempted stop would come out with
@@ -686,7 +745,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 if so:
                     mark_lines = False
                 annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
-                                  missing_names=mn, show_packages=show_packages,
+                                  missing_names=mn, show_packages=sp,
                                   shortfall_only=so)
                 invoice_part[s["tid"]] = ann
                 continue
@@ -744,6 +803,14 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 disc.append({"stop": s["do"], "recipient": s["recipient"],
                              "item": it["name"], "ordered": int(q), "picked": int(pq)})
 
+    # Picking state per stop, straight from LionWheel's pick_status. Reported
+    # even when nothing is short: "no marks" must be readable as "nothing was
+    # certain", never as "everything came out in full".
+    pick = {}
+    for s in stops:
+        pick.setdefault(s.get("pick_status") or "UNKNOWN", []).append(
+            {"stop": s["do"], "recipient": s["recipient"]})
+
     summary = {
         "driver": driver, "date": date,
         "stops": len(stops),
@@ -751,6 +818,9 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         "waybills": sum(1 for p, _ in ordered_parts if "wb_" in p),
         "copies": copies,
         "discrepancies": disc,
+        "pick_status": {k: len(v) for k, v in pick.items()},
+        "partially_picked": pick.get("PARTIALLY_PICKED", []),
+        "not_picked": pick.get("NEW", []),
         "inventory_proposals": len(proposals),
         "file": final,
     }
@@ -783,18 +853,35 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
             tags.append("special-handling")
         if any(d["stop"] == s["do"] for d in disc):
             tags.append("picking-shortfall")
+        ps = s.get("pick_status")
+        if ps == "PARTIALLY_PICKED":
+            tags.append("partially picked")
+        elif ps == "NEW":
+            tags.append("not picked yet")
         tag = f" — {', '.join(tags)}" if tags else ""
+        pkg = "packages not yet known" if ps == "NEW" else f"{s.get('packages')} packages"
         L.append(f"- Stop {s.get('do')} at {s.get('eta') or '?'}: **{recip}** "
-                 f"({city}) — {s.get('items')} items, {s.get('packages')} "
-                 f"packages{tag}")
+                 f"({city}) — {s.get('items')} items, {pkg}{tag}")
     L.append("")
-    L.append("## Picking shortfalls")
+    L.append("## Picking state (LionWheel pick_status)")
+    for k, n in sorted(summary.get("pick_status", {}).items()):
+        L.append(f"- {k}: {n} stops")
+    for s in summary.get("partially_picked", []):
+        L.append(f"- PARTIALLY_PICKED — stop {s['stop']} **{s['recipient']}**: "
+                 f"short, line not identified by LionWheel")
+    for s in summary.get("not_picked", []):
+        L.append(f"- NEW — stop {s['stop']} **{s['recipient']}**: invoice shipped "
+                 f"without package count or picking marks")
+    L.append("")
+    L.append("## Picking shortfalls (per line, certain)")
     if disc:
         for d in disc:
             L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
                      f"picked {d['picked']} of {d['ordered']}")
     else:
-        L.append("- None.")
+        L.append("- None certain. LionWheel's order_items no longer carry "
+                 "picked_quantity, so per-line shortfalls are not derivable; "
+                 "only the per-stop pick_status above is.")
     L.append("")
     L.append("## Inventory-movement proposals (await inbox approval)")
     if proposals:
@@ -834,6 +921,14 @@ def main():
     ap.add_argument("--marks-only-short", action="store_true",
                     help="with --mark-all-lines: full per-line marking, but only "
                          "on orders that fell short; fully-picked orders stay clean")
+    ap.add_argument("--respect-pick-status", action="store_true",
+                    help="per stop, honour LionWheel pick_status: a stop still on "
+                         "NEW ships its invoice with no package badge and no "
+                         "picking marks (nothing about it is known yet). Picked "
+                         "stops are unaffected. (Tom, 2026-08-16)")
+    ap.add_argument("--driver-id", type=int, default=None,
+                    help="LionWheel driver_id, used when the task payload carries "
+                         "the id but not the driver name")
     a = ap.parse_args()
     date = a.date or (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
     missing = [m.strip() for m in a.missing.split(";") if m.strip()] if a.missing else None
@@ -843,7 +938,9 @@ def main():
                          if a.missing_exempt else None,
           all_statuses=a.all_statuses, show_packages=not a.no_packages,
           shortfall_only=not a.mark_all_lines,
-          workorder=not a.no_workorder)
+          workorder=not a.no_workorder,
+          respect_pick_status=a.respect_pick_status,
+          driver_id_hint=a.driver_id)
 
 
 if __name__ == "__main__":
