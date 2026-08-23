@@ -626,7 +626,8 @@ def _is_exempt(stop, missing_exempt):
 
 def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
           missing_products=None, all_statuses=False, workorder=True,
-          missing_exempt=None, show_packages=True, shortfall_only=True):
+          missing_exempt=None, show_packages=True, shortfall_only=True,
+          missing_by_stop=None):
     os.makedirs(OUT, exist_ok=True)
     import annotate
 
@@ -652,7 +653,13 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             elif "החלפ" in text:
                 special = "החלפה"
         short = False
-        if missing_products:
+        per_stop = (missing_by_stop or {}).get(s["tid"])
+        if per_stop:
+            # Per-stop shortage list: only the named lines OF THIS STOP are short.
+            low = [m.lower() for m in per_stop]
+            short = any(any(m in (it.get("name") or "").lower() for m in low)
+                        for it in (t.get("order_items") or []))
+        elif missing_products:
             # Shortage-list mode: picking is still running, so picked_quantity is
             # not yet truth. The known-missing products are.
             low = [m.lower() for m in missing_products]
@@ -688,7 +695,13 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 mark_lines = True
                 mn = missing_products
                 so = shortfall_only
-                if missing_products:
+                per_stop = (missing_by_stop or {}).get(s["tid"])
+                if per_stop:
+                    # A stop absent from the map has no shortage: it stays clean.
+                    mn, so, mark_lines = per_stop, False, False
+                elif missing_by_stop is not None:
+                    mn, so, mark_lines = None, False, False
+                elif missing_products:
                     so = False          # alternative modes, never both
                     # Shortage-list mode owns the marks outright: never fall back
                     # to picked_quantity, or an exempted stop would come out with
@@ -833,6 +846,11 @@ def main():
                     help="';'-separated product names known to be missing/partial. "
                          "Marks X on those lines only and ignores picked_quantity "
                          "(use while picking is still in progress).")
+    ap.add_argument("--missing-map", default=None,
+                    help="path to a JSON file {lw_task_id: [product name, ...]} — "
+                         "per-stop shortage lists, so an item that runs out only "
+                         "at the last stops is marked X there and nowhere else. "
+                         "Wins over --missing; a stop absent from the map is clean.")
     ap.add_argument("--missing-exempt", default=None,
                     help="';'-separated customer-name substrings exempt from "
                          "--missing (they DO have the product on their invoice).")
@@ -852,8 +870,13 @@ def main():
     a = ap.parse_args()
     date = a.date or (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
     missing = [m.strip() for m in a.missing.split(";") if m.strip()] if a.missing else None
+    missing_map = None
+    if a.missing_map:
+        with open(a.missing_map, encoding="utf-8") as f:
+            missing_map = {str(k): v for k, v in json.load(f).items()}
     build(a.driver, date, a.from_stop, a.copies, a.marks_only_short,
           missing_products=missing,
+          missing_by_stop=missing_map,
           missing_exempt=[e.strip() for e in a.missing_exempt.split(";") if e.strip()]
                          if a.missing_exempt else None,
           all_statuses=a.all_statuses, show_packages=not a.no_packages,
