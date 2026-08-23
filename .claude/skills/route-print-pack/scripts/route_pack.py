@@ -101,8 +101,44 @@ def lw_list_open():
     return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
 
 
+def task_driver_str(t):
+    """Display name of the task's driver. LionWheel returns it on the visit, and
+    (historically) on the task itself — read both, task first."""
+    if t.get("driver_str"):
+        return t["driver_str"]
+    return ((t.get("visits") or [{}])[0]).get("driver_str") or ""
+
+
+def driver_matches(driver_str, driver):
+    """True when `driver` names the task's driver. LionWheel stores the full name
+    ("מיידן גבאי"); Tom types the first name ("מיידן"). Match on whole name-parts
+    only — never substring — so "דן" cannot swallow "מיידן"."""
+    ds = (driver_str or "").strip()
+    d = (driver or "").strip()
+    return bool(d) and (ds == d or d in ds.split())
+
+
+def iso_pickup(t):
+    """pickup_at as YYYY-MM-DD. LionWheel serves DD/MM/YYYY on this endpoint;
+    accept an ISO value too rather than depend on which one arrives."""
+    s = (t.get("pickup_at") or "")[:10]
+    m = re.fullmatch(r"(\d{2})/(\d{2})/(\d{4})", s)
+    return f"{m.group(3)}-{m.group(2)}-{m.group(1)}" if m else s
+
+
+def visit_eta(v):
+    """Visit ETA as HH:MM. LionWheel returns a bare "HH:MM" on `eta_at`; older
+    payloads carried a full timestamp."""
+    s = (v.get("eta_at") or "").strip()
+    m = re.search(r"(\d{2}:\d{2})", s)
+    return m.group(1) if m else ""
+
+
 def fetch_route(driver, date, all_statuses=False):
-    """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
+    """Return (driver_id, [stop,...]) in driving order for driver+date.
+
+    Driving order = LionWheel's `daily_order` when present, else the visit ETA —
+    LionWheel's own optimized sequence, which is what the driver follows.
 
     all_statuses=True also keeps UNASSIGNED stops — use when the whole day is to
     be treated as confirmed even though LionWheel has not finished assigning."""
@@ -111,15 +147,15 @@ def fetch_route(driver, date, all_statuses=False):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        if not driver_matches(task_driver_str(t), driver):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        if iso_pickup(t) != date:
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
-        driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        driver_id = driver_id or t.get("driver_id") or v.get("driver_id")
+        eta = visit_eta(v)
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
@@ -132,7 +168,8 @@ def fetch_route(driver, date, all_statuses=False):
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    stops.sort(key=lambda s: (s["do"] is None, s["do"] or 0,
+                              s["eta"] == "", s["eta"], s["tid"]))
     return driver_id, stops
 
 
@@ -744,6 +781,14 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 disc.append({"stop": s["do"], "recipient": s["recipient"],
                              "item": it["name"], "ordered": int(q), "picked": int(pq)})
 
+    # LionWheel does not always serve per-line `picked_quantity`; when it is absent
+    # `disc` is empty for a reason that is NOT "everything was picked". Carry the
+    # task-level `pick_status` so an unfinished pick can never read as clean.
+    pick_flags = [{"stop": s["do"], "recipient": s["recipient"], "wp": s["wp"],
+                   "pick_status": s["task"].get("pick_status")}
+                  for s in stops
+                  if (s["task"].get("pick_status") or "PICKED") != "PICKED"]
+
     summary = {
         "driver": driver, "date": date,
         "stops": len(stops),
@@ -751,6 +796,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         "waybills": sum(1 for p, _ in ordered_parts if "wb_" in p),
         "copies": copies,
         "discrepancies": disc,
+        "pick_flags": pick_flags,
         "inventory_proposals": len(proposals),
         "file": final,
     }
@@ -775,7 +821,7 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
              f"LionWheel waybills (×{summary['copies']} each).")
     L.append("")
     L.append("## Stops (driving order)")
-    for s in stops:
+    for n, s in enumerate(stops, 1):
         recip = (s.get("recipient") or "").strip()
         city = (s.get("city") or "").strip()
         tags = []
@@ -783,8 +829,11 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
             tags.append("special-handling")
         if any(d["stop"] == s["do"] for d in disc):
             tags.append("picking-shortfall")
+        ps = s["task"].get("pick_status")
+        if ps and ps != "PICKED":
+            tags.append(f"pick_status={ps}")
         tag = f" — {', '.join(tags)}" if tags else ""
-        L.append(f"- Stop {s.get('do')} at {s.get('eta') or '?'}: **{recip}** "
+        L.append(f"- Stop {n} at {s.get('eta') or '?'}: **{recip}** "
                  f"({city}) — {s.get('items')} items, {s.get('packages')} "
                  f"packages{tag}")
     L.append("")
@@ -794,7 +843,16 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
             L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
                      f"picked {d['picked']} of {d['ordered']}")
     else:
-        L.append("- None.")
+        L.append("- No per-line shortfall reported by LionWheel "
+                 "(`picked_quantity` is not served on this endpoint — absence is "
+                 "not proof of a clean pick; see pick_status below).")
+    L.append("")
+    L.append("## Stops not fully picked (LionWheel pick_status)")
+    if summary.get("pick_flags"):
+        for f in summary["pick_flags"]:
+            L.append(f"- **{f['recipient']}** ({f['wp']}) — {f['pick_status']}")
+    else:
+        L.append("- None — every stop reports PICKED.")
     L.append("")
     L.append("## Inventory-movement proposals (await inbox approval)")
     if proposals:
