@@ -146,6 +146,21 @@ def main():
     check("an ordinary delivery is untouched",
           not cp(_stop(recipient="קפה נמרוד", notes="")))
 
+    # --- order-level pick status, since LionWheel dropped the per-line one --- #
+    def st(status, items=None):
+        d = _stop(items=items or [{"name": "x", "quantity": 6, "picked_quantity": None}])
+        d["task"]["pick_status"] = status
+        return d
+    check("a partially-picked order counts as reported picking",
+          route_pack.picking_recorded([st("PARTIALLY_PICKED")]))
+    check("a fully-picked order counts as reported picking",
+          route_pack.picking_recorded([st("PICKED")]))
+    check("a not-yet-picked order does not",
+          not route_pack.picking_recorded([st("NEW")]))
+    check("only PARTIALLY_PICKED earns the shortage banner",
+          route_pack.pick_status(st("PARTIALLY_PICKED")) == route_pack.PICK_PARTIAL
+          and route_pack.pick_status(st("PICKED")) != route_pack.PICK_PARTIAL)
+
     # --- marks are never built on picking that was not reported ------------- #
     pr = route_pack.picking_recorded
     unreported = [_stop(items=[{"name": "x", "quantity": 6, "picked_quantity": 0},
@@ -161,7 +176,8 @@ def main():
                "waybills": 0, "copies": 2, "discrepancies": [],
                "inventory_proposals": 0, "picking_recorded": True,
                "check_pickups_skipped": [{"stop": 9, "recipient": "קפה ליבה"}],
-               "unmarked_lines": [], "file": "x.pdf"}
+               "unmarked_lines": [], "orders_short": [{"stop": 3, "recipient": "קפה אמיצ׳י"}],
+               "file": "x.pdf"}
     dpath = os.path.join(tempfile.mkdtemp(), "summary.md")
     route_pack.write_digest(
         [{"tid": "1", "do": 1, "eta": "09:00", "recipient": "קפה נמרוד",
@@ -173,6 +189,7 @@ def main():
         h in digest for h in ("## Stops (driving order)", "## Picking shortfalls",
                               "## Check collections skipped (not printed)",
                               "## Lines that could not be marked (check by hand)",
+                              "## Orders LionWheel reports as partially picked (line unknown)",
                               "## Inventory-movement proposals (await inbox approval)")))
 
     failed = [n for n, ok in CHECKS if not ok]

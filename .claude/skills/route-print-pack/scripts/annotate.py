@@ -110,6 +110,25 @@ def _order_id_chip(pg, last3):
                    fontname="djv", fontsize=nf, color=GTGREEN)
 
 
+def _order_short_banner(pg):
+    """Order-level shortage banner, under the order-id chip.
+
+    LionWheel dropped per-line picked quantities (2026-08-13..16), so for a
+    PARTIALLY_PICKED order we know the order is short and cannot know which line.
+    Say exactly that much: marking a line would be a guess, and printing nothing
+    tells the driver the order is complete."""
+    W = pg.rect.width
+    box = fitz.Rect(W - 250, 80, W - 30, 108)
+    pg.draw_rect(box, color=RED, fill=None, width=1.1, radius=0.5)
+    head = get_display("ליקוט חלקי")
+    sub = get_display("ייתכן שחסר פריט בהזמנה")
+    hf, sf = 11, 7.5
+    pg.insert_text((box.x1 - 10 - HEB.text_length(head, hf), box.y0 + 14), head,
+                   fontname="djv", fontsize=hf, color=RED)
+    pg.insert_text((box.x1 - 10 - HEBR.text_length(sub, sf), box.y0 + 24), sub,
+                   fontname="djvr", fontsize=sf, color=MUTE)
+
+
 def _package_count(doc, pkg):
     """Round, formal package badge centered directly under the word 'מקור':
     a white disc with a GT-green ring (+ thin inner ring), the count inside, and
@@ -263,7 +282,7 @@ def _find_line(index, name, used):
 
 
 def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
-             show_packages=True, shortfall_only=False):
+             show_packages=True, shortfall_only=False, order_short=False):
     """Stamp marks onto a real GI invoice PDF. Lines matched by product name.
 
     Four modes, in precedence order:
@@ -278,6 +297,9 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
       mark_lines=True      per-line ✓/✗/partial from ordered vs picked.
       mark_lines=False     no line marks (order picked in full).
     The order-id chip and package badge are always stamped.
+
+    order_short=True adds an order-level shortage banner — used when LionWheel
+    reports the ORDER as partially picked but no longer says which line.
 
     Returns the product names whose invoice line could not be matched — the
     caller surfaces them so an unmarkable shortfall is never mistaken for a
@@ -335,6 +357,8 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
     last3 = "".join(c for c in wp if c.isdigit())[-3:]
     if last3:
         _order_id_chip(doc[0], last3)
+    if order_short:
+        _order_short_banner(doc[0])
     if show_packages and task.get("packages_quantity"):
         _package_count(doc, task["packages_quantity"])
     doc.save(out_pdf)

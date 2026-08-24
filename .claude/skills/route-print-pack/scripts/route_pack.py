@@ -208,15 +208,32 @@ def is_check_pickup(stop):
     return any(w in stop_text(stop) for w in CHECK_WORDS)
 
 
-def picking_recorded(stops):
-    """True once LionWheel carries a picked quantity anywhere on the route.
+# Between 2026-08-13 and 2026-08-16 LionWheel removed `picked_quantity` and the
+# per-line `status` from `order_items[]` (backend exception
+# `lionwheel_schema_drift`, api/src/integrations/lionwheel/reconciliation.ts).
+# The task-level `pick_status` survived, so what is knowable per ORDER is:
+#   PICKED            — picked in full, nothing to mark
+#   PARTIALLY_PICKED  — short, and WHICH LINE is no longer knowable from the API
+#   NEW / PENDING     — not picked yet
+# The backend takes exactly this position and refuses to guess a line; so does
+# this skill. An order-level banner says what is true; a line mark would not be.
+PICK_FULL, PICK_PARTIAL = "PICKED", "PARTIALLY_PICKED"
 
-    While this is False every `picked_quantity` reads 0 because picking has not
-    been reported yet — NOT because nothing was picked. Marking on it would print
-    ✗ on every line of every invoice and send the driver out to hand over
-    nothing. A wrong mark is money thrown away (Tom, 2026-08-24), so the pack
-    goes out unmarked instead, and the summary says why."""
+
+def pick_status(stop):
+    return (stop["task"].get("pick_status") or "").upper()
+
+
+def picking_recorded(stops):
+    """True once LionWheel reports picking for any stop on the route — per line
+    where it still sends one, otherwise per order via `pick_status`.
+
+    While this is False, marks built on picked_quantity would print ✗ on every
+    line and send the driver out to hand over nothing. A wrong mark is money
+    thrown away (Tom, 2026-08-24), so the pack goes out unmarked and says why."""
     for s in stops:
+        if pick_status(s) in (PICK_FULL, PICK_PARTIAL):
+            return True
         for it in (s["task"].get("order_items") or []):
             try:
                 if float(it.get("picked_quantity") or 0) > 0:
@@ -801,6 +818,8 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             short = (not _is_exempt(s, missing_exempt)) and any(
                 any(m in (it.get("name") or "").lower() for m in low)
                 for it in (t.get("order_items") or []))
+        elif pick_status(s) == PICK_PARTIAL:
+            short = True                 # order-level truth; the line is unknown
         else:
             for it in (t.get("order_items") or []):
                 try:
@@ -845,7 +864,8 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 miss = annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
                                          missing_names=mn,
                                          show_packages=show_packages,
-                                         shortfall_only=so)
+                                         shortfall_only=so,
+                                         order_short=pick_status(s) == PICK_PARTIAL)
                 if miss:
                     # Surfaced, never swallowed: an invoice whose ✗ could not be
                     # placed looks exactly like an order picked in full.
@@ -916,6 +936,8 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         "discrepancies": disc,
         "inventory_proposals": len(proposals),
         "picking_recorded": picked_ok,
+        "orders_short": [{"stop": s["do"], "recipient": s["recipient"]}
+                         for s in stops if pick_status(s) == PICK_PARTIAL],
         "check_pickups_skipped": [{"stop": s["do"], "recipient": s["recipient"]}
                                   for s in checks],
         "unmarked_lines": unmarked,
@@ -965,6 +987,9 @@ def write_digest(stops, proposals, summary, path):
                     f"{s.get('packages')} packages"
                     + (f" — {', '.join(tags)}" if tags else ""))
     section("Stops (driving order)", rows)
+
+    section("Orders LionWheel reports as partially picked (line unknown)", [
+        f"- Stop {o['stop']} **{o['recipient']}**" for o in summary["orders_short"]])
 
     if summary["picking_recorded"]:
         section("Picking shortfalls", [
