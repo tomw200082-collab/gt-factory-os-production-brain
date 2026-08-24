@@ -37,7 +37,10 @@ ABANDONED — why, with evidence pointers>
 - **Halt conditions, evidence standard, git discipline:** inherited from <path §section>.
   Deltas specific to this work only: <…>
 - **The standard:** <the requester's words, then 2–3 checkable prohibitions>
-- **Language:** <what you reason in / what the user sees>
+- **Language:** this document is in English because that is the register the executor
+  reasons best in; data literals stay in their own script, in backticks, and are never
+  translated. **Output language: concise English** — short sentences, no preamble, no
+  restating the question. <adjust register if the requester asked for something else>
 
 ## 1. Mission and definition of done
 **One testable sentence:** <…>
