@@ -152,8 +152,64 @@ to say "not done." Cannot? Rewrite the condition.
 - **Write imperatives to the reader**, not narration about them.
 - **Length is not the enemy; padding is.** For each section, name the specific wrong
   action it prevents. No answer → cut it.
-- **Write it in the language the executor will reason in.** State the output language
-  separately.
+- **Language: see below.** It is a rule, not a preference.
+
+### Language — English instructions, native-script data
+
+**Write the instructions in English. Leave every data literal in its own script,
+inside backticks.** Two separate findings, and the common intuition gets one of them
+backwards.
+
+**English, for the instructions.** Multilingual models pivot through English: given a
+non-English prompt they reason in English-shaped representations and translate back,
+which costs accuracy. MultiNRC (2025) measured roughly **+10% on math reasoning in
+English** over the problem's original language, and no model cleared 50% on native
+non-English reasoning; MMLU-ProX finds the same gap across 29 languages. A masterprompt
+is nothing but instructions, so it pays that tax on every line.
+
+**Chinese is not a shortcut.** The "Chinese fits more meaning per token" claim was
+tested directly and did not survive — a 2026 study found Chinese prompts **no more
+efficient than English** for code work, on token cost or solve rate. The real rule is
+that a model favours *its own dominant training language*; for the models used here
+that is English. Switching buys nothing and loses fluency.
+
+**Hebrew is the expensive case.** Hebrew has close to the worst character-to-token
+ratio in common use — roughly **a third of English's efficiency** — because it is two
+bytes per character and the tokenizer's merge budget went to Latin script. Measured on
+this repo's own 2026-08-24 production brief: **3,381 tokens in Hebrew against 2,093 in
+English** for identical content. That difference is context that could have held facts.
+
+**But data keeps its own script.** When the executor must reason *over* text in another
+language, matching helps — and a translated identifier matches nothing. Every Hebrew
+string the system actually stores (a form question, a business name, a UI label the
+agent must compare byte-for-byte) goes in backticks, verbatim. Translating
+`מה_שם_החברה_שלך?` into "what is your company name?" produces a key that exists
+nowhere.
+
+**State the output language explicitly, with its register.** A pasted document does not
+govern the session's replies; without a directive the session mirrors whatever the user
+types next, and the language choice stops meaning anything after turn one. "English"
+alone still permits three paragraphs of throat-clearing — name the register too:
+
+> **Output language: concise English.** Short sentences. No preamble, no restating the
+> question, no summary of what you are about to do.
+
+### Check it mechanically before the red-team pass
+
+```bash
+node .claude/skills/masterprompt/check.mjs <file.md>
+```
+
+Exit 0 is clean. It fails on instruction-language violations, a missing output-language
+directive, a missing structural section, hedging, and numbers with no source anywhere
+in the document. Fix findings **in the document, not by loosening the checker** — an
+unsourced-number warning means the number needs a source. It is a cheap first filter,
+not a substitute for `REVIEWER-PROMPT.md`.
+
+Two of its rules have edges worth knowing: quoted and backticked spans are stripped
+before the hedge match, so writing `"Should work" is not evidence` is safe; and a bare
+number inside a fence does not ground that number for prose, so make the fence a real
+query with a dated comment.
 
 ## Phase 4 — Red-team *(premise 1)*
 
@@ -237,6 +293,8 @@ If a masterprompt cannot be written without embedding one, the design is wrong.
 - [ ] Every done-condition names the observation that would prove it false
 - [ ] Authority docs are cited by section, never copied
 - [ ] Every volatile fact is dated; shelf life and divergence protocol stated
+- [ ] Instructions in English; data literals in their own script; output language and register stated
+- [ ] `check.mjs` exits 0
 - [ ] Scope OUT is explicit and names specifics
 - [ ] The human's part is complete and closed
 - [ ] Landmines carry symptom → real cause → resolution
