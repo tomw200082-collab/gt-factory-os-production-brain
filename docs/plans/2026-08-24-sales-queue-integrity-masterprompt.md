@@ -51,6 +51,23 @@
   ownership already binds `W1`–`W5` to different lanes (W1 = DB/migrations, W3 = sandbox
   UI and "⊥ ever canonical"). Using `W` numbers here would make your
   `AGENT_TEMPLATE.md` handoff declare the wrong lane.
+- **Skills to run, and when.** Not optional decoration — each one closes a specific
+  requirement below.
+
+  | Skill | When | What it closes |
+  |---|---|---|
+  | `/caveman` + `/ponytail` | first message, before anything | Tom's standing modes. Ponytail matters here: S1 is a one-word change to an array and must stay one word — do not refactor the queue while you are in it |
+  | `/portal-tranche-plan 173` | before touching any portal file | The portal invariant in §0. Produces the manifest, `_active.txt` and the `registry.md` entry that `portal-pr-guard` fails without (§7.6) |
+  | `test-driven-development` | S1, before editing `queue.ts` | D1 **is** a red-green cycle. The three existing tests pass today and encode the wrong doctrine (§7.2); write the new assertion, watch it fail, then change the array |
+  | `systematic-debugging` | any test that goes red you did not predict | §7.2 lists the three that should. A fourth means you broke something |
+  | `verification-before-completion` | before every done-claim, and before each PR | §0's third prohibition, and the D1–D9 table |
+  | `/code-review` | on each PR diff before leaving draft | Two repos, two lanes, three migrations |
+  | `/ux-release-gate` | after S1+S2 land, before merge | The gate that produced this document. S1 changes what a rep sees first every morning |
+  | `/close-session` | at the end | Unmerged PRs, live triggers, PR subscriptions, and stamping §D9 |
+
+  Do **not** reach for `shopify-sync` — nothing here touches inventory. Do **not** reach
+  for `brainstorming` — the design is settled in §1.1 and reopening it is out of scope.
+
 - **The standard.** Tom's words: *"אני רוצה שתהיה מקצוען"*, *"מערכת באמת מקצועית וישימה
   לעבודה בפרודקשן"*. Three checkable prohibitions:
   1. **Nothing on screen may be false.** A count, date or status the UI shows must match
