@@ -316,17 +316,56 @@ def lw_login_cookies():
 # nowrap + tight cells collapses it back to single-line rows so all stops fit one
 # A4 page. We keep LionWheel's own header/columns/branding — only the layout is
 # tightened, nothing is invented.
-# width:auto (NOT 100%): a 100%-wide table measures as wide as the viewport, not
-# as wide as the route. The fit maths lives in _render_one().
+# Cells WRAP on purpose. Keeping every row on one line is what pinned the table
+# to the top quarter of the sheet and the type at ~4.2pt: a row had to be as wide
+# as its longest cell, so the page was scaled down to fit that width and the
+# height went unused. Wrapping spends the empty height on width, and width is
+# what buys type size. The width is set per candidate scale in _render_one().
 WORKORDER_FIT_CSS = """
 @page { size: A4 portrait; margin: 5mm; }
 * { box-sizing: border-box; }
-table { font-size: 12px !important; width: auto !important; border-collapse: collapse !important; }
-td, th { white-space: nowrap !important; padding: 3px 5px !important;
-         line-height: 1.3 !important; overflow: visible !important;
+table { font-size: 12px !important; border-collapse: collapse !important;
+        table-layout: auto !important; }
+td, th { white-space: normal !important; padding: 4px 6px !important;
+         line-height: 1.35 !important; overflow: visible !important;
          vertical-align: middle !important; }
 img { max-height: 40px !important; }
 """
+
+
+# Hide columns that are empty on EVERY row before fitting: this route's work
+# order carries seven of them (דירה, הערות, גובינא, …) taking ~40% of the width,
+# and a column blank on every row carries no information — same licence as the
+# layout tightening. Rows with an irregular cell count (a colspan anywhere) skip
+# the pass rather than risk hiding the wrong column.
+_JS_HIDE_EMPTY = """(() => { const t=[...document.querySelectorAll('table')]
+ .sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];
+ if(!t) return 0; const rows=[...t.rows]; if(rows.length<2) return 0;
+ const n=rows[0].cells.length; if(rows.some(r=>r.cells.length!==n)) return 0;
+ let d=0; for(let c=0;c<n;c++){ if(rows.slice(1).every(r=>!r.cells[c].textContent.trim())){
+   rows.forEach(r=>{r.cells[c].style.display='none';}); d++; } } return d; })()"""
+
+# Never documentElement.scroll* — the root box never reports less than the layout
+# viewport, so folding it in caps every scale just under 1.
+_JS_MEASURE = """(() => { const t=[...document.querySelectorAll('table')]
+ .sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];
+ const kids=[...document.body.children];
+ return { th: t?t.offsetHeight:0, tw: t?t.scrollWidth:0,
+          h: kids.length?Math.max(...kids.map(e=>e.getBoundingClientRect().bottom)):0 }; })()"""
+
+_JS_TABLE_WIDTH = """(w)=>{const t=[...document.querySelectorAll('table')]
+ .sort((a,b)=>b.offsetHeight-a.offsetHeight)[0]; if(t) t.style.width=w+'px';}"""
+
+# Spread the rows over the height that is left, so the sheet is filled top to
+# bottom instead of ending a quarter of the way down.
+_JS_STRETCH = """(h)=>{const t=[...document.querySelectorAll('table')]
+ .sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];
+ if(t){ t.style.height=h+'px';
+        [...t.rows].forEach(r=>{r.style.height=(h/t.rows.length)+'px';}); }}"""
+
+# Descending: the first scale whose laid-out page still fits wins. Capped at 1.8
+# so the layout width never drops into phone-breakpoint territory.
+_WO_SCALES = (1.8, 1.6, 1.45, 1.3, 1.15, 1.0, 0.85, 0.7, 0.55, 0.45)
 
 
 def render_pages(jobs):
@@ -393,67 +432,43 @@ def _render_one(pg, url, out, fit_one):
     opts = dict(format="A4", print_background=True,
                 margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
     if fit_one:
-        # Real LionWheel work order on ONE A4 page, as LARGE as that page allows.
-        # Printed size = font-size × pdf scale, and what binds is width. The old
-        # code measured a width:100% table in Chromium’s default 1280px viewport,
-        # so it always measured 1280 and printed at scale ~0.59 — a 9.5px font
-        # landing near 5.6px on paper: the too-small סידור עבודה Tom reported
-        # (2026-08-24). It also stretched the table to eat the leftover height,
-        # which spent the very headroom that could have grown the type.
-        # Now: measure the route table’s own nowrap width at A4 in print media,
-        # then scale to fill the page — up as well as down.
-        # CSS first, and outside the measurement: if measuring ever fails, the
-        # page must still print with nowrap rows, not as a 13-page letter stack.
+        # Page 1 fills the sheet in BOTH directions (Tom, 2026-08-24). Wider
+        # layout = smaller print, so walk the scales from large to small and take
+        # the first whose content still fits the page at that scale; then stretch
+        # the rows into whatever height is left.
         pg.add_style_tag(content=WORKORDER_FIT_CSS)
+        scale = 0.62      # the proven pre-2026-08-24 fit; never clip the route
         try:
             pg.emulate_media(media="print")
-            pg.set_viewport_size({"width": 794, "height": 1123})   # A4 @96dpi
-            pg.wait_for_timeout(400)
-            usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
-            # Drop columns that are empty on EVERY row before measuring. Width is
-            # the whole constraint, and this route's work order carries six such
-            # columns (דירה, הערות, גובינא, …) eating ~40% of it — with them the
-            # print lands at 4.7pt however well the fit maths works. Hiding a
-            # column that is blank on every row removes no information; same
-            # licence as the nowrap tightening, nothing invented. Rows with an
-            # irregular cell count (a colspan anywhere) skip the whole pass
-            # rather than risk hiding the wrong column.
-            dropped = pg.evaluate(
-                "(() => { const t=[...document.querySelectorAll('table')]"
-                ".sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];"
-                " if(!t) return 0; const rows=[...t.rows]; if(rows.length<2) return 0;"
-                " const n=rows[0].cells.length;"
-                " if(rows.some(r=>r.cells.length!==n)) return 0;"
-                " let d=0;"
-                " for(let c=0;c<n;c++){"
-                "   if(rows.slice(1).every(r=>!r.cells[c].textContent.trim())){"
-                "     rows.forEach(r=>{r.cells[c].style.display='none';}); d++; } }"
-                " return d; })()"
-            )
+            usable_w, usable_h = 754.0, 1080.0   # A4 @96dpi minus 5mm margins
+            dropped = pg.evaluate(_JS_HIDE_EMPTY)
             if dropped:
                 print(f"workorder fit: hid {dropped} all-empty columns")
-            pg.wait_for_timeout(150)
-            # Measure the CONTENT, never documentElement.scroll* — the root box
-            # never reports less than the layout viewport, so folding it in would
-            # floor w at 794 and h at 1123 and cap every scale at 0.95: the same
-            # measure-the-viewport mistake this fit was rewritten to remove.
-            m = pg.evaluate(
-                "(() => { const t=[...document.querySelectorAll('table')]"
-                ".sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];"
-                " const kids=[...document.body.children];"
-                " return { w: t ? Math.max(t.scrollWidth, t.offsetWidth) : 0,"
-                "          h: kids.length"
-                "             ? Math.max(...kids.map(e=>e.getBoundingClientRect().bottom))"
-                "             : 0 }; })()"
-            ) or {}
-            w = float(m.get("w") or 0) or usable_w
-            h = float(m.get("h") or 0) or usable_h
-            # Chromium caps pdf scale at 2; 0.4 is the floor below which the page
-            # is unreadable anyway.
-            scale = max(0.4, min(2.0, round(min(usable_w / w, usable_h / h), 3)))
-        except Exception:
-            scale = 0.62      # the proven pre-2026-08-24 fit; never clip the route
-            print("workorder fit: measurement failed, falling back to scale 0.62")
+            for s_try in _WO_SCALES:
+                layout_w, layout_h = usable_w / s_try, usable_h / s_try
+                pg.set_viewport_size({"width": int(layout_w), "height": int(layout_h) + 40})
+                pg.evaluate(_JS_TABLE_WIDTH, int(layout_w))
+                pg.wait_for_timeout(180)
+                scale = s_try
+                if pg.evaluate(_JS_MEASURE)["h"] <= layout_h:
+                    break               # largest scale that still fits one page
+            m = pg.evaluate(_JS_MEASURE)
+            # A table whose min-content width will not compress to the page still
+            # overflows it. Trim the scale by exactly that overshoot instead of
+            # letting the right-hand column run off the edge.
+            if m["tw"] > usable_w / scale + 1:
+                scale = max(0.4, round(usable_w / m["tw"], 3))
+                pg.set_viewport_size({"width": int(usable_w / scale),
+                                      "height": int(usable_h / scale) + 40})
+                pg.evaluate(_JS_TABLE_WIDTH, int(usable_w / scale))
+                pg.wait_for_timeout(180)
+                m = pg.evaluate(_JS_MEASURE)
+            room = usable_h / scale - (m["h"] - m["th"])
+            if room > m["th"]:
+                pg.evaluate(_JS_STRETCH, int(room))
+                pg.wait_for_timeout(200)
+        except Exception as e:
+            print(f"workorder fit: measurement failed ({e}), falling back to scale {scale}")
         opts["scale"] = scale
         opts["page_ranges"] = "1"
     pg.pdf(path=out, **opts)
