@@ -11,24 +11,26 @@ description: >
 
 ## Overview
 
-A masterprompt is a single self-contained document pasted as the first message of a
-fresh session, which then executes the work without coming back to ask what you meant.
+A masterprompt is a self-contained brief handed to a fresh executor, which then does
+the work without coming back to ask what you meant.
 
-**The one constraint that generates every rule below: the reader has total amnesia and
-unlimited competence.** It is as capable as you. It knows nothing you learned. Every
-fact you verified, every dead end you burned hours on, every decision that got reversed
-— if it is not in the document it does not exist, and the new session will rediscover
-it the slow way or contradict it confidently.
+**Three premises generate every rule here. Each rule below cites its parent.**
 
-So the job is not "write instructions." It is **transfer everything expensive you know,
-and nothing you merely believe.** Those are different disciplines, and the second is
-where masterprompts fail.
+1. **Zero shared context.** The reader knows nothing you learned. If a fact is not in
+   the document it does not exist, and the reader will rediscover it the slow way or
+   contradict it confidently.
+2. **Your own knowledge is dated and lossy.** Not the reader's problem — yours. This is
+   why reconnaissance is non-negotiable and why a masterprompt written from a
+   conversation summary asserts false things with confidence.
+3. **The reader has your capability but not your authority.** Not your credentials, not
+   your standing to decide. A fully competent stranger will happily decide something
+   that was never theirs to decide.
 
 ## When to Use
 
-- Multi-step work a fresh session will own end to end
+- Multi-step work a fresh executor will own end to end
 - Any handoff across a context boundary — new session, another agent, another person
-- Work Tom will re-run later, or hand to someone else
+- Work that will be re-run later, or handed on again
 - Anything where being wrong is expensive
 
 **When NOT to use:**
@@ -37,197 +39,207 @@ where masterprompts fail.
   procrastination with formatting.
 - The ask is a question → answer it.
 - Scope is still forming → that is a conversation, not a document.
-
-## Quick Reference
-
-| Phase | Output | Skippable |
-|---|---|---|
-| 1 Reconnaissance | Dated numbers from live systems | **Never** |
-| 2 Spine | Done-sentence, the hard part, blockers, settled decisions | Never |
-| 3 Write | The document | Never |
-| 4 Red-team | Gaps closed, guesses marked | **Never** |
-| 5 Deliver | File · commit · draft PR · SendUserFile | Never |
+- **A task-level plan for work already scoped** → that is `writing-plans`. A
+  masterprompt wraps; a plan nests inside it.
 
 ---
 
-## Phase 1 — Reconnaissance
+## Phase 1 — Reconnaissance *(premise 2)*
 
-**Nothing is written before this phase produces numbers.**
+**Nothing is written before this produces observations.**
 
-The most common way a masterprompt fails is being written from a conversation summary —
-compressed, lossy, and confidently stale. Go and look:
+Items 1–4 are independent; run them concurrently (`dispatching-parallel-agents`).
+Item 5 shapes how you read the rest.
 
-1. **Query the live systems.** Row counts, states, timestamps, last-success times. Not
-   "the pipeline works" — `count(*)`, `max(created_at)`, and what they imply.
-2. **Read the current code**, not your memory of writing it. Signatures drift.
-3. **Check what actually runs.** Deployed functions, cron entries, feature flags, CI
-   workflows. Grepping the repo is not sufficient — check deployed state.
-4. **Establish the baseline.** Which failures are pre-existing? A session that inherits
+1. **Measure the current state at its source.** Counts, states, timestamps, last-success
+   times. Not "the pipeline works" — the number, and what it implies.
+2. **Read the current artifact**, not your memory of writing it. Signatures drift.
+3. **Verify the thing that will run, not the artifact that describes it.** Deployed code
+   over committed code; the live form over the form spec; the API's real response over
+   its documentation; what the person currently believes over the last email.
+4. **Establish the baseline.** Which failures pre-date you? An executor that inherits
    two broken tests and thinks it caused them chases ghosts for an hour.
-5. **Read the governing docs** in authority order; note where they conflict.
+5. **Read the governing docs** and note conflicts. **If no authority order exists,
+   establish one and state it** — "if the code and this document disagree, X wins."
 
-**Greenfield — nothing running yet?** Reconnaissance still applies, it just changes
-target. Verify the environment, the versions, the existing conventions to match, what
-the neighbouring systems actually expose, and every constraint the work must live
-inside. "There is nothing to query" is almost never true, and it is never a licence to
-write from imagination.
+**Non-software reconnaissance is still reconnaissance.** Read the last three artifacts
+of this kind and what happened to them · ask the people holding unwritten constraints ·
+get source documents, not descriptions of them · find who already tried this and what
+they hit. Greenfield changes the target, never the requirement.
 
-Then hunt for **the fact that reorganizes everything** — the one that, once known,
-changes what the work even is:
+### Hunt for the fact that reorganizes everything
+
+The one that, once known, changes what the work *is*:
 
 > `leads 188 · leads ever touched 0 · live leads ever received 0`
 > A system described as "built and tested" had never carried a real record or been used
 > by a human. That reframed the task from "finish the features" to "nothing here has
 > ever been exercised."
 
-If reconnaissance produced only confirmations, you did not look hard enough. Ask: *what
-would have to be true for this work to be unnecessary — or twice as large as it looks?*
-Then go check.
+Ask: *what would have to be true for this work to be unnecessary — or twice as large as
+it looks?* Then check.
 
-**Date every volatile claim** and instruct the reader to re-verify rather than trust.
+**If nothing surprised you, do not manufacture a surprise.** Name the two things you
+assumed and did not check, and check them. "The state is as expected" is a legitimate
+finding — record it with its evidence.
 
-## Phase 2 — Find the spine
+## Phase 2 — The spine
 
-Answer these before writing a section. They determine the document's shape.
+**0. Who is the reader, and what can they actually do?** *(premise 3)* Agent or human ·
+one session or a chain · frontier or cheap · which systems, credentials and repos they
+hold · what they may decide alone. **Every later choice follows from this.** A human
+needs time estimates and no boot order. A cheaper executor needs decisions pre-made
+rather than analysis to reason over. A chained pair needs the handoff written into §0.
 
-1. **What single sentence defines done?** One testable sentence. If it needs "and also"
-   three times, the scope is wrong.
-2. **What is actually hard here?** Usually not the feature work. This becomes the
-   analytical section — the thing that separates a masterprompt from a ticket. A
-   checklist produces checklist-following; the analysis is what lets the session decide
-   well in situations you failed to anticipate.
-3. **What is genuinely blocked on a human?** Enumerate it, closed.
-4. **What will it get wrong?** Every landmine you hit, it will hit.
-5. **What is settled and must not be reopened?** Without this it helpfully re-litigates
-   decisions that were already approved.
+1. **What single sentence defines done?** If it needs "and also" three times, the scope
+   is wrong.
+2. **What is actually hard here?** Usually not the visible deliverable.
+3. **What is genuinely blocked on a person?** *(premise 3)* Enumerate it, closed.
+4. **What will it get wrong?** *(premise 1)* Every landmine you hit, it will hit.
+5. **What is settled and must not be reopened?** Without this it re-litigates decisions
+   that were already approved.
+
+Q3 and Q5 come from the conversation, not from the systems — draft them while Phase 1
+runs.
 
 ## Phase 3 — Write
 
-### Mandatory sections
+Start from `TEMPLATE.md` in this directory; it holds the skeleton and the section
+numbering. **`TEMPLATE.md` is the single source of the section list** — this page only
+covers what authors get wrong.
 
-- **Usage header** — how to paste, what to attach, what it must produce.
-- **Provenance** — written when, verified how, which docs are authoritative in what
-  order. Enables re-verification.
-- **Mission + done-conditions** — the one sentence, then a numbered table of **binary**
-  conditions, each naming **the evidence that closes it**. Not "improve X" but "X is
-  true, and here is the row / count / recording that proves it." No partial credit.
-- **Ground truth** — dated reconnaissance numbers, split into what is built · what is
-  not · what is known-broken-and-out-of-scope.
-- **The analysis** — what the hard part actually is, in prose. The section a lazy
-  prompt omits and the one that raises quality most.
-- **Workstreams** — ordered, dependencies stated, each with an acceptance criterion
-  tied back to a done-condition.
-- **Scope IN and OUT** — the OUT list is not optional. Name specific files, systems and
-  temptations. Unbounded scope is the standard failure mode.
-- **The human's part** — complete, closed, minimal. Say "this list is complete";
-  it stops a session stalling politely.
-- **Landmines** — symptom → real cause → resolution. Highest value per token.
-- **Halt conditions** — what makes it stop and surface rather than improvise.
-- **Report format** — the shape the answer returns in.
+### The invariant core — present at every size
 
-### Situational sections
+Mission · **falsifiable** done-conditions · dated ground truth · scope OUT · landmines ·
+provenance · report shape.
 
-- **Working agreement** — boot order, mandatory skills, evidence standard, git rules,
-  language rules. Include whenever house conventions exist; they are never inferred.
-- **The standard being held to** — when the user states one ("zero mistakes in front of
-  my boss"), translate it into two or three concrete engineering rules. Restated as a
-  human standard it changes no behaviour; translated, it does.
-- **Verification recipe** — exact commands and queries that prove each condition.
+### The rest are triggered, not mandatory
+
+| Include | When |
+|---|---|
+| Halt conditions | the work can touch something irreversible |
+| The human's part | anything is genuinely blocked on a person |
+| The analysis | the hard part is not the visible deliverable |
+| Working agreement | house conventions exist — they are never inferred |
+| The standard | the requester stated one ("zero mistakes in front of my boss") |
+
+### Cite authority, never copy it
+
+`AGENT_TEMPLATE.md:255` — *"Cite, do not duplicate. Authority docs are referenced by
+section, not pasted."* This binds masterprompts. A copied rule is a **competing
+authority** the reader meets first, at §0, before it ever opens the real one — and it
+rots the moment the source is amended. Reference by path and section; state only the
+project-specific delta. **Halt conditions and evidence standards are inherited, not
+re-authored** — say so explicitly, because you also told the reader your lists are
+complete.
+
+### Every done-condition must be able to fail
+
+> **Name the observation that would prove it false, made on something you do not
+> control.**
+
+Instances of the same defect: "improve X" names no observation · a `200 OK` observes
+the wrong layer · "zero mistakes" is a value until translated into checkable bans · a
+passing mock observes your own work. Test: describe the world in which you would have
+to say "not done." Cannot? Rewrite the condition.
 
 ### Prose rules
 
 - **Say why, not only what.** Reasoning survives the unanticipated case; steps do not.
-- **Prefer the specific.** `sales_core.convert_lead()` beats "the conversion function."
-- **Mark confidence honestly** — verified / assumed / unknown.
-- **Write imperatives to the session**, not narration about it.
-- **Length is not the enemy; padding is.** Every section must change what it does.
-- **English for the prompt itself** unless told otherwise; user-facing output language
-  is a separate instruction inside it.
+- **Prefer the specific** — paths, identifiers, versions, counts.
+- **Every claim carries its provenance** *(premise 2)*: observed (with date and how) ·
+  told to you (by whom, when) · inferred (and marked as such).
+- **Write imperatives to the reader**, not narration about them.
+- **Length is not the enemy; padding is.** For each section, name the specific wrong
+  action it prevents. No answer → cut it.
+- **Write it in the language the executor will reason in.** State the output language
+  separately.
 
-## Phase 4 — Red-team your own document
+## Phase 4 — Red-team *(premise 1)*
 
-Read it **as the receiving session, with amnesia**:
+Read it **as the reader, with amnesia**. The check categories live in
+`REVIEWER-PROMPT.md` — run that table against your own draft.
 
-- **Where would I have to guess?** Every guess is a gap — close it or mark it UNKNOWN.
-- **What reads as permission to do something dumb?** Tighten it.
-- **Which "done" could I claim without doing the work?** Any condition satisfiable by a
-  `200 OK` or a passing mock is not a done-condition.
-- **What contradicts what** — between sections, and against the authority docs?
-- **Which facts will be stale when this is pasted?** Mark them re-verify.
-- **What am I asserting that I did not check?** Check it or downgrade it.
+**High stakes → dispatch a fresh subagent with `REVIEWER-PROMPT.md` instead.** You
+cannot simulate the amnesia the check depends on. Do not do both; the self-pass output
+is discarded the moment the reviewer returns.
 
 Naming the wrong turn beats describing the right one: *"if you find yourself doing X,
 stop — that means Y."*
 
-For anything high-stakes, hand the draft to a fresh subagent using
-`REVIEWER-PROMPT.md` in this directory and fix what it finds.
-
 ## Phase 5 — Deliver
 
-1. Write to `docs/plans/YYYY-MM-DD-<slug>-masterprompt.md`.
-2. Commit on the designated branch, push, open a **draft PR** whose body says why the
-   document exists and what reconnaissance produced it.
-3. `SendUserFile` so it can be copied straight out.
-4. In chat: the reorganizing fact, the shape of the work, what is still blocked on the
-   user. Do not paraphrase the document — he has it.
+**The document must land somewhere the executor can reach at paste time, addressable
+and unedited, and the requester must be able to lift it out of the chat in one move.**
+
+1. **A durable location** — a dated repo path for repo work, otherwise a file or link
+   the executor can open.
+2. **Immutable by reference** — commit and PR where version control exists; a dated
+   filename where it does not.
+3. **Hand over the artifact itself**, not a summary of it.
+4. **Chat message** = the reorganizing fact, the shape of the work, what is still
+   theirs. Do not paraphrase the document — they have it.
+
+**Paste or point?** Pasting freezes a possibly-stale document and is size-bounded.
+Pointing stays current but breaks when the branch merges and changes silently under the
+executor. Pick deliberately and say which.
+
+**Stamp it.** The document carries `STATUS: LIVE — not yet executed` from the moment it
+is written; the executing session's last act is to stamp it `SHIPPED` / `SUPERSEDED by
+<path>` / `ABANDONED — why`, with evidence pointers. Make that a done-condition of the
+masterprompt itself. Without it, a spent masterprompt is indistinguishable from a live
+one, and the most likely bad outcome of a re-paste is re-running work that already
+shipped.
+
+**Surviving a delayed paste.** State a shelf life, carry a runnable block that
+regenerates ground truth, and pick the divergence protocol — when reality no longer
+matches, does the executor adapt or halt? Slots for all three are in `TEMPLATE.md`.
+
+*In this workspace:* `docs/plans/YYYY-MM-DD-<slug>-masterprompt.md`, the session's
+designated branch, a draft PR, then `SendUserFile`.
+
+---
 
 ## Calibration
 
-Scale honestly. A masterprompt with three sections and four landmines for a bounded
-task is **correct**, not lazy. Mandatory sections stay; their length varies.
+Scale to the work. The invariant core stays; the triggered sections apply or do not.
+A masterprompt with four sections and four landmines for a bounded task is **correct**,
+not lazy.
 
-| Scope | Shape |
-|---|---|
-| Bounded, one system | Mission · done-conditions · ground truth · landmines · scope OUT · report |
-| Multi-system feature | Add workstreams, the analysis, the human's part, halt conditions |
-| Production readiness / handoff | Full kit, plus working agreement and the standard |
+The test is not word count. It is: **the only questions it comes back with are the ones
+you decided in advance it should come back with.** The human's part and the halt
+conditions are that complete question set; anything outside them is a gap in the
+document. ("Asks nothing at all" is the wrong target — it rewards guessing.)
 
-The test is not word count. It is: **can it execute without asking me anything?**
+## Never embed what cannot be un-disclosed
 
-## Secrets
+A masterprompt is **transmitted** — pasted into an unknown session, committed, PR'd,
+read by people you did not choose. Anything whose disclosure is irreversible is
+referenced, never embedded.
 
-- **Never embed a secret value** — no token, key, password, connection string or
-  cookie. Not truncated, not "just this once."
-- **Name the secret and where it lives** ("`LEAD_INGEST_TOKEN`, Supabase Edge Function
-  secrets"), never its value.
-- **When a human must supply one**, design so no session holds it: the human sets it
-  directly; the session verifies through an observable side effect instead. Prefer
-  **rotate over retrieve** — a fresh value set in two places beats extracting a live
-  one and leaves no secret in a transcript. Where the platform supports a secret
-  reference (e.g. a Make custom variable), reference it by name and never see it.
-- If a masterprompt cannot be written without a secret in it, the design is wrong.
+- **Secrets.** No token, key, password, connection string or cookie — not truncated, not
+  "just this once." Name the secret and where it lives, never its value.
+- **Personal and customer data.** No names, phone numbers, addresses or exported rows in
+  the document, the commit, the PR body, or a screenshot. Point at the query instead.
+- **When a human must supply a secret**, design so no session holds it: they set it
+  directly; the executor verifies through an observable side effect. **Prefer rotate
+  over retrieve** — a fresh value set in two places beats extracting a live one and
+  leaves nothing in a transcript. Where the platform supports a named secret reference,
+  reference it and never see it.
 
-## Common Mistakes
-
-| Mistake | Why it costs |
-|---|---|
-| Writing from the conversation summary | Lossy and stale; you assert false things confidently |
-| "Improve the X experience" | Unfalsifiable — declared done having changed nothing |
-| Omitting the OUT list | Scope creep is the standard failure mode |
-| Burying the human's blockers | The session stalls, pesters, or invents around them |
-| Skipping landmines | It re-burns every hour you already burned |
-| Restating a human standard verbatim | "Zero mistakes" changes nothing until translated into rules |
-| Padding to look thorough | Every section must change behaviour; the rest is noise |
-| Assuming shared context | There is none. This is the whole constraint |
-| Presenting a guess as fact | The most expensive thing the document can do |
-| Letting `200 OK` close a condition | It proves one layer. Demand the observable end state |
+If a masterprompt cannot be written without embedding one, the design is wrong.
 
 ## Final checklist
 
-- [ ] Reconnaissance run against live systems, not memory — and it produced numbers
-- [ ] The reorganizing fact is identified and stated up front
-- [ ] Done-conditions are binary and each names its evidence
-- [ ] Every volatile fact is dated and marked re-verify
+- [ ] Reconnaissance run at source, not from memory — and it produced observations
+- [ ] The reorganizing fact is stated up front, or its absence is recorded with evidence
+- [ ] Who the reader is, and what they hold, is written down
+- [ ] Every done-condition names the observation that would prove it false
+- [ ] Authority docs are cited by section, never copied
+- [ ] Every volatile fact is dated; shelf life and divergence protocol stated
 - [ ] Scope OUT is explicit and names specifics
 - [ ] The human's part is complete and closed
 - [ ] Landmines carry symptom → real cause → resolution
-- [ ] Halt conditions present
-- [ ] No secret values anywhere
-- [ ] Red-team pass done as the amnesiac reader
-- [ ] Report format specified
-- [ ] Delivered: file · commit · draft PR · SendUserFile
-
-## Files
-
-- `TEMPLATE.md` — the skeleton to fill.
-- `REVIEWER-PROMPT.md` — hand a draft to a fresh subagent for adversarial critique.
+- [ ] No secret values, no personal data, anywhere
+- [ ] Red-team pass done — self or dispatched, not both
+- [ ] Status line present; delivery location durable and addressable
