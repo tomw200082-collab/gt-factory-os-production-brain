@@ -81,6 +81,35 @@ def lw_task(tid):
     return _get_json(url).get("task")
 
 
+# LionWheel's task shape drifted (verified live 2026-08-24, 60 tasks / 133 lines):
+# task-level `driver_str` is null on every open task — the name now rides the
+# VISIT — and `pickup_at` comes back DD/MM/YYYY, not ISO. Both silently matched
+# nothing, so a run just reported "No stops".
+def task_driver(t):
+    return t.get("driver_str") or ((t.get("visits") or [{}])[0]).get("driver_str") or ""
+
+
+def task_date(t):
+    """`pickup_at` as YYYY-MM-DD, from either the DD/MM/YYYY LionWheel returns
+    today or a plain ISO date, so this keeps working if they switch back."""
+    raw = str(t.get("pickup_at") or "").strip()
+    if "/" in raw:
+        d, m, y = (raw.split()[0].split("/") + ["", ""])[:3]
+        return f"{y}-{m.zfill(2)}-{d.zfill(2)}" if y else ""
+    return raw[:10]
+
+
+def driver_matches(t, driver):
+    """A route is asked for by the name Tom uses (מיידן); LionWheel carries the
+    full name (מיידן גבאי). Match on containment either way, or on the numeric
+    driver_id when one is given."""
+    name = str(driver).strip()
+    if name.isdigit():
+        return str(t.get("driver_id") or "") == name
+    got = task_driver(t).strip()
+    return bool(name) and bool(got) and (name in got or got in name)
+
+
 def gi_link(task):
     for s in (task.get("driver_note"), task.get("notes")):
         if isinstance(s, str) and "greeninvoice.co.il" in s:
@@ -111,15 +140,18 @@ def fetch_route(driver, date, all_statuses=False):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        if not driver_matches(t, driver):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        if task_date(t) != date:
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
         driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        # eta_at comes back as "12:11" now, not an ISO datetime — take HH:MM from
+        # either shape rather than slicing a fixed offset into an empty string.
+        eta = (v.get("eta_at") or "").strip()
+        eta = eta[11:16] if len(eta) > 10 else eta[:5]
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
@@ -132,7 +164,12 @@ def fetch_route(driver, date, all_statuses=False):
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    # LionWheel leaves daily_order null until the route is sequenced, and its own
+    # work order (page 1) then reads the day in ETA order. Fall back to the same
+    # key, or the invoices come out in a different order than the sheet the
+    # driver is holding.
+    stops.sort(key=lambda s: (s["do"] is None,
+                              s["do"] if s["do"] is not None else (s["eta"] or "99:99")))
     return driver_id, stops
 
 
@@ -373,6 +410,29 @@ def _render_one(pg, url, out, fit_one):
             pg.set_viewport_size({"width": 794, "height": 1123})   # A4 @96dpi
             pg.wait_for_timeout(400)
             usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
+            # Drop columns that are empty on EVERY row before measuring. Width is
+            # the whole constraint, and this route's work order carries six such
+            # columns (דירה, הערות, גובינא, …) eating ~40% of it — with them the
+            # print lands at 4.7pt however well the fit maths works. Hiding a
+            # column that is blank on every row removes no information; same
+            # licence as the nowrap tightening, nothing invented. Rows with an
+            # irregular cell count (a colspan anywhere) skip the whole pass
+            # rather than risk hiding the wrong column.
+            dropped = pg.evaluate(
+                "(() => { const t=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];"
+                " if(!t) return 0; const rows=[...t.rows]; if(rows.length<2) return 0;"
+                " const n=rows[0].cells.length;"
+                " if(rows.some(r=>r.cells.length!==n)) return 0;"
+                " let d=0;"
+                " for(let c=0;c<n;c++){"
+                "   if(rows.slice(1).every(r=>!r.cells[c].textContent.trim())){"
+                "     rows.forEach(r=>{r.cells[c].style.display='none';}); d++; } }"
+                " return d; })()"
+            )
+            if dropped:
+                print(f"workorder fit: hid {dropped} all-empty columns")
+            pg.wait_for_timeout(150)
             # Measure the CONTENT, never documentElement.scroll* — the root box
             # never reports less than the layout viewport, so folding it in would
             # floor w at 794 and h at 1123 and cap every scale at 0.95: the same
