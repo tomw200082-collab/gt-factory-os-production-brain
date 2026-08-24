@@ -17,8 +17,8 @@
 > Cited below, never copied.
 >
 > **Shelf life:** §2 is presumed wrong if pasted after 2026-09-07. Run §2.5 first.
-> **Divergence protocol:** if §2.5 disagrees on counts, adapt and note it. If it shows
-> follow-ups are **no longer starved** (§2.5 query `starved_followups` returns `f`),
+> **Divergence protocol:** if §2.5 disagrees on counts, adapt and note it. If §2.5's
+> trip-wire shows `'due_follow_up'` is **already absent** from `CAPPED_SECTIONS`,
 > **halt and surface** — someone else moved and this document's ordering is wrong.
 
 ---
@@ -198,7 +198,7 @@ These pre-date you. Do not fix them; do not let them read as your fault.
 ### 2.5 Re-verification block
 
 ```sql
--- regenerates every number §3 depends on, including the divergence trip-wire
+-- regenerates every number §3 depends on
 select
   (select count(*) from sales_core.lead where status='new')                     as new_leads,
   (select count(*) from sales_core.lead where assignee is not null)             as assigned,
@@ -214,11 +214,18 @@ select
   (select value from sales_core.app_setting where key='queue')                  as queue_settings,
   (select count(*) from sales_core.app_setting where key='assignees')           as roster_key_exists,
   (select count(*) from private_core.app_users
-     where status='active' and role='sales_rep')                                as sales_reps,
-  -- the trip-wire: true while the defect stands
-  (select count(*) from api_read.v_sales_today where item_type='new_lead')
-     > (select (value->>'daily_cap')::int from sales_core.app_setting where key='queue')
-                                                                                as starved_followups;
+     where status='active' and role='sales_rep')                                as sales_reps;
+```
+
+**The divergence trip-wire is not SQL.** The defect lives in a TypeScript array, so no
+query can see it: a row count above the cap is only a proxy — it stays true after someone
+fixes `CAPPED_SECTIONS`, and it goes false whenever the backlog happens to dip below 15,
+neither of which is the condition §0 asks you to halt on. Check the array itself:
+
+```bash
+grep -n "CAPPED_SECTIONS" /home/user/gt-factory-os-portal/src/app/\(sales\)/_lib/queue.ts
+# defect standing  → the array contains BOTH 'new_lead' and 'due_follow_up'
+# already fixed    → 'due_follow_up' is absent → HALT and surface (§0 divergence protocol)
 ```
 
 ```bash
@@ -305,9 +312,14 @@ Order matters. S1 is the smallest diff and the one that bites first.
   `newest_first` by §1.1. Add a section-scoped key **before** it:
   `case when item_type='due_follow_up' then next_touch_at end asc nulls last`. Do not
   change the global direction and do not sort client-side.
-- Leave `dailyCapRule` alone. Its Hebrew string is *"מתוך מכסה יומית של N לכל התור"*,
-  which stays true after this change. Only the English source comment above it is stale;
-  correct that comment.
+- **Update `dailyCapRule` — it becomes false.** Today it reads *"מתוך מכסה יומית של N
+  לכל התור"* ("a daily quota of N **for the whole queue**"), which is accurate only while
+  both sections share the budget. After this change the quota governs new leads alone and
+  follow-ups are uncapped, so the old string overstates what it caps and violates §0
+  prohibition 1. Rewrite it to say the quota is on new leads and that committed callbacks
+  are not counted against it — suggested, not mandated:
+  *"מתוך מכסה יומית של N לידים חדשים · מעקבים שהתחייבת אליהם אינם נספרים"*.
+  The English source comment above it is stale for the same reason; correct it too.
 
 **Acceptance:** D1, D2.
 
@@ -377,7 +389,13 @@ A morning digest, per assignee, of callbacks due today.
   to 09:00 Israel (`sales_core.next_business_touch`, `0324:22-40`). A 06:00 run using
   `v_sales_today`'s `<= now()` predicate returns an empty digest every morning — including
   the §3.2 callback this whole document is about. Query a day range.
-- **`pg_cron` runs in UTC.** Israel is UTC+3; 06:00 Israel is `0 3 * * *`.
+- **`pg_cron` cannot be given a timezone here — do not try.** Verified 2026-08-24:
+  version `1.6.4`, database `TimeZone` is `UTC`, and `cron.job` has **no `timezone`
+  column**. So a fixed `0 3 * * *` means 06:00 only while Israel is on UTC+3 and silently
+  becomes 05:00 every winter, which would make this document's own "06:00" false.
+  Schedule **`0 3,4 * * *`** and have the function return early unless
+  `extract(hour from now() at time zone 'Asia/Jerusalem') = 6`. Two cheap invocations a
+  day, correct across the DST boundary, no maintenance.
 - **Recipient.** `sendViaResend` (`index.ts:208-212`) hard-refuses any address that is not
   `ALERT_RECIPIENT`, and the module header says there is deliberately no code path that
   could address anyone but Tom. That guard exists to make it impossible to mail a lead.
@@ -385,9 +403,17 @@ A morning digest, per assignee, of callbacks due today.
   from `private_core.app_users` — staff addresses only — and you must keep the check.**
   Deleting the check, or sourcing a recipient from a `lead` row, violates brain Stop
   condition 1. `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` is untouched and stays `false`.
-- Write one `lead_event` per send. `sales_core.lead_event` is **append-only** (triggers
-  `lead_event_no_update` / `lead_event_no_delete`, migration `0320`), so same-day
-  de-duplication must be a `NOT EXISTS` pre-check, never a marker updated after sending.
+- **De-duplicate by claiming, not by checking.** `sales_core.lead_event` is append-only
+  (triggers `lead_event_no_update` / `lead_event_no_delete`, migration `0320`), so a
+  marker cannot be updated after sending — but a `NOT EXISTS` pre-check is not sufficient
+  either: two overlapping runs (cron plus a manual invocation, or a retry) both see
+  nothing and both send. In the same migration that adds `reminder_sent`, add a partial
+  unique index over `(lead_id, (created_at at time zone 'Asia/Jerusalem')::date)` where
+  `event_type = 'reminder_sent'`, then **insert the event first and send only if the
+  insert succeeded**; a unique violation means another run already owns that lead today,
+  so skip it. The trade-off is deliberate and must be stated in the migration header: a
+  send that fails after a successful claim produces a missed reminder rather than a
+  duplicate. Surface those failures in the run summary so the heartbeat can see them.
 
 **Acceptance:** D7.
 
@@ -535,7 +561,8 @@ Inherited set cited in §0. Additions specific to this work:
   `converted` event → **STOP**. Both break `v_sales_today` (see S5).
 - S4 tempts you to remove the `sendViaResend` recipient check rather than widen it to a
   staff allowlist → **STOP**. That guard is why no message can reach a lead.
-- §2.5 shows `starved_followups = f` → **STOP and surface**. Someone else moved.
+- §2.5's trip-wire shows `'due_follow_up'` already absent from `CAPPED_SECTIONS` →
+  **STOP and surface**. Someone else moved.
 - Any work would touch `stock_ledger` or a projection → **STOP**.
 
 ---
