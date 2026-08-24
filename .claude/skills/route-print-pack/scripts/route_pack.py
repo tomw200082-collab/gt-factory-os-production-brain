@@ -81,6 +81,35 @@ def lw_task(tid):
     return _get_json(url).get("task")
 
 
+# LionWheel's task shape drifted (verified live 2026-08-24, 60 tasks / 133 lines):
+# task-level `driver_str` is null on every open task — the name now rides the
+# VISIT — and `pickup_at` comes back DD/MM/YYYY, not ISO. Both silently matched
+# nothing, so a run just reported "No stops".
+def task_driver(t):
+    return t.get("driver_str") or ((t.get("visits") or [{}])[0]).get("driver_str") or ""
+
+
+def task_date(t):
+    """`pickup_at` as YYYY-MM-DD, from either the DD/MM/YYYY LionWheel returns
+    today or a plain ISO date, so this keeps working if they switch back."""
+    raw = str(t.get("pickup_at") or "").strip()
+    if "/" in raw:
+        d, m, y = (raw.split()[0].split("/") + ["", ""])[:3]
+        return f"{y}-{m.zfill(2)}-{d.zfill(2)}" if y else ""
+    return raw[:10]
+
+
+def driver_matches(t, driver):
+    """A route is asked for by the name Tom uses (מיידן); LionWheel carries the
+    full name (מיידן גבאי). Match on containment either way, or on the numeric
+    driver_id when one is given."""
+    name = str(driver).strip()
+    if name.isdigit():
+        return str(t.get("driver_id") or "") == name
+    got = task_driver(t).strip()
+    return bool(name) and bool(got) and (name in got or got in name)
+
+
 def gi_link(task):
     for s in (task.get("driver_note"), task.get("notes")):
         if isinstance(s, str) and "greeninvoice.co.il" in s:
@@ -111,15 +140,18 @@ def fetch_route(driver, date, all_statuses=False):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        if not driver_matches(t, driver):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        if task_date(t) != date:
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
         driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        # eta_at comes back as "12:11" now, not an ISO datetime — take HH:MM from
+        # either shape rather than slicing a fixed offset into an empty string.
+        eta = (v.get("eta_at") or "").strip()
+        eta = eta[11:16] if len(eta) > 10 else eta[:5]
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
@@ -132,8 +164,83 @@ def fetch_route(driver, date, all_statuses=False):
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    # LionWheel leaves daily_order null until the route is sequenced, and its own
+    # work order (page 1) then reads the day in ETA order. Fall back to the same
+    # key, or the invoices come out in a different order than the sheet the
+    # driver is holding.
+    stops.sort(key=lambda s: (s["do"] is None,
+                              s["do"] if s["do"] is not None else (s["eta"] or "99:99")))
     return driver_id, stops
+
+
+# --------------------------------------------------------------------------- #
+# check-collection errands (איסוף צ'קים) — never in the pack (Tom, 2026-08-24)
+# No goods move, so there is nothing to hand over and nothing to sign: the
+# LionWheel waybill printed for them is two wasted sheets and one more page for
+# the driver to leaf past. Deliberately narrow, because dropping a real delivery
+# is the expensive mistake: a stop is skipped ONLY when it names checks AND
+# carries nothing to deliver (no Green Invoice, no order lines). A delivery to a
+# customer whose name merely contains "צ'ק" keeps its invoice.
+# --------------------------------------------------------------------------- #
+# Same variants annotate._PUNCT strips; folded to one here rather than dropped,
+# because a keyword like צ'ק needs the geresh to stay a single word.
+_GERESH = str.maketrans({c: "'" for c in "׳״’‘`\""})
+CHECK_WORDS = ("צ'ק", "המחאות")
+
+
+def stop_text(stop):
+    """The stop's free text as one normalised string: recipient + both note
+    fields, every geresh/quote variant folded together.
+
+    Every classifier reads this one — check errands, inventory-movement
+    proposals, the page-1 special-handling bar. Three field lists over the same
+    text is how a note written into driver_note gets seen by one of them and
+    missed by the others."""
+    t = stop["task"]
+    return " ".join(str(x or "") for x in
+                    (stop.get("recipient"), t.get("notes"), t.get("driver_note"))
+                    ).translate(_GERESH)
+
+
+def is_check_pickup(stop):
+    if stop.get("gi") or (stop["task"].get("order_items") or []):
+        return False
+    return any(w in stop_text(stop) for w in CHECK_WORDS)
+
+
+# Between 2026-08-13 and 2026-08-16 LionWheel removed `picked_quantity` and the
+# per-line `status` from `order_items[]` (backend exception
+# `lionwheel_schema_drift`, api/src/integrations/lionwheel/reconciliation.ts).
+# The task-level `pick_status` survived, so what is knowable per ORDER is:
+#   PICKED            — picked in full, nothing to mark
+#   PARTIALLY_PICKED  — short, and WHICH LINE is no longer knowable from the API
+#   NEW / PENDING     — not picked yet
+# The backend takes exactly this position and refuses to guess a line; so does
+# this skill. An order-level banner says what is true; a line mark would not be.
+PICK_FULL, PICK_PARTIAL = "PICKED", "PARTIALLY_PICKED"
+
+
+def pick_status(stop):
+    return (stop["task"].get("pick_status") or "").upper()
+
+
+def picking_recorded(stops):
+    """True once LionWheel reports picking for any stop on the route — per line
+    where it still sends one, otherwise per order via `pick_status`.
+
+    While this is False, marks built on picked_quantity would print ✗ on every
+    line and send the driver out to hand over nothing. A wrong mark is money
+    thrown away (Tom, 2026-08-24), so the pack goes out unmarked and says why."""
+    for s in stops:
+        if pick_status(s) in (PICK_FULL, PICK_PARTIAL):
+            return True
+        for it in (s["task"].get("order_items") or []):
+            try:
+                if float(it.get("picked_quantity") or 0) > 0:
+                    return True
+            except (TypeError, ValueError):
+                continue
+    return False
 
 
 # --------------------------------------------------------------------------- #
@@ -226,15 +333,56 @@ def lw_login_cookies():
 # nowrap + tight cells collapses it back to single-line rows so all stops fit one
 # A4 page. We keep LionWheel's own header/columns/branding — only the layout is
 # tightened, nothing is invented.
+# Cells WRAP on purpose. Keeping every row on one line is what pinned the table
+# to the top quarter of the sheet and the type at ~4.2pt: a row had to be as wide
+# as its longest cell, so the page was scaled down to fit that width and the
+# height went unused. Wrapping spends the empty height on width, and width is
+# what buys type size. The width is set per candidate scale in _render_one().
 WORKORDER_FIT_CSS = """
 @page { size: A4 portrait; margin: 5mm; }
 * { box-sizing: border-box; }
-table { font-size: 9.5px !important; width: 100% !important; border-collapse: collapse !important; }
-td, th { white-space: nowrap !important; padding: 2px 4px !important;
-         line-height: 1.2 !important; overflow: hidden !important;
+table { font-size: 12px !important; border-collapse: collapse !important;
+        table-layout: auto !important; }
+td, th { white-space: normal !important; padding: 4px 6px !important;
+         line-height: 1.35 !important; overflow: visible !important;
          vertical-align: middle !important; }
-img { max-height: 48px !important; }
+img { max-height: 40px !important; }
 """
+
+
+# Hide columns that are empty on EVERY row before fitting: this route's work
+# order carries seven of them (דירה, הערות, גובינא, …) taking ~40% of the width,
+# and a column blank on every row carries no information — same licence as the
+# layout tightening. Rows with an irregular cell count (a colspan anywhere) skip
+# the pass rather than risk hiding the wrong column.
+_JS_HIDE_EMPTY = """(() => { const t=[...document.querySelectorAll('table')]
+ .sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];
+ if(!t) return 0; const rows=[...t.rows]; if(rows.length<2) return 0;
+ const n=rows[0].cells.length; if(rows.some(r=>r.cells.length!==n)) return 0;
+ let d=0; for(let c=0;c<n;c++){ if(rows.slice(1).every(r=>!r.cells[c].textContent.trim())){
+   rows.forEach(r=>{r.cells[c].style.display='none';}); d++; } } return d; })()"""
+
+# Never documentElement.scroll* — the root box never reports less than the layout
+# viewport, so folding it in caps every scale just under 1.
+_JS_MEASURE = """(() => { const t=[...document.querySelectorAll('table')]
+ .sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];
+ const kids=[...document.body.children];
+ return { th: t?t.offsetHeight:0, tw: t?t.scrollWidth:0,
+          h: kids.length?Math.max(...kids.map(e=>e.getBoundingClientRect().bottom)):0 }; })()"""
+
+_JS_TABLE_WIDTH = """(w)=>{const t=[...document.querySelectorAll('table')]
+ .sort((a,b)=>b.offsetHeight-a.offsetHeight)[0]; if(t) t.style.width=w+'px';}"""
+
+# Spread the rows over the height that is left, so the sheet is filled top to
+# bottom instead of ending a quarter of the way down.
+_JS_STRETCH = """(h)=>{const t=[...document.querySelectorAll('table')]
+ .sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];
+ if(t){ t.style.height=h+'px';
+        [...t.rows].forEach(r=>{r.style.height=(h/t.rows.length)+'px';}); }}"""
+
+# Descending: the first scale whose laid-out page still fits wins. Capped at 1.8
+# so the layout width never drops into phone-breakpoint territory.
+_WO_SCALES = (1.8, 1.6, 1.45, 1.3, 1.15, 1.0, 0.85, 0.7, 0.55, 0.45)
 
 
 def render_pages(jobs):
@@ -301,37 +449,43 @@ def _render_one(pg, url, out, fit_one):
     opts = dict(format="A4", print_background=True,
                 margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
     if fit_one:
-        # Real LionWheel work order, fitted to ONE A4 page AND spread to fill its
-        # full height: tighten layout (nowrap), scale to fit width, then stretch
-        # the route table so its rows distribute the remaining vertical space
-        # (no dead whitespace at the bottom).
+        # Page 1 fills the sheet in BOTH directions (Tom, 2026-08-24). Wider
+        # layout = smaller print, so walk the scales from large to small and take
+        # the first whose content still fits the page at that scale; then stretch
+        # the rows into whatever height is left.
+        pg.add_style_tag(content=WORKORDER_FIT_CSS)
+        scale = 0.62      # the proven pre-2026-08-24 fit; never clip the route
         try:
-            pg.add_style_tag(content=WORKORDER_FIT_CSS)
-            pg.wait_for_timeout(400)
-            usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
-            w = pg.evaluate("document.body.scrollWidth") or 800
-            scale = min(1.0, usable_w / max(w, 1))
-            m = pg.evaluate(
-                "(() => { const ts=[...document.querySelectorAll('table')]"
-                ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
-                " return { nonTable: document.body.scrollHeight - (t?t.offsetHeight:0),"
-                " tableH: t?t.offsetHeight:0 }; })()"
-            ) or {}
-            non_table = float(m.get("nonTable", 0))
-            table_h0 = float(m.get("tableH", 0))
-            target_table = int(max(table_h0, usable_h / scale - non_table))
-            pg.evaluate(
-                "(h)=>{const ts=[...document.querySelectorAll('table')]"
-                ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
-                " if(ts[0]) ts[0].style.height=h+'px';}",
-                target_table,
-            )
-            pg.wait_for_timeout(300)
-            h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
-            scale = min(scale, usable_h / max(h, 1))
-            scale = max(0.4, round(scale, 3))
-        except Exception:
-            scale = 0.62
+            pg.emulate_media(media="print")
+            usable_w, usable_h = 754.0, 1080.0   # A4 @96dpi minus 5mm margins
+            dropped = pg.evaluate(_JS_HIDE_EMPTY)
+            if dropped:
+                print(f"workorder fit: hid {dropped} all-empty columns")
+            for s_try in _WO_SCALES:
+                layout_w, layout_h = usable_w / s_try, usable_h / s_try
+                pg.set_viewport_size({"width": int(layout_w), "height": int(layout_h) + 40})
+                pg.evaluate(_JS_TABLE_WIDTH, int(layout_w))
+                pg.wait_for_timeout(180)
+                scale = s_try
+                if pg.evaluate(_JS_MEASURE)["h"] <= layout_h:
+                    break               # largest scale that still fits one page
+            m = pg.evaluate(_JS_MEASURE)
+            # A table whose min-content width will not compress to the page still
+            # overflows it. Trim the scale by exactly that overshoot instead of
+            # letting the right-hand column run off the edge.
+            if m["tw"] > usable_w / scale + 1:
+                scale = max(0.4, round(usable_w / m["tw"], 3))
+                pg.set_viewport_size({"width": int(usable_w / scale),
+                                      "height": int(usable_h / scale) + 40})
+                pg.evaluate(_JS_TABLE_WIDTH, int(usable_w / scale))
+                pg.wait_for_timeout(180)
+                m = pg.evaluate(_JS_MEASURE)
+            room = usable_h / scale - (m["h"] - m["th"])
+            if room > m["th"]:
+                pg.evaluate(_JS_STRETCH, int(room))
+                pg.wait_for_timeout(200)
+        except Exception as e:
+            print(f"workorder fit: measurement failed ({e}), falling back to scale {scale}")
         opts["scale"] = scale
         opts["page_ranges"] = "1"
     pg.pdf(path=out, **opts)
@@ -371,7 +525,7 @@ def detect_inventory_moves(stops):
         t = s["task"]
         note = (t.get("notes") or "").strip()
         recip = s.get("recipient") or ""
-        text = f"{recip} {note}"
+        text = stop_text(s)
         if any(h in text for h in MOVE_HINTS) and not s.get("gi"):
             kind, label = classify_move(text)
             recip_short = recip.split("(")[0].strip() or recip
@@ -623,13 +777,33 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         # stop, and testing it as a boolean silently drops that whole invoice.
         stops = [s for s in stops if s["do"] is not None and s["do"] >= from_stop]
 
+    # check-collection errands never print (see is_check_pickup)
+    checks = [s for s in stops if is_check_pickup(s)]
+    if checks:
+        drop = {s["tid"] for s in checks}
+        stops = [s for s in stops if s["tid"] not in drop]
+        if not stops:
+            raise SystemExit(
+                f"Only check-collection stops for driver={driver!r} date={date}")
+
+    # Nothing picked anywhere on the route = picking not reported yet, not a
+    # route of empty orders. Blank the field rather than branch on it: every
+    # reader below (the page-1 shortfall bar, the marks, the discrepancy list)
+    # already guards against a non-numeric picked_quantity, so "unknown" flows
+    # through each of them correctly with no new special case.
+    picked_ok = picking_recorded(stops)
+    if not picked_ok:
+        for s in stops:
+            for it in (s["task"].get("order_items") or []):
+                it["picked_quantity"] = None
+
     # per-stop flags for the work-order timeline: special handling (pickup /
     # exchange, derived from the same note hints used for the inbox proposals)
     # and picking shortfalls (any ordered > picked). Structure carries truth.
     flags = {}
     for s in stops:
         t = s["task"]
-        text = f"{s.get('recipient') or ''} {(t.get('notes') or '')}"
+        text = stop_text(s)
         special = None
         if not s.get("gi"):
             if "איסוף" in text:
@@ -644,6 +818,8 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             short = (not _is_exempt(s, missing_exempt)) and any(
                 any(m in (it.get("name") or "").lower() for m in low)
                 for it in (t.get("order_items") or []))
+        elif pick_status(s) == PICK_PARTIAL:
+            short = True                 # order-level truth; the line is unknown
         else:
             for it in (t.get("order_items") or []):
                 try:
@@ -661,15 +837,17 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
     #    waybill render that is then discarded.
     invoice_part = {}     # tid -> annotated invoice path
     waybill_stops = []
+    unmarked = []         # lines a mark was wanted on but no invoice line matched
     for s in stops:
         if s["gi"] or s["task"].get("order_items"):   # invoice candidate
             src = f"{OUT}/inv_{s['tid']}.pdf"
             if gi_fetch_invoice(s, src):
                 ann = f"{OUT}/ann_{s['tid']}.pdf"
-                # Default marks every line (the Tom-locked 2026-06-21 design).
-                # --marks-only-short narrows marks to the orders that actually fell
-                # short, so a re-run mid-route carries no column of identical ✓ for
-                # the driver to read past. Opt-in: the locked design is the default.
+                # Marking mode for this stop. shortfall_only — the default since
+                # 2026-08-04 — wins over mark_lines inside annotate(); mark_lines
+                # only takes effect under --mark-all-lines, where
+                # --marks-only-short then narrows it to the orders that fell short,
+                # so a re-run carries no column of identical ✓ to read past.
                 mark_lines = True
                 mn = missing_products
                 so = shortfall_only
@@ -683,11 +861,16 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                         mn = None
                 elif marks_only_short:
                     mark_lines = bool(flags.get(s["tid"], {}).get("short"))
-                if so:
-                    mark_lines = False
-                annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
-                                  missing_names=mn, show_packages=show_packages,
-                                  shortfall_only=so)
+                miss = annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
+                                         missing_names=mn,
+                                         show_packages=show_packages,
+                                         shortfall_only=so,
+                                         order_short=pick_status(s) == PICK_PARTIAL)
+                if miss:
+                    # Surfaced, never swallowed: an invoice whose ✗ could not be
+                    # placed looks exactly like an order picked in full.
+                    unmarked.append({"stop": s["do"], "recipient": s["recipient"],
+                                     "items": miss})
                 invoice_part[s["tid"]] = ann
                 continue
         waybill_stops.append(s)                       # no invoice → needs waybill
@@ -752,6 +935,12 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         "copies": copies,
         "discrepancies": disc,
         "inventory_proposals": len(proposals),
+        "picking_recorded": picked_ok,
+        "orders_short": [{"stop": s["do"], "recipient": s["recipient"]}
+                         for s in stops if pick_status(s) == PICK_PARTIAL],
+        "check_pickups_skipped": [{"stop": s["do"], "recipient": s["recipient"]}
+                                  for s in checks],
+        "unmarked_lines": unmarked,
         "file": final,
     }
     json.dump(summary, open(f"{OUT}/summary.json", "w"), ensure_ascii=False, indent=2)
@@ -759,51 +948,70 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
     # markdown digest of the run — the graphify auto-step (SKILL.md step 7) reads
     # THIS (graphify can't ingest raw JSON). One queryable record per dispatch:
     # stops, customers, picking shortfalls, inventory-movement proposals.
-    write_digest(driver, date, stops, disc, proposals, summary,
-                 f"{OUT}/summary.md")
+    write_digest(stops, proposals, summary, f"{OUT}/summary.md")
 
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return summary
 
 
-def write_digest(driver, date, stops, disc, proposals, summary, path):
+def write_digest(stops, proposals, summary, path):
+    """Markdown digest of the run — SKILL.md step 7 feeds THIS to graphify (it
+    cannot ingest raw JSON). Everything derivable comes off `summary`, which the
+    caller has just built with every key present."""
+    disc = summary["discrepancies"]
+    skipped = summary["check_pickups_skipped"]
     L = []
-    L.append(f"# Route pack — {driver} — {date}")
+
+    def section(title, rows):
+        L.extend([f"## {title}", *(rows or ["- None."]), ""])
+
+    L.append(f"# Route pack — {summary['driver']} — {summary['date']}")
     L.append("")
-    L.append(f"Driver **{driver}** ran {summary['stops']} stops on {date}: "
+    ran = summary["stops"] + len(skipped)
+    L.append(f"Driver **{summary['driver']}** ran {ran} stops on {summary['date']}: "
              f"{summary['invoices']} Green Invoices and {summary['waybills']} "
-             f"LionWheel waybills (×{summary['copies']} each).")
+             f"LionWheel waybills (×{summary['copies']} each)"
+             + (f", plus {len(skipped)} check collections that print nothing."
+                if skipped else "."))
     L.append("")
-    L.append("## Stops (driving order)")
+    rows = []
     for s in stops:
-        recip = (s.get("recipient") or "").strip()
-        city = (s.get("city") or "").strip()
         tags = []
         if any(p["lw_task_id"] == s["tid"] for p in proposals):
             tags.append("special-handling")
         if any(d["stop"] == s["do"] for d in disc):
             tags.append("picking-shortfall")
-        tag = f" — {', '.join(tags)}" if tags else ""
-        L.append(f"- Stop {s.get('do')} at {s.get('eta') or '?'}: **{recip}** "
-                 f"({city}) — {s.get('items')} items, {s.get('packages')} "
-                 f"packages{tag}")
-    L.append("")
-    L.append("## Picking shortfalls")
-    if disc:
-        for d in disc:
-            L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
-                     f"picked {d['picked']} of {d['ordered']}")
+        rows.append(f"- Stop {s.get('do')} at {s.get('eta') or '?'}: "
+                    f"**{(s.get('recipient') or '').strip()}** "
+                    f"({(s.get('city') or '').strip()}) — {s.get('items')} items, "
+                    f"{s.get('packages')} packages"
+                    + (f" — {', '.join(tags)}" if tags else ""))
+    section("Stops (driving order)", rows)
+
+    section("Orders LionWheel reports as partially picked (line unknown)", [
+        f"- Stop {o['stop']} **{o['recipient']}**" for o in summary["orders_short"]])
+
+    if summary["picking_recorded"]:
+        section("Picking shortfalls", [
+            f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
+            f"picked {d['picked']} of {d['ordered']}" for d in disc])
     else:
-        L.append("- None.")
-    L.append("")
-    L.append("## Inventory-movement proposals (await inbox approval)")
-    if proposals:
-        for p in proposals:
-            L.append(f"- {p['recipient']} (task {p['lw_task_id']}): "
-                     f"{p.get('note') or 'goods pickup'}")
-    else:
-        L.append("- None.")
-    L.append("")
+        section("Picking shortfalls",
+                ["- Picking was not reported yet when this pack was built — the "
+                 "invoices went out unmarked on purpose."])
+
+    section("Check collections skipped (not printed)", [
+        f"- Stop {c['stop']}: **{c['recipient']}** — check collection, "
+        f"no paperwork printed" for c in skipped])
+
+    section("Lines that could not be marked (check by hand)", [
+        f"- Stop {u['stop']} **{u['recipient']}**: {', '.join(u['items'])}"
+        for u in summary["unmarked_lines"]])
+
+    section("Inventory-movement proposals (await inbox approval)", [
+        f"- {p['recipient']} (task {p['lw_task_id']}): "
+        f"{p.get('note') or 'goods pickup'}" for p in proposals])
+
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(L))
 
