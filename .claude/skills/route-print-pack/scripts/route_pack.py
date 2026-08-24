@@ -145,17 +145,30 @@ def fetch_route(driver, date, all_statuses=False):
 # carries nothing to deliver (no Green Invoice, no order lines). A delivery to a
 # customer whose name merely contains "צ'ק" keeps its invoice.
 # --------------------------------------------------------------------------- #
-_GERESH = str.maketrans({"׳": "'", "’": "'", "‘": "'", "`": "'"})
+# Same variants annotate._PUNCT strips; folded to one here rather than dropped,
+# because a keyword like צ'ק needs the geresh to stay a single word.
+_GERESH = str.maketrans({c: "'" for c in "׳״’‘`\""})
 CHECK_WORDS = ("צ'ק", "המחאות")
 
 
-def is_check_pickup(stop):
+def stop_text(stop):
+    """The stop's free text as one normalised string: recipient + both note
+    fields, every geresh/quote variant folded together.
+
+    Every classifier reads this one — check errands, inventory-movement
+    proposals, the page-1 special-handling bar. Three field lists over the same
+    text is how a note written into driver_note gets seen by one of them and
+    missed by the others."""
     t = stop["task"]
-    if stop.get("gi") or (t.get("order_items") or []):
+    return " ".join(str(x or "") for x in
+                    (stop.get("recipient"), t.get("notes"), t.get("driver_note"))
+                    ).translate(_GERESH)
+
+
+def is_check_pickup(stop):
+    if stop.get("gi") or (stop["task"].get("order_items") or []):
         return False
-    text = " ".join(str(x or "") for x in
-                    (stop.get("recipient"), t.get("notes"), t.get("driver_note")))
-    return any(w in text.translate(_GERESH) for w in CHECK_WORDS)
+    return any(w in stop_text(stop) for w in CHECK_WORDS)
 
 
 def picking_recorded(stops):
@@ -266,9 +279,8 @@ def lw_login_cookies():
 # nowrap + tight cells collapses it back to single-line rows so all stops fit one
 # A4 page. We keep LionWheel's own header/columns/branding — only the layout is
 # tightened, nothing is invented.
-# width:auto (NOT 100%) is what makes the print readable: a 100%-wide table
-# measures as wide as the viewport, so the fit maths below scaled the whole page
-# down to the viewport instead of to the route’s real width.
+# width:auto (NOT 100%): a 100%-wide table measures as wide as the viewport, not
+# as wide as the route. The fit maths lives in _render_one().
 WORKORDER_FIT_CSS = """
 @page { size: A4 portrait; margin: 5mm; }
 * { box-sizing: border-box; }
@@ -361,13 +373,18 @@ def _render_one(pg, url, out, fit_one):
             pg.set_viewport_size({"width": 794, "height": 1123})   # A4 @96dpi
             pg.wait_for_timeout(400)
             usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
+            # Measure the CONTENT, never documentElement.scroll* — the root box
+            # never reports less than the layout viewport, so folding it in would
+            # floor w at 794 and h at 1123 and cap every scale at 0.95: the same
+            # measure-the-viewport mistake this fit was rewritten to remove.
             m = pg.evaluate(
                 "(() => { const t=[...document.querySelectorAll('table')]"
                 ".sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];"
-                " const d=document.documentElement;"
-                " return { w: Math.max(t?Math.max(t.scrollWidth,t.offsetWidth):0,"
-                "                      d.scrollWidth),"
-                "          h: Math.max(d.scrollHeight, document.body.scrollHeight) }; })()"
+                " const kids=[...document.body.children];"
+                " return { w: t ? Math.max(t.scrollWidth, t.offsetWidth) : 0,"
+                "          h: kids.length"
+                "             ? Math.max(...kids.map(e=>e.getBoundingClientRect().bottom))"
+                "             : 0 }; })()"
             ) or {}
             w = float(m.get("w") or 0) or usable_w
             h = float(m.get("h") or 0) or usable_h
@@ -376,6 +393,7 @@ def _render_one(pg, url, out, fit_one):
             scale = max(0.4, min(2.0, round(min(usable_w / w, usable_h / h), 3)))
         except Exception:
             scale = 0.62      # the proven pre-2026-08-24 fit; never clip the route
+            print("workorder fit: measurement failed, falling back to scale 0.62")
         opts["scale"] = scale
         opts["page_ranges"] = "1"
     pg.pdf(path=out, **opts)
@@ -415,7 +433,7 @@ def detect_inventory_moves(stops):
         t = s["task"]
         note = (t.get("notes") or "").strip()
         recip = s.get("recipient") or ""
-        text = f"{recip} {note}"
+        text = stop_text(s)
         if any(h in text for h in MOVE_HINTS) and not s.get("gi"):
             kind, label = classify_move(text)
             recip_short = recip.split("(")[0].strip() or recip
@@ -677,9 +695,15 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 f"Only check-collection stops for driver={driver!r} date={date}")
 
     # Nothing picked anywhere on the route = picking not reported yet, not a
-    # route of empty orders. Marks built on it would all be ✗.
+    # route of empty orders. Blank the field rather than branch on it: every
+    # reader below (the page-1 shortfall bar, the marks, the discrepancy list)
+    # already guards against a non-numeric picked_quantity, so "unknown" flows
+    # through each of them correctly with no new special case.
     picked_ok = picking_recorded(stops)
-    no_marks = not picked_ok and not missing_products
+    if not picked_ok:
+        for s in stops:
+            for it in (s["task"].get("order_items") or []):
+                it["picked_quantity"] = None
 
     # per-stop flags for the work-order timeline: special handling (pickup /
     # exchange, derived from the same note hints used for the inbox proposals)
@@ -687,7 +711,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
     flags = {}
     for s in stops:
         t = s["task"]
-        text = f"{s.get('recipient') or ''} {(t.get('notes') or '')}"
+        text = stop_text(s)
         special = None
         if not s.get("gi"):
             if "איסוף" in text:
@@ -702,7 +726,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             short = (not _is_exempt(s, missing_exempt)) and any(
                 any(m in (it.get("name") or "").lower() for m in low)
                 for it in (t.get("order_items") or []))
-        elif picked_ok:
+        else:
             for it in (t.get("order_items") or []):
                 try:
                     if float(it["picked_quantity"]) < float(it["quantity"]):
@@ -725,10 +749,11 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             src = f"{OUT}/inv_{s['tid']}.pdf"
             if gi_fetch_invoice(s, src):
                 ann = f"{OUT}/ann_{s['tid']}.pdf"
-                # Default marks every line (the Tom-locked 2026-06-21 design).
-                # --marks-only-short narrows marks to the orders that actually fell
-                # short, so a re-run mid-route carries no column of identical ✓ for
-                # the driver to read past. Opt-in: the locked design is the default.
+                # Marking mode for this stop. shortfall_only — the default since
+                # 2026-08-04 — wins over mark_lines inside annotate(); mark_lines
+                # only takes effect under --mark-all-lines, where
+                # --marks-only-short then narrows it to the orders that fell short,
+                # so a re-run carries no column of identical ✓ to read past.
                 mark_lines = True
                 mn = missing_products
                 so = shortfall_only
@@ -742,10 +767,6 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                         mn = None
                 elif marks_only_short:
                     mark_lines = bool(flags.get(s["tid"], {}).get("short"))
-                if so:
-                    mark_lines = False
-                if no_marks:
-                    mark_lines, so, mn = False, False, None
                 miss = annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
                                          missing_names=mn,
                                          show_packages=show_packages,
@@ -801,7 +822,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
 
     # discrepancy summary (for the email body / cover-of-record)
     disc = []
-    for s in (stops if picked_ok else []):
+    for s in stops:
         for it in (s["task"].get("order_items") or []):
             try:
                 q, pq = float(it["quantity"]), float(it["picked_quantity"])
@@ -830,70 +851,67 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
     # markdown digest of the run — the graphify auto-step (SKILL.md step 7) reads
     # THIS (graphify can't ingest raw JSON). One queryable record per dispatch:
     # stops, customers, picking shortfalls, inventory-movement proposals.
-    write_digest(driver, date, stops, disc, proposals, summary,
-                 f"{OUT}/summary.md")
+    write_digest(stops, proposals, summary, f"{OUT}/summary.md")
 
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return summary
 
 
-def write_digest(driver, date, stops, disc, proposals, summary, path):
+def write_digest(stops, proposals, summary, path):
+    """Markdown digest of the run — SKILL.md step 7 feeds THIS to graphify (it
+    cannot ingest raw JSON). Everything derivable comes off `summary`, which the
+    caller has just built with every key present."""
+    disc = summary["discrepancies"]
+    skipped = summary["check_pickups_skipped"]
     L = []
-    L.append(f"# Route pack — {driver} — {date}")
+
+    def section(title, rows):
+        L.extend([f"## {title}", *(rows or ["- None."]), ""])
+
+    L.append(f"# Route pack — {summary['driver']} — {summary['date']}")
     L.append("")
-    L.append(f"Driver **{driver}** ran {summary['stops']} stops on {date}: "
+    ran = summary["stops"] + len(skipped)
+    L.append(f"Driver **{summary['driver']}** ran {ran} stops on {summary['date']}: "
              f"{summary['invoices']} Green Invoices and {summary['waybills']} "
-             f"LionWheel waybills (×{summary['copies']} each).")
+             f"LionWheel waybills (×{summary['copies']} each)"
+             + (f", plus {len(skipped)} check collections that print nothing."
+                if skipped else "."))
     L.append("")
-    L.append("## Stops (driving order)")
+    rows = []
     for s in stops:
-        recip = (s.get("recipient") or "").strip()
-        city = (s.get("city") or "").strip()
         tags = []
         if any(p["lw_task_id"] == s["tid"] for p in proposals):
             tags.append("special-handling")
         if any(d["stop"] == s["do"] for d in disc):
             tags.append("picking-shortfall")
-        tag = f" — {', '.join(tags)}" if tags else ""
-        L.append(f"- Stop {s.get('do')} at {s.get('eta') or '?'}: **{recip}** "
-                 f"({city}) — {s.get('items')} items, {s.get('packages')} "
-                 f"packages{tag}")
-    L.append("")
-    L.append("## Picking shortfalls")
-    if not summary.get("picking_recorded", True):
-        L.append("- Picking was not reported yet when this pack was built — the "
-                 "invoices went out unmarked on purpose.")
-    elif disc:
-        for d in disc:
-            L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
-                     f"picked {d['picked']} of {d['ordered']}")
+        rows.append(f"- Stop {s.get('do')} at {s.get('eta') or '?'}: "
+                    f"**{(s.get('recipient') or '').strip()}** "
+                    f"({(s.get('city') or '').strip()}) — {s.get('items')} items, "
+                    f"{s.get('packages')} packages"
+                    + (f" — {', '.join(tags)}" if tags else ""))
+    section("Stops (driving order)", rows)
+
+    if summary["picking_recorded"]:
+        section("Picking shortfalls", [
+            f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
+            f"picked {d['picked']} of {d['ordered']}" for d in disc])
     else:
-        L.append("- None.")
-    L.append("")
-    L.append("## Check collections skipped (not printed)")
-    if summary.get("check_pickups_skipped"):
-        for c in summary["check_pickups_skipped"]:
-            L.append(f"- Stop {c['stop']}: **{c['recipient']}** — check collection, "
-                     f"no paperwork printed")
-    else:
-        L.append("- None.")
-    L.append("")
-    L.append("## Lines that could not be marked (check by hand)")
-    if summary.get("unmarked_lines"):
-        for u in summary["unmarked_lines"]:
-            L.append(f"- Stop {u['stop']} **{u['recipient']}**: "
-                     f"{', '.join(u['items'])}")
-    else:
-        L.append("- None.")
-    L.append("")
-    L.append("## Inventory-movement proposals (await inbox approval)")
-    if proposals:
-        for p in proposals:
-            L.append(f"- {p['recipient']} (task {p['lw_task_id']}): "
-                     f"{p.get('note') or 'goods pickup'}")
-    else:
-        L.append("- None.")
-    L.append("")
+        section("Picking shortfalls",
+                ["- Picking was not reported yet when this pack was built — the "
+                 "invoices went out unmarked on purpose."])
+
+    section("Check collections skipped (not printed)", [
+        f"- Stop {c['stop']}: **{c['recipient']}** — check collection, "
+        f"no paperwork printed" for c in skipped])
+
+    section("Lines that could not be marked (check by hand)", [
+        f"- Stop {u['stop']} **{u['recipient']}**: {', '.join(u['items'])}"
+        for u in summary["unmarked_lines"]])
+
+    section("Inventory-movement proposals (await inbox approval)", [
+        f"- {p['recipient']} (task {p['lw_task_id']}): "
+        f"{p.get('note') or 'goods pickup'}" for p in proposals])
+
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(L))
 

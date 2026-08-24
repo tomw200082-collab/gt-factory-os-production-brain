@@ -56,7 +56,10 @@ compact print CSS (`white-space:nowrap`, tight cells) and pick the largest scale
 that still fits, so all stops land on **one A4 portrait page** — layout tightened
 only, nothing invented. Printed size = font-size × PDF scale and **width is what
 binds**, so the route table is measured at its own `width:auto` nowrap width, in
-print media at A4, then scaled to fill the page — up to 2× as well as down. (Until
+print media at A4, then scaled to fill the page — up to 2× as well as down. The
+measurement reads the **content** box only: `documentElement.scroll*` never
+reports less than the viewport, so folding it in would silently cap every scale
+just under 1 and the up-scaling would never fire. (Until
 2026-08-24 it was measured as a `width:100%` table in the browser's 1280px
 viewport, so it always "measured" 1280, always printed at scale ≈0.59, and landed
 near 5.6px — the too-small סידור עבודה Tom flagged.) `build_workorder()` stays as
@@ -79,10 +82,12 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
   shared words then by fewest extra words. **A wrong mark is money thrown away
   (Tom, 2026-08-24); an unplaced one is only reported** — so a mark needs all
   three: enough shared words, a strictly better score than the runner-up, and at
-  least one shared word that is **rare on that invoice**. Agreement built only
-  from generic words (`בסיס`, `ליטר`, `מיץ`) is a guess: it would put
+  least one matched word **the runner-up does not also carry**. Leading only on
+  words every sibling shares (`בסיס`, `ליטר`, `מיץ`) is a guess: it would put
   `בסיס לימונדה אשכוליות` on the plain `בסיס לימונדה` line — four words of
-  agreement, wrong product. Whatever could not be marked is reported in
+  agreement, wrong product. The test is against the runner-up, not the whole page,
+  so a customer name or a note that happens to repeat a flavour cannot veto a line
+  it has nothing to do with. Whatever could not be marked is reported in
   `summary.json` → `unmarked_lines`, in `summary.md` and in the email — an
   unmarked shortfall reads to the driver as "picked in full", so it is never
   silent. (Superseded: exact `search_for(name)` with a first-two-words fallback,
@@ -123,7 +128,8 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    Writes `route_pack_out/route_<driver>_<date>.pdf`, `summary.json`, and
    `inventory_proposals.json`. Sanity-check by rendering a page to PNG with PyMuPDF.
    After touching the mark matcher or the stop filter, run the self-check first:
-   `python3 test_route_pack.py` (expects `21/21 ok`).
+   `python3 test_route_pack.py` (expects `25/25 ok`; it names every failing rule
+   and exits non-zero).
 4. **Inventory inbox — submit as an APPROVAL (not a plain exception).** For each
    item in `inventory_proposals.json` (returns, exchanges, tastings, goods received
    — anything that moves stock outside normal picking), create a **pending

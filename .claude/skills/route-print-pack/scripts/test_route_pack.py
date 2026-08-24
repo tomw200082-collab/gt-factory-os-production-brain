@@ -26,6 +26,10 @@ LINES = [
 ]
 
 
+def _ix(doc):
+    return annotate._index(doc)
+
+
 def _invoice(lines, reverse_words=False):
     """A stand-in Green Invoice PDF. reverse_words=True mimics the GI exports
     whose Hebrew comes out of the text layer visually reversed."""
@@ -55,51 +59,58 @@ CHECKS = []
 
 
 def check(name, cond):
-    CHECKS.append(name)
-    assert cond, f"FAILED: {name}"
+    """Record, do not raise: one broken rule should not hide the state of the
+    other twenty. main() reports the real ratio and exits non-zero."""
+    CHECKS.append((name, bool(cond)))
 
 
 def main():
     doc = fitz.open(_invoice(LINES))
 
     # --- the mark lands on the right line ---------------------------------- #
-    hit = annotate._find_line(doc, "בסיס לימונדה תות 1 ליטר", set())
+    hit = annotate._find_line(_ix(doc), "בסיס לימונדה תות 1 ליטר", set())
     check("distinguishing word wins over a shared prefix",
           hit and abs(hit[1] - _y_of(1)) < 12)
 
-    hit = annotate._find_line(doc, "בסיס לימונדה נענע 1 ליטר", set())
+    hit = annotate._find_line(_ix(doc), "בסיס לימונדה נענע 1 ליטר", set())
     check("the sibling flavour matches its own line",
           hit and abs(hit[1] - _y_of(0)) < 12)
 
     # --- refuse rather than guess ------------------------------------------ #
     check("a flavour that is not on the invoice never lands on a sibling line",
-          annotate._find_line(doc, "בסיס לימונדה אשכוליות 1 ליטר", set()) is None)
+          annotate._find_line(_ix(doc), "בסיס לימונדה אשכוליות 1 ליטר", set()) is None)
     check("agreement on generic words alone is not a match",
-          annotate._find_line(doc, "בסיס לימונדה 1 ליטר", set()) is None)
+          annotate._find_line(_ix(doc), "בסיס לימונדה 1 ליטר", set()) is None)
     check("a product absent from the invoice is unmatched",
-          annotate._find_line(doc, "מיץ אשכוליות 250 מל", set()) is None)
+          annotate._find_line(_ix(doc), "מיץ אשכוליות 250 מל", set()) is None)
     twin = fitz.open(_invoice(["מיץ תפוזים 1 ליטר", "מיץ תפוזים 1 ליטר"]))
     check("two indistinguishable lines are reported, never stamped at random",
-          annotate._find_line(twin, "מיץ תפוזים 1 ליטר", set()) is None)
+          annotate._find_line(_ix(twin), "מיץ תפוזים 1 ליטר", set()) is None)
     sized = fitz.open(_invoice(["מיץ תפוזים 1 ליטר", "מיץ תפוזים 2 ליטר"]))
-    hit = annotate._find_line(sized, "מיץ תפוזים 2 ליטר", set())
+    hit = annotate._find_line(_ix(sized), "מיץ תפוזים 2 ליטר", set())
     check("size digits keep 2 ליטר off the 1 ליטר line",
           hit and abs(hit[1] - _y_of(1)) < 12)
 
+    # --- an unrelated line repeating a word must not veto the match --------- #
+    hdr = fitz.open(_invoice(["לכבוד: קפה נענע בעמ"] + LINES))
+    hit = annotate._find_line(_ix(hdr), "בסיס לימונדה נענע 1 ליטר", set())
+    check("a customer named after a flavour does not block that flavour's line",
+          hit and abs(hit[1] - _y_of(1)) < 12)
+
     # --- wording drift between LionWheel and Green Invoice ------------------ #
-    hit = annotate._find_line(doc, 'סירופ ג׳ינג׳ר 700 מ"ל', set())
+    hit = annotate._find_line(_ix(doc), 'סירופ ג׳ינג׳ר 700 מ"ל', set())
     check("geresh/quote variants still match the same line",
           hit and abs(hit[1] - _y_of(3)) < 12)
 
     # --- one line carries one mark ----------------------------------------- #
-    used = set()
-    annotate._find_line(doc, "בסיס לימונדה תות 1 ליטר", used)
+    used, ix = set(), _ix(doc)
+    annotate._find_line(ix, "בסיס לימונדה תות 1 ליטר", used)
     check("a line already marked is not marked twice",
-          annotate._find_line(doc, "בסיס לימונדה תות 1 ליטר", used) is None)
+          annotate._find_line(ix, "בסיס לימונדה תות 1 ליטר", used) is None)
 
     # --- visually reversed text layer -------------------------------------- #
     rdoc = fitz.open(_invoice(LINES, reverse_words=True))
-    hit = annotate._find_line(rdoc, "בסיס לימונדה תות 1 ליטר", set())
+    hit = annotate._find_line(_ix(rdoc), "בסיס לימונדה תות 1 ליטר", set())
     check("a reversed-extraction invoice still matches",
           hit and abs(hit[1] - _y_of(1)) < 12)
 
@@ -128,6 +139,8 @@ def main():
                        items=[{"name": "בסיס לימונדה תות 1 ליטר"}])))
     check("a check note on a stop that has an invoice is KEPT",
           not cp(_stop(recipient="איסוף צ'קים", gi="https://greeninvoice.co.il/x")))
+    check("a check errand noted in driver_note is dropped too",
+          cp(_stop(recipient="לקוח", driver_note="לאסוף צ'קים")))
     check("a goods pickup is not a check pickup",
           not cp(_stop(recipient="לקוח", notes="איסוף סחורה")))
     check("an ordinary delivery is untouched",
@@ -143,7 +156,29 @@ def main():
           pr(unreported + [_stop(items=[{"name": "z", "quantity": 2,
                                          "picked_quantity": 2}])]))
 
-    print(f"{len(CHECKS)}/{len(CHECKS)} ok")
+    # --- the digest renders from the summary build() actually writes -------- #
+    summary = {"driver": "מיידן", "date": "2026-08-25", "stops": 2, "invoices": 2,
+               "waybills": 0, "copies": 2, "discrepancies": [],
+               "inventory_proposals": 0, "picking_recorded": True,
+               "check_pickups_skipped": [{"stop": 9, "recipient": "קפה ליבה"}],
+               "unmarked_lines": [], "file": "x.pdf"}
+    dpath = os.path.join(tempfile.mkdtemp(), "summary.md")
+    route_pack.write_digest(
+        [{"tid": "1", "do": 1, "eta": "09:00", "recipient": "קפה נמרוד",
+          "city": "תל אביב", "items": 3, "packages": 2}], [], summary, dpath)
+    digest = open(dpath, encoding="utf-8").read()
+    check("the digest counts the day, not only the printed stops",
+          "ran 3 stops" in digest)
+    check("every digest section renders", all(
+        h in digest for h in ("## Stops (driving order)", "## Picking shortfalls",
+                              "## Check collections skipped (not printed)",
+                              "## Lines that could not be marked (check by hand)",
+                              "## Inventory-movement proposals (await inbox approval)")))
+
+    failed = [n for n, ok in CHECKS if not ok]
+    print(f"{len(CHECKS) - len(failed)}/{len(CHECKS)} ok")
+    if failed:
+        sys.exit("FAILED: " + "; ".join(failed))
 
 
 if __name__ == "__main__":

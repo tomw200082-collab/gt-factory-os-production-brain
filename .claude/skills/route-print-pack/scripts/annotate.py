@@ -171,8 +171,8 @@ def _drop_trailing_blank_pages(doc):
 # search_for(name) exact-substring match missed lines outright — and its "first
 # two words" fallback then stamped the WRONG line whenever two products share a
 # prefix ("בסיס לימונדה …"), which is most of the catalogue. Match on shared
-# words, make the winner beat the runner-up, and hand anything still unmatched
-# back to the caller instead of printing a silently unmarked invoice.
+# words, and hand anything still unmatched back to the caller instead of printing
+# a silently unmarked invoice.
 # --------------------------------------------------------------------------- #
 _PUNCT = str.maketrans({c: " " for c in "\"'`׳״’‘,.;:()[]{}/\\|*+-–—"})
 
@@ -199,62 +199,67 @@ def _page_lines(pg):
     return [(ws, (top + bot) / 2) for ws, top, bot in rows.values()]
 
 
-def _find_line(doc, name, used):
+def _index(doc):
+    """Every text line of the invoice as (page, y_center, tokens, token_count).
+
+    Built ONCE per document, and before any mark is drawn — two reasons, not one.
+    Per item it re-extracted and re-tokenised every page; and a partial mark
+    writes its "9/12" label into the text layer, so a later item would be scoring
+    against labels drawn for earlier ones."""
+    out = []
+    for pno in range(len(doc)):
+        for words, ycen in _page_lines(doc[pno]):
+            base = set(_tokens(" ".join(words)))
+            # some Green Invoice PDFs extract Hebrew visually reversed — a word
+            # counts in either direction
+            out.append((pno, ycen, base | {w[::-1] for w in base}, len(base)))
+    return out
+
+
+def _find_line(index, name, used):
     """(page_no, y_center) of the invoice line for `name`, or None.
 
     Ranked by how many of the product's words the line carries, then by how few
-    words the line adds. Some Green Invoice PDFs extract Hebrew visually reversed,
-    so each line word counts in both directions.
+    words the line adds.
 
     Three things must hold before a mark is placed, because a wrong mark is money
     thrown away (Tom, 2026-08-24) while an unplaced one is merely reported:
       * enough shared words to mean anything;
       * a STRICTLY better score than the runner-up — where two lines are equally
         likely, a mark is a coin toss;
-      * at least one shared word that is RARE on this invoice. Generic words
-        (בסיס, ליטר, מיץ) are carried by every sibling product, so agreement built
-        only from them is a guess: "בסיס לימונדה אשכוליות 1 ליטר" would otherwise
-        land on the plain "בסיס לימונדה 1 ליטר" line — four words of agreement and
-        the wrong product. The rare word — the flavour, the size, the type — is
-        what actually identifies a line."""
+      * at least one matched word the runner-up does NOT also carry. Otherwise the
+        winner leads only on words that identify nothing: "בסיס לימונדה אשכוליות
+        1 ליטר" would land on the plain "בסיס לימונדה 1 ליטר" line — four words of
+        agreement, wrong product. Measured against the runner-up and not against
+        the whole page, so an unrelated line that happens to repeat a flavour (a
+        customer name, a note) cannot veto a match it has nothing to do with."""
     toks = _tokens(name)
     if not toks:
         return None
     cands = []
-    for pno in range(len(doc)):
-        for words, ycen in _page_lines(doc[pno]):
-            base = set(_tokens(" ".join(words)))
-            lt = base | {w[::-1] for w in base}
-            sc = sum(1 for t in toks if t in lt)
-            cands.append(((sc, -max(0, len(base) - sc)), pno, ycen, lt))
+    for pno, ycen, lt, nbase in index:
+        hit = {t for t in toks if t in lt}
+        cands.append(((len(hit), -max(0, nbase - len(hit))), pno, ycen, hit))
     if not cands:
         return None
     cands.sort(key=lambda c: c[0], reverse=True)
-    key, pno, ycen, lt = cands[0]
+    key, pno, ycen, hit = cands[0]
     if key[0] < min(2, len(toks)):
         return None                       # nothing on the invoice resembles it
-    if len(cands) > 1 and cands[1][0] == key:
-        return None                       # two lines equally likely — a coin toss
-    df = {t: sum(1 for c in cands if t in c[3]) for t in toks}
-    if not any(df[t] <= 1 for t in toks if t in lt):
-        return None                       # agreement on generic words only
+    if len(cands) > 1:
+        runner_key, _, _, runner_hit = cands[1]
+        if runner_key == key:
+            return None                   # two lines equally likely — a coin toss
+        if hit <= runner_hit:
+            return None                   # ahead only on words that identify nothing
     spot = (pno, round(ycen, 1))
     if spot in used:
-        # Its line already carries a mark. Scoring deliberately ignores `used`,
-        # so a second item cannot be pushed onto the next-best line — which would
-        # be some other product's.
+        # Its line already carries a mark. Scoring deliberately ignores `used`, so
+        # a second item cannot be pushed onto the next-best line — which would be
+        # some other product's.
         return None
     used.add(spot)
     return pno, ycen
-
-
-def _stamp(doc, name, kind, label, used):
-    """Draw one status mark on the invoice line for `name`. False = unmatched."""
-    hit = _find_line(doc, name, used)
-    if not hit:
-        return False
-    _line_mark(doc[hit[0]], hit[1], kind, label)
-    return True
 
 
 def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
@@ -283,12 +288,17 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
     _drop_trailing_blank_pages(doc)
     for pno in range(len(doc)):
         _reg(doc[pno])
-    used, unmatched = set(), []
+    index, used, unmatched = _index(doc), set(), []
 
     def stamp(name, kind, label):
         """A mark that cannot be placed goes back to the caller, never dropped:
         an invoice missing its ✗ reads to the driver as picked in full."""
-        if name and not _stamp(doc, name, kind, label, used):
+        if not name:
+            return
+        hit = _find_line(index, name, used)
+        if hit:
+            _line_mark(doc[hit[0]], hit[1], kind, label)
+        else:
             unmatched.append(name)
 
     if missing_names:
