@@ -137,6 +137,28 @@ def fetch_route(driver, date, all_statuses=False):
 
 
 # --------------------------------------------------------------------------- #
+# check-collection errands (איסוף צ'קים) — never in the pack (Tom, 2026-08-24)
+# No goods move, so there is nothing to hand over and nothing to sign: the
+# LionWheel waybill printed for them is two wasted sheets and one more page for
+# the driver to leaf past. Deliberately narrow, because dropping a real delivery
+# is the expensive mistake: a stop is skipped ONLY when it names checks AND
+# carries nothing to deliver (no Green Invoice, no order lines). A delivery to a
+# customer whose name merely contains "צ'ק" keeps its invoice.
+# --------------------------------------------------------------------------- #
+_GERESH = str.maketrans({"׳": "'", "’": "'", "‘": "'", "`": "'"})
+CHECK_WORDS = ("צ'ק", "המחאות")
+
+
+def is_check_pickup(stop):
+    t = stop["task"]
+    if stop.get("gi") or (t.get("order_items") or []):
+        return False
+    text = " ".join(str(x or "") for x in
+                    (stop.get("recipient"), t.get("notes"), t.get("driver_note")))
+    return any(w in text.translate(_GERESH) for w in CHECK_WORDS)
+
+
+# --------------------------------------------------------------------------- #
 # Green Invoice — primary = link on the task; fallback = API match on the order
 # --------------------------------------------------------------------------- #
 _GI_TOK = None
@@ -226,14 +248,17 @@ def lw_login_cookies():
 # nowrap + tight cells collapses it back to single-line rows so all stops fit one
 # A4 page. We keep LionWheel's own header/columns/branding — only the layout is
 # tightened, nothing is invented.
+# width:auto (NOT 100%) is what makes the print readable: a 100%-wide table
+# measures as wide as the viewport, so the fit maths below scaled the whole page
+# down to the viewport instead of to the route’s real width.
 WORKORDER_FIT_CSS = """
 @page { size: A4 portrait; margin: 5mm; }
 * { box-sizing: border-box; }
-table { font-size: 9.5px !important; width: 100% !important; border-collapse: collapse !important; }
-td, th { white-space: nowrap !important; padding: 2px 4px !important;
-         line-height: 1.2 !important; overflow: hidden !important;
+table { font-size: 12px !important; width: auto !important; border-collapse: collapse !important; }
+td, th { white-space: nowrap !important; padding: 3px 5px !important;
+         line-height: 1.3 !important; overflow: visible !important;
          vertical-align: middle !important; }
-img { max-height: 48px !important; }
+img { max-height: 40px !important; }
 """
 
 
@@ -301,37 +326,38 @@ def _render_one(pg, url, out, fit_one):
     opts = dict(format="A4", print_background=True,
                 margin={"top": "5mm", "bottom": "5mm", "left": "5mm", "right": "5mm"})
     if fit_one:
-        # Real LionWheel work order, fitted to ONE A4 page AND spread to fill its
-        # full height: tighten layout (nowrap), scale to fit width, then stretch
-        # the route table so its rows distribute the remaining vertical space
-        # (no dead whitespace at the bottom).
+        # Real LionWheel work order on ONE A4 page, as LARGE as that page allows.
+        # Printed size = font-size × pdf scale, and what binds is width. The old
+        # code measured a width:100% table in Chromium’s default 1280px viewport,
+        # so it always measured 1280 and printed at scale ~0.59 — a 9.5px font
+        # landing near 5.6px on paper: the too-small סידור עבודה Tom reported
+        # (2026-08-24). It also stretched the table to eat the leftover height,
+        # which spent the very headroom that could have grown the type.
+        # Now: measure the route table’s own nowrap width at A4 in print media,
+        # then scale to fill the page — up as well as down.
+        # CSS first, and outside the measurement: if measuring ever fails, the
+        # page must still print with nowrap rows, not as a 13-page letter stack.
+        pg.add_style_tag(content=WORKORDER_FIT_CSS)
         try:
-            pg.add_style_tag(content=WORKORDER_FIT_CSS)
+            pg.emulate_media(media="print")
+            pg.set_viewport_size({"width": 794, "height": 1123})   # A4 @96dpi
             pg.wait_for_timeout(400)
             usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
-            w = pg.evaluate("document.body.scrollWidth") or 800
-            scale = min(1.0, usable_w / max(w, 1))
             m = pg.evaluate(
-                "(() => { const ts=[...document.querySelectorAll('table')]"
-                ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
-                " return { nonTable: document.body.scrollHeight - (t?t.offsetHeight:0),"
-                " tableH: t?t.offsetHeight:0 }; })()"
+                "(() => { const t=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetHeight-a.offsetHeight)[0];"
+                " const d=document.documentElement;"
+                " return { w: Math.max(t?Math.max(t.scrollWidth,t.offsetWidth):0,"
+                "                      d.scrollWidth),"
+                "          h: Math.max(d.scrollHeight, document.body.scrollHeight) }; })()"
             ) or {}
-            non_table = float(m.get("nonTable", 0))
-            table_h0 = float(m.get("tableH", 0))
-            target_table = int(max(table_h0, usable_h / scale - non_table))
-            pg.evaluate(
-                "(h)=>{const ts=[...document.querySelectorAll('table')]"
-                ".sort((a,b)=>b.offsetHeight-a.offsetHeight);"
-                " if(ts[0]) ts[0].style.height=h+'px';}",
-                target_table,
-            )
-            pg.wait_for_timeout(300)
-            h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
-            scale = min(scale, usable_h / max(h, 1))
-            scale = max(0.4, round(scale, 3))
+            w = float(m.get("w") or 0) or usable_w
+            h = float(m.get("h") or 0) or usable_h
+            # Chromium caps pdf scale at 2; 0.4 is the floor below which the page
+            # is unreadable anyway.
+            scale = max(0.4, min(2.0, round(min(usable_w / w, usable_h / h), 3)))
         except Exception:
-            scale = 0.62
+            scale = 0.62      # the proven pre-2026-08-24 fit; never clip the route
         opts["scale"] = scale
         opts["page_ranges"] = "1"
     pg.pdf(path=out, **opts)
@@ -623,6 +649,15 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         # stop, and testing it as a boolean silently drops that whole invoice.
         stops = [s for s in stops if s["do"] is not None and s["do"] >= from_stop]
 
+    # check-collection errands never print (see is_check_pickup)
+    checks = [s for s in stops if is_check_pickup(s)]
+    if checks:
+        drop = {s["tid"] for s in checks}
+        stops = [s for s in stops if s["tid"] not in drop]
+        if not stops:
+            raise SystemExit(
+                f"Only check-collection stops for driver={driver!r} date={date}")
+
     # per-stop flags for the work-order timeline: special handling (pickup /
     # exchange, derived from the same note hints used for the inbox proposals)
     # and picking shortfalls (any ordered > picked). Structure carries truth.
@@ -661,6 +696,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
     #    waybill render that is then discarded.
     invoice_part = {}     # tid -> annotated invoice path
     waybill_stops = []
+    unmarked = []         # lines a mark was wanted on but no invoice line matched
     for s in stops:
         if s["gi"] or s["task"].get("order_items"):   # invoice candidate
             src = f"{OUT}/inv_{s['tid']}.pdf"
@@ -685,9 +721,15 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                     mark_lines = bool(flags.get(s["tid"], {}).get("short"))
                 if so:
                     mark_lines = False
-                annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
-                                  missing_names=mn, show_packages=show_packages,
-                                  shortfall_only=so)
+                miss = annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
+                                         missing_names=mn,
+                                         show_packages=show_packages,
+                                         shortfall_only=so)
+                if miss:
+                    # Surfaced, never swallowed: an invoice whose ✗ could not be
+                    # placed looks exactly like an order picked in full.
+                    unmarked.append({"stop": s["do"], "recipient": s["recipient"],
+                                     "items": miss})
                 invoice_part[s["tid"]] = ann
                 continue
         waybill_stops.append(s)                       # no invoice → needs waybill
@@ -752,6 +794,9 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         "copies": copies,
         "discrepancies": disc,
         "inventory_proposals": len(proposals),
+        "check_pickups_skipped": [{"stop": s["do"], "recipient": s["recipient"]}
+                                  for s in checks],
+        "unmarked_lines": unmarked,
         "file": final,
     }
     json.dump(summary, open(f"{OUT}/summary.json", "w"), ensure_ascii=False, indent=2)
@@ -793,6 +838,22 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
         for d in disc:
             L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
                      f"picked {d['picked']} of {d['ordered']}")
+    else:
+        L.append("- None.")
+    L.append("")
+    L.append("## Check collections skipped (not printed)")
+    if summary.get("check_pickups_skipped"):
+        for c in summary["check_pickups_skipped"]:
+            L.append(f"- Stop {c['stop']}: **{c['recipient']}** — check collection, "
+                     f"no paperwork printed")
+    else:
+        L.append("- None.")
+    L.append("")
+    L.append("## Lines that could not be marked (check by hand)")
+    if summary.get("unmarked_lines"):
+        for u in summary["unmarked_lines"]:
+            L.append(f"- Stop {u['stop']} **{u['recipient']}**: "
+                     f"{', '.join(u['items'])}")
     else:
         L.append("- None.")
     L.append("")

@@ -20,7 +20,7 @@ the **driver name** and the **day**; everything else is default and automatic.
 
 ## Output (one merged, print-ready PDF)
 1. **Page 1** — the LionWheel work order (`daily_route_plan`) for that driver/date,
-   fitted to a single A4 portrait page.
+   on a single A4 portrait page **at the largest type that page allows**.
 2. **Then, every stop in driving order** (`visits.daily_order`):
    - stop **with** a Green Invoice → the **real GI invoice**, annotated, **×2 copies**.
    - **Invoices are the rule — a waybill is a genuine last resort.** Every stop
@@ -38,6 +38,14 @@ the **driver name** and the **day**; everything else is default and automatic.
      real content (a `₪` amount, `מע"מ`, or a `GT-` SKU: line items or totals that
      spilled over); the first page is never dropped. Saves two printed sheets per
      affected stop (×2 copies).
+   - **איסוף צ'קים ⊥ in the pack (Tom, 2026-08-24).** A check-collection errand
+     moves no goods, so there is nothing to hand over or sign: the stop is dropped
+     from the PDF **and** from the inventory proposals, and listed in the summary
+     instead. Deliberately narrow, because dropping a real delivery is the
+     expensive mistake — a stop goes only when it names checks (`צ'ק` any geresh,
+     or `המחאות`) **and** carries nothing to deliver (no Green Invoice, no order
+     lines). A delivery to a customer whose name merely contains `צ'ק` keeps its
+     invoice.
 
 ## Page 1 — the REAL LionWheel work order (Tom, 2026-06-21)
 Page 1 is LionWheel's own "סידור עבודה" print (the **הדפסת סידור עבודה** button =
@@ -46,8 +54,13 @@ generate. It carries LionWheel's header/branding and full columns. LionWheel's
 print view stacks the `יעד` column one Hebrew letter per line (~13 pages); we inject
 compact print CSS (`white-space:nowrap`, tight cells) and pick the largest scale
 that still fits, so all stops land on **one A4 portrait page** — layout tightened
-only, nothing invented. `build_workorder()` stays as a fallback if LionWheel does
-not return the page.
+only, nothing invented. Printed size = font-size × PDF scale and **width is what
+binds**, so the route table is measured at its own `width:auto` nowrap width, in
+print media at A4, then scaled to fill the page — up to 2× as well as down. (Until
+2026-08-24 it was measured as a `width:100%` table in the browser's 1280px
+viewport, so it always "measured" 1280, always printed at scale ≈0.59, and landed
+near 5.6px — the too-small סידור עבודה Tom flagged.) `build_workorder()` stays as
+a fallback if LionWheel does not return the page.
 
 ## Invoice annotation design (formal, rounded — Tom, 2026-06-21)
 Per product line, at the **right margin, precise to the line**, a formal rounded
@@ -59,6 +72,16 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
 - **Package count** — centered **directly under "מקור"**: a round GT-green
   double-ring badge with the count and a `חבילות` label.
 - Touch **only the named driver's route**. Ignore every other stop.
+- **Lines are matched by shared words, and the matcher refuses to guess (Tom,
+  2026-08-24).** LionWheel and Green Invoice word the same product differently, so
+  a mark is placed on the invoice's own text line (word layer; geresh/quote
+  insensitive; safe against GI exports whose Hebrew extracts reversed), ranked by
+  shared words then by fewest extra words. Two equally-likely lines ⇒ **no mark**.
+  Whatever could not be marked is reported in `summary.json` → `unmarked_lines`,
+  in `summary.md` and in the email — an unmarked shortfall reads to the driver as
+  "picked in full", so it is never silent. (Superseded: exact `search_for(name)`
+  with a first-two-words fallback, which missed lines outright and stamped the
+  wrong line whenever two products shared a prefix.)
 
 ## How to run
 1. **Inputs.** Driver name + date (`YYYY-MM-DD`) — both optional since 2026-07-22:
@@ -86,6 +109,8 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    ```
    Writes `route_pack_out/route_<driver>_<date>.pdf`, `summary.json`, and
    `inventory_proposals.json`. Sanity-check by rendering a page to PNG with PyMuPDF.
+   After touching the mark matcher or the stop filter, run the self-check first:
+   `python3 test_route_pack.py` (expects `18/18 ok`).
 4. **Inventory inbox — submit as an APPROVAL (not a plain exception).** For each
    item in `inventory_proposals.json` (returns, exchanges, tastings, goods received
    — anything that moves stock outside normal picking), create a **pending

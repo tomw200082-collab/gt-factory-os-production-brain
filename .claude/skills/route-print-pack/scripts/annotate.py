@@ -70,7 +70,7 @@ def _cross(pg, cx, cy, g, color):
 def _line_mark(pg, ycen, kind, label):
     """Elegant status mark at the right margin, precise to the line: a hairline
     ring + a finely drawn glyph. One quiet, airy system — no ink-heavy fills."""
-    cx, r = 568, 6.6
+    cx, r = pg.rect.width - 27, 6.6   # page-relative; 568 assumed A4
     if kind == "V":
         # success icon: a plain LINE check (open, rounded caps — no fill, no
         # triangle) centered inside a green ring, matching Tom's reference.
@@ -165,15 +165,86 @@ def _drop_trailing_blank_pages(doc):
         doc.delete_page(doc.page_count - 1)
 
 
-def _stamp(doc, name, kind, label):
-    """Draw one status mark on the first page where the product line is found."""
+# --------------------------------------------------------------------------- #
+# product-line matching (Tom, 2026-08-24 — "ליישר קו סופית על הסימונים")
+# Green Invoice does not word a line exactly the way LionWheel does, so the old
+# search_for(name) exact-substring match missed lines outright — and its "first
+# two words" fallback then stamped the WRONG line whenever two products share a
+# prefix ("בסיס לימונדה …"), which is most of the catalogue. Match on shared
+# words, make the winner beat the runner-up, and hand anything still unmatched
+# back to the caller instead of printing a silently unmarked invoice.
+# --------------------------------------------------------------------------- #
+_PUNCT = str.maketrans({c: " " for c in "\"'`׳״’‘,.;:()[]{}/\\|*+-–—"})
+
+
+def _tokens(s):
+    """Comparable words. Punctuation and every geresh/quote variant out; single
+    letters out — a lone letter (a preposition, a stray glyph) matches everything
+    and decides nothing. Single DIGITS stay: "1 ליטר" vs "2 ליטר" is exactly the
+    kind of difference a mark must not get wrong."""
+    return [w for w in str(s or "").translate(_PUNCT).lower().split()
+            if len(w) > 1 or w.isdigit()]
+
+
+def _page_lines(pg):
+    """[(words, y_center)] per text line, off the word layer. A mark points at a
+    line, so it rides that line's own bbox — not a substring hit that may sit in
+    a header or a totals row."""
+    rows = {}
+    for x0, y0, x1, y1, w, blk, ln, _ in pg.get_text("words"):
+        r = rows.setdefault((blk, ln), [[], y0, y1])
+        r[0].append(w)
+        r[1] = min(r[1], y0)
+        r[2] = max(r[2], y1)
+    return [(ws, (top + bot) / 2) for ws, top, bot in rows.values()]
+
+
+def _find_line(doc, name, used):
+    """(page_no, y_center) of the invoice line for `name`, or None.
+
+    Ranked by how many of the product's words the line carries, then by how few
+    words the line adds — so "בסיס לימונדה 1 ליטר" takes its own line instead of
+    tying with the נענע and תות variants that contain every word of it. Some
+    Green Invoice PDFs extract Hebrew visually reversed, so each line word counts
+    in both directions. The winner must be STRICTLY better than the runner-up:
+    where two lines are indistinguishable a mark is a coin toss, and a mark on
+    the wrong line is worse than none — an unmatched line gets reported, a wrong
+    one gets believed."""
+    toks = _tokens(name)
+    if not toks:
+        return None
+    cands = []
     for pno in range(len(doc)):
-        pg = doc[pno]
-        rs = pg.search_for(name) or pg.search_for(" ".join(name.split()[:2]))
-        if rs:
-            _line_mark(pg, (rs[0].y0 + rs[0].y1) / 2, kind, label)
-            return True
-    return False
+        for words, ycen in _page_lines(doc[pno]):
+            base = set(_tokens(" ".join(words)))
+            lt = base | {w[::-1] for w in base}
+            sc = sum(1 for t in toks if t in lt)
+            cands.append(((sc, -max(0, len(base) - sc)), pno, ycen))
+    if not cands:
+        return None
+    cands.sort(key=lambda c: c[0], reverse=True)
+    key, pno, ycen = cands[0]
+    if key[0] < min(2, len(toks)):
+        return None                       # nothing on the invoice resembles it
+    if len(cands) > 1 and cands[1][0] == key:
+        return None                       # two lines equally likely — a coin toss
+    spot = (pno, round(ycen, 1))
+    if spot in used:
+        # Its line already carries a mark. Scoring deliberately ignores `used`,
+        # so a second item cannot be pushed onto the next-best line — which would
+        # be some other product's.
+        return None
+    used.add(spot)
+    return pno, ycen
+
+
+def _stamp(doc, name, kind, label, used):
+    """Draw one status mark on the invoice line for `name`. False = unmatched."""
+    hit = _find_line(doc, name, used)
+    if not hit:
+        return False
+    _line_mark(doc[hit[0]], hit[1], kind, label)
+    return True
 
 
 def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
@@ -191,10 +262,25 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
                            This is the DEFAULT (Tom, 2026-08-04).
       mark_lines=True      per-line ✓/✗/partial from ordered vs picked.
       mark_lines=False     no line marks (order picked in full).
-    The order-id chip and package badge are always stamped."""
+    The order-id chip and package badge are always stamped.
+
+    Returns the product names whose invoice line could not be matched — the
+    caller surfaces them so an unmarkable shortfall is never mistaken for a
+    fully-picked order."""
     doc = fitz.open(src_pdf)
+    # Trim the tail page BEFORE stamping: a mark placed on a page that is then
+    # deleted is a shortfall that silently never printed.
+    _drop_trailing_blank_pages(doc)
     for pno in range(len(doc)):
         _reg(doc[pno])
+    used, unmatched = set(), []
+
+    def stamp(name, kind, label):
+        """A mark that cannot be placed goes back to the caller, never dropped:
+        an invoice missing its ✗ reads to the driver as picked in full."""
+        if name and not _stamp(doc, name, kind, label, used):
+            unmatched.append(name)
+
     if missing_names:
         # Explicit shortage list wins over picked_quantity: it is used precisely
         # when picking is unfinished and those counts are not yet truth.
@@ -202,7 +288,7 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
         for it in (task.get("order_items") or []):
             name = it.get("name") or ""
             if any(m in name.lower() for m in low):
-                _stamp(doc, name, "X", "X")
+                stamp(name, "X", "X")
     elif shortfall_only:
         # Picking is finished, so picked_quantity IS truth — but mark only the
         # lines that fell short. A ✓ on every complete line is ink the driver has
@@ -214,7 +300,7 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
                 continue
             if pq < q:
                 kind, label = mark_kind(q, pq)
-                _stamp(doc, it.get("name") or "", kind, label)
+                stamp(it.get("name") or "", kind, label)
     elif mark_lines:
         for it in (task.get("order_items") or []):
             name = it.get("name") or ""
@@ -224,13 +310,13 @@ def annotate(task, src_pdf, out_pdf, mark_lines=True, missing_names=None,
             except (TypeError, ValueError, KeyError):
                 continue
             kind, label = mark_kind(q, pq)
-            _stamp(doc, name, kind, label)
+            stamp(name, kind, label)
     wp = task.get("wp_order_id") or ""
     last3 = "".join(c for c in wp if c.isdigit())[-3:]
     if last3:
         _order_id_chip(doc[0], last3)
     if show_packages and task.get("packages_quantity"):
         _package_count(doc, task["packages_quantity"])
-    _drop_trailing_blank_pages(doc)   # save paper: no signature-only / empty tail pages
     doc.save(out_pdf)
     doc.close()
+    return unmatched

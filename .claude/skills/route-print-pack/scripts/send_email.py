@@ -42,6 +42,17 @@ def main(summary_path):
             lines.append(f"  עצירה {d['stop']} · {d['recipient']} · {d['item']} · לוקט {d['picked']}/{d['ordered']}")
     else:
         lines.append("אין הפרשי ליקוט.")
+    um = s.get("unmarked_lines") or []
+    if um:
+        lines.append("")
+        lines.append("שורות שלא ניתן היה לסמן על החשבונית — לבדוק ידנית:")
+        for u in um:
+            lines.append(f"  עצירה {u['stop']} · {u['recipient']} · {', '.join(u['items'])}")
+    ck = s.get("check_pickups_skipped") or []
+    if ck:
+        lines.append("")
+        lines.append("איסופי צ'קים שהושמטו מהקובץ (אין סחורה, אין ניירת): "
+                     + ", ".join(c["recipient"] or "?" for c in ck))
     if s.get("inventory_proposals"):
         lines.append("")
         lines.append(f"תזוזות מלאי לא-רגילות שממתינות לאישור ב-inbox: {s['inventory_proposals']}")
