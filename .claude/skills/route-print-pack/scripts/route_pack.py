@@ -158,6 +158,24 @@ def is_check_pickup(stop):
     return any(w in text.translate(_GERESH) for w in CHECK_WORDS)
 
 
+def picking_recorded(stops):
+    """True once LionWheel carries a picked quantity anywhere on the route.
+
+    While this is False every `picked_quantity` reads 0 because picking has not
+    been reported yet — NOT because nothing was picked. Marking on it would print
+    ✗ on every line of every invoice and send the driver out to hand over
+    nothing. A wrong mark is money thrown away (Tom, 2026-08-24), so the pack
+    goes out unmarked instead, and the summary says why."""
+    for s in stops:
+        for it in (s["task"].get("order_items") or []):
+            try:
+                if float(it.get("picked_quantity") or 0) > 0:
+                    return True
+            except (TypeError, ValueError):
+                continue
+    return False
+
+
 # --------------------------------------------------------------------------- #
 # Green Invoice — primary = link on the task; fallback = API match on the order
 # --------------------------------------------------------------------------- #
@@ -658,6 +676,11 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             raise SystemExit(
                 f"Only check-collection stops for driver={driver!r} date={date}")
 
+    # Nothing picked anywhere on the route = picking not reported yet, not a
+    # route of empty orders. Marks built on it would all be ✗.
+    picked_ok = picking_recorded(stops)
+    no_marks = not picked_ok and not missing_products
+
     # per-stop flags for the work-order timeline: special handling (pickup /
     # exchange, derived from the same note hints used for the inbox proposals)
     # and picking shortfalls (any ordered > picked). Structure carries truth.
@@ -679,7 +702,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             short = (not _is_exempt(s, missing_exempt)) and any(
                 any(m in (it.get("name") or "").lower() for m in low)
                 for it in (t.get("order_items") or []))
-        else:
+        elif picked_ok:
             for it in (t.get("order_items") or []):
                 try:
                     if float(it["picked_quantity"]) < float(it["quantity"]):
@@ -721,6 +744,8 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                     mark_lines = bool(flags.get(s["tid"], {}).get("short"))
                 if so:
                     mark_lines = False
+                if no_marks:
+                    mark_lines, so, mn = False, False, None
                 miss = annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
                                          missing_names=mn,
                                          show_packages=show_packages,
@@ -776,7 +801,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
 
     # discrepancy summary (for the email body / cover-of-record)
     disc = []
-    for s in stops:
+    for s in (stops if picked_ok else []):
         for it in (s["task"].get("order_items") or []):
             try:
                 q, pq = float(it["quantity"]), float(it["picked_quantity"])
@@ -794,6 +819,7 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         "copies": copies,
         "discrepancies": disc,
         "inventory_proposals": len(proposals),
+        "picking_recorded": picked_ok,
         "check_pickups_skipped": [{"stop": s["do"], "recipient": s["recipient"]}
                                   for s in checks],
         "unmarked_lines": unmarked,
@@ -834,7 +860,10 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
                  f"packages{tag}")
     L.append("")
     L.append("## Picking shortfalls")
-    if disc:
+    if not summary.get("picking_recorded", True):
+        L.append("- Picking was not reported yet when this pack was built — the "
+                 "invoices went out unmarked on purpose.")
+    elif disc:
         for d in disc:
             L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
                      f"picked {d['picked']} of {d['ordered']}")

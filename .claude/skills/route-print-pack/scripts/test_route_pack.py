@@ -71,11 +71,11 @@ def main():
     check("the sibling flavour matches its own line",
           hit and abs(hit[1] - _y_of(0)) < 12)
 
-    hit = annotate._find_line(doc, "בסיס לימונדה 1 ליטר", set())
-    check("the plain variant takes its own line, not a longer superset",
-          hit and abs(hit[1] - _y_of(2)) < 12)
-
     # --- refuse rather than guess ------------------------------------------ #
+    check("a flavour that is not on the invoice never lands on a sibling line",
+          annotate._find_line(doc, "בסיס לימונדה אשכוליות 1 ליטר", set()) is None)
+    check("agreement on generic words alone is not a match",
+          annotate._find_line(doc, "בסיס לימונדה 1 ליטר", set()) is None)
     check("a product absent from the invoice is unmatched",
           annotate._find_line(doc, "מיץ אשכוליות 250 מל", set()) is None)
     twin = fitz.open(_invoice(["מיץ תפוזים 1 ליטר", "מיץ תפוזים 1 ליטר"]))
@@ -132,6 +132,16 @@ def main():
           not cp(_stop(recipient="לקוח", notes="איסוף סחורה")))
     check("an ordinary delivery is untouched",
           not cp(_stop(recipient="קפה נמרוד", notes="")))
+
+    # --- marks are never built on picking that was not reported ------------- #
+    pr = route_pack.picking_recorded
+    unreported = [_stop(items=[{"name": "x", "quantity": 6, "picked_quantity": 0},
+                               {"name": "y", "quantity": 3, "picked_quantity": None}])]
+    check("a route with nothing picked anywhere is treated as unreported",
+          not pr(unreported))
+    check("one recorded pick is enough to trust the numbers",
+          pr(unreported + [_stop(items=[{"name": "z", "quantity": 2,
+                                         "picked_quantity": 2}])]))
 
     print(f"{len(CHECKS)}/{len(CHECKS)} ok")
 

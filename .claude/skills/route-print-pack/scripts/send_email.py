@@ -36,7 +36,10 @@ def main(summary_path):
         f"{s['stops']} עצירות · {s['invoices']} חשבוניות (×{s['copies']}) · {s['waybills']} תעודות משלוח",
         "",
     ]
-    if disc:
+    if not s.get("picking_recorded", True):
+        lines.append("שים לב: הליקוט עוד לא דווח כשהקובץ נבנה — החשבוניות יצאו "
+                     "בלי סימוני ליקוט, בכוונה. לבנות שוב אחרי נעילת הליקוט.")
+    elif disc:
         lines.append(f"הפרשי ליקוט ({len(disc)}):")
         for d in disc:
             lines.append(f"  עצירה {d['stop']} · {d['recipient']} · {d['item']} · לוקט {d['picked']}/{d['ordered']}")

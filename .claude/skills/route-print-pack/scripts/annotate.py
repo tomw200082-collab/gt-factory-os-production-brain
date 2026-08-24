@@ -203,13 +203,20 @@ def _find_line(doc, name, used):
     """(page_no, y_center) of the invoice line for `name`, or None.
 
     Ranked by how many of the product's words the line carries, then by how few
-    words the line adds — so "בסיס לימונדה 1 ליטר" takes its own line instead of
-    tying with the נענע and תות variants that contain every word of it. Some
-    Green Invoice PDFs extract Hebrew visually reversed, so each line word counts
-    in both directions. The winner must be STRICTLY better than the runner-up:
-    where two lines are indistinguishable a mark is a coin toss, and a mark on
-    the wrong line is worse than none — an unmatched line gets reported, a wrong
-    one gets believed."""
+    words the line adds. Some Green Invoice PDFs extract Hebrew visually reversed,
+    so each line word counts in both directions.
+
+    Three things must hold before a mark is placed, because a wrong mark is money
+    thrown away (Tom, 2026-08-24) while an unplaced one is merely reported:
+      * enough shared words to mean anything;
+      * a STRICTLY better score than the runner-up — where two lines are equally
+        likely, a mark is a coin toss;
+      * at least one shared word that is RARE on this invoice. Generic words
+        (בסיס, ליטר, מיץ) are carried by every sibling product, so agreement built
+        only from them is a guess: "בסיס לימונדה אשכוליות 1 ליטר" would otherwise
+        land on the plain "בסיס לימונדה 1 ליטר" line — four words of agreement and
+        the wrong product. The rare word — the flavour, the size, the type — is
+        what actually identifies a line."""
     toks = _tokens(name)
     if not toks:
         return None
@@ -219,15 +226,18 @@ def _find_line(doc, name, used):
             base = set(_tokens(" ".join(words)))
             lt = base | {w[::-1] for w in base}
             sc = sum(1 for t in toks if t in lt)
-            cands.append(((sc, -max(0, len(base) - sc)), pno, ycen))
+            cands.append(((sc, -max(0, len(base) - sc)), pno, ycen, lt))
     if not cands:
         return None
     cands.sort(key=lambda c: c[0], reverse=True)
-    key, pno, ycen = cands[0]
+    key, pno, ycen, lt = cands[0]
     if key[0] < min(2, len(toks)):
         return None                       # nothing on the invoice resembles it
     if len(cands) > 1 and cands[1][0] == key:
         return None                       # two lines equally likely — a coin toss
+    df = {t: sum(1 for c in cands if t in c[3]) for t in toks}
+    if not any(df[t] <= 1 for t in toks if t in lt):
+        return None                       # agreement on generic words only
     spot = (pno, round(ycen, 1))
     if spot in used:
         # Its line already carries a mark. Scoring deliberately ignores `used`,

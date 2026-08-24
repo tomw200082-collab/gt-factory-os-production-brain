@@ -76,12 +76,25 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
   2026-08-24).** LionWheel and Green Invoice word the same product differently, so
   a mark is placed on the invoice's own text line (word layer; geresh/quote
   insensitive; safe against GI exports whose Hebrew extracts reversed), ranked by
-  shared words then by fewest extra words. Two equally-likely lines ⇒ **no mark**.
-  Whatever could not be marked is reported in `summary.json` → `unmarked_lines`,
-  in `summary.md` and in the email — an unmarked shortfall reads to the driver as
-  "picked in full", so it is never silent. (Superseded: exact `search_for(name)`
-  with a first-two-words fallback, which missed lines outright and stamped the
-  wrong line whenever two products shared a prefix.)
+  shared words then by fewest extra words. **A wrong mark is money thrown away
+  (Tom, 2026-08-24); an unplaced one is only reported** — so a mark needs all
+  three: enough shared words, a strictly better score than the runner-up, and at
+  least one shared word that is **rare on that invoice**. Agreement built only
+  from generic words (`בסיס`, `ליטר`, `מיץ`) is a guess: it would put
+  `בסיס לימונדה אשכוליות` on the plain `בסיס לימונדה` line — four words of
+  agreement, wrong product. Whatever could not be marked is reported in
+  `summary.json` → `unmarked_lines`, in `summary.md` and in the email — an
+  unmarked shortfall reads to the driver as "picked in full", so it is never
+  silent. (Superseded: exact `search_for(name)` with a first-two-words fallback,
+  which missed lines outright and stamped the wrong line whenever two products
+  shared a prefix.)
+- **⊥ marks when picking was not reported.** If LionWheel carries no picked
+  quantity anywhere on the route, `picked_quantity` reads 0 because picking has
+  not been reported — not because nothing was picked. Marking on it would print ✗
+  on every line and send the driver out to hand over nothing, so the pack goes out
+  **unmarked**, `summary.json` → `picking_recorded: false`, and the email says to
+  rebuild after the line lock. (Timing rule unchanged: build after 15:00, or after
+  the Sunday ~10:15 sweep.)
 
 ## How to run
 1. **Inputs.** Driver name + date (`YYYY-MM-DD`) — both optional since 2026-07-22:
@@ -110,7 +123,7 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    Writes `route_pack_out/route_<driver>_<date>.pdf`, `summary.json`, and
    `inventory_proposals.json`. Sanity-check by rendering a page to PNG with PyMuPDF.
    After touching the mark matcher or the stop filter, run the self-check first:
-   `python3 test_route_pack.py` (expects `18/18 ok`).
+   `python3 test_route_pack.py` (expects `21/21 ok`).
 4. **Inventory inbox — submit as an APPROVAL (not a plain exception).** For each
    item in `inventory_proposals.json` (returns, exchanges, tastings, goods received
    — anything that moves stock outside normal picking), create a **pending
@@ -171,7 +184,10 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
      which a route-pack run has none. Tom chose graphify, 2026-06-21.)
 
 ## Picking discrepancies (credits)
-Picking shortfalls are marked on the invoices and listed in the email summary.
+Picking shortfalls are marked on the invoices (**✗ / partial on the short lines
+only — a ✓ on every complete line is ink the driver reads past to find the one
+line that needs a conversation**; Tom-locked 2026-08-04, reconfirmed 2026-08-24,
+`--mark-all-lines` restores full marking) and listed in the email summary.
 **Do not** write credits to the DB — the system auto-creates `credit_tasks` after
 the driver marks delivery. (Confirmed live: the pick-bridge creates them on the
 terminal LionWheel status.)
