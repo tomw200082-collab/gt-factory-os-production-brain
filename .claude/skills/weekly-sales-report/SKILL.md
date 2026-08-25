@@ -17,7 +17,7 @@ description: >
 
 - **Artifact URL (לעולם לא משתנה):** `https://claude.ai/code/artifact/ad0dd380-d95e-4a21-94e3-af9ee386fc88`
   — מפרסמים עם `url=<זה>` כדי לעדכן את אותו קישור. פרסום בלי `url` = באג.
-- Scripts: `gt-factory-os/scripts/sales-report/` (README שם = סדר ההרצה).
+- Scripts: `gt-factory-os/scripts/sales-report/` (README שם = סדר ההרצה; השאילתה = `orders_bulk.graphql`).
 - שיטה מלאה: `Sales-Machine/recipes/sales-report.md` · מספרי ייחוס: `Sales-Machine/evidence/2026-08-24-sales-report.md`.
 - בסיס נעול: כל ₪ ללא מע״מ (המחיר השמור) · discountedTotalSet · חודש לפי שעון ישראל ·
   מבוטלות מוחרגות · עמודות המס/net של שופיפיי אסורות · amountSpent אסור.
@@ -26,13 +26,17 @@ description: >
 ## צעדים
 
 1. **חלון:** `END` = החודש הנוכחי (שעון ישראל). משיכה מ-1 לחודש של `END−24` פחות יום.
-2. **משיכה:** Shopify MCP → `bulkOperationRunQuery` על `orders(query:"created_at:>=<תאריך>")`
-   עם השדות המדויקים שבתחילת `build_facts.py` (הזמנה+לקוח+שורות+refunds). Poll עד
+2. **משיכה:** `bulkOperationRunQuery` עם `scripts/sales-report/orders_bulk.graphql`
+   **כמות שהוא** (`<START>` = התאריך מסעיף 1). השאילתה נעולה שם כי היא נשברת בשקט:
+   בלי `id` על `lineItems` כל השורות נופלות ו-`fact_rows=0` (נמדד 2026-08-25). Poll עד
    `COMPLETED`, הורדת ה-JSONL אל `<workdir>/raw/orders.jsonl`. לרשום את **שעת ה-completedAt
    בשעון ישראל** — זו חותמת הטריות.
-3. **עוגן בלתי-תלוי:** ShopifyQL
-   `FROM sales SHOW orders, gross_sales, discounts, sales_reversals, net_sales, shipping_charges, taxes, total_sales TIMESERIES month SINCE <START>-01 UNTIL today`
-   → לשמור כ-`shopifyql_month.json` באותו מבנה קיים (rows של מערכים).
+3. **עוגן בלתי-תלוי:** `python3 fetch_shopifyql.py <START> shopifyql_month.json`
+   (`FROM sales SHOW orders, gross_sales, discounts, sales_reversals, net_sales, shipping_charges, taxes, total_sales TIMESERIES month`).
+   הסקריפט עובד בלי MCP ועוטף את המלכודות: ה-Admin API קורא לעמודה `returns`, לא
+   `sales_reversals` — והבקשה השגויה חוזרת HTTP 200 עם השגיאה קבורה ב-`parseErrors`;
+   צורת `rows` משתנה בין גרסאות API; והתאים חוזרים כמחרוזות. אומת זהה ל-MCP ב-25/25 חודשים.
+   ה-MCP (`run-analytics-query`) עדיין עובד כשיש connectors — אבל ⊥ לבנות עליו.
 4. **בנייה:** להעתיק את הסקריפטים מהריפו ל-workdir, ואז
    `GT_RANGE_END=<END> python3 build_facts.py` →
    `GT_RANGE_END=<END> GT_PULLED_AT=<ISO שעת המשיכה> python3 build_report.py`.
@@ -56,7 +60,7 @@ description: >
 
 ## גבולות
 
-שופיפיי לקריאה בלבד (bulk = קריאה) · ⊥ ליבת factory-os · ⊥ פנייה ללקוחות
+האח החודשי — `monthly-sales-excel` (האקסל לדרופבוקס, 1 לחודש). שופיפיי לקריאה בלבד (bulk = קריאה) · ⊥ ליבת factory-os · ⊥ פנייה ללקוחות
 (`SALES_CUSTOMER_OUTREACH_WRITE_ENABLED=false`) · שינוי טקסונומיה/רשתות — רק דרך שער
 תום (עמוד האימות: `https://claude.ai/code/artifact/9d94c4ff-7ea2-4ddc-a148-0a1781ad1c3e`) ·
 אין ⁠`git push` נדרש — הריצה לא נוגעת בריפו.
