@@ -31,11 +31,12 @@ description: >
    בלי `id` על `lineItems` כל השורות נופלות ו-`fact_rows=0` (נמדד 2026-08-25). Poll עד
    `COMPLETED`, הורדת ה-JSONL אל `<workdir>/raw/orders.jsonl`. לרשום את **שעת ה-completedAt
    בשעון ישראל** — זו חותמת הטריות.
-3. **עוגן בלתי-תלוי:** ShopifyQL
-   `FROM sales SHOW orders, gross_sales, discounts, sales_reversals, net_sales, shipping_charges, taxes, total_sales TIMESERIES month SINCE <START>-01 UNTIL today`
-   → לשמור כ-`shopifyql_month.json` באותו מבנה קיים (rows של מערכים). חייבים את ה-MCP
-   (`run-analytics-query`) — ל-`shopifyqlQuery` של ה-Admin API אין `sales_reversals`;
-   וה-MCP מחזיר מחרוזות, להמיר למספרים לפני השמירה.
+3. **עוגן בלתי-תלוי:** `python3 fetch_shopifyql.py <START> shopifyql_month.json`
+   (`FROM sales SHOW orders, gross_sales, discounts, sales_reversals, net_sales, shipping_charges, taxes, total_sales TIMESERIES month`).
+   הסקריפט עובד בלי MCP ועוטף את המלכודות: ה-Admin API קורא לעמודה `returns`, לא
+   `sales_reversals` — והבקשה השגויה חוזרת HTTP 200 עם השגיאה קבורה ב-`parseErrors`;
+   צורת `rows` משתנה בין גרסאות API; והתאים חוזרים כמחרוזות. אומת זהה ל-MCP ב-25/25 חודשים.
+   ה-MCP (`run-analytics-query`) עדיין עובד כשיש connectors — אבל ⊥ לבנות עליו.
 4. **בנייה:** להעתיק את הסקריפטים מהריפו ל-workdir, ואז
    `GT_RANGE_END=<END> python3 build_facts.py` →
    `GT_RANGE_END=<END> GT_PULLED_AT=<ISO שעת המשיכה> python3 build_report.py`.
