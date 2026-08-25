@@ -216,12 +216,12 @@ def mapping_svg(fig):
     cross = (f'<path d="M {X},{secs["33"]} C 902,{secs["33"]} 902,{secs["namastea"]} '
              f'{X},{secs["namastea"]}" class="m-cross"/>'
              f'<circle cx="{X}" cy="{secs["namastea"]}" r="7" fill="var(--hue-namastea)"/>')
-    return (f'<svg viewBox="0 0 {W} {y}" width="{W}" class="mapsvg" direction="ltr" '
-            f'xmlns="http://www.w3.org/2000/svg">{"".join(parts)}{cross}</svg>')
+    return (f'<svg viewBox="0 0 {W} {y}" width="{W}" class="mapsvg" direction="ltr">'
+            f'{"".join(parts)}{cross}</svg>')
 
 
 DOWN = ('<svg class="down" viewBox="0 0 26 76" width="26" height="76" aria-hidden="true">'
-        '<path d="M13 0 V68 M3 55 L13 68 L23 55" fill="none" stroke="var(--coral)" '
+        '<path d="M13 0 V68 M3 55 L13 68 L23 55" fill="none" stroke="var(--coral-ink)" '
         'stroke-width="3.5" stroke-linecap="square"/></svg>')
 
 
@@ -260,13 +260,13 @@ h1,h2,.dname,.prod,.figbig,.cover-h { font-family:'Rubik',sans-serif; line-heigh
 h2 { font-size:88px; font-weight:700; margin-bottom:40px; }
 .lead { font-size:48px; line-height:1.5; color:var(--ink); max-width:904px; }
 .body { font-size:42px; line-height:1.5; }
-.rule { height:1px; background:var(--line); border:0; margin:20px 0; }
+.rule { height:3px; background:var(--line); border:0; margin:20px 0; }
 
 /* ---- cover ---- */
 .cover { display:flex; flex-direction:column; justify-content:space-between; }
 .cover-logo { width:190px; }
 .cover-h { font-size:150px; font-weight:700; letter-spacing:-.02em; }
-.cover-h em { font-style:normal; color:var(--coral); }
+.cover-h em { font-style:normal; color:var(--coral-ink); }
 .cover-vision { font-size:48px; color:var(--muted); margin-top:40px; }
 .cover-bottles { display:flex; align-items:flex-end; justify-content:space-between; gap:0;
                  flex:0 0 560px; height:560px; padding:0 10px; }
@@ -287,14 +287,14 @@ h2 { font-size:88px; font-weight:700; margin-bottom:40px; }
 .m-prod { font-family:'Rubik',sans-serif; font-weight:700; font-size:56px;
           letter-spacing:.14em; text-anchor:end; }
 .m-drink { font-family:'Heebo',sans-serif; font-size:42px; fill:var(--ink); text-anchor:end; }
-.m-tick { stroke:var(--line); stroke-width:2; }
+.m-tick { stroke:var(--line); stroke-width:3; }
 .m-cross { fill:none; stroke:var(--hue-matcha); stroke-width:3; }
 
 /* ---- product screens ---- */
 .prod { font-size:130px; font-weight:700; letter-spacing:.06em; line-height:1; }
 .prodsub { font-size:42px; color:var(--muted); margin-top:16px; }
-.shot { position:absolute; left:-56px; top:108px; height:560px; }
-.prodhead { max-width:600px; min-height:510px; }
+.shot { position:absolute; left:-56px; top:104px; height:548px; }
+.prodhead { max-width:600px; min-height:492px; }
 .prodhead.wide { max-width:904px; min-height:0; }
 .dense .prod { font-size:110px; }
 .dense .blurb { font-size:38px; line-height:1.3; margin-top:12px; }
@@ -305,7 +305,7 @@ h2 { font-size:88px; font-weight:700; margin-bottom:40px; }
 .dense .rule { margin:12px 0; }
 .dense .dprofit .val { font-size:64px; }
 
-.drink { padding:9px 0; border-bottom:1px solid var(--line); }
+.drink { padding:9px 0; border-bottom:2px solid var(--line); }
 .drink:last-of-type { border-bottom:0; }
 .drow { display:flex; align-items:baseline; justify-content:space-between; gap:32px; }
 
@@ -366,14 +366,14 @@ h2 { font-size:88px; font-weight:700; margin-bottom:40px; }
 
 /* ---- lists ---- */
 .olist { margin-top:16px; }
-.olist li { list-style:none; padding:28px 0; border-bottom:1px solid var(--line);
+.olist li { list-style:none; padding:28px 0; border-bottom:2px solid var(--line);
             display:flex; gap:28px; align-items:baseline; }
 .olist li:last-child { border-bottom:0; }
 .olist .nm { font-family:'Rubik',sans-serif; font-weight:700; font-size:52px;
              letter-spacing:.08em; min-width:290px; }
 .olist .role { font-size:38px; color:var(--muted); }
 .have { display:flex; flex-wrap:wrap; gap:20px 28px; margin-top:40px; }
-.have span { font-size:48px; padding:14px 30px; border:1px solid var(--line); border-radius:999px; }
+.have span { font-size:48px; padding:14px 30px; border:2px solid var(--line); border-radius:999px; }
 
 /* ---- closing ---- */
 .close { display:flex; flex-direction:column; justify-content:center; }
@@ -501,16 +501,16 @@ def html(fig):
       <div class="kick">פשוט להגיש</div>
       <h2 style="margin-top:24px">כוס מושלמת<br>בשלוש תנועות</h2>
       <ul class="olist" style="margin-top:64px">
-        <li><span class="nm" style="min-width:110px;color:var(--coral)"><span class="num">1</span></span>
+        <li><span class="nm" style="min-width:110px;color:var(--coral-ink)"><span class="num">1</span></span>
             <span class="lead">מלאו כוס בקרח.</span></li>
-        <li><span class="nm" style="min-width:110px;color:var(--coral)"><span class="num">2</span></span>
+        <li><span class="nm" style="min-width:110px;color:var(--coral-ink)"><span class="num">2</span></span>
             <span class="lead">השלימו במים קרים.</span></li>
-        <li><span class="nm" style="min-width:110px;color:var(--coral)"><span class="num">3</span></span>
+        <li><span class="nm" style="min-width:110px;color:var(--coral-ink)"><span class="num">3</span></span>
             <span class="lead">הוסיפו את תרכיז GT, ערבבו קלות, סיימו בפרוסת לימון או נענע טרייה — והגישו.</span></li>
       </ul>
       <hr class="rule" style="margin-top:64px">
       <div style="display:flex;gap:64px;align-items:baseline;margin-top:24px">
-        <div class="big" style="font-size:150px;color:var(--coral)"><span class="num">5:1</span></div>
+        <div class="big" style="font-size:150px;color:var(--coral-ink)"><span class="num">5:1</span></div>
         <div class="body" style="max-width:560px"><span class="num">250</span> מ״ל נוזל ל־<span class="num">50</span> מ״ל תרכיז.
           התרכיז תמיד נכנס אחרון.</div>
       </div>
@@ -519,7 +519,7 @@ def html(fig):
       <div class="body" style="margin-top:24px">באחסון סגור — מקום קריר ויבש, לא דורש קירור.<br>
         לאחר הפתיחה — לשמור בקירור; מומלץ עד <span class="num">3</span> חודשים.</div>
       <div class="body" style="margin-top:40px;color:var(--muted)">
-        GT נבנה לצוותים עמוסים — קל להכניס, קל לתפעל, בכל משמרת.</div>'''))
+        GT נבנה לצוותים עמוסים. קל להכניס, קל לתפעל, בכל משמרת.</div>'''))
 
     # S05-S12 — a dense product screen, then a hero that breathes. Hold the alternation.
     n = 5
@@ -530,7 +530,7 @@ def html(fig):
     # S13 what to order
     roles = {"fresh": "היביסקוס ולײם. הבסיס לשלושה משקאות בתפריט.",
              "detox": "תה ירוק, לואיזה, נענע ולײם. הבסיס לשני משקאות.",
-             "namastea": "מסאלה צ׳אי. הבסיס לשלושה משקאות — וגם לאייס מאצ׳ה מסאלה.",
+             "namastea": "מסאלה צ׳אי. הבסיס לשלושה משקאות, וגם לאייס מאצ׳ה מסאלה.",
              "matcha": "מאצ׳ה טקסית שיזואוקה. הבסיס לארבעה משקאות."}
     items = "".join(
         f'<li><span class="nm" style="color:var({p["hue"]})">{p["latin"]}</span>'
@@ -562,7 +562,7 @@ def html(fig):
     # S15 closing — leads with the promise. Tom explicit; D8.
     s.append(screen(15, '''
       <div class="promise">נחזור אליכם<br>בהקדם.</div>
-      <div class="promise-sub">נשמח להתאים לכם את התפריט — לפי מה שאתם מוכרים היום.</div>
+      <div class="promise-sub">נשמח להתאים לכם את התפריט לפי מה שאתם מוכרים היום.</div>
       <div class="contact">
         <div><span class="num">gteveryday.com</span></div>
         <div><span class="num">info@gteveryday.com</span></div>

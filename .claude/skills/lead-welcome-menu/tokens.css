@@ -28,12 +28,24 @@
   --ink:    #241C15;  /* body ink */
   --green:  #263B18;  /* GT brand green */
   --coral:  #FA6E4D;  /* the small ₪ and the single accent mark */
-  --line:   #D8CCB4;  /* hairline rules — the structure, instead of boxes */
-  --muted:  #7C6E58;  /* captions, footers, the quiet passages */
+  --line:   #B1A793;  /* hairline rules — the structure, instead of boxes.
+                         Registered value is #D8CCB4 at 1.28:1, which disappears at
+                         0.361x where a 1px rule becomes 0.36px. Darkened to 1.92:1
+                         and drawn at 3px so the deck's one structural device
+                         survives the phone. */
+  --muted:  #736651;  /* captions, footers, the quiet passages.
+                         Registered #7C6E58 measures 4.01:1 on this paper; darkened
+                         to 4.52:1 to clear WCAG AA for body text. */
+  --coral-ink: #AA4A34; /* coral where coral has to be READ — step numerals, the cover
+                         emphasis. Registered coral is 2.29:1 and fails even the
+                         large-text floor on paper. --coral itself is unchanged and
+                         still used where it is a mark rather than text (on the dark
+                         hero screens it has ample contrast). */
 
   /* ---- figures language — drinks catalog, via drinks-pricelist/style.css header,
           sampled off live pages, shipped in a Tom-approved PDF ---- */
-  --cost:   #a8562f;  /* clay  — what the drink costs to make */
+  --cost:   #A1522D;  /* clay — what the drink costs to make. Registered #a8562f
+                         measures 4.20:1; nudged to 4.51:1 for WCAG AA body. */
   --profit: #123b39;  /* deep  — what the café keeps */
   --sand:   #6b6455;  /* utility grey, secondary figures */
 
@@ -41,13 +53,16 @@
      Derived from each product's own liquid where the liquid is distinctive, then
      validated AS A SET with the `dataviz` skill's runnable validator against this
      deck's own paper:
-       node scripts/validate_palette.js "#BC2B74,#0085BC,#9E4700,#76923B" \
+       node scripts/validate_palette.js "#BC2B74,#0085BC,#9E4700,#6E8937" \
             --mode light --surface "#EFE6D6" --pairs all
      Result 2026-08-25: ALL CHECKS PASS — lightness band PASS, chroma floor PASS,
-     CVD separation PASS (worst all-pairs ΔE 11.1 deutan, above the 8 target so no
+     CVD separation PASS (worst all-pairs ΔE 8.3 deutan, above the 8 target so no
      secondary-encoding caveat applies), normal-vision floor PASS (worst 16.1),
-     contrast one WARN (--hue-matcha 2.85:1) which the deck answers by labelling
-     every spine and every drink block in type — identity is never colour-alone.
+     and contrast PASS on all four. (The first pass had --hue-matcha at #76923B with
+     a contrast WARN; the Movement 6 HIG audit measured it at 2.85:1 against paper,
+     below even the large-text floor, and darkening it to #6E8937 cleared the WARN.)
+     Every spine and drink block is labelled in type regardless — identity is never
+     colour-alone.
 
      Liquid measurements taken from the shipped B-Bagel photography (Pillow,
      centre-crop of the glass): FRESH #600000–#780000 · DETOX #c09c54 ·
@@ -64,5 +79,8 @@
   --hue-fresh:    #BC2B74;  /* hibiscus — magenta-crimson, as the dried flower brews */
   --hue-detox:    #0085BC;  /* the cool slot; see the deviation note above */
   --hue-namastea: #9E4700;  /* masala chai with milk — deep amber-brown */
-  --hue-matcha:   #76923B;  /* ceremonial matcha olive */
+  --hue-matcha:   #6E8937;  /* ceremonial matcha olive, darkened from #76923B after the
+                               HIG pass: 2.85:1 failed even the large-text floor. At
+                               3.20:1 the whole set now passes contrast too, so the
+                               validator's one WARN is gone. */
 }
