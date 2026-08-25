@@ -101,19 +101,59 @@ def lw_list_open():
     return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
 
 
+def lw_drivers():
+    """Live driver directory: GET /api/v1/drivers.json."""
+    url = f"{LW_BASE}/api/v1/drivers.json?key={urllib.parse.quote(LW_KEY)}"
+    d = _get_json(url)
+    return d.get("drivers", d) if isinstance(d, dict) else d
+
+
+def resolve_driver_id(driver):
+    """Map a driver name (or a numeric id passed as text) to a LionWheel
+    driver_id. Exact-ish substring match on first/last/nick name; raises when
+    the name is unknown or ambiguous — never guess which driver a route is."""
+    s = str(driver).strip()
+    if s.isdigit():
+        return int(s)
+    hits = []
+    for d in lw_drivers():
+        full = " ".join(str(d.get(k) or "") for k in
+                        ("first_name", "last_name", "nick_name")).strip()
+        norm = " ".join(full.split())
+        if s == norm or s in norm.split() or norm.startswith(s + " "):
+            hits.append((d.get("id"), norm))
+    if not hits:
+        raise SystemExit(f"driver not found in LionWheel: {driver!r}")
+    if len({h[0] for h in hits}) > 1:
+        raise SystemExit(f"ambiguous driver {driver!r}: {hits}")
+    return hits[0][0]
+
+
+def _iso_date(s):
+    """LionWheel returns pickup_at as DD/MM/YYYY (sometimes ISO). Normalise."""
+    s = (s or "").strip()
+    m = re.match(r"^(\d{2})/(\d{2})/(\d{4})", s)
+    if m:
+        return f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+    return s[:10]
+
+
 def fetch_route(driver, date, all_statuses=False):
     """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
 
     all_statuses=True also keeps UNASSIGNED stops — use when the whole day is to
     be treated as confirmed even though LionWheel has not finished assigning."""
     stops, driver_id = [], None
+    want_id = resolve_driver_id(driver)
     for tid in (lw_list_open() if all_statuses else lw_list_assigned()):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        # driver_str is no longer populated by the API (2026-08-25); match on
+        # driver_id, keeping the name check as a fallback when it does come back.
+        if t.get("driver_id") != want_id and t.get("driver_str") != driver:
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        if _iso_date(t.get("pickup_at")) != date:
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
