@@ -89,6 +89,35 @@
 | קטלוג מוצרים בקאנבה (מקור ה-DNA) | Canva design `DAHQrpThEBE` | מאושר-טום | 2026-08-06 |
 | תיקיית קאנבה — פקשוטים 1L + ODK + אבקות | Canva folder `FAHRTt8KXZg` | טוב | 2026-08-06 |
 
+## נכסי תפריט-פתיחה ללידים — `.claude/skills/lead-welcome-menu/assets/` (ריפו)
+
+> נמשכו 2026-08-25 לבניית `lead-welcome-menu`. כולם הוקטנו לצלע ארוכה ≤1400px;
+> התיקייה כולה 1.60MB. שלושת הבקבוקים אומתו RGBA עם אלפא 0 בארבע הפינות.
+
+| מה | נתיב | דירוג | אומת |
+|---|---|---|---|
+| פקשוט FRESH (רקע שקוף) | ריפו `assets/bottle-fresh.png` ← Drive `1SAIDMD0E5bxNoo2VYUdqH3CRR5gWCqgE` (1,582,135 בתים במקור) | מאושר-טום | 2026-08-25 |
+| פקשוט DETOX (רקע שקוף) | ריפו `assets/bottle-detox.png` ← Drive `1NDmMB3lKkALdU4HB5uONF811YrOmqF1U` (1,608,667 בתים במקור) | מאושר-טום | 2026-08-25 |
+| פקשוט NAMASTEA (רקע שקוף) | ריפו `assets/bottle-namastea.png` ← Drive `1RMSYeRUxjBsfp7VW3ahTr1VhW02WyqRE` (1,810,057 בתים במקור) | מאושר-טום | 2026-08-25 |
+| כוס מוכנה FRESH | ריפו `assets/glass-fresh.jpg` — **חולץ מה-PDF ששווק** (ר' הערת המקור למטה) | מאושר-טום | 2026-08-25 |
+| כוס מוכנה DETOX | ריפו `assets/glass-detox.jpg` — **חולץ מה-PDF ששווק** | מאושר-טום | 2026-08-25 |
+| כוס מוכנה NAMASTEA | ריפו `assets/glass-namastea.jpg` — **חולץ מה-PDF ששווק** | מאושר-טום | 2026-08-25 |
+| לוגו GT שחור | ריפו `assets/gt-logo-black.png` ← Drive `1z-jgnJONNJGTMYmlAtYa6rlA3IfppeNE` (30,092 בתים, תואם בתים) | מאושר-טום | 2026-08-25 |
+
+**הערת מקור לתמונות הכוסות — קריאה לפני שימוש חוזר.** קובצי ה-JPG המקוריים
+(`glass-*.jpg`, 11.6–12.2MB) **אינם ניתנים להורדה** בסביבה הזאת: ה-MCP של Google Drive
+חוסם מעל 10MB, ו-`dl.dropboxusercontent.com` / `drive.usercontent.google.com` מוחזרים
+403 ע"י פרוקסי המדיניות. הנתיב שעבד: הורדת ה-PDF ששווק ללקוח
+(`B-BAGEL-x-GT-Premium-Iced-Tea-Programme.pdf`, 4.7MB, Drive `1RAyaE9-aOO19LehZsAC8R9MJo3YGD0B3`)
+וחילוץ תמונות ה-XObject מסוג DCTDecode מתוכו — אותן שלוש תמונות, 1000×1500, ~66KB כל אחת,
+בדיוק ההקטנה שטום כבר אישר ושלח ללקוח. הזיהוי נעשה חזותית (נענע=DETOX, אודם=FRESH,
+חלבי=NAMASTEA), לא לפי סדר העמודים.
+
+| מה | מצב | אומת |
+|---|---|---|
+| `glass-consciousness.jpg` | קיים באותו PDF (סלוט 3) — **לא בשימוש**, CONSCIOUSNESS אינו בדק הזה | 2026-08-25 |
+| פקשוט MATCHA באיכות בקבוק | **עדיין חסר.** אין תצלום מאושר. S11 נבנה עם פלייסהולדר טיפוגרפי (מאסטרפרומפט §6.A) | 2026-08-25 |
+
 ## פערים ידועים (רשומות-שלילה)
 
 | מה | מצב | אומת |

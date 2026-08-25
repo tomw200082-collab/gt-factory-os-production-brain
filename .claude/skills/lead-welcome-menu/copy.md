@@ -4,7 +4,8 @@
 > masterprompt `20260825leadwelcomemenumasterprompt.md` §W3. This file is the copy source that
 > `build.py` will read; it is **not** the design and **not** the build.
 >
-> **Status:** DRAFT — copy complete, pending Tom on the four items in §Open.
+> **Status:** APPROVED-IN-PART — copy complete. Tom settled NAMASTEA ingredients and the contact
+> block on 2026-08-25; two items remain in §Open, neither blocking the build.
 > **Written:** 2026-08-25. **Language of the deliverable:** Hebrew, RTL.
 >
 > **Numeric authority:** `.claude/skills/drinks-pricelist/drinks_final_figures.json`.
@@ -263,17 +264,28 @@ Computing margin as `(price − cost)/price` overstates every drink by 2–5 poi
 Re-derived independently on 2026-08-25 against all twelve rows: every margin and profit in this
 file reproduces from cost and price under the rule above. Zero deviations.
 
-## Open — Tom's, before this ships
+## Open — Tom's
 
-1. **NAMASTEA ingredients.** Products catalog: `שני זני תה שחור, קינמון, הל, ג׳ינג׳ר, פלפל שחור, ציפורן`.
-   The shipped B-Bagel brochure additionally lists Pu-erh and star anise. This file defaults to the
-   products catalog, which is newer. One line from Tom confirms it. (Masterprompt §6.B.)
-2. **The contact block.** Read off the products catalog footer, not yet confirmed as the right
-   channel for an inbound lead: `gteveryday.com` · `info@gteveryday.com` · `054-398-2444` ·
-   `gteveryday@`. (Masterprompt §6.C.)
-3. **The asterisk spread** — catalog marks eleven drinks, the figures file marks one. Which is right?
-4. **The MATCHA image** for S11 — no approved packshot exists. (Masterprompt §6.A.)
+**Resolved by Tom, 2026-08-25:**
+
+1. ~~NAMASTEA ingredients.~~ **Settled: follow the products catalog** (`לך לפי הקטלוג מוצרים`).
+   `שני זני תה שחור, קינמון, הל, ג׳ינג׳ר, פלפל שחור, ציפורן.` No Pu-erh, no star anise —
+   the B-Bagel brochure's longer list does not carry into this deck.
+2. ~~The contact block.~~ **Approved as read off the products catalog footer** (`מאשר את פרטי הקשר`):
+   `gteveryday.com` · `info@gteveryday.com` · `054-398-2444` · `gteveryday@`.
+
+**Still open:**
+
+3. **The asterisk spread.** The drinks catalog marks eleven of the twelve with
+   `* כולל הערכת עלות גרניש/קצף`; `drinks_final_figures.json` marks one (key `12`). This file
+   follows the drinks catalog, per masterprompt §2.2 (`carry the asterisk and its footnote,
+   exactly as the catalog does`). Neither side was changed. Tom's ruling on the products catalog
+   does not reach this — the asterisk lives in the drinks catalog. Carrying the wider disclosure
+   is the conservative default and it stands until Tom says otherwise.
+4. **The MATCHA image** for S11 — no approved packshot exists at bottle quality. Masterprompt §6.A
+   says explicitly not to block on this: S11 builds with a typographic placeholder and the image
+   drops in when Tom picks one from the contact sheet.
 
 Drink-name divergence, recorded not resolved: key `12` is `חליטת תה ירוק וליים` in both the
-figures file and masterprompt §2.2, and `חליטת תה ירוק לואיזה וליים` in the Canva catalog. This
-file uses the figures-file name.
+figures file and masterprompt §2.2, and `חליטת תה ירוק לואיזה וליים` in the Canva drinks catalog.
+This file uses the figures-file name.

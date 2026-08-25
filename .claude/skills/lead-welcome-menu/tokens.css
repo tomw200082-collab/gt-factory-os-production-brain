@@ -1,0 +1,68 @@
+/* GT lead-welcome menu — design tokens.
+   Every value below carries the record it came from. Nothing here was invented,
+   sampled off a screenshot, or averaged between sources.
+
+   THE RECONCILIATION RULE (masterprompt W1 / reframe 3).
+   Two registered palettes exist and neither is wrong. They are reconciled by JOB,
+   not by preference:
+
+     · The PRODUCTS catalog palette supplies the SURFACE AND IDENTITY — paper, ink,
+       rules, the brand green, the coral accent. It is the registered design DNA
+       (`docs/warehouses/marketing-assets.md`, row `פלטה`, graded מאושר-טום 2026-08-06)
+       and this deck is, structurally, a customer-facing catalog piece.
+
+     · The DRINKS catalog palette supplies the FIGURES LANGUAGE — the clay/deep pair
+       that the approved cost sheet uses to say "this is what it costs" and "this is
+       what you keep" (`.claude/skills/drinks-pricelist/style.css` header comment,
+       sampled off live pages and shipped in a Tom-approved PDF). This deck shows
+       FOOD COST, price, margin and profit — exactly that sheet's job — so it
+       inherits that sheet's vocabulary for those numbers rather than inventing one.
+
+   Written into the file so the next rebuild inherits the decision instead of
+   re-taking it. */
+
+:root {
+  /* ---- surface & identity — products catalog DAHQrpThEBE, via marketing-assets.md
+          row `פלטה`, graded מאושר-טום 2026-08-06 ---- */
+  --paper:  #EFE6D6;  /* page ground */
+  --ink:    #241C15;  /* body ink */
+  --green:  #263B18;  /* GT brand green */
+  --coral:  #FA6E4D;  /* the small ₪ and the single accent mark */
+  --line:   #D8CCB4;  /* hairline rules — the structure, instead of boxes */
+  --muted:  #7C6E58;  /* captions, footers, the quiet passages */
+
+  /* ---- figures language — drinks catalog, via drinks-pricelist/style.css header,
+          sampled off live pages, shipped in a Tom-approved PDF ---- */
+  --cost:   #a8562f;  /* clay  — what the drink costs to make */
+  --profit: #123b39;  /* deep  — what the café keeps */
+  --sand:   #6b6455;  /* utility grey, secondary figures */
+
+  /* ---- the four product hues ----
+     Derived from each product's own liquid where the liquid is distinctive, then
+     validated AS A SET with the `dataviz` skill's runnable validator against this
+     deck's own paper:
+       node scripts/validate_palette.js "#BC2B74,#0085BC,#9E4700,#76923B" \
+            --mode light --surface "#EFE6D6" --pairs all
+     Result 2026-08-25: ALL CHECKS PASS — lightness band PASS, chroma floor PASS,
+     CVD separation PASS (worst all-pairs ΔE 11.1 deutan, above the 8 target so no
+     secondary-encoding caveat applies), normal-vision floor PASS (worst 16.1),
+     contrast one WARN (--hue-matcha 2.85:1) which the deck answers by labelling
+     every spine and every drink block in type — identity is never colour-alone.
+
+     Liquid measurements taken from the shipped B-Bagel photography (Pillow,
+     centre-crop of the glass): FRESH #600000–#780000 · DETOX #c09c54 ·
+     NAMASTEA #9c7848.
+
+     DEVIATION, deliberate and recorded: the masterprompt asked for "DETOX green".
+     DETOX cannot be green here. Its own liquid photographs GOLDEN (#c09c54), which
+     collides with NAMASTEA; and a set holding two greens plus an amber fails the
+     validator every way it was tried (~220 candidate sets searched in OKLCH — the
+     green↔amber pair bottomed out at ΔE 1.5 deutan). DETOX therefore takes the cool
+     slot, which is also the one that makes the whole set legible. GT's own greens
+     are #263B18 and #123b39; --hue-detox is that cool family opened up to the
+     lightness and chroma the validator requires. The other three are faithful. */
+  --hue-fresh:    #BC2B74;  /* hibiscus — magenta-crimson, as the dried flower brews */
+  --hue-detox:    #0085BC;  /* the cool slot; see the deviation note above */
+  --hue-namastea: #9E4700;  /* masala chai with milk — deep amber-brown */
+  --hue-matcha:   #76923B;  /* ceremonial matcha olive */
+}
