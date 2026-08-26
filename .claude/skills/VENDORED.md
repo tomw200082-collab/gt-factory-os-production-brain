@@ -1,8 +1,8 @@
 # Vendored third-party skills
 
 These skill directories were copied in from public upstream repositories on
-2026-08-04, and `apple-design` on 2026-08-25. They are **not** GT Factory OS
-governance artifacts — they are general-purpose development-workflow skills.
+2026-08-04, `apple-design` on 2026-08-25, and the four copywriting skills on
+2026-08-26. They are **not** GT Factory OS governance artifacts — they are general-purpose development-workflow skills.
 Nothing here is authority; the authority order in `CLAUDE.md` is unaffected.
 
 | Upstream | License | Skills |
@@ -13,6 +13,7 @@ Nothing here is authority; the authority order in `CLAUDE.md` is unaffected.
 | Anthropic `claude-plugins-official` | Apache-2.0 | `skill-creator` |
 | Anthropic (supplied by Tom, 2026-08-05) | see note | `frontend-design` |
 | [dickwu/apple-design-skill](https://github.com/dickwu/apple-design-skill) | none stated — see note | `apple-design` |
+| [boraoztunc/skills](https://github.com/boraoztunc/skills) | MIT (README only — no `LICENSE` file) | `ogilvy`, `copywriting`, `copy-editing`, `stop-slop` |
 
 `frontend-design` was supplied directly by Tom on 2026-08-05, not cloned from a
 public repo. Its frontmatter says `license: Complete terms in LICENSE.txt`, but
@@ -41,6 +42,24 @@ provenance than the MIT skills above. It is vendored for internal design review
 only; do not redistribute it, and do not treat its text as GT-owned. Flagged
 for Tom.
 
+The four copywriting skills were cloned from `boraoztunc/skills` at commit
+`645553c` (2026-08-15, the upstream tip on 2026-08-26), at Tom's request. That
+repo is a **re-publisher**, not the origin of everything it ships: it carries
+four separate upstream `LICENSE-*` files for the trees it vendored from others.
+Of the four skills taken here, `ogilvy` and `stop-slop` declare `license: MIT`
+in their own frontmatter (`stop-slop` also names its author, Hardik Pandya, and
+its origin, `hardikpandya/stop-slop`). `copywriting` and `copy-editing` declare
+no licence of their own and are covered only by the repo README's one-word
+"## License / MIT" — **the repo ships no root `LICENSE` file**, so no copyright
+holder and no permission notice travel with them. That is weaker than the MIT
+skills above, though stronger than `apple-design`. Flagged for Tom.
+
+`ogilvy/SKILL.md` was modified on adoption: its frontmatter said
+`name: ogilvy-copywriting` while its directory is `ogilvy`. Every other skill in
+this directory has `name` equal to its directory name, and upstream's own README
+documents the command as `/ogilvy`. The `name` field was changed to `ogilvy`.
+That is the only edit; the three other files are byte-identical to upstream.
+
 Only `SKILL.md`, `README.md` and `references/` were copied (56 files, ~600 KB).
 The upstream `AGENTS.md`, `.cursorrules` and `.gitignore` are for other editors
 and were left behind. The identical tree also lives at
@@ -62,6 +81,30 @@ and installer scripts were **not** copied, and `settings.json` was not modified.
   Without it the skill has no data source.
 - **`using-superpowers` is written as an always-on session-start skill.**
   Upstream injects it via a hook; here it only applies when invoked.
+- **The copywriting set is English-calibrated to different degrees.** `ogilvy`
+  is principle-level (positioning, the promise, headline discipline) and carries
+  over to Hebrew intact. `copywriting` and `copy-editing` are process skills —
+  the passes and the frameworks (PAS, AIDA, and the rest in
+  `copywriting/references/copy-frameworks.md`) are language-neutral, their
+  examples are English. `copy-editing/references/plain-english-alternatives.md`
+  is an English word-swap table and does nothing for Hebrew copy.
+  **`stop-slop` is the outlier: most of its substance is English string
+  matching** — a removal list of English throat-clearing phrases, "no em
+  dashes", "sentence starts with a Wh- word", "kill the adverbs". Its
+  general rules (be specific, active voice, vary rhythm, cut the pull-quote)
+  transfer; its lists do not. Do not run it over Hebrew copy and treat the
+  result as a clean pass.
+- **`copywriting` and `copy-editing` both look for
+  `.claude/product-marketing-context.md` and read it before asking questions.**
+  That file does not exist in this workspace, so both skills fall back to
+  interviewing the user every run. Writing it means writing GT positioning and
+  brand voice — doctrine, Tom-approved only (`Sales-Machine/CLAUDE.md` rule 5).
+  It was deliberately not authored here.
+- **`copywriting` and `content-strategy` reference sibling skills that were not
+  vendored** — `email-sequence`, `popup-cro`, `seo-audit`. Those pointers
+  resolve to nothing here. Same class of dangling reference as `cavecrew` below.
+  `content-strategy` itself was not taken; only the README's "Writing & Copy"
+  four.
 - **`apple-design` is scoped to *app* UI — mobile and desktop, not the web.**
   Its review process assumes Flutter / React Native / Tauri / Electron /
   SwiftUI. The portal is Next.js in a browser, so translate before applying:
@@ -92,6 +135,12 @@ the respective authors: Julius Brussee, Dietrich Gebert, and Jesse Vincent. The
 MIT license permits this redistribution provided the copyright and permission
 notice are retained; full license text is in each upstream repository's
 `LICENSE` file.
+
+The `boraoztunc/skills` upstream states MIT in its README but ships no root
+`LICENSE` file. `ogilvy` and `stop-slop` restate MIT in their own frontmatter;
+`copywriting` and `copy-editing` restate nothing. Copyright for `stop-slop`
+remains with Hardik Pandya (`hardikpandya/stop-slop`); for the other three,
+upstream names no holder.
 
 `apple-design` carries no licence grant at all — see its note above. Treat it as the
 weakest link in this directory and keep it internal.
