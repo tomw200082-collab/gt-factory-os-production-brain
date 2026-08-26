@@ -1,0 +1,1088 @@
+{
+  "_meta": {
+    "design_id": "DAHTYkRvEnM",
+    "page_count": 60,
+    "captured": "2026-08-26",
+    "method": "read-design structured, one read-only transaction, cancelled"
+  },
+  "drink_pages": {
+    "3": {
+      "figures_page": 8,
+      "title": "חליטת היביסקוס וליים",
+      "cost": {
+        "element": "PBrMd12yfFHKQYQH-LBP7z4LgKbTjhWnQ",
+        "text": "₪3.76",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBrMd12yfFHKQYQH-LByKTJFJVhmQrVR1",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBrMd12yfFHKQYQH-LB314xjpsjhW6DPr",
+        "text": "77%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "4": {
+      "figures_page": 9,
+      "title": "חליטת קמומיל ותפוח",
+      "cost": {
+        "element": "PBL2q3cwjT9Wg7zx-LBgRhCL7lT7zCTp7",
+        "text": "₪3.76",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBL2q3cwjT9Wg7zx-LBvTgcdr3LmsKT8s",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBL2q3cwjT9Wg7zx-LB89G13mw9fHFfX2",
+        "text": "77%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "5": {
+      "figures_page": 10,
+      "title": "חליטה מדברית",
+      "cost": {
+        "element": "PBvP4XnyzzFQmSvL-LBkwf6MY9K2ycQsP",
+        "text": "₪3.76",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBvP4XnyzzFQmSvL-LBDvxNj7S77vchn7",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBvP4XnyzzFQmSvL-LBJnpgNYQB1TH80Z",
+        "text": "77%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "6": {
+      "figures_page": 11,
+      "title": "חליטת סנצ'ה ופסיפלורה",
+      "cost": {
+        "element": "PBKhnZpWQSRQGdqY-LBsCqJfJsdNL8xmJ",
+        "text": "₪3.76",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBKhnZpWQSRQGdqY-LBdRjJ0nKRr3xK7b",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBKhnZpWQSRQGdqY-LBC34LDGj5BjGVT8",
+        "text": "77%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "7": {
+      "figures_page": 12,
+      "title": "חליטת תה ירוק לואיזה וליים",
+      "cost": {
+        "element": "PBPLWpxhnwm8fSrL-LBsTdCXxzn55J619",
+        "text": "₪3.76",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBPLWpxhnwm8fSrL-LBrWPB3Qg2M4LW3h",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBPLWpxhnwm8fSrL-LBS4w4dZbXzQ62cB",
+        "text": "77%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "8": {
+      "figures_page": 13,
+      "title": "חליטת תה ירוק ולמון גראס",
+      "cost": {
+        "element": "PB840qG09KzjMhnY-LBJ3dCX0M7GVB9gj",
+        "text": "₪3.76",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PB840qG09KzjMhnY-LBrJfvJwSq6Crpx6",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PB840qG09KzjMhnY-LBJtXksK7fYPtJVs",
+        "text": "77%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "9": {
+      "figures_page": 14,
+      "title": "חליטת יסמין וליצ'י",
+      "cost": {
+        "element": "PBMJJ1zXPBJwgtHq-LB4KDqnGrMrTLvJ7",
+        "text": "₪3.76",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBMJJ1zXPBJwgtHq-LBsgqsLWnG72MVZx",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBMJJ1zXPBJwgtHq-LBXcFBGZKKxN6j9K",
+        "text": "77%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "11": {
+      "figures_page": 16,
+      "title": "לימונדת היביסקוס וליים",
+      "cost": {
+        "element": "PB6BpHCpNvv9JlZT-LBFj2CCKSfqk8Qt1",
+        "text": "₪4.19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PB6BpHCpNvv9JlZT-LBjxLrdwbs0yqQRy",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PB6BpHCpNvv9JlZT-LBRbTVd3BKQp1652",
+        "text": "74%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "12": {
+      "figures_page": 17,
+      "title": "לימונדה מדברית",
+      "cost": {
+        "element": "PBmjN46wbvQ8YFXv-LBwGSCnwRjgf2xNF",
+        "text": "₪4.19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBmjN46wbvQ8YFXv-LB6YHLngRXCY8DS3",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBmjN46wbvQ8YFXv-LBQNbLGtJxhz29qD",
+        "text": "74%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "13": {
+      "figures_page": 18,
+      "title": "לימונדת צ'אי מסאלה",
+      "cost": {
+        "element": "PBFbY1XrgqBXPT0N-LBcg0FMRnVp57gyg",
+        "text": "₪4.19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBFbY1XrgqBXPT0N-LBfJF7gqYChHLzFT",
+        "text": "₪19",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBFbY1XrgqBXPT0N-LB6nzrWx1zZbHQvB",
+        "text": "74%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "15": {
+      "figures_page": 20,
+      "title": "חליטת אפרסק מדברית",
+      "cost": {
+        "element": "PBhYW6hvMCyCh15B-LBqMJSb8fX0ZP02J",
+        "text": "₪5.41",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBhYW6hvMCyCh15B-LB5Wf5KlJNgZb6CM",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBhYW6hvMCyCh15B-LBZspQgPkRslJHZ6",
+        "text": "73%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "16": {
+      "figures_page": 21,
+      "title": "חליטת תות לואיזה",
+      "cost": {
+        "element": "PBrbJ94LQByRTDXB-LBfzy2xH8kcq8dYg",
+        "text": "₪5.41",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBrbJ94LQByRTDXB-LBw2nClNH582TWBb",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBrbJ94LQByRTDXB-LBHMtWzJ4nyxnc6r",
+        "text": "73%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "17": {
+      "figures_page": 22,
+      "title": "חליטת מנגו סנצ'ה",
+      "cost": {
+        "element": "PBLD0wLjqx7NLkrc-LBzmRbHJPTyVhwJF",
+        "text": "₪5.41",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBLD0wLjqx7NLkrc-LBThs94D6K39Tb2p",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBLD0wLjqx7NLkrc-LBVqQzJZ6SlDWcRF",
+        "text": "73%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "18": {
+      "figures_page": 23,
+      "title": "חליטת תפוח היביסקוס",
+      "cost": {
+        "element": "PBMxkSZhkdmJXLhQ-LB47j9tsW2cnYLty",
+        "text": "₪5.41",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBMxkSZhkdmJXLhQ-LBg5Sd1xmJGFSW4r",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBMxkSZhkdmJXLhQ-LB3ChKSD7L4LHbmr",
+        "text": "73%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "20": {
+      "figures_page": 25,
+      "title": "גזוז יסמין וליצ'י",
+      "cost": {
+        "element": "PBTTmNhKk6WmCRbT-LB4b6hMWzFVt3lzb",
+        "text": "₪4.52",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBTTmNhKk6WmCRbT-LBtm1j0H6dqSVv3P",
+        "text": "₪22",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBTTmNhKk6WmCRbT-LBsttnNZDSpYWThx",
+        "text": "76%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "21": {
+      "figures_page": 26,
+      "title": "גזוז מדברי ואפרסק",
+      "cost": {
+        "element": "PB4hFFjRS4hX28lF-LB66WXWrtdxZ2H6b",
+        "text": "₪5.79",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PB4hFFjRS4hX28lF-LBHcRJKPLCVv3jFC",
+        "text": "₪22",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PB4hFFjRS4hX28lF-LBf2wyGQwZ01p7Hx",
+        "text": "69%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "22": {
+      "figures_page": 27,
+      "title": "גזוז היביסקוס ותפוח",
+      "cost": {
+        "element": "PBGbkr7xHBtZbyjS-LBm3QL6NRyv0YLDc",
+        "text": "₪3.62",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBGbkr7xHBtZbyjS-LBg95vQPF0ZnnfH1",
+        "text": "₪22",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBGbkr7xHBtZbyjS-LBHsLV66yNJyrhqN",
+        "text": "81%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "24": {
+      "figures_page": 29,
+      "title": "אייס מאצ'ה קלאסי",
+      "cost": {
+        "element": "PBG13WPXQTmD11HL-LBRf3gglMxNnSH4L",
+        "text": "₪3.77",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBG13WPXQTmD11HL-LBhH64X5KZpnRBNR",
+        "text": "₪26",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBG13WPXQTmD11HL-LB5z103HJR3lRzjr",
+        "text": "83%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "25": {
+      "figures_page": 30,
+      "title": "אייס מאצ'ה מנגו",
+      "cost": {
+        "element": "PBfWnbn8s7K2MGyb-LB0tgtpCbBrTxT0L",
+        "text": "₪6.17",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBfWnbn8s7K2MGyb-LBB2fsZjWJXJd8tF",
+        "text": "₪26",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBfWnbn8s7K2MGyb-LBWXvqL1HVLpB3mJ",
+        "text": "72%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "26": {
+      "figures_page": 31,
+      "title": "אייס מאצ'ה תות",
+      "cost": {
+        "element": "PBXBfbTJFHjFmvl3-LBlpBNv7nHKyh27g",
+        "text": "₪6.17",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBXBfbTJFHjFmvl3-LBHfQYGMrs6plWKQ",
+        "text": "₪26",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBXBfbTJFHjFmvl3-LB99yGrc692YmRcy",
+        "text": "72%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "27": {
+      "figures_page": 32,
+      "title": "אייס מאצ'ה אפרסק",
+      "cost": {
+        "element": "PByRwWky0sJmcXYp-LBPzn1yVNyC0HRVx",
+        "text": "₪6.17",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PByRwWky0sJmcXYp-LB9ts6gCw2nRh9kt",
+        "text": "₪26",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PByRwWky0sJmcXYp-LBbKPvh9zHTlFdMz",
+        "text": "72%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "28": {
+      "figures_page": 33,
+      "title": "אייס מאצ'ה מסאלה",
+      "cost": {
+        "element": "PB6Tyr1X5WkdD7CC-LBZ6kHLNVmdVX88N",
+        "text": "₪6.37",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PB6Tyr1X5WkdD7CC-LBfMfJ0prqYr399V",
+        "text": "₪26",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PB6Tyr1X5WkdD7CC-LBP9wJvmtYDb7DLh",
+        "text": "71%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "29": {
+      "figures_page": 34,
+      "title": "מאצ'ה אגבה על הקרח",
+      "cost": {
+        "element": "PBmGlVRfR9mVN5W1-LBJRsCrsl0G3DyV3",
+        "text": "₪3.35",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBmGlVRfR9mVN5W1-LBD7X5YdvmVsv856",
+        "text": "₪26",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBmGlVRfR9mVN5W1-LBzhdqcsD5YYD5hk",
+        "text": "85%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "31": {
+      "figures_page": 36,
+      "title": "אייס מאצ'ה וניל",
+      "cost": {
+        "element": "PBZkTzgm3t6MzSM6-LB0DqpbnFQmNyNkX",
+        "text": "₪5.97",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBZkTzgm3t6MzSM6-LB6sCvP65pv95kTf",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBZkTzgm3t6MzSM6-LB19GRpDH8H4PzF2",
+        "text": "75%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "32": {
+      "figures_page": 37,
+      "title": "אייס מאצ'ה פיסטוק",
+      "cost": {
+        "element": "PBkjFTztBstgvjLf-LBCKJyRW3gn6dH8T",
+        "text": "₪4.32",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBkjFTztBstgvjLf-LBLXt1JF1NN2VmVf",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBkjFTztBstgvjLf-LBr8j0l5gnX13N5v",
+        "text": "82%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "33": {
+      "figures_page": 38,
+      "title": "אייס מאצ'ה שומשום שחור",
+      "cost": {
+        "element": "PBH77WmC8bjt8xQ8-LBCjTFdyZwR9Q11W",
+        "text": "₪3.92",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBH77WmC8bjt8xQ8-LB9Rsw1NvtsfFt57",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBH77WmC8bjt8xQ8-LBMHzY4fsKzxS5VG",
+        "text": "83%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "34": {
+      "figures_page": 39,
+      "title": "אייס מאצ'ה קפה",
+      "cost": {
+        "element": "PBhBHv36YYsgfBJy-LBQm0w3t0cdY6HTm",
+        "text": "₪4.52",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBhBHv36YYsgfBJy-LBylFRPgDd7rYfVb",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBhBHv36YYsgfBJy-LBxsVZKqXXbbNsSX",
+        "text": "81%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "35": {
+      "figures_page": 40,
+      "title": "אייס מאצ'ה בננה",
+      "cost": {
+        "element": "PBQk7LktLfynh1X8-LB9BpYl3Kc5sz7M6",
+        "text": "₪4.37",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBQk7LktLfynh1X8-LByK4Xsn1lQQ0kzX",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBQk7LktLfynh1X8-LBq431M4Lqt5LMt4",
+        "text": "82%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "37": {
+      "figures_page": 42,
+      "title": "מאצ'ה קוקוס אגבה",
+      "cost": {
+        "element": "PBfPZ8Nc8kV5FjH9-LBCNp26LMlXwqykg",
+        "text": "₪5.33",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBfPZ8Nc8kV5FjH9-LBwRnB0bDMdgZTF0",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBfPZ8Nc8kV5FjH9-LB31R8MGVtr3m5Bd",
+        "text": "78%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "38": {
+      "figures_page": 43,
+      "title": "מאצ'ה קוקוס ליצ'י",
+      "cost": {
+        "element": "PB1yVMv0rD633Ng5-LBbQyWKdC9683gGp",
+        "text": "₪5.14",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PB1yVMv0rD633Ng5-LBzlPdnS0ncLPZn0",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PB1yVMv0rD633Ng5-LBdcNSQgpK3xmtKr",
+        "text": "78%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "39": {
+      "figures_page": 44,
+      "title": "מאצ'ה קוקוס תות",
+      "cost": {
+        "element": "PBL1Pb0XNZxfyNlF-LB4HvCJWBMdZ7y1X",
+        "text": "₪5.14",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBL1Pb0XNZxfyNlF-LBWB6WM9YWx43PQw",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBL1Pb0XNZxfyNlF-LBdwLZmtqs5GwNg3",
+        "text": "78%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "40": {
+      "figures_page": 45,
+      "title": "מאצ'ה קוקוס מנגו",
+      "cost": {
+        "element": "PBJd2SgvWYMqftVC-LBh2gdB0VfMfwh4c",
+        "text": "₪7.06",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBJd2SgvWYMqftVC-LB97Ks4khH0CBLtz",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBJd2SgvWYMqftVC-LB7JDntv8Zm5Rxct",
+        "text": "70%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "41": {
+      "figures_page": 46,
+      "title": "מאצ'ה קוקוס אפרסק",
+      "cost": {
+        "element": "PBt862TqJ7zVrYWZ-LBDGFSTxgf5j0jv0",
+        "text": "₪7.06",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBt862TqJ7zVrYWZ-LB9ZCyMZF7g6M8NH",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBt862TqJ7zVrYWZ-LBpZjcBdLp4rdpzM",
+        "text": "70%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "43": {
+      "figures_page": 48,
+      "title": "אייס צ'אי מסאלה קלאסי",
+      "cost": {
+        "element": "PBt2JtVZy2jvCmsY-LBTTJP50N1DJ0ZRz",
+        "text": "₪5.00",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBt2JtVZy2jvCmsY-LB8tWG570lPb96KW",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBt2JtVZy2jvCmsY-LBs9hbRHfN6sp0M2",
+        "text": "75%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "44": {
+      "figures_page": 49,
+      "title": "צ'אי מסאלה על הקרח",
+      "cost": {
+        "element": "PBGh5JMTN546Sxyv-LB5SHNwLlmlr4CWl",
+        "text": "₪3.80",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBGh5JMTN546Sxyv-LBWmrPLTfHvc77wr",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBGh5JMTN546Sxyv-LB4nlkGYtGQJ2Fzh",
+        "text": "81%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "45": {
+      "figures_page": 50,
+      "title": "דירטי צ'אי",
+      "cost": {
+        "element": "PBpYkvcmrxXn1fy2-LB7qnRrtHXjcN3s3",
+        "text": "₪5.65",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBpYkvcmrxXn1fy2-LB3RYMng8KSmDrFL",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBpYkvcmrxXn1fy2-LBH1VB4Xm3qTWb8Q",
+        "text": "72%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "46": {
+      "figures_page": 51,
+      "title": "צ'אי מסאלה תפוז וטוניק",
+      "cost": {
+        "element": "PBKGn5bwrpSR0CGv-LBfD4KT4cfX2PbvM",
+        "text": "₪4.76",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBKGn5bwrpSR0CGv-LBtzkTdDvyXX9Bdp",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBKGn5bwrpSR0CGv-LBYXhFVkFyMR5c6R",
+        "text": "77%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "47": {
+      "figures_page": 52,
+      "title": "צ'אי מסאלה פינק טוניק",
+      "cost": {
+        "element": "PB3VS6hm4RyTgm9S-LBDdxSH45xgQ2TZZ",
+        "text": "₪4.51",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PB3VS6hm4RyTgm9S-LB3YTyvVfzDTmNTX",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PB3VS6hm4RyTgm9S-LBHzxHgNglS6hz3g",
+        "text": "78%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "48": {
+      "figures_page": 53,
+      "title": "צ'אי מסאלה ומיץ תפוזים",
+      "cost": {
+        "element": "PBLj1k5130BZszZM-LBzxkvhbK9sfqwRZ",
+        "text": "₪5.11",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBLj1k5130BZszZM-LBrdz5DQC9TQnK0R",
+        "text": "₪24",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBLj1k5130BZszZM-LBbxTmHKVxY4DBwQ",
+        "text": "75%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "50": {
+      "figures_page": 55,
+      "title": "צ'אי מסאלה קולד פואם וניל",
+      "cost": {
+        "element": "PBB4Fm5c0jy1nktx-LBZtVH0NZpN7yq4b",
+        "text": "₪3.95",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBB4Fm5c0jy1nktx-LB76Ds8WZDmkSxpV",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBB4Fm5c0jy1nktx-LBl3FkK8pKtFTcXG",
+        "text": "83%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "51": {
+      "figures_page": 56,
+      "title": "צ'אי מסאלה קולד פואם פיסטוק",
+      "cost": {
+        "element": "PBjPBN8RJxkSkrg2-LBkBjKHkC23Ms1F7",
+        "text": "₪3.95",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBjPBN8RJxkSkrg2-LBfBlnrQ8bCk3v0P",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBjPBN8RJxkSkrg2-LBYbFBFGz7GNT3f8",
+        "text": "83%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "52": {
+      "figures_page": 57,
+      "title": "צ'אי תאילנדי קוקוס קולד פואם",
+      "cost": {
+        "element": "PBcySlWCH5TCDPJf-LBR2kLPBDVNHB18V",
+        "text": "₪5.79",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBcySlWCH5TCDPJf-LBzvY7hmvVYlqHMv",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBcySlWCH5TCDPJf-LBtP7MbZ3dYwNkX1",
+        "text": "76%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "53": {
+      "figures_page": 58,
+      "title": "צ'אי מסאלה קולד פואם בננה",
+      "cost": {
+        "element": "PBjS0QcmP5J0r15x-LBSJkB30lTjx5p9y",
+        "text": "₪5.50",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBjS0QcmP5J0r15x-LBBlPg5pWLzTst0D",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBjS0QcmP5J0r15x-LB43LNF7n2HjV5XR",
+        "text": "77%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "55": {
+      "figures_page": 60,
+      "title": "אייס אובה תות",
+      "cost": {
+        "element": "PBTWgHLkfHMLVxKm-LBSxvvxTqRzDVW0d",
+        "text": "₪4.73",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBTWgHLkfHMLVxKm-LBqC8lMcQzL52J5x",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBTWgHLkfHMLVxKm-LBqX8jl7y760tN2r",
+        "text": "80%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "56": {
+      "figures_page": 61,
+      "title": "אייס אובה מנגו",
+      "cost": {
+        "element": "PB9M840HHFjFmXwT-LBmyGklgYvqGkwWn",
+        "text": "₪4.73",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PB9M840HHFjFmXwT-LBJLRbCwy0tPJCbK",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PB9M840HHFjFmXwT-LBd0P0c4kB3JwfXP",
+        "text": "80%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "57": {
+      "figures_page": 62,
+      "title": "אייס אובה אפרסק",
+      "cost": {
+        "element": "PBvcvwntCPjLqjCt-LBrryqVgQjyjDWqw",
+        "text": "₪4.73",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBvcvwntCPjLqjCt-LB0rZHSYsmHZLsXv",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBvcvwntCPjLqjCt-LBsLtVk8p2TF3Qff",
+        "text": "80%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "58": {
+      "figures_page": 63,
+      "title": "אייס אובה מסאלה",
+      "cost": {
+        "element": "PBv7KWjD5MYjn98k-LB1yN25nzztlTk5Y",
+        "text": "₪5.58",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBv7KWjD5MYjn98k-LBQJvqfSP9y6ZBV6",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBv7KWjD5MYjn98k-LBJqQKbmCpxVC74S",
+        "text": "76%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    },
+    "59": {
+      "figures_page": 64,
+      "title": "אייס אובה מאצ'ה",
+      "cost": {
+        "element": "PBpBCNcLsx072k1q-LBq9JpNh5SJxdKG6",
+        "text": "₪4.45",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "price": {
+        "element": "PBpBCNcLsx072k1q-LBZdlTBkFzdx1VVN",
+        "text": "₪28",
+        "regions": 2,
+        "font_size": 48.0002
+      },
+      "margin": {
+        "element": "PBpBCNcLsx072k1q-LBXqg5jNT66JbjRV",
+        "text": "81%",
+        "regions": 1,
+        "font_size": 50.6668
+      }
+    }
+  },
+  "summary_page": {
+    "page_index": 60,
+    "page_locator": "PBYFh9V5m1843JlG",
+    "columns": {
+      "names": {
+        "element": "PBYFh9V5m1843JlG-LBD4dsjfg56M4vDH",
+        "text": "\nחליטת היביסקוס וליים\nחליטת קמומיל ותפוח\nחליטה מדברית\nחליטת סנצ'ה ופסיפלורה\nחליטת תה ירוק וליים\nחליטת תה ירוק ולמון גראס\nחליטת יסמין וליצ'י\n\nלימונדת היביסקוס וליים\nלימונדה מדברית\nלימונדת צ'אי מסאלה\n\nחליטת אפרסק מדברית\nחליטת תות לואיזה\nחליטת מנגו סנצ'ה\nחליטת תפוח היביסקוס\n\nגזוז יסמין וליצ'י\nגזוז מדברי ואפרסק\nגזוז היביסקוס ותפוח\n\nאייס מאצ'ה קלאסי\nאייס מאצ'ה מנגו\nאייס מאצ'ה תות\nאייס מאצ'ה אפרסק\nאייס מאצ'ה מסאלה\nמאצ'ה אגבה על הקרח\n\nאייס מאצ'ה וניל\nאייס מאצ'ה פיסטוק\nאייס מאצ'ה שומשום שחור\nאייס מאצ'ה קפה\nאייס מאצ'ה בננה\n\nמאצ'ה קוקוס אגבה\nמאצ'ה קוקוס ליצ'י\nמאצ'ה קוקוס תות\nמאצ'ה קוקוס מנגו\nמאצ'ה קוקוס אפרסק\n\nאייס צ'אי מסאלה קלאסי\nצ'אי מסאלה על הקרח\nדירטי צ'אי\nצ'אי מסאלה תפוז וטוניק\nצ'אי מסאלה פינק טוניק\nצ'אי מסאלה ומיץ תפוזים\n\nצ'אי מסאלה קולד פואם וניל\nצ'אי מסאלה קולד פואם פיסטוק\nצ'אי תאילנדי קוקוס קולד פואם\nצ'אי מסאלה קולד פואם בננה\n\nאייס אובה תות\nאייס אובה מנגו\nאייס אובה אפרסק\nאייס אובה מסאלה\nאייס אובה מאצ'ה"
+      },
+      "cost": {
+        "element": "PBYFh9V5m1843JlG-LB5KYwbT5wrvxrpk",
+        "text": "\n₪3.76\n₪3.76*\n₪3.76*\n₪3.76*\n₪3.76*\n₪3.76*\n₪3.76*\n\n₪4.19\n₪4.19\n₪4.19\n\n₪5.41*\n₪5.41*\n₪5.41*\n₪3.25*\n\n₪4.52*\n₪5.79*\n₪3.62*\n\n₪3.77*\n₪6.17*\n₪6.17*\n₪6.17*\n₪6.37*\n₪3.35*\n\n₪5.97*\n₪4.32*\n₪3.92*\n₪4.52*\n₪4.37*\n\n₪5.33*\n₪5.14*\n₪7.06*\n₪7.06*\n₪7.06*\n\n₪5.00*\n₪3.80*\n₪5.65*\n₪4.76*\n₪4.51*\n₪5.11*\n\n₪3.95*\n₪5.45*\n₪5.79*\n₪5.50*\n\n₪4.73*\n₪4.73*\n₪4.73*\n₪5.58*\n₪4.45*"
+      },
+      "price": {
+        "element": "PBYFh9V5m1843JlG-LBRpFcrdnQwZvzQX",
+        "text": "\n₪19\n₪19\n₪19\n₪19\n₪19\n₪19\n₪19\n\n₪19\n₪19\n₪19\n\n₪24\n₪24\n₪24\n₪24\n\n₪22\n₪22\n₪22\n\n₪26\n₪26\n₪26\n₪26\n₪26\n₪26\n\n₪28\n₪28\n₪28\n₪28\n₪28\n\n₪28\n₪28\n₪28\n₪28\n₪28\n\n₪24\n₪24\n₪24\n₪24\n₪24\n₪24\n\n₪28\n₪28\n₪28\n₪28\n\n₪28\n₪28\n₪28\n₪28\n₪28"
+      },
+      "margin": {
+        "element": "PBYFh9V5m1843JlG-LBqqQp7kmW5yKfXY",
+        "text": "\n77%\n77%\n77%\n77%\n77%\n77%\n77%\n\n74%\n74%\n74%\n\n73%\n73%\n73%\n84%\n\n76%\n69%\n81%\n\n83%\n72%\n72%\n72%\n71%\n85%\n\n75%\n82%\n83%\n81%\n82%\n\n78%\n78%\n70%\n70%\n70%\n\n75%\n81%\n72%\n77%\n78%\n75%\n\n83%\n77%\n76%\n77%\n\n80%\n80%\n80%\n76%\n81%"
+      }
+    }
+  }
+}
