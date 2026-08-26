@@ -1,5 +1,13 @@
 # RESUME PROMPT — קטלוג משקאות GT · השלמת תיקון FOOD COST
 
+> **ישן — אל תשתמש.** 2026-08-26.
+> הפרומפט הזה מומש ופג. הוא מפנה ל-`2026-08-05_drinks_final_figures.json`
+> (מחירים ישנים, מרווח 77%) שהוחלף מאז — הקובץ ההוא ארוכן ל-
+> `docs/archive/2026-08-05_drinks_final_figures.superseded-2026-08-26.json`.
+> **האמת המעודכנת:** `.claude/skills/drinks-pricelist/drinks_final_figures.json`
+> (48 משקאות, מרווח ≥81%, טום 2026-08-26).
+> נשמר להיסטוריה בלבד. אל תריץ אותו.
+
 > הדבק בסשן חדש. עומד בפני עצמו.
 
 **קובץ:** https://www.canva.com/design/DAHPi9gpfts/edit — קטלוג משקאות GT, SUMMER 2026, 64 עמודים.
