@@ -16,10 +16,11 @@ Executed end to end on 2026-08-26. Evidence:
   normal-weight shekel sign. A pre/post element diff shows 112 elements changed — the
   109 written drink-page fields plus the 3 summary columns; 35 fields already carried
   their target value and were skipped. Nothing else in the design changed.
-- Menu `DAHTY5nfDxo`: 21 pages — the 20 in the §4.4 order plus the original placeholder,
-  which stays until Tom types the exact phrase the delete requires. Page 21 keeps its
-  four hyperlinks. `DAHTXqsXzDg` still reports 20 pages and `DAHTYkRvEnM` 60, proving
-  the pages were copied and not moved.
+- Menu `DAHTY5nfDxo`: exactly 20 pages in the §4.4 order. The original placeholder was
+  deleted on 2026-08-26 after Tom gave the exact approval phrase the delete requires;
+  page 1 is now the title page and page 20 keeps its four hyperlinks. `DAHTXqsXzDg`
+  still reports 20 pages and `DAHTYkRvEnM` 60, proving the pages were copied and not
+  moved.
 
 > **Usage:** paste this entire file as the first message of a fresh session with the
 > Canva MCP (`mcp__Canva__*`), a shell, and push access to
