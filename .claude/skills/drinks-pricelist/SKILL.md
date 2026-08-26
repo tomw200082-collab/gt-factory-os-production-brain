@@ -19,6 +19,21 @@ The figures file is the authority for both. Nothing here recomputes a price, a
 margin or a profit — if a number is wrong, it is wrong in the figures file and
 that is where it gets fixed.
 
+## Current figures — read this before quoting any price
+
+**`drinks_final_figures.json` in this directory is the only live figures file.**
+48 drinks, every margin ≥81%, Tom-approved 2026-08-26. Whole-shekel prices; cost
+ex-VAT, price VAT-inclusive; 44 of 48 costs carry `*`.
+
+Both live designs were brought into exact agreement with it on 2026-08-26 and
+verified by direct read — catalog `DAHPi9gpfts` (all 48 drink pages, 0 deviations)
+and opening menu `DAHTXqsXzDg` (pages 3–14, 48/48 fields).
+
+The pre-2026-08-26 figures (₪19-era prices, 77% margins) are **superseded** and live
+in `docs/archive/2026-08-05_drinks_final_figures.superseded-2026-08-26.json`. Do not
+quote them, and do not run
+`docs/archive/RESUME_PROMPT_finish_catalog.spent-2026-08-26.md`, which points at them.
+
 ## Files
 
 | File | What it is |
@@ -29,6 +44,13 @@ that is where it gets fixed.
 | `style.css` | The sheet's design. See "Design" below before changing it. |
 | `shot.py` | `pricelist.html` → `pricelist.pdf` via the bundled headless Chromium |
 | `validate.py` | on-page catalog values vs the figures file, plus an independent VAT re-derivation |
+
+Outside this directory:
+
+| File | What it is |
+|---|---|
+| `scripts/build_drinks_pricing_xlsx.py` | figures → the customer-facing xlsx. Re-derives margin and profit as a self-check and refuses to write on any disagreement. |
+| `docs/pricing/2026-08-26_drinks_pricing_81pct.xlsx` | The current customer-facing costing sheet. Regenerate it, never hand-edit it. Carries no wholesale price, no landed cost, no supplier name. |
 
 ## Build
 

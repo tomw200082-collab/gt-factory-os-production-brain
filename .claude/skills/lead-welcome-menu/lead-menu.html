@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><title>GT — תפריט הפתיחה</title><style>
+/* GT lead-welcome menu — design tokens.
+   Every value below carries the record it came from. Nothing here was invented,
+   sampled off a screenshot, or averaged between sources.
+
+   THE RECONCILIATION RULE (masterprompt W1 / reframe 3).
+   Two registered palettes exist and neither is wrong. They are reconciled by JOB,
+   not by preference:
+
+     · The PRODUCTS catalog palette supplies the SURFACE AND IDENTITY — paper, ink,
+       rules, the brand green, the coral accent. It is the registered design DNA
+       (`docs/warehouses/marketing-assets.md`, row `פלטה`, graded מאושר-טום 2026-08-06)
+       and this deck is, structurally, a customer-facing catalog piece.
+
+     · The DRINKS catalog palette supplies the FIGURES LANGUAGE — the clay/deep pair
+       that the approved cost sheet uses to say "this is what it costs" and "this is
+       what you keep" (`.claude/skills/drinks-pricelist/style.css` header comment,
+       sampled off live pages and shipped in a Tom-approved PDF). This deck shows
+       FOOD COST, price, margin and profit — exactly that sheet's job — so it
+       inherits that sheet's vocabulary for those numbers rather than inventing one.
+
+   Written into the file so the next rebuild inherits the decision instead of
+   re-taking it. */
+
+:root {
+  /* ---- surface & identity — products catalog DAHQrpThEBE, via marketing-assets.md
+          row `פלטה`, graded מאושר-טום 2026-08-06 ---- */
+  --paper:  #EFE6D6;  /* page ground */
+  --ink:    #241C15;  /* body ink */
+  --green:  #263B18;  /* GT brand green */
+  --coral:  #FA6E4D;  /* the small ₪ and the single accent mark */
+  --line:   #B1A793;  /* hairline rules — the structure, instead of boxes.
+                         Registered value is #D8CCB4 at 1.28:1, which disappears at
+                         0.361x where a 1px rule becomes 0.36px. Darkened to 1.92:1
+                         and drawn at 3px so the deck's one structural device
+                         survives the phone. */
+  --muted:  #736651;  /* captions, footers, the quiet passages.
+                         Registered #7C6E58 measures 4.01:1 on this paper; darkened
+                         to 4.52:1 to clear WCAG AA for body text. */
+  --coral-ink: #AA4A34; /* coral where coral has to be READ — step numerals, the cover
+                         emphasis. Registered coral is 2.29:1 and fails even the
+                         large-text floor on paper. --coral itself is unchanged and
+                         still used where it is a mark rather than text (on the dark
+                         hero screens it has ample contrast). */
+
+  /* ---- figures language — drinks catalog, via drinks-pricelist/style.css header,
+          sampled off live pages, shipped in a Tom-approved PDF ---- */
+  --cost:   #A1522D;  /* clay — what the drink costs to make. Registered #a8562f
+                         measures 4.20:1; nudged to 4.51:1 for WCAG AA body. */
+  --profit: #123b39;  /* deep  — what the café keeps */
+  --sand:   #6b6455;  /* utility grey, secondary figures */
+
+  /* ---- the four product hues ----
+     Derived from each product's own liquid where the liquid is distinctive, then
+     validated AS A SET with the `dataviz` skill's runnable validator against this
+     deck's own paper:
+       node scripts/validate_palette.js "#BC2B74,#0085BC,#9E4700,#6E8937" \
+            --mode light --surface "#EFE6D6" --pairs all
+     Result 2026-08-25: ALL CHECKS PASS — lightness band PASS, chroma floor PASS,
+     CVD separation PASS (worst all-pairs ΔE 8.3 deutan, above the 8 target so no
+     secondary-encoding caveat applies), normal-vision floor PASS (worst 16.1),
+     and contrast PASS on all four. (The first pass had --hue-matcha at #76923B with
+     a contrast WARN; the Movement 6 HIG audit measured it at 2.85:1 against paper,
+     below even the large-text floor, and darkening it to #6E8937 cleared the WARN.)
+     Every spine and drink block is labelled in type regardless — identity is never
+     colour-alone.
+
+     Liquid measurements taken from the shipped B-Bagel photography (Pillow,
+     centre-crop of the glass): FRESH #600000–#780000 · DETOX #c09c54 ·
+     NAMASTEA #9c7848.
+
+     DEVIATION, deliberate and recorded: the masterprompt asked for "DETOX green".
+     DETOX cannot be green here. Its own liquid photographs GOLDEN (#c09c54), which
+     collides with NAMASTEA; and a set holding two greens plus an amber fails the
+     validator every way it was tried (~220 candidate sets searched in OKLCH — the
+     green↔amber pair bottomed out at ΔE 1.5 deutan). DETOX therefore takes the cool
+     slot, which is also the one that makes the whole set legible. GT's own greens
+     are #263B18 and #123b39; --hue-detox is that cool family opened up to the
+     lightness and chroma the validator requires. The other three are faithful. */
+  --hue-fresh:    #BC2B74;  /* hibiscus — magenta-crimson, as the dried flower brews */
+  --hue-detox:    #0085BC;  /* the cool slot; see the deviation note above */
+  --hue-namastea: #9E4700;  /* masala chai with milk — deep amber-brown */
+  --hue-matcha:   #6E8937;  /* ceremonial matcha olive, darkened from #76923B after the
+                               HIG pass: 2.85:1 failed even the large-text floor. At
+                               3.20:1 the whole set now passes contrast too, so the
+                               validator's one WARN is gone. */
+}
+@font-face{font-family:'Rubik';font-weight:400;font-style:normal;src:url('file:///home/user/gt-factory-os-production-brain/docs/pricing/pricelist_pdf/fonts/rubik-400.woff') format('woff');}@font-face{font-family:'Rubik';font-weight:500;font-style:normal;src:url('file:///home/user/gt-factory-os-production-brain/docs/pricing/pricelist_pdf/fonts/rubik-500.woff') format('woff');}@font-face{font-family:'Rubik';font-weight:600;font-style:normal;src:url('file:///home/user/gt-factory-os-production-brain/docs/pricing/pricelist_pdf/fonts/rubik-600.woff') format('woff');}@font-face{font-family:'Rubik';font-weight:700;font-style:normal;src:url('file:///home/user/gt-factory-os-production-brain/docs/pricing/pricelist_pdf/fonts/rubik-700.woff') format('woff');}@font-face{font-family:'Heebo';font-weight:400;font-style:normal;src:url('file:///home/user/gt-factory-os-production-brain/docs/pricing/pricelist_pdf/fonts/heebo-400.woff') format('woff');}@font-face{font-family:'Heebo';font-weight:500;font-style:normal;src:url('file:///home/user/gt-factory-os-production-brain/docs/pricing/pricelist_pdf/fonts/heebo-500.woff') format('woff');}@font-face{font-family:'Heebo';font-weight:700;font-style:normal;src:url('file:///home/user/gt-factory-os-production-brain/docs/pricing/pricelist_pdf/fonts/heebo-700.woff') format('woff');}@font-face{font-family:'Heebo';font-weight:900;font-style:normal;src:url('file:///home/user/gt-factory-os-production-brain/docs/pricing/pricelist_pdf/fonts/heebo-900.woff') format('woff');}
+@page { size: 1080px 1920px; margin: 0; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { direction: rtl; }
+body { background: var(--paper); color: var(--ink);
+       font-family:'Heebo',sans-serif; font-weight:400;
+       -webkit-font-smoothing:antialiased; }
+
+.screen { position:relative; width:1080px; height:1920px; overflow:hidden;
+          background:var(--paper); page-break-after:always; break-after:page;
+          padding:96px 88px 168px 88px; }
+.screen:last-child { page-break-after:auto; break-after:auto; }
+
+/* the running footer — the deck's name and screen number do the job a repeated
+   logo would do badly */
+.foot { position:absolute; inset:auto 88px 56px 88px; display:flex;
+        justify-content:space-between; font-size:36px; color:var(--muted);
+        letter-spacing:.04em; }
+.foot .num { color:var(--muted); }
+
+.num { direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums; }
+
+h1,h2,.dname,.prod,.figbig,.cover-h { font-family:'Rubik',sans-serif; line-height:1.08; }
+.kick { font-family:'Rubik',sans-serif; font-weight:600; font-size:40px;
+        letter-spacing:.18em; color:var(--muted); }
+h2 { font-size:88px; font-weight:700; margin-bottom:40px; }
+.lead { font-size:48px; line-height:1.5; color:var(--ink); max-width:904px; }
+.body { font-size:42px; line-height:1.5; }
+.rule { height:3px; background:var(--line); border:0; margin:20px 0; }
+
+/* ---- cover ---- */
+.cover { display:flex; flex-direction:column; justify-content:space-between; }
+.cover-logo { width:190px; }
+.cover-h { font-size:150px; font-weight:700; letter-spacing:-.02em; }
+.cover-h em { font-style:normal; color:var(--coral-ink); }
+.cover-vision { font-size:48px; color:var(--muted); margin-top:40px; }
+.cover-bottles { display:flex; align-items:flex-end; justify-content:space-between; gap:0;
+                 flex:0 0 560px; height:560px; padding:0 10px; }
+.cover-bottles img { height:100%; width:auto; max-width:31%; object-fit:contain; }
+.prow { display:flex; justify-content:space-between; font-family:'Rubik',sans-serif;
+        font-weight:600; font-size:40px; letter-spacing:.14em; }
+.prow span { display:flex; align-items:center; gap:16px; }
+.prow i { width:22px; height:22px; border-radius:50%; display:inline-block; }
+
+/* ---- promise ---- */
+.big { font-family:'Rubik',sans-serif; font-weight:700; font-size:130px; line-height:1.02;
+       white-space:nowrap; }
+.claim { display:flex; gap:56px; font-size:36px; color:var(--muted); flex-wrap:wrap; }
+
+/* ---- mapping ---- */
+.mapsvg { display:block; margin:0 auto; }
+.arw { vertical-align:-2px; margin:0 12px; }
+.m-prod { font-family:'Rubik',sans-serif; font-weight:700; font-size:56px;
+          letter-spacing:.14em; text-anchor:end; }
+.m-drink { font-family:'Heebo',sans-serif; font-size:42px; fill:var(--ink); text-anchor:end; }
+.m-tick { stroke:var(--line); stroke-width:3; }
+.m-cross { fill:none; stroke:var(--hue-matcha); stroke-width:3; }
+
+/* ---- product screens ---- */
+.prod { font-size:130px; font-weight:700; letter-spacing:.06em; line-height:1; }
+.prodsub { font-size:42px; color:var(--muted); margin-top:16px; }
+.shot { position:absolute; left:-56px; top:104px; height:548px; }
+.prodhead { max-width:600px; min-height:492px; }
+.prodhead.wide { max-width:904px; min-height:0; }
+.dense .prod { font-size:110px; }
+.dense .blurb { font-size:38px; line-height:1.3; margin-top:12px; }
+.dense .drink { padding:0; }
+.dense .mini { margin-top:2px; }
+.dense .panel { margin-top:2px; }
+.dense .dprofit .val { font-size:64px; margin-top:0; }
+.dense .rule { margin:12px 0; }
+.dense .dprofit .val { font-size:64px; }
+
+.drink { padding:9px 0; border-bottom:2px solid var(--line); }
+.drink:last-of-type { border-bottom:0; }
+.drow { display:flex; align-items:baseline; justify-content:space-between; gap:32px; }
+
+.dname { font-size:52px; font-weight:600; flex:1 1 auto; }
+.dprofit { text-align:left; flex:0 0 auto; }
+.dprofit .cap { font-family:'Rubik',sans-serif; font-weight:600; font-size:36px;
+                letter-spacing:.1em; color:var(--muted); }
+.dprofit .val { font-family:'Rubik',sans-serif; font-weight:700; font-size:70px;
+                line-height:1; margin-top:4px; }
+.dprofit .val.profit { color:var(--profit); }
+.panel { font-size:36px; color:var(--muted); line-height:1.26; margin-top:6px; }
+.mini { display:flex; gap:52px; margin-top:8px; }
+.mini span { display:flex; flex-direction:column; align-items:flex-start;
+             font-family:'Rubik',sans-serif; font-weight:700; font-size:44px; }
+.mini i { font-style:normal; font-weight:600; font-size:36px; letter-spacing:.08em;
+          color:var(--muted); margin-bottom:2px; }
+.mini span:first-child { color:var(--cost); }
+.figs { display:flex; gap:56px; margin-top:28px; }
+.fig .cap { font-family:'Rubik',sans-serif; font-weight:600; font-size:36px;
+            letter-spacing:.1em; color:var(--muted); }
+.fig .val { font-family:'Rubik',sans-serif; font-weight:700; font-size:72px; margin-top:8px; }
+.fig .val.cost { color:var(--cost); }
+.blurb { font-size:42px; line-height:1.4; color:var(--ink); margin-top:22px; max-width:600px; }
+.prodhead.wide .blurb { max-width:904px; }
+.flow { display:flex; flex-direction:column; align-items:flex-start; gap:12px; }
+.down { display:block; margin-right:40px; }
+.legal { font-size:30px; color:var(--muted); }
+
+/* ---- hero screens ---- */
+.hero { padding:0; color:var(--paper); }
+.hero .bg { position:absolute; top:0; left:0; width:1080px; height:1920px;
+            background-size:cover; background-position:center; }
+.hero .scrim { position:absolute; top:0; left:0; width:1080px; height:1920px;
+   background:linear-gradient(180deg, rgba(20,14,10,.72) 0%, rgba(20,14,10,.30) 34%,
+                              rgba(20,14,10,.62) 66%, rgba(20,14,10,.92) 100%); }
+.hero .inner { position:absolute; top:96px; right:88px; bottom:168px; left:88px;
+               display:flex; flex-direction:column; justify-content:space-between; }
+.hero .plate { margin:0 -88px; padding:56px 88px 64px;
+   background:linear-gradient(180deg, rgba(16,11,7,0) 0%, rgba(16,11,7,.74) 22%,
+                              rgba(16,11,7,.74) 78%, rgba(16,11,7,0) 100%); }
+.hero .kick, .hero .fig .cap { color:rgba(239,230,214,.72); }
+.hero .dname { font-size:88px; }
+.hero .ddesc { color:rgba(239,230,214,.80); }
+.hero .fig .val { color:var(--paper); }
+.hero .fig .val.cost, .hero .fig .val.profit { color:var(--paper); }
+.hero .steps { font-size:42px; line-height:1.5; }
+.hero .steps li { list-style:none; display:flex; gap:24px; padding:10px 0; }
+.hero .steps b { font-family:'Rubik',sans-serif; font-weight:700;
+                 color:var(--coral); min-width:44px; }
+.herofig { font-family:'Rubik',sans-serif; font-weight:700; font-size:180px; line-height:1; }
+.hero .foot { color:rgba(239,230,214,.62); }
+.hero .foot .num { color:rgba(239,230,214,.62); }
+
+/* matcha hero — no photograph exists, so typography and the hue carry it */
+.hero.typo .bg { background:var(--hue-matcha); }
+.hero.typo .scrim { background:linear-gradient(180deg, rgba(28,34,12,.55) 0%,
+                    rgba(28,34,12,.20) 40%, rgba(28,34,12,.80) 100%); }
+
+/* ---- lists ---- */
+.olist { margin-top:16px; }
+.olist li { list-style:none; padding:28px 0; border-bottom:2px solid var(--line);
+            display:flex; gap:28px; align-items:baseline; }
+.olist li:last-child { border-bottom:0; }
+.olist .nm { font-family:'Rubik',sans-serif; font-weight:700; font-size:52px;
+             letter-spacing:.08em; min-width:290px; }
+.olist .role { font-size:38px; color:var(--muted); }
+.have { display:flex; flex-wrap:wrap; gap:20px 28px; margin-top:40px; }
+.have span { font-size:48px; padding:14px 30px; border:2px solid var(--line); border-radius:999px; }
+
+/* ---- closing ---- */
+.close { display:flex; flex-direction:column; justify-content:center; }
+.promise { font-family:'Rubik',sans-serif; font-weight:700; font-size:150px;
+           line-height:1.05; letter-spacing:-.01em; }
+.promise-sub { font-size:48px; color:var(--muted); margin-top:40px; max-width:820px; line-height:1.5; }
+.contact { margin-top:96px; font-size:42px; line-height:1.7; }
+.contact a { color:var(--ink); text-decoration:none; }
+.signoff { margin-top:96px; font-size:42px; color:var(--muted); }
+.close-logo { width:170px; margin-top:64px; }
+
+</style></head><body>
+<section class="screen cover">
+      <div style="display:flex;flex-direction:column;height:100%;justify-content:space-between">
+        <div>
+          <img class="cover-logo" src="assets/gt-logo-black.png" alt="GT">
+          <div class="kick" style="margin-top:96px">תפריט הפתיחה</div>
+          <h1 class="cover-h" style="margin-top:24px">ארבע תמציות.<br>
+            <span class="num">12</span> משקאות.<br><em>תפריט רווחי.</em></h1>
+          <div class="cover-vision">המשקה הטוב יותר, הבחירה הקלה, לכולם.</div>
+        </div>
+        <div class="cover-bottles">
+          <img src="assets/bottle-namastea.png" alt=""><img src="assets/bottle-detox.png" alt=""><img src="assets/bottle-fresh.png" alt="">
+        </div>
+        <div class="prow"><span><i style="background:var(--hue-fresh)"></i>FRESH</span><span><i style="background:var(--hue-detox)"></i>DETOX</span><span><i style="background:var(--hue-namastea)"></i>NAMASTEA</span><span><i style="background:var(--hue-matcha)"></i>MATCHA</span></div></div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">01 / 15</span></div></section>
+<section class="screen ">
+      <div class="kick">ההבטחה</div>
+      <h2 style="margin-top:24px">מארבעה מוצרים,<br>תפריט שלם.</h2>
+      <div class="flow" style="margin-top:48px">
+        <div class="big"><span class="num">4</span> מוצרים</div>
+        <svg class="down" viewBox="0 0 26 76" width="26" height="76" aria-hidden="true"><path d="M13 0 V68 M3 55 L13 68 L23 55" fill="none" stroke="var(--coral-ink)" stroke-width="3.5" stroke-linecap="square"/></svg>
+        <div class="big" style="color:var(--green)"><span class="num">12</span> משקאות</div>
+      </div>
+      <hr class="rule" style="margin-top:56px">
+      <div style="margin-top:32px">
+        <div class="kick">רווח לכוס</div>
+        <div class="figbig" style="font-size:96px;font-weight:700;color:var(--profit);margin-top:8px">
+          <span class="num">₪12.34</span>–<span class="num">₪19.78</span></div>
+        <div class="kick" style="margin-top:32px">שוליים</div>
+        <div class="figbig" style="font-size:96px;font-weight:700;margin-top:8px">
+          <span class="num">71%</span>–<span class="num">85%</span></div>
+      </div>
+      <hr class="rule" style="margin-top:64px">
+      <div class="lead" style="margin-top:24px"><span class="num">20–25</span> כוסות מכל בקבוק.</div>
+      <div class="claim" style="margin-top:64px">
+        <span>ללא חומרים משמרים</span><span>ללא צבעי מאכל</span><span>ללא תמציות טעם</span></div>
+      <div class="body" style="margin-top:28px;color:var(--muted)">
+        <span class="num">17</span> קק״ל ל־<span class="num">100</span> מ״ל מוכן</div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">02 / 15</span></div></section>
+<section class="screen ">
+      <div class="kick">המיפוי</div>
+      <h2 style="margin-top:24px">מאיזה מוצר<br>מיוצר כל משקה</h2>
+      <svg viewBox="0 0 904 1272" width="904" class="mapsvg" direction="ltr"><line x1="838" y1="912" x2="838" y2="1174" stroke="var(--hue-matcha)" stroke-width="5"/><line x1="838" y1="600" x2="838" y2="800" stroke="var(--hue-namastea)" stroke-width="5"/><line x1="838" y1="350" x2="838" y2="488" stroke="var(--hue-detox)" stroke-width="5"/><line x1="838" y1="38" x2="838" y2="238" stroke="var(--hue-fresh)" stroke-width="5"/><text x="812" y="74" class="m-prod" fill="var(--hue-fresh)">FRESH</text><line x1="792" y1="91" x2="838" y2="91" class="m-tick"/><circle cx="838" cy="91" r="7" fill="var(--hue-fresh)"/><text x="778" y="104" class="m-drink">חליטת היביסקוס וליים</text><line x1="792" y1="153" x2="838" y2="153" class="m-tick"/><circle cx="838" cy="153" r="7" fill="var(--hue-fresh)"/><text x="778" y="166" class="m-drink">חליטת תפוח היביסקוס</text><line x1="792" y1="215" x2="838" y2="215" class="m-tick"/><circle cx="838" cy="215" r="7" fill="var(--hue-fresh)"/><text x="778" y="228" class="m-drink">גזוז היביסקוס ותפוח</text><text x="812" y="386" class="m-prod" fill="var(--hue-detox)">DETOX</text><line x1="792" y1="403" x2="838" y2="403" class="m-tick"/><circle cx="838" cy="403" r="7" fill="var(--hue-detox)"/><text x="778" y="416" class="m-drink">חליטת תה ירוק וליים</text><line x1="792" y1="465" x2="838" y2="465" class="m-tick"/><circle cx="838" cy="465" r="7" fill="var(--hue-detox)"/><text x="778" y="478" class="m-drink">חליטת תות לואיזה</text><text x="812" y="636" class="m-prod" fill="var(--hue-namastea)">NAMASTEA</text><line x1="792" y1="653" x2="838" y2="653" class="m-tick"/><circle cx="838" cy="653" r="7" fill="var(--hue-namastea)"/><text x="778" y="666" class="m-drink">אייס צ׳אי מסאלה קלאסי</text><line x1="792" y1="715" x2="838" y2="715" class="m-tick"/><circle cx="838" cy="715" r="7" fill="var(--hue-namastea)"/><text x="778" y="728" class="m-drink">צ׳אי מסאלה על הקרח</text><line x1="792" y1="777" x2="838" y2="777" class="m-tick"/><circle cx="838" cy="777" r="7" fill="var(--hue-namastea)"/><text x="778" y="790" class="m-drink">צ׳אי מסאלה קולד פואם וניל</text><text x="812" y="948" class="m-prod" fill="var(--hue-matcha)">MATCHA</text><line x1="792" y1="965" x2="838" y2="965" class="m-tick"/><circle cx="838" cy="965" r="7" fill="var(--hue-matcha)"/><text x="778" y="978" class="m-drink">אייס מאצ׳ה קלאסי</text><line x1="792" y1="1027" x2="838" y2="1027" class="m-tick"/><circle cx="838" cy="1027" r="7" fill="var(--hue-matcha)"/><text x="778" y="1040" class="m-drink">מאצ׳ה אגבה על הקרח</text><line x1="792" y1="1089" x2="838" y2="1089" class="m-tick"/><circle cx="838" cy="1089" r="7" fill="var(--hue-matcha)"/><text x="778" y="1102" class="m-drink">אייס מאצ׳ה תות</text><line x1="792" y1="1151" x2="838" y2="1151" class="m-tick"/><circle cx="838" cy="1151" r="7" fill="var(--hue-matcha)"/><text x="778" y="1164" class="m-drink">אייס מאצ׳ה מסאלה</text><path d="M 838,1151 C 902,1151 902,700.0 838,700.0" class="m-cross"/><circle cx="838" cy="700.0" r="7" fill="var(--hue-namastea)"/></svg>
+      <div class="body" style="color:var(--muted);margin-top:24px">
+        משקה אחד בלבד מחבר שני מוצרים.</div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">03 / 15</span></div></section>
+<section class="screen ">
+      <div class="kick">פשוט להגיש</div>
+      <h2 style="margin-top:24px">כוס מושלמת<br>בשלוש תנועות</h2>
+      <ul class="olist" style="margin-top:64px">
+        <li><span class="nm" style="min-width:110px;color:var(--coral-ink)"><span class="num">1</span></span>
+            <span class="lead">מלאו כוס בקרח.</span></li>
+        <li><span class="nm" style="min-width:110px;color:var(--coral-ink)"><span class="num">2</span></span>
+            <span class="lead">השלימו במים קרים.</span></li>
+        <li><span class="nm" style="min-width:110px;color:var(--coral-ink)"><span class="num">3</span></span>
+            <span class="lead">הוסיפו את תרכיז GT, ערבבו קלות, סיימו בפרוסת לימון או נענע טרייה — והגישו.</span></li>
+      </ul>
+      <hr class="rule" style="margin-top:64px">
+      <div style="display:flex;gap:64px;align-items:baseline;margin-top:24px">
+        <div class="big" style="font-size:150px;color:var(--coral-ink)"><span class="num">5:1</span></div>
+        <div class="body" style="max-width:560px"><span class="num">250</span> מ״ל נוזל ל־<span class="num">50</span> מ״ל תרכיז.
+          התרכיז תמיד נכנס אחרון.</div>
+      </div>
+      <hr class="rule" style="margin-top:64px">
+      <div class="kick">אחסון</div>
+      <div class="body" style="margin-top:24px">באחסון סגור — מקום קריר ויבש, לא דורש קירור.<br>
+        לאחר הפתיחה — לשמור בקירור; מומלץ עד <span class="num">3</span> חודשים.</div>
+      <div class="body" style="margin-top:40px;color:var(--muted)">
+        GT נבנה לצוותים עמוסים. קל להכניס, קל לתפעל, בכל משמרת.</div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">04 / 15</span></div></section>
+<section class="screen "><img class="shot" src="assets/bottle-fresh.png" alt="">
+      <div class="prodhead">
+        <div class="prod" style="color:var(--hue-fresh)">FRESH</div>
+        <div class="prodsub">חליטה תאילנדית · פרחי היביסקוס ולײם</div>
+        <p class="blurb">משקה מעורר ללא קפאין. צבע אדום עז, בולט ומסקרן. טעם חמצמץ עדין שמחזיר לקוחות שוב ושוב.</p>
+      </div>
+      <hr class="rule" style="background:var(--hue-fresh);height:3px">
+      <div class="drink">
+      <div class="drow">
+        <div class="dname">חליטת היביסקוס וליים</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪12.34</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪3.76</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪19</span></span>
+        <span><i>שוליים</i><span class="num">77%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">50</span> מ״ל תרכיז GT · סלייס לימון · עשבי קישוט</div>
+    </div><div class="drink">
+      <div class="drow">
+        <div class="dname">חליטת תפוח היביסקוס</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪17.09</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪3.25*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪24</span></span>
+        <span><i>שוליים</i><span class="num">84%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">40</span> מ״ל מיץ תפוחים · <span class="num">40</span> מ״ל תרכיז GT · גרניש</div>
+    </div><div class="drink">
+      <div class="drow">
+        <div class="dname">גזוז היביסקוס ותפוח</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪15.02</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪3.62*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪22</span></span>
+        <span><i>שוליים</i><span class="num">81%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">40</span> מ״ל מיץ תפוחים · <span class="num">40</span> מ״ל תרכיז GT · ~<span class="num">150</span> מ״ל סודה · גרניש לפי טעם</div>
+    </div>
+      <div class="legal">* כולל הערכת עלות גרניש/קצף</div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">05 / 15</span></div></section>
+<section class="screen hero"><div class="bg" style="background-image:url(assets/glass-fresh.jpg)"></div><div class="scrim"></div>
+      <div class="inner">
+        <div>
+          <div class="kick">FRESH</div>
+          <div class="dname" style="margin-top:24px">חליטת תפוח היביסקוס</div>
+        </div>
+        <div class="plate">
+          <div class="kick">רווח לכוס</div>
+          <div class="herofig"><span class="num">₪17.09</span></div>
+          <div class="figs">
+      <div class="fig"><div class="cap">FOOD COST</div><div class="val cost"><span class="num">₪3.25*</span></div></div>
+      <div class="fig"><div class="cap">מחיר מומלץ</div><div class="val"><span class="num">₪24</span></div></div>
+      <div class="fig"><div class="cap">שוליים</div><div class="val"><span class="num">84%</span></div></div>
+    </div>
+          <div class="legal" style="color:rgba(239,230,214,.62);margin-top:16px">
+            * כולל הערכת עלות גרניש/קצף</div>
+        </div>
+        <ul class="steps"><li><b>1</b><span>מלאו כוס בקרח</span></li><li><b>2</b><span>הוסיפו 40 מ״ל מיץ תפוחים</span></li><li><b>3</b><span>הוסיפו 40 מ״ל תרכיז GT</span></li><li><b>4</b><span>השלימו ל־<span class="num">2/3</span> במים</span></li><li><b>5</b><span>קשטו בגרניש לפי טעם</span></li></ul>
+      </div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">06 / 15</span></div></section>
+<section class="screen "><img class="shot" src="assets/bottle-detox.png" alt="">
+      <div class="prodhead">
+        <div class="prod" style="color:var(--hue-detox)">DETOX</div>
+        <div class="prodsub">חליטה ישראלית · תה ירוק, לואיזה, נענע ולײם</div>
+        <p class="blurb">טעם קליל ומרענן שלקוחות אוהבים בכל גיל. נרטיב בריאות ברור שכולם מתחברים אליו ומבינים.</p>
+      </div>
+      <hr class="rule" style="background:var(--hue-detox);height:3px">
+      <div class="drink">
+      <div class="drow">
+        <div class="dname">חליטת תה ירוק וליים</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪12.34</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪3.76*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪19</span></span>
+        <span><i>שוליים</i><span class="num">77%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">50</span> מ״ל תרכיז GT · סלייס לימון · עשבי קישוט</div>
+    </div><div class="drink">
+      <div class="drow">
+        <div class="dname">חליטת תות לואיזה</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪14.93</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪5.41*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪24</span></span>
+        <span><i>שוליים</i><span class="num">73%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">40</span> מ״ל מחית תות · <span class="num">40</span> מ״ל תרכיז GT · גרניש</div>
+    </div>
+      <div class="legal">* כולל הערכת עלות גרניש/קצף</div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">07 / 15</span></div></section>
+<section class="screen hero"><div class="bg" style="background-image:url(assets/glass-detox.jpg)"></div><div class="scrim"></div>
+      <div class="inner">
+        <div>
+          <div class="kick">DETOX</div>
+          <div class="dname" style="margin-top:24px">חליטת תות לואיזה</div><div class="ddesc" style="margin-top:16px">משקה דגל על בסיס מחית תות</div>
+        </div>
+        <div class="plate">
+          <div class="kick">רווח לכוס</div>
+          <div class="herofig"><span class="num">₪14.93</span></div>
+          <div class="figs">
+      <div class="fig"><div class="cap">FOOD COST</div><div class="val cost"><span class="num">₪5.41*</span></div></div>
+      <div class="fig"><div class="cap">מחיר מומלץ</div><div class="val"><span class="num">₪24</span></div></div>
+      <div class="fig"><div class="cap">שוליים</div><div class="val"><span class="num">73%</span></div></div>
+    </div>
+          <div class="legal" style="color:rgba(239,230,214,.62);margin-top:16px">
+            * כולל הערכת עלות גרניש/קצף</div>
+        </div>
+        <ul class="steps"><li><b>1</b><span>מלאו כוס בקרח</span></li><li><b>2</b><span>הוסיפו 40 מ״ל מחית תות</span></li><li><b>3</b><span>הוסיפו 40 מ״ל תרכיז GT</span></li><li><b>4</b><span>השלימו ל־<span class="num">2/3</span> במים</span></li><li><b>5</b><span>קשטו בגרניש לפי טעם</span></li></ul>
+      </div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">08 / 15</span></div></section>
+<section class="screen "><img class="shot" src="assets/bottle-namastea.png" alt="">
+      <div class="prodhead">
+        <div class="prod" style="color:var(--hue-namastea)">NAMASTEA</div>
+        <div class="prodsub">חליטה הודית · שני זני תה שחור, קינמון, הל, ג׳ינג׳ר, פלפל שחור, ציפורן</div>
+        <p class="blurb">להיט מכירות ענק בקרב הקהל הישראלי. נפלא כמשקה קר — גם עם מי קוקוס. נפלא כמשקה חם — גם כלאטה.</p>
+      </div>
+      <hr class="rule" style="background:var(--hue-namastea);height:3px">
+      <div class="drink">
+      <div class="drow">
+        <div class="dname">אייס צ׳אי מסאלה קלאסי</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪15.34</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪5.00*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪24</span></span>
+        <span><i>שוליים</i><span class="num">75%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">2/3</span> כוס חלב · <span class="num">50</span> מ״ל מסאלה GT · <span class="num">70</span> מ״ל קצף חלב · קינמון</div>
+    </div><div class="drink">
+      <div class="drow">
+        <div class="dname">צ׳אי מסאלה על הקרח</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪16.54</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪3.80*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪24</span></span>
+        <span><i>שוליים</i><span class="num">81%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">2/3</span> כוס מים · <span class="num">50</span> מ״ל מסאלה GT · <span class="num">70</span> מ״ל קצף חלב</div>
+    </div><div class="drink">
+      <div class="drow">
+        <div class="dname">צ׳אי מסאלה קולד פואם וניל</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪19.78</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪3.95*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪28</span></span>
+        <span><i>שוליים</i><span class="num">83%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">2/3</span> כוס מים · <span class="num">50</span> מ״ל מסאלה GT · <span class="num">70</span> מ״ל קצף קר חלבי · תמצית וניל</div>
+    </div>
+      <div class="legal">* כולל הערכת עלות גרניש/קצף</div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">09 / 15</span></div></section>
+<section class="screen hero"><div class="bg" style="background-image:url(assets/glass-namastea.jpg)"></div><div class="scrim"></div>
+      <div class="inner">
+        <div>
+          <div class="kick">NAMASTEA</div>
+          <div class="dname" style="margin-top:24px">צ׳אי מסאלה קולד פואם וניל</div><div class="ddesc" style="margin-top:16px">צ׳אי מסאלה עם קצף קר חלבי בטעם וניל</div>
+        </div>
+        <div class="plate">
+          <div class="kick">רווח לכוס</div>
+          <div class="herofig"><span class="num">₪19.78</span></div>
+          <div class="figs">
+      <div class="fig"><div class="cap">FOOD COST</div><div class="val cost"><span class="num">₪3.95*</span></div></div>
+      <div class="fig"><div class="cap">מחיר מומלץ</div><div class="val"><span class="num">₪28</span></div></div>
+      <div class="fig"><div class="cap">שוליים</div><div class="val"><span class="num">83%</span></div></div>
+    </div>
+          <div class="legal" style="color:rgba(239,230,214,.62);margin-top:16px">
+            * כולל הערכת עלות גרניש/קצף</div>
+        </div>
+        <ul class="steps"><li><b>1</b><span>מלאו כוס בקרח</span></li><li><b>2</b><span>השלימו ל־<span class="num">2/3</span> במים</span></li><li><b>3</b><span>יצקו 50 מ״ל תרכיז מסאלה GT</span></li><li><b>4</b><span>הכתירו בקצף קר חלבי עם תמצית וניל</span></li><li><b>5</b><span>קשטו במקל וניל</span></li></ul>
+      </div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">10 / 15</span></div></section>
+<section class="screen dense">
+      <div class="prodhead wide">
+        <div class="prod" style="color:var(--hue-matcha)">MATCHA</div>
+        <div class="prodsub">מאצ׳ה טקסית שיזואוקה · תה ירוק</div>
+        <p class="blurb">לא טרנד חולף — המאצ׳ה כאן כדי להישאר. מייבאים היישר מהחקלאים, בהטסה מרגע הקטיפה — כך נשמרות הטריות והאיכות.</p>
+      </div>
+      <hr class="rule" style="background:var(--hue-matcha);height:3px">
+      <div class="drink">
+      <div class="drow">
+        <div class="dname">אייס מאצ׳ה קלאסי</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪18.26</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪3.77*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪26</span></span>
+        <span><i>שוליים</i><span class="num">83%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">2/3</span> כוס חלב · <span class="num">50</span> מ״ל מאצ׳ה (<span class="num">1.8</span> גר׳) · <span class="num">70</span> מ״ל קצף חלב</div>
+    </div><div class="drink">
+      <div class="drow">
+        <div class="dname">מאצ׳ה אגבה על הקרח</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪18.68</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪3.35*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪26</span></span>
+        <span><i>שוליים</i><span class="num">85%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">2/3</span> כוס מים · <span class="num">15</span> מ״ל סירופ אגבה · <span class="num">50</span> מ״ל מאצ׳ה (<span class="num">1.8</span> גר׳) · <span class="num">70</span> מ״ל קצף חלב</div>
+    </div><div class="drink">
+      <div class="drow">
+        <div class="dname">אייס מאצ׳ה תות</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪15.86</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪6.17*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪26</span></span>
+        <span><i>שוליים</i><span class="num">72%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">40</span> מ״ל מחית תות · <span class="num">2/3</span> כוס חלב · <span class="num">50</span> מ״ל מאצ׳ה (<span class="num">1.8</span> גר׳) · <span class="num">70</span> מ״ל קצף חלב</div>
+    </div><div class="drink">
+      <div class="drow">
+        <div class="dname">אייס מאצ׳ה מסאלה</div>
+        <div class="dprofit"><div class="cap">רווח לכוס</div>
+          <div class="val profit"><span class="num">₪15.66</span></div></div>
+      </div>
+      <div class="mini">
+        <span><i>FOOD COST</i><span class="num">₪6.37*</span></span>
+        <span><i>מחיר מומלץ</i><span class="num">₪26</span></span>
+        <span><i>שוליים</i><span class="num">71%</span></span>
+      </div>
+      <div class="panel">קרח · <span class="num">40</span> מ״ל תמצית מסאלה GT · <span class="num">2/3</span> כוס חלב · <span class="num">50</span> מ״ל מאצ׳ה (<span class="num">1.8</span> גר׳) · <span class="num">70</span> מ״ל קצף חלב</div>
+    </div>
+      <div class="legal">* כולל הערכת עלות גרניש/קצף</div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">11 / 15</span></div></section>
+<section class="screen hero typo"><div class="bg"></div><div class="scrim"></div>
+      <div class="inner">
+        <div>
+          <div class="kick">MATCHA</div>
+          <div class="dname" style="margin-top:24px">מאצ׳ה אגבה על הקרח</div><div class="ddesc" style="margin-top:16px">אגבה מאצ׳ה אייס, קליל על הקרח</div>
+        </div>
+        <div class="plate">
+          <div class="kick">רווח לכוס</div>
+          <div class="herofig"><span class="num">₪18.68</span></div>
+          <div class="figs">
+      <div class="fig"><div class="cap">FOOD COST</div><div class="val cost"><span class="num">₪3.35*</span></div></div>
+      <div class="fig"><div class="cap">מחיר מומלץ</div><div class="val"><span class="num">₪26</span></div></div>
+      <div class="fig"><div class="cap">שוליים</div><div class="val"><span class="num">85%</span></div></div>
+    </div>
+          <div class="legal" style="color:rgba(239,230,214,.62);margin-top:16px">
+            * כולל הערכת עלות גרניש/קצף</div>
+        </div>
+        <ul class="steps"><li><b>1</b><span>מלאו כוס בקרח</span></li><li><b>2</b><span>הוסיפו 15 מ״ל סירופ אגבה</span></li><li><b>3</b><span>השלימו ל־<span class="num">2/3</span> במים</span></li><li><b>4</b><span>יצקו 50 מ״ל תרכיז מאצ׳ה (1.8 גר׳)</span></li><li><b>5</b><span>הוסיפו קצף חלב מלמעלה</span></li></ul>
+      </div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">12 / 15</span></div></section>
+<section class="screen ">
+      <div class="kick">הזמנה</div>
+      <h2 style="margin-top:24px">מה מזמינים<br>מ־GT</h2>
+      <ul class="olist" style="margin-top:64px"><li><span class="nm" style="color:var(--hue-fresh)">FRESH</span><span class="role">היביסקוס ולײם. הבסיס לשלושה משקאות בתפריט.</span></li><li><span class="nm" style="color:var(--hue-detox)">DETOX</span><span class="role">תה ירוק, לואיזה, נענע ולײם. הבסיס לשני משקאות.</span></li><li><span class="nm" style="color:var(--hue-namastea)">NAMASTEA</span><span class="role">מסאלה צ׳אי. הבסיס לשלושה משקאות, וגם לאייס מאצ׳ה מסאלה.</span></li><li><span class="nm" style="color:var(--hue-matcha)">MATCHA</span><span class="role">מאצ׳ה טקסית שיזואוקה. הבסיס לארבעה משקאות.</span></li>
+        <li><span class="nm" style="color:var(--cost)">SMOOTHIE</span>
+          <span class="role">מחית תות, <span class="num">50%</span> פרי. נדרשת לשני משקאות:
+            חליטת תות לואיזה ואייס מאצ׳ה תות.</span></li>
+      </ul>
+      <hr class="rule" style="margin-top:64px">
+      <div class="body" style="color:var(--muted)">בקבוק תמצית: <span class="num">20–25</span> כוסות.
+        באחסון סגור — ללא קירור.</div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">13 / 15</span></div></section>
+<section class="screen ">
+      <div class="kick">המטבח שלכם</div>
+      <h2 style="margin-top:24px">מה שכבר יש<br>לכם במטבח</h2>
+      <p class="lead" style="margin-top:40px">כל <span class="num">12</span> המשקאות נבנים
+        מהתרכיזים של GT ומהמצרכים שכבר עומדים אצלכם על השיש.</p>
+      <div class="have"><span>קרח</span><span>מים קרים</span><span>סודה</span><span>חלב או תחליפי חלב</span><span>קצף חלב</span><span>מיץ תפוחים</span><span>סירופ אגבה</span><span>אבקת קינמון</span><span>תמצית וניל</span><span>לימון</span><span>נענע טרייה</span><span>גרניש לפי טעם</span></div>
+      <hr class="rule" style="margin-top:56px">
+      <div class="lead">כל השאר כבר אצלכם. מ־GT מגיעים רק התרכיזים.</div><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">14 / 15</span></div></section>
+<section class="screen close">
+      <div class="promise">נחזור אליכם<br>בהקדם.</div>
+      <div class="promise-sub">נשמח להתאים לכם את התפריט לפי מה שאתם מוכרים היום.</div>
+      <div class="contact">
+        <div><span class="num">gteveryday.com</span></div>
+        <div><span class="num">info@gteveryday.com</span></div>
+        <div><span class="num">054-398-2444</span></div>
+        <div><span class="num">@gteveryday</span></div>
+      </div>
+      <div class="signoff">המשקה הטוב יותר, הבחירה הקלה, לכולם.</div>
+      <img class="close-logo" src="assets/gt-logo-black.png" alt="GT"><div class="foot"><span>תפריט הפתיחה · GT</span><span class="num">15 / 15</span></div></section>
+</body></html>
