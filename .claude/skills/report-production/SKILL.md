@@ -136,13 +136,22 @@ Tom with the numbers, and let him decide. The blockers worth knowing:
 
 | Blocker | What it means | What to do |
 |---|---|---|
-| component would go negative | Projection says the material is not there | Real shortage, or stock arrived without a receipt. Ask which. Only Tom can authorise posting it anyway |
-| off-recipe take flagged | A collected quantity differs from the recipe by 2× or more | Ask what really went in |
+| component would go negative | Projection says the material is not there | Real shortage, or stock arrived without a receipt. Ask which. Only Tom can authorise posting it anyway — see below |
+| off-recipe take flagged | A collected quantity differs from the recipe by 2× or more | Ask what really went in, then put it in `explanation` |
 | duplicate open plans | Two plan rows for the same base or item that day | Cancel one in the portal first — otherwise the other stays looking unproduced |
 | no run materialized | The plan's shape does not imply a run for that item | Check the plan in the portal |
 
-Optional per line, when Tom mentions them: `scrap_qty`, `qc_brix`, `qc_ph`, `notes`.
-Leave them out otherwise — every QC field is optional by design.
+Optional per line: `scrap_qty`, `qc_brix`, `qc_ph`, `notes`, and the two
+overrides — `confirm_negative: true` and `explanation: "..."`.
+
+`confirm_negative` is Tom's call and only Tom's. It says the material really did
+leave the shelf even though the projection holds none, which is usually a receipt
+that was never booked rather than a phantom (Tom, 2026-07-27: bottles standing
+unlabelled against a label delivery). The take then posts in full and those
+components read negative until a receipt lands. Prefer booking the missing
+receipt first when the goods are genuinely on site — a negative balance is a debt
+the system carries in the open, not a free pass. When Tom does say to post it
+anyway, set the flag and name the affected components back to him.
 
 ## Step 5 — Verify, then report back
 

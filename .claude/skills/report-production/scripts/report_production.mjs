@@ -279,17 +279,51 @@ async function previewAll(targets) {
       'GET',
       `/api/v1/queries/production-runs/${t.run.run_id}/consumption-preview?output_qty=${t.line.qty}`,
     );
+    t.decisions = [];
+
     // These two counters are the whole gate. A negative projection means the
     // material is not there on paper, and a flagged line means the collected
     // quantity is off-recipe by 2x or more — both need a human to say which
     // number is the true one before anything hits the ledger.
-    if (t.preview.would_go_negative_count > 0) {
-      const which = t.preview.lines.filter((l) => l.would_go_negative).map((l) => `${l.component_id} (want ${l.wanted_qty}, on hand ${l.on_hand_qty})`);
-      blockers.push(`${t.line.item_id}: ${which.length} component(s) would go negative — ${which.join('; ')}.`);
+    //
+    // Tom can overrule the negative one per line: the material really did leave
+    // the shelf even though the projection says there is none, usually because a
+    // receipt was never booked. That take posts in full and the component sits
+    // negative until the receipt lands, which is the honest record — so say
+    // loudly which components it applied to.
+    const negatives = t.preview.lines.filter((l) => l.would_go_negative);
+    if (negatives.length > 0) {
+      if (t.line.confirm_negative) {
+        for (const l of negatives) t.decisions.push({ component_id: l.component_id, source: l.source, confirm_negative: true });
+        notes.push(
+          `${t.line.item_id}: posting against an empty projection for ` +
+            negatives.map((l) => `${l.component_id} (want ${l.wanted_qty}, on hand ${l.on_hand_qty} → ${l.on_hand_after_qty})`).join('; ') +
+            ' — confirmed, these will read negative until a receipt lands.',
+        );
+      } else {
+        blockers.push(
+          `${t.line.item_id}: ${negatives.length} component(s) would go negative — ` +
+            negatives.map((l) => `${l.component_id} (want ${l.wanted_qty}, on hand ${l.on_hand_qty})`).join('; ') +
+            '. Book the missing receipt, or set confirm_negative on this line.',
+        );
+      }
     }
-    if (t.preview.requires_explanation_count > 0) {
-      const which = t.preview.lines.filter((l) => l.needs_explanation).map((l) => l.component_id);
-      blockers.push(`${t.line.item_id}: collected quantities differ sharply from the recipe for ${which.join(', ')} — needs a reason.`);
+
+    const unexplained = t.preview.lines.filter((l) => l.needs_explanation);
+    if (unexplained.length > 0) {
+      if (t.line.explanation) {
+        for (const l of unexplained) {
+          const existing = t.decisions.find((d) => d.component_id === l.component_id && d.source === l.source);
+          if (existing) existing.explanation = t.line.explanation;
+          else t.decisions.push({ component_id: l.component_id, source: l.source, confirm_negative: false, explanation: t.line.explanation });
+        }
+        notes.push(`${t.line.item_id}: off-recipe on ${unexplained.map((l) => l.component_id).join(', ')} — reason recorded.`);
+      } else {
+        blockers.push(
+          `${t.line.item_id}: collected quantities differ sharply from the recipe for ` +
+            `${unexplained.map((l) => l.component_id).join(', ')} — set explanation on this line with the reason.`,
+        );
+      }
     }
   }
 }
@@ -307,7 +341,7 @@ async function reportAll(spec, targets, eventAt) {
       output_qty: t.line.qty,
       scrap_qty: Number(t.line.scrap_qty ?? 0),
       output_uom: t.line.uom,
-      consumption_decisions: [],
+      consumption_decisions: t.decisions ?? [],
       ...(t.line.qc_brix != null ? { qc_brix: t.line.qc_brix } : {}),
       ...(t.line.qc_ph != null ? { qc_ph: t.line.qc_ph } : {}),
       notes: t.line.notes ?? `Production reported for ${spec.date}.`,
