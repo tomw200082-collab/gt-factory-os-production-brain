@@ -1,0 +1,67 @@
+{
+  "manifest_version": "1.0",
+  "skill_id": "sdd-git-commit",
+  "name": "SDD Git Commit",
+  "version": "1.0.0",
+  "description": "Orchestrates a professional SDD Git commit workflow — hygiene checks, SDD gates, CHANGELOG updates, and Conventional Commits.",
+  "author": "kimcharli",
+  "license": "MIT",
+  "homepage": "https://github.com/kimcharli/ck-skills",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kimcharli/ck-skills.git"
+  },
+  "keywords": [
+    "git",
+    "commit",
+    "sdd",
+    "workflow",
+    "changelog",
+    "conventional-commits",
+    "documentation"
+  ],
+  "categories": [
+    "git-management",
+    "productivity",
+    "workflow"
+  ],
+  "commands": [
+    {
+      "name": "commit",
+      "description": "Professional SDD Git commit — checks hygiene, syncs specs, updates CHANGELOG",
+      "file": "commands/commit.md"
+    }
+  ],
+  "features": [
+    "Hygiene check — prevents accidental commit of secrets/junk",
+    "SDD Gate — ensures source code and specs remain in parity",
+    "Automatic CHANGELOG, TODO, and Session Memo tracking",
+    "Conventional Commit message generation",
+    "Post-commit reflection and lessons learned capture"
+  ],
+  "dependencies": [],
+  "documentation": {
+    "readme": "README.md"
+  },
+  "installation": {
+    "method": "script",
+    "script": "install.sh",
+    "uninstall_script": "uninstall.sh",
+    "location": "~/.agents/skills/sdd-git-commit"
+  },
+  "system_requirements": {
+    "claude_code": "latest",
+    "bash": "4.0+",
+    "git": "any"
+  },
+  "permissions": {
+    "file_read": true,
+    "file_write": true,
+    "file_delete": false,
+    "bash_execution": true,
+    "git_access": true
+  },
+  "created_at": "2026-03-18",
+  "updated_at": "2026-03-18",
+  "last_release": "2026-03-18"
+}

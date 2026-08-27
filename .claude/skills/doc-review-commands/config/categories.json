@@ -1,0 +1,58 @@
+{
+  "categories": {
+    "developer": {
+      "patterns": [
+        "## API",
+        "### Endpoints",
+        "Request/Response",
+        "curl.*http",
+        "POST",
+        "GET",
+        "PUT"
+      ],
+      "description": "API documentation, developer references"
+    },
+    "user": {
+      "patterns": [
+        "## Installation",
+        "### Setup",
+        "Getting Started",
+        "Quick Start",
+        "## Usage",
+        "### Examples"
+      ],
+      "description": "User guides, setup instructions"
+    },
+    "technical": {
+      "patterns": [
+        "## Architecture",
+        "### Design",
+        "Technical.*Spec",
+        "## Security",
+        "Performance",
+        "Requirements"
+      ],
+      "description": "Technical specifications, architecture docs"
+    },
+    "ai-agents": {
+      "patterns": [
+        "AI",
+        "Claude",
+        "Gemini",
+        "Assistant",
+        "Tool.*Usage",
+        "Prompt"
+      ],
+      "description": "AI integration, context files"
+    }
+  },
+  "essential_root_files": [
+    "README.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "LICENSE.md"
+  ],
+  "large_file_threshold": 200
+}

@@ -1,0 +1,192 @@
+{
+  "manifest_version": "1.0",
+  "skill_id": "doc-review-commands",
+  "name": "Doc Review Commands",
+  "version": "1.0.0",
+  "description": "AI-powered documentation management system for Claude Code - keeps project documentation in sync with code changes",
+  "author": "kimcharli",
+  "license": "MIT",
+  "homepage": "https://github.com/kimcharli/doc-review-commands",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kimcharli/doc-review-commands.git"
+  },
+  "keywords": [
+    "documentation",
+    "markdown",
+    "ai",
+    "claude-code",
+    "automation",
+    "quality-assurance",
+    "changelog",
+    "readme",
+    "sdd",
+    "specification-driven-development"
+  ],
+  "categories": [
+    "documentation",
+    "productivity",
+    "quality-assurance"
+  ],
+  "commands": [
+    {
+      "name": "main",
+      "description": "Documentation update orchestrator - analyzes and delegates to focused sub-commands",
+      "file": "commands/main.md"
+    },
+    {
+      "name": "analyze",
+      "description": "Analyze project documentation - what needs updating without making changes",
+      "file": "commands/analyze.md"
+    },
+    {
+      "name": "core",
+      "description": "Update core documentation files (README, CLAUDE, CHANGELOG)",
+      "file": "commands/core.md"
+    },
+    {
+      "name": "sdd",
+      "description": "Update SDD artifacts (specifications, plans, tasks, contracts)",
+      "file": "commands/sdd.md"
+    },
+    {
+      "name": "qa",
+      "description": "Quality validation - comprehensive documentation checks with scoring",
+      "file": "commands/qa.md"
+    },
+    {
+      "name": "help",
+      "description": "Usage guide and help documentation with patterns and examples",
+      "file": "commands/help.md"
+    }
+  ],
+  "features": [
+    "Modular command architecture (6 focused commands)",
+    "88% token reduction vs monolithic approaches",
+    "70% faster execution with focused sub-commands",
+    "External bash analyzer tool (sub-second analysis)",
+    "Pattern-based file categorization",
+    "SDD (Specification-Driven Development) support",
+    "7-category quality validation with 0-100 scoring",
+    "Professional documentation templates",
+    "Progressive disclosure for user control",
+    "Zero external dependencies (bash only)",
+    "Self-contained installation",
+    "Customizable patterns and configurations"
+  ],
+  "performance": {
+    "token_savings": "88% compared to monolithic commands",
+    "execution_speed": "70% faster with focused sub-commands",
+    "analysis_time": "< 1 second with external tools"
+  },
+  "dependencies": [],
+  "external_tools": [
+    {
+      "name": "analyzer.sh",
+      "description": "Bash-based analysis tool for instant project insights",
+      "location": "tools/analyzer.sh",
+      "language": "bash"
+    }
+  ],
+  "configuration": {
+    "file": "config/categories.json",
+    "description": "Pattern-based file categorization for documentation analysis",
+    "customizable": true
+  },
+  "documentation": {
+    "readme": "README.md",
+    "quick_start": "docs/QUICKSTART.md",
+    "usage": "docs/USAGE.md",
+    "architecture": "docs/ARCHITECTURE.md",
+    "customization": "docs/CUSTOMIZATION.md",
+    "templates": "docs/TEMPLATES.md",
+    "migration": "docs/MIGRATION.md",
+    "examples": "examples/basic-usage.md"
+  },
+  "installation": {
+    "method": "script",
+    "script": "install.sh",
+    "uninstall_script": "uninstall.sh",
+    "location": "~/.agents/skills/doc-review-commands"
+  },
+  "system_requirements": {
+    "claude_code": "latest",
+    "bash": "4.0+",
+    "os": [
+      "macOS",
+      "Linux",
+      "WSL"
+    ]
+  },
+  "permissions": {
+    "file_read": true,
+    "file_write": true,
+    "file_delete": false,
+    "bash_execution": true,
+    "git_access": false
+  },
+  "roadmap": [
+    {
+      "version": "1.0.0",
+      "status": "released",
+      "features": [
+        "6 core commands",
+        "External analyzer tool",
+        "Pattern configuration",
+        "SDD support",
+        "Quality validation"
+      ]
+    },
+    {
+      "version": "1.1.0",
+      "status": "planned",
+      "features": [
+        "Diagram generation sub-command",
+        "Multi-language template support"
+      ]
+    },
+    {
+      "version": "1.2.0",
+      "status": "planned",
+      "features": [
+        "CI/CD integration mode",
+        "GitHub Actions integration"
+      ]
+    },
+    {
+      "version": "2.0.0",
+      "status": "planned",
+      "features": [
+        "Claude Skills wrapper",
+        "Documentation metrics dashboard"
+      ]
+    }
+  ],
+  "metrics": {
+    "commands": 6,
+    "lines_of_code": 3300,
+    "files_tracked": 18,
+    "documentation_pages": 8,
+    "examples_provided": 2
+  },
+  "community": {
+    "github_issues": "https://github.com/kimcharli/doc-review-commands/issues",
+    "github_discussions": "https://github.com/kimcharli/doc-review-commands/discussions",
+    "github_releases": "https://github.com/kimcharli/doc-review-commands/releases"
+  },
+  "compatibility": {
+    "claude_code_version": ">=1.0.0",
+    "backward_compatibility": "Full - all existing workflows supported"
+  },
+  "tags": [
+    "documentation",
+    "automation",
+    "ai-powered",
+    "modular",
+    "efficient",
+    "open-source"
+  ],
+  "created_at": "2025-10-24",
+  "updated_at": "2025-10-24",
+  "last_release": "2025-10-24"
+}

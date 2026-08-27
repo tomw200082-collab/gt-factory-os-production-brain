@@ -1,0 +1,5 @@
+#!/bin/sh
+# Repo conventions guard -- see specs/workflow.md Section 8 and
+# scripts/check_repo_conventions.py for what this checks and why.
+# The checker is stdlib-only, so no uv sync / virtualenv is needed to commit.
+exec python3 scripts/check_repo_conventions.py

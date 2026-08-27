@@ -1,0 +1,19 @@
+[project]
+name = "__PROJECT_NAME__"
+version = "0.1.0"
+description = "__DESCRIPTION__"
+readme = "README.md"
+requires-python = ">=__PYTHON_VERSION__"
+dependencies = []
+
+# Add [project.scripts] / [build-system] when the first src/ module needs a
+# console entry point — see specs/workflow.md Section 5.
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -1,0 +1,3 @@
+[tools]
+python = "__PYTHON_VERSION__"
+uv = "latest"

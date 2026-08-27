@@ -1,0 +1,74 @@
+---
+# Claude Skill Configuration
+# SDD Project Init — interview-driven project initializer
+
+name: SDD Project Init
+version: 1.0.0
+description: Initialize a new project with Spec-Driven Development structure
+
+metadata:
+  id: sdd-project-init
+  author: kimcharli
+  homepage: https://github.com/kimcharli/ck-skills
+  repository: https://github.com/kimcharli/ck-skills.git
+  license: MIT
+  created: 2026-03-18
+
+capabilities:
+  - interview_driven_init
+  - sdd_structure_generation
+  - multi_tool_support       # AGENTS.md + GEMINI.md + copilot-instructions.md
+
+commands:
+  - name: /ck:sdd-init
+    description: Interview-driven SDD project initializer
+    category: project-management
+    token_cost: 800-1200
+    execution_time: 30-60s
+
+requirements:
+  claude_code:
+    minimum_version: "1.0.0"
+  system:
+    bash_version: "4.0+"
+    platforms:
+      - macos
+      - linux
+      - wsl
+  dependencies: []
+
+installation:
+  method: script
+  install_script: install.sh
+  uninstall_script: uninstall.sh
+  install_path: ~/.claude/commands/ck/sdd-init
+  auto_update: true
+
+files:
+  commands:
+    - commands/init.md
+  docs:
+    - docs/README.md
+
+permissions:
+  read: []
+  write:
+    - "new project directory files"
+  execute: []
+  analytics: false
+  network: false
+
+keywords:
+  - sdd
+  - spec-driven-development
+  - project-init
+  - scaffold
+  - bootstrap
+  - claude-code
+  - workflow
+
+tags:
+  category: project-management
+  skill_type: bootstrap
+  complexity: simple
+  automation_level: high

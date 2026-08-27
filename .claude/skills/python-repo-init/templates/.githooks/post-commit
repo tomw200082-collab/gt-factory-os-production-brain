@@ -1,0 +1,6 @@
+#!/bin/sh
+# Preserves a machine-wide auto-sync hook (e.g. tokensave, normally at
+# ~/.config/git/hooks/post-commit) that core.hooksPath would otherwise shadow
+# for this repo. No-op if the tool isn't installed. See specs/workflow.md
+# Section 8.
+command -v tokensave >/dev/null 2>&1 && tokensave sync >/dev/null 2>&1 &

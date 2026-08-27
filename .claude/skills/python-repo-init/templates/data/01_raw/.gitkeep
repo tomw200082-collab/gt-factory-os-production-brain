@@ -1,0 +1,3 @@
+# Immutable, as-provided source artifacts go here, read-only input for skills.
+# Tracked in git. Never write generated or scratch output back into this
+# directory. Sanitize secrets. See specs/workflow.md Section 5a.

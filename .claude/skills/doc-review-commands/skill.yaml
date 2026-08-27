@@ -1,0 +1,312 @@
+---
+# Claude Skill Configuration
+# Doc Review Commands - AI-powered documentation management system
+
+name: Doc Review Commands
+version: 1.0.0
+description: Modular documentation management system for Claude Code
+
+# Metadata
+metadata:
+  id: doc-review-commands
+  author: kimcharli
+  homepage: https://github.com/kimcharli/doc-review-commands
+  repository: https://github.com/kimcharli/doc-review-commands.git
+  license: MIT
+  created: 2025-10-24
+
+# Skill capabilities
+capabilities:
+  - modular_commands
+  - documentation_analysis
+  - automated_updates
+  - quality_validation
+  - sdd_support
+  - customizable_patterns
+
+# Commands provided by this skill
+commands:
+  - name: /ck:doc-review/main
+    description: Smart orchestrator - analyzes and delegates to focused sub-commands
+    category: documentation
+    token_cost: 900-1200
+    execution_time: variable
+
+  - name: /ck:doc-review/analyze
+    description: Analyze documentation - what needs updating (zero changes)
+    category: analysis
+    token_cost: 600-800
+    execution_time: < 1s
+    safe: true
+
+  - name: /ck:doc-review/core
+    description: Update core files (README, CLAUDE, CHANGELOG)
+    category: documentation
+    token_cost: 1200-1500
+    execution_time: 15-30s
+
+  - name: /ck:doc-review/sdd
+    description: Update SDD artifacts (spec, plan, tasks, contracts)
+    category: documentation
+    token_cost: 1500-1800
+    execution_time: 30-60s
+
+  - name: /ck:doc-review/qa
+    description: Quality validation with 7-category scoring
+    category: quality-assurance
+    token_cost: 1800-2000
+    execution_time: 10-20s
+    safe: true
+
+  - name: /ck:doc-review/help
+    description: Usage guide and help documentation
+    category: help
+    token_cost: 200
+    execution_time: instant
+    safe: true
+
+# Skill configuration
+configuration:
+  customizable: true
+  config_file: config/categories.json
+  patterns_support: true
+  template_support: true
+
+# Performance metrics
+performance:
+  token_efficiency: "88% reduction vs monolithic"
+  execution_speed: "70% faster than alternatives"
+  analysis_speed: "< 1 second with external tools"
+
+# Requirements
+requirements:
+  claude_code:
+    minimum_version: "1.0.0"
+  system:
+    bash_version: "4.0+"
+    platforms:
+      - macos
+      - linux
+      - wsl
+  dependencies: []
+
+# Installation configuration
+installation:
+  method: script
+  install_script: install.sh
+  uninstall_script: uninstall.sh
+  install_path: ~/.claude/commands/ck/doc-review
+  auto_update: true
+
+# Files and directories
+files:
+  commands:
+    - commands/main.md
+    - commands/analyze.md
+    - commands/core.md
+    - commands/sdd.md
+    - commands/qa.md
+    - commands/help.md
+  config:
+    - config/categories.json
+  tools:
+    - tools/analyzer.sh
+  docs:
+    - docs/QUICKSTART.md
+    - docs/USAGE.md
+    - docs/ARCHITECTURE.md
+    - docs/CUSTOMIZATION.md
+    - docs/TEMPLATES.md
+    - docs/MIGRATION.md
+  examples:
+    - examples/basic-usage.md
+    - examples/advanced-workflows.md
+    - examples/custom-config.json
+  root:
+    - README.md
+    - CHANGELOG.md
+    - CONTRIBUTING.md
+    - LICENSE
+    - .gitignore
+
+# Features
+features:
+  - name: Modular Architecture
+    description: 6 focused commands instead of monolithic tool
+    enabled: true
+
+  - name: External Analysis
+    description: Bash-based analyzer for instant insights (< 1s)
+    enabled: true
+
+  - name: Pattern Configuration
+    description: Customizable file categorization via JSON
+    enabled: true
+
+  - name: SDD Support
+    description: Specification-Driven Development artifacts
+    enabled: true
+
+  - name: Quality Validation
+    description: 7-category QA with 0-100 scoring
+    enabled: true
+
+  - name: Templates
+    description: Professional documentation templates
+    enabled: true
+
+  - name: Progressive Disclosure
+    description: User controls update scope
+    enabled: true
+
+  - name: Token Efficiency
+    description: 88% token reduction vs alternatives
+    enabled: true
+
+# Permissions required
+permissions:
+  read:
+    - "project files and documentation"
+  write:
+    - "documentation files"
+  execute:
+    - "bash scripts and tools"
+  analytics: false
+  network: false
+
+# Keywords for discovery
+keywords:
+  - documentation
+  - markdown
+  - automation
+  - ai-powered
+  - claude-code
+  - quality-assurance
+  - changelog
+  - readme
+  - specification-driven-development
+  - modular
+  - efficient
+  - open-source
+
+# Links
+links:
+  github: https://github.com/kimcharli/doc-review-commands
+  issues: https://github.com/kimcharli/doc-review-commands/issues
+  discussions: https://github.com/kimcharli/doc-review-commands/discussions
+  releases: https://github.com/kimcharli/doc-review-commands/releases
+  documentation: https://github.com/kimcharli/doc-review-commands/blob/main/README.md
+
+# Usage patterns
+usage_patterns:
+  daily:
+    command: /ck:doc-review/core
+    frequency: per-feature
+    token_cost: 1.2K
+    description: Quick documentation update
+
+  weekly:
+    command: /ck:doc-review/qa
+    frequency: once-weekly
+    token_cost: 1.8K
+    description: Comprehensive quality check
+
+  phase:
+    command: /ck:doc-review/sdd
+    frequency: phase-completion
+    token_cost: 1.5K
+    description: Update specifications and plans
+
+  analysis:
+    command: /ck:doc-review/analyze
+    frequency: as-needed
+    token_cost: 0.7K
+    description: Understand documentation needs
+
+# Versioning
+versioning:
+  current: 1.0.0
+  release_date: 2025-10-24
+  breaking_changes: none
+  upgrade_path: automatic
+
+# Support and maintenance
+support:
+  type: community
+  github_issues: true
+  discussions_enabled: true
+  response_time_target: "24 hours"
+  maintenance_status: active
+
+# Compatibility matrix
+compatibility:
+  claude_code: ">=1.0.0"
+  python: optional
+  nodejs: optional
+  bash: required
+  operating_systems:
+    - macOS 10.15+
+    - Linux (any distribution)
+    - WSL 2
+
+# Metrics and tracking
+metrics:
+  enabled: false
+  telemetry: false
+  analytics: false
+
+# Tags for categorization
+tags:
+  category: documentation
+  skill_type: utility
+  complexity: intermediate
+  automation_level: high
+  efficiency: high
+
+# Health check configuration
+health_check:
+  enabled: true
+  check_interval: 86400  # Daily
+  required_files:
+    - commands/main.md
+    - commands/core.md
+    - tools/analyzer.sh
+    - config/categories.json
+
+# Customization options
+customization:
+  categories: true
+  patterns: true
+  templates: true
+  commands: true
+  analyzer: true
+
+# Documentation
+documentation:
+  format: markdown
+  languages:
+    - en
+  main: README.md
+  quick_start: docs/QUICKSTART.md
+  installation: docs/INSTALLATION.md
+  detailed: docs/USAGE.md
+  architecture: docs/ARCHITECTURE.md
+  customization: docs/CUSTOMIZATION.md
+  migration: docs/MIGRATION.md
+  examples: examples/
+
+# Development
+development:
+  test_framework: bash
+  linting: shellcheck
+  ci_enabled: false
+
+# Security
+security:
+  permissions:
+    files: read/write
+    bash: execute
+    network: none
+    external_api: none
+  sandbox: true
+  code_review_required: true
