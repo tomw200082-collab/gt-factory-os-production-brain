@@ -1,0 +1,200 @@
+# Claude Skill Ignore File
+# Files and directories to exclude from skill packaging
+
+# Git and version control
+.git/
+.gitignore
+.github/
+.gitattributes
+
+# Version control and backups
+*.backup
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Development and testing
+tests/
+test/
+.test/
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+.npm/
+.node_modules/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.sublime-settings
+*.swp
+*.swo
+*~
+.editor.config
+.editorconfig.bak
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+*.tmp
+*.log
+logs/
+
+# OS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+.egg-info/
+*.egg
+.tox/
+.nox/
+
+# Package managers
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+lerna-debug.log
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# Documentation builds
+docs/_build/
+docs/.doctrees/
+site/
+htmlcov/
+
+# Cache files
+.cache/
+.eslintcache
+.stylelintcache
+
+# Compiled files
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Private or sensitive files
+secrets/
+private/
+credentials.json
+.credentials
+.aws/
+.azure/
+.gcp/
+
+# Project-specific
+.claude-config/
+.anthropic/
+.api-keys
+
+# Workflow files (except doc review related)
+.github/workflows/
+!.github/workflows/docs.yml
+
+# Archive files (but keep the source)
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+
+# Node/npm specific
+.npmrc
+.npmignore
+npm-shrinkwrap.json
+
+# Python specific
+.venv/
+venv/
+ENV/
+env/
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Ruby specific
+Gemfile.lock
+.ruby-version
+.ruby-gemset
+
+# Java specific
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+release.properties
+
+# Go specific
+vendor/
+*.mod
+go.sum
+
+# Rust specific
+Cargo.lock
+target/
+
+# Backup and restore scripts
+backup.sh
+restore.sh
+*.backup.sh
+
+# Local configuration overrides
+.local/
+local.env
+config.local.json
+
+# Documentation that shouldn't be packaged
+docs/internal/
+docs/private/
+docs/dev-notes.md
+
+# Experimental features
+experiments/
+poc/
+prototype/
+
+# Keep these IMPORTANT files (don't ignore)
+# README.md - included
+# LICENSE - included
+# CHANGELOG.md - included
+# manifest.json - included
+# skill.yaml - included
+
+# End of .skillignore

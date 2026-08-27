@@ -1,0 +1,28 @@
+name: Repo conventions guard
+
+# Runs the same mechanical checks as the local pre-commit hook
+# (scripts/check_repo_conventions.py, see specs/workflow.md Section 8), so
+# enforcement doesn't depend on any contributor -- human or AI agent, any tool
+# -- having run the local setup step first.
+#
+# NOTE: GitHub Actions must be ENABLED at the repository level for this to run
+# (a parked human decision -- see specs/NEXT.md).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      # The checker is stdlib-only, so no uv/dependency setup is needed here.
+      - name: Run repo conventions guard
+        env:
+          CHECK_CONVENTIONS_BASE_REF: ${{ github.event.pull_request.base.sha || 'HEAD~1' }}
+        run: python3 scripts/check_repo_conventions.py

@@ -1,0 +1,2 @@
+# Tests live here, one test_<skill-name>.py per src/ module. Run with
+# `uv run pytest`. See specs/workflow.md Section 3.

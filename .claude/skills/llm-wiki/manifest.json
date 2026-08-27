@@ -1,0 +1,84 @@
+{
+  "manifest_version": "1.0",
+  "skill_id": "llm-wiki",
+  "name": "LLM Wiki",
+  "version": "1.0.0",
+  "description": "Maintains a persistent, LLM-managed personal wiki — ingest sources, query knowledge, and lint the wiki for health.",
+  "author": "kimcharli",
+  "license": "MIT",
+  "homepage": "https://github.com/kimcharli/ck-skills",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kimcharli/ck-skills.git"
+  },
+  "keywords": [
+    "wiki",
+    "knowledge-base",
+    "rag",
+    "notes",
+    "research",
+    "obsidian",
+    "markdown",
+    "productivity"
+  ],
+  "categories": [
+    "knowledge-management",
+    "productivity",
+    "workflow"
+  ],
+  "commands": [
+    {
+      "name": "wiki-init",
+      "description": "Bootstrap a new wiki in the current project",
+      "file": "commands/init.md"
+    },
+    {
+      "name": "wiki-ingest",
+      "description": "Process a raw source file and integrate it into the wiki",
+      "file": "commands/ingest.md"
+    },
+    {
+      "name": "wiki-query",
+      "description": "Answer a question using wiki pages with citations",
+      "file": "commands/query.md"
+    },
+    {
+      "name": "wiki-lint",
+      "description": "Health-check the wiki for orphans, contradictions, and gaps",
+      "file": "commands/lint.md"
+    }
+  ],
+  "features": [
+    "Bootstrap a new wiki with raw/, wiki/, index.md, log.md, and WIKI.md schema",
+    "Ingest single sources: extract, write wiki pages, update index and log",
+    "Query wiki with index-first navigation and citation-backed answers",
+    "File valuable query answers back into the wiki as new pages",
+    "Lint for orphan pages, contradictions, stale claims, and missing cross-references",
+    "Structured log format parseable with standard unix tools",
+    "YAML frontmatter on all wiki pages for Dataview and LLM staleness reasoning"
+  ],
+  "dependencies": [],
+  "documentation": {
+    "readme": "README.md"
+  },
+  "installation": {
+    "method": "script",
+    "script": "install.sh",
+    "uninstall_script": "uninstall.sh",
+    "location": "~/.agents/skills/llm-wiki"
+  },
+  "system_requirements": {
+    "claude_code": "latest",
+    "bash": "4.0+"
+  },
+  "permissions": {
+    "file_read": true,
+    "file_write": true,
+    "file_delete": false,
+    "bash_execution": false,
+    "git_access": false
+  },
+  "created_at": "2026-04-29",
+  "updated_at": "2026-04-29",
+  "last_release": "2026-04-29"
+}

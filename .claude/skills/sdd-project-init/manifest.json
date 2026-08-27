@@ -1,0 +1,71 @@
+{
+  "manifest_version": "1.0",
+  "skill_id": "sdd-project-init",
+  "name": "SDD Project Init",
+  "version": "1.0.0",
+  "description": "Initialize a new project with Spec-Driven Development structure — runs an interview and generates all files fully populated",
+  "author": "kimcharli",
+  "license": "MIT",
+  "homepage": "https://github.com/kimcharli/ck-skills",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kimcharli/ck-skills.git"
+  },
+  "keywords": [
+    "sdd",
+    "spec-driven-development",
+    "project-init",
+    "scaffold",
+    "bootstrap",
+    "claude-code",
+    "workflow",
+    "productivity"
+  ],
+  "categories": [
+    "project-management",
+    "productivity",
+    "workflow"
+  ],
+  "commands": [
+    {
+      "name": "init",
+      "description": "Interview-driven project initializer — creates AGENTS.md, specs/, docs/ fully populated",
+      "file": "commands/init.md"
+    }
+  ],
+  "features": [
+    "Interview-driven setup — no placeholders left behind",
+    "Generates AGENTS.md with SDD gates enforced",
+    "Generates specs/ (requirements, design, tasks, features template)",
+    "Generates docs/sdd-how-to-apply.md as human reference",
+    "Conditionally generates GEMINI.md and .github/copilot-instructions.md",
+    "Single command — globally available, runs before any project exists",
+    "Zero external dependencies"
+  ],
+  "dependencies": [],
+  "documentation": {
+    "readme": "README.md",
+    "detailed": "docs/README.md"
+  },
+  "installation": {
+    "method": "script",
+    "script": "install.sh",
+    "uninstall_script": "uninstall.sh",
+    "location": "~/.agents/skills/sdd-project-init"
+  },
+  "system_requirements": {
+    "claude_code": "latest",
+    "bash": "4.0+",
+    "os": ["macOS", "Linux", "WSL"]
+  },
+  "permissions": {
+    "file_read": false,
+    "file_write": true,
+    "file_delete": false,
+    "bash_execution": false,
+    "git_access": false
+  },
+  "created_at": "2026-03-18",
+  "updated_at": "2026-03-18",
+  "last_release": "2026-03-18"
+}

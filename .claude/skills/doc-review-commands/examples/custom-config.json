@@ -1,0 +1,77 @@
+{
+  "_comment": "Example custom configuration for your project",
+  "categories": {
+    "api": {
+      "patterns": [
+        "## API",
+        "### Endpoints",
+        "Request/Response",
+        "curl.*http",
+        "POST",
+        "GET",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "description": "API documentation and endpoint references"
+    },
+    "user-guide": {
+      "patterns": [
+        "## Installation",
+        "### Setup",
+        "Getting Started",
+        "Quick Start",
+        "## Usage",
+        "### Examples",
+        "Tutorial"
+      ],
+      "description": "End-user documentation and guides"
+    },
+    "technical": {
+      "patterns": [
+        "## Architecture",
+        "### Design",
+        "Technical.*Spec",
+        "## Security",
+        "Performance",
+        "Requirements",
+        "System.*Design"
+      ],
+      "description": "Technical specifications and architecture"
+    },
+    "ai-context": {
+      "patterns": [
+        "AI",
+        "Claude",
+        "Gemini",
+        "Assistant",
+        "Tool.*Usage",
+        "Prompt",
+        "LLM",
+        "Model"
+      ],
+      "description": "AI assistant integration and context"
+    },
+    "devops": {
+      "patterns": [
+        "CI/CD",
+        "Docker",
+        "Kubernetes",
+        "Deploy",
+        "Infrastructure",
+        "Pipeline"
+      ],
+      "description": "DevOps and deployment documentation"
+    }
+  },
+  "essential_root_files": [
+    "README.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "LICENSE.md",
+    "CODE_OF_CONDUCT.md"
+  ],
+  "large_file_threshold": 250
+}

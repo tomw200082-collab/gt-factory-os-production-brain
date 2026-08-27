@@ -1,8 +1,8 @@
 # Vendored third-party skills
 
 These skill directories were copied in from public upstream repositories on
-2026-08-04, `apple-design` on 2026-08-25, and the four copywriting skills on
-2026-08-26. They are **not** GT Factory OS governance artifacts — they are general-purpose development-workflow skills.
+2026-08-04, `apple-design` on 2026-08-25, the four copywriting skills on
+2026-08-26, and the nine `ck-skills` workflow skills on 2026-08-27. They are **not** GT Factory OS governance artifacts — they are general-purpose development-workflow skills.
 Nothing here is authority; the authority order in `CLAUDE.md` is unaffected.
 
 | Upstream | License | Skills |
@@ -14,6 +14,7 @@ Nothing here is authority; the authority order in `CLAUDE.md` is unaffected.
 | Anthropic (supplied by Tom, 2026-08-05) | see note | `frontend-design` |
 | [dickwu/apple-design-skill](https://github.com/dickwu/apple-design-skill) | none stated — see note | `apple-design` |
 | [boraoztunc/skills](https://github.com/boraoztunc/skills) | MIT (README only — no `LICENSE` file) | `ogilvy`, `copywriting`, `copy-editing`, `stop-slop` |
+| [kimcharli/ck-skills](https://github.com/kimcharli/ck-skills) | MIT (README only — no root `LICENSE` file) | `decision-capture`, `plan-doc`, `session-close`, `sdd-git-commit`, `doc-review-commands`, `sdd-project-init`, `python-repo-init`, `python-lint-fix`, `llm-wiki` |
 
 `frontend-design` was supplied directly by Tom on 2026-08-05, not cloned from a
 public repo. Its frontmatter says `license: Complete terms in LICENSE.txt`, but
@@ -59,6 +60,33 @@ skills above, though stronger than `apple-design`. Flagged for Tom.
 this directory has `name` equal to its directory name, and upstream's own README
 documents the command as `/ogilvy`. The `name` field was changed to `ogilvy`.
 That is the only edit; the three other files are byte-identical to upstream.
+
+The nine `ck-skills` skills were cloned from `kimcharli/ck-skills` at commit
+`90ba1b4` (2026-07-17, the upstream tip on 2026-08-27), at Tom's request. They
+are **workflow/governance** skills — spec-driven development, decision capture,
+plan-first batches, session handoff — not design or copy skills.
+
+**Licence is the weakest-but-one link in this directory.** The README says
+"MIT — see [LICENSE](LICENSE)" but **the repo ships no root `LICENSE` file** and
+that link is dead. No skill declares `license:` in its own frontmatter. The only
+licence text anywhere in the tree is
+`doc-review-commands/LICENSE` — MIT, "Copyright (c) 2025 doc-review-commands
+contributors", which covers that one sub-tree and names no individual holder.
+So: one of nine skills carries a real permission notice; the other eight are
+covered only by a README word whose target does not exist. That is the same
+class of gap as `boraoztunc/skills` above, and weaker in that even the README
+link is broken. Stronger than `apple-design`, which has no grant at all.
+Flagged for Tom.
+
+Upstream lays the skills out under `plugins/ck/skills/<name>/`,
+`plugins/llm-wiki/` and `plugins/python-repo-init/skills/python-repo-init/`.
+They were flattened to `.claude/skills/<name>/` to match every other skill here.
+No file contents were edited; every `name:` already equalled its directory name.
+`llm-wiki/install.sh` and `llm-wiki/uninstall.sh` were **not** copied — they
+write to `~/.claude` outside the repo, and installer scripts are excluded by the
+rule at the end of this file. Everything else each skill needs to run
+(`commands/`, `tools/`, `templates/`, `docs/`, `config/`, `scripts/`) came with
+it: 97 files.
 
 Only `SKILL.md`, `README.md` and `references/` were copied (56 files, ~600 KB).
 The upstream `AGENTS.md`, `.cursorrules` and `.gitignore` are for other editors
@@ -123,6 +151,36 @@ and installer scripts were **not** copied, and `settings.json` was not modified.
   `-reviewer`) that were not copied, so its delegation targets do not exist
   in this workspace.
 
+- **Three of the nine are Python-only and inert here.** `python-repo-init`,
+  `python-lint-fix` and `sdd-project-init`'s Python branch assume uv/mise, ruff
+  and pre-commit. This workspace is TypeScript, SQL and Next.js — `gt-factory-os`
+  runs `npm run typecheck`, `tsx --test` and `pg_prove`. Do not run them against
+  these repos expecting them to work; they are here for completeness.
+- **`session-close` overlaps GT's own `close-session`.** Two skills, near-identical
+  names, different jobs. GT's `close-session` is the one that knows this
+  workspace: unmerged PRs, live triggers, PR webhook subscriptions, the
+  production brain's knowledge layout. Upstream's `session-close` only refreshes
+  a `specs/NEXT.md` pointer. **Reach for `close-session` in this workspace.**
+- **`plan-doc` and `decision-capture` overlap GT's existing governance, and the
+  GT rule wins.** Both write to `specs/` and commit on their own. In this
+  workspace decisions belong in `Sales-Machine/doctrine/decisions.md` (Tom sole
+  approver, rule 5) or `docs/decisions/` here — **not** a new `specs/` tree, and
+  `CLAUDE.md` forbids new authority docs without a Tom decision. Use them for
+  their interview-and-write-it-down discipline; route the output to the path GT
+  already owns. `decision-capture` also commits and pushes by itself — know that
+  before invoking it on a branch you care about.
+- **`sdd-git-commit` will want to touch `CHANGELOG.md` and `TODO.md`.** Neither
+  is the convention in these repos, and `git add -A` / `git add .` is a stop
+  condition in `CLAUDE.md`. Read what it stages before letting it commit.
+- **`llm-wiki` overlaps `graphify` and the `Sales-Machine/knowledge/` card
+  system.** It maintains its own markdown wiki with its own index; GT already has
+  a graded-card registry with authority grades and freshness classes that
+  `llm-wiki` knows nothing about. Do not let it become a second knowledge store.
+- **`doc-review-commands` carries 31 files, most of them its own documentation**
+  (`docs/QA-REPORT.md`, `docs/OPTIMIZATION-ANALYSIS.md`, and so on) describing
+  itself rather than helping you use it. The working parts are `SKILL.md`,
+  `commands/` and `tools/analyzer.sh`.
+
 ## Updating
 
 Re-clone the upstream repo and copy `skills/<name>/` over the local directory.
@@ -141,6 +199,12 @@ The `boraoztunc/skills` upstream states MIT in its README but ships no root
 `copywriting` and `copy-editing` restate nothing. Copyright for `stop-slop`
 remains with Hardik Pandya (`hardikpandya/stop-slop`); for the other three,
 upstream names no holder.
+
+The `kimcharli/ck-skills` upstream states MIT in its README but the `LICENSE`
+link that README points at resolves to nothing — no root licence file exists.
+Only `doc-review-commands/LICENSE` carries real MIT text, attributed to
+"doc-review-commands contributors" with no named holder. The remaining eight
+skills travel with no permission notice. Internal use only; do not redistribute.
 
 `apple-design` carries no licence grant at all — see its note above. Treat it as the
 weakest link in this directory and keep it internal.

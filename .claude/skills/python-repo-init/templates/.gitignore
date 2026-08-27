@@ -1,0 +1,19 @@
+# data/01_raw and data/03_generated are tracked; data/work and data/tmp hold
+# scratch and (potentially) credential-bearing files that must stay out of git
+# — see specs/workflow.md Section 5a. The .gitkeep negations keep the empty
+# directories present in every clone.
+data/work/*
+!data/work/.gitkeep
+data/tmp/*
+!data/tmp/.gitkeep
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# tooling
+.tokensave
+.gemini/
+.DS_Store

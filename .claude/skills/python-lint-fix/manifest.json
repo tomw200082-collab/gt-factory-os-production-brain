@@ -1,0 +1,71 @@
+{
+  "manifest_version": "1.0",
+  "skill_id": "python-lint-fix",
+  "name": "Python Lint Fix",
+  "version": "1.1.0",
+  "description": "Environment health checks and pre-commit setup guidance for Python and Markdown quality automation.",
+  "author": "kimcharli",
+  "license": "MIT",
+  "homepage": "https://github.com/kimcharli/ck-skills",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kimcharli/ck-skills.git"
+  },
+  "keywords": [
+    "lint",
+    "format",
+    "python",
+    "ruff",
+    "markdown",
+    "mdformat",
+    "markdownlint",
+    "productivity"
+  ],
+  "categories": [
+    "linting",
+    "productivity",
+    "workflow"
+  ],
+  "commands": [
+    {
+      "name": "lint",
+      "description": "Check environment health and guide pre-commit setup",
+      "file": "commands/lint.md"
+    }
+  ],
+  "features": [
+    "Pre-commit setup guidance for commit-time quality automation",
+    "Environment health checks for uv, pre-commit, and hook installation",
+    "Project policy checks for .pre-commit-config.yaml and markdownlint version",
+    "Compatibility checks for markdownlint-cli (MD060 support)",
+    "Skill validation support via validate-skill.sh detection",
+    "Actionable remediation hints for missing tools"
+  ],
+  "dependencies": [],
+  "documentation": {
+    "readme": "README.md"
+  },
+  "installation": {
+    "method": "script",
+    "script": "install.sh",
+    "uninstall_script": "uninstall.sh",
+    "location": "~/.agents/skills/python-lint-fix"
+  },
+  "system_requirements": {
+    "claude_code": "latest",
+    "bash": "4.0+",
+    "ruff": "latest",
+    "mdformat": "latest",
+    "npm": "for markdownlint-cli"
+  },
+  "permissions": {
+    "file_read": true,
+    "file_write": true,
+    "file_delete": false,
+    "bash_execution": true,
+    "git_access": false
+  },
+  "created_at": "2026-03-18",
+  "updated_at": "2026-04-09",
+  "last_release": "2026-04-09"
+}
