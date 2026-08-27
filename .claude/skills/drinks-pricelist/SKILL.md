@@ -154,3 +154,48 @@ display + Hebrew sans, matching the deck.
 Files changed · rows rendered · fields compared vs the figures file **and** vs
 the CSV · deviations · asterisk count (expect 44) · PDF page count and size.
 "It should work" is not evidence.
+
+## LEARNED — append-only log
+
+*Self-compaction: when this section passes ~30 lines, distil it into the sections
+above, clear the log, and stamp "Last distilled &lt;date&gt;" here.*
+
+**2026-08-27 — the money elements are two textRegions, not one.**
+Every cost / price figure on a drink page is a single text element holding **two**
+regions: `₪` at normal weight and the digits at bold. `replace_text` rewrites the
+element and flattens both into one font — the shekel sign silently goes bold and
+the page changes typographically. Always use `find_and_replace_text` on the
+**digits only** (`"3.11" → "3.25"`), never `replace_text`, on any figure element.
+
+**2026-08-27 — `locator_id` is not stable across transactions.**
+Ids regenerate per editing transaction. A write plan built from an earlier read
+will target elements that no longer exist. Re-read `design_content` *inside the
+live transaction* and generate the operations from that read, every time.
+
+**2026-08-27 — page titles in these decks lie; match on content.**
+Canva page titles are copied along with the template and are frequently wrong —
+catalog page 22 is titled `Desert · Peach` but holds גזוז היביסקוס ותפוח. Match a
+page to a drink by its Hebrew title *element* (font size 60) plus its figures,
+never by the page title. Same trap on the opening menu.
+
+**2026-08-27 — large structured reads overflow the token cap.**
+A structured `read-design` of the 60-page catalog is ~900 KB and is written to a
+tool-results file instead of returned. Parse it offline with python; a *plain*
+(non-transaction) read is small enough to return inline and is enough to verify
+figures after a commit.
+
+**2026-08-27 — `export-download.canva.com` is blocked by the egress proxy.**
+Canva export URLs cannot be fetched from this environment (403 on CONNECT, org
+policy). Verify written pages by re-reading the design, not by downloading a PDF.
+
+**2026-08-27 — FOOD COST is now derived, not restated.**
+The figures file no longer carries costs copied off the catalog. Every cost is
+computed by `docs/pricing/2026-08-27_cost_model.py` from Tom's ingredient price
+list; the inputs, assumptions and Tom's decisions (foam ÷2 because whipping
+doubles the volume, 350 ml cup, cheapest juices, garnish excluded) are documented
+in `docs/pricing/2026-08-27_COST_MODEL.md`. Re-run the model before changing any
+cost by hand.
+
+**2026-08-27 — no profit-per-cup line on catalog drink pages.**
+The catalog's drink pages carry exactly three figures: cost, price, margin %. Do
+not add a profit line — that is the *pricelist PDF*'s job, not the catalog's.
