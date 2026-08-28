@@ -131,8 +131,21 @@ Read the output. If it is clean, flip `dry_run` to `false` and run it again — 
 posts. Tom's standing instruction is to post without waiting for approval **when every
 check is green**, so do not stall on a clean dry run; just show him the result.
 
-When the script exits blocked (code 2), it has written nothing. Bring the blockers to
-Tom with the numbers, and let him decide. The blockers worth knowing:
+Two things about the dry run are worth holding in mind, because both decide whether
+"clean" means anything:
+
+- **A first-time report cannot be previewed.** The runs only exist once the plan row
+  does, and a dry run refuses to create one — so for a date with no plan yet, there is
+  nothing to explode and nothing to check. The script says so (`⚠ NOT CHECKED`, status
+  `dry_run_incomplete`) rather than printing an empty, reassuring result. Those lines
+  are gated for real on the live pass, which still refuses to post past a blocker.
+- **A blocked run is not inert.** It reports nothing and moves no stock, but the plan
+  rows are written before the gate runs, so some may already exist. The script lists
+  exactly which. Plan rows are intent only, so this is untidy rather than dangerous —
+  re-running after the blocker clears reuses them.
+
+Bring the blockers to Tom with the numbers, and let him decide. The blockers worth
+knowing:
 
 | Blocker | What it means | What to do |
 |---|---|---|
@@ -140,6 +153,7 @@ Tom with the numbers, and let him decide. The blockers worth knowing:
 | off-recipe take flagged | A collected quantity differs from the recipe by 2× or more | Ask what really went in, then put it in `explanation` |
 | duplicate open plans | Two plan rows for the same base or item that day | Cancel one in the portal first — otherwise the other stays looking unproduced |
 | no run materialized | The plan's shape does not imply a run for that item | Check the plan in the portal |
+| shared component over-drawn | Two runs in the same batch each pass alone but together exceed on-hand | Real for a split tank, where both pack SKUs draw the same base and cartons. Every preview is taken before any report posts, so each sees the same on-hand; without this check the later report is silently capped and books goods the materials do not back. Split the batch across two runs of the script, or confirm the negative |
 
 Optional per line: `scrap_qty`, `qc_brix`, `qc_ph`, `notes`, and the two
 overrides — `confirm_negative: true` and `explanation: "..."`.

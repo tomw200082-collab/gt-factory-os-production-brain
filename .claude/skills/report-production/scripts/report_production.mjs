@@ -34,8 +34,13 @@ const BASE = process.env.GT_API_BASE ?? 'https://gt-factory-os-api-production.up
 const TOKEN = process.env.GT_API_TOKEN;
 
 const OPEN_PLAN_STATUS = new Set(['planned', 'in_production']);
+const CONSUME_EPS = 1e-8;
 const blockers = [];
 const notes = [];
+// Lines a dry run could not preview: the runs only exist once their plan row
+// does, and a dry run refuses to create one. Tracked so a dry run can say it
+// checked nothing rather than looking clean.
+const notPreviewed = [];
 
 // ---------------------------------------------------------------------------
 // HTTP
@@ -184,6 +189,7 @@ async function ensurePlans(spec) {
     const batchSizeL = round8(lines.reduce((sum, l) => sum + l.qty * Number(l.fill_l_per_unit), 0));
     if (spec.dry_run) {
       actions.push({ kind: 'plan_would_be_created', base_bom_head_id: baseId, batch_size_l: batchSizeL });
+      for (const line of lines) notPreviewed.push(line.item_id);
       continue;
     }
     const created = await call('POST', '/api/v1/mutations/production-plan', {
@@ -222,6 +228,7 @@ async function ensurePlans(spec) {
 
     if (spec.dry_run) {
       actions.push({ kind: 'plan_would_be_created', item_id: line.item_id, qty: line.qty });
+      notPreviewed.push(line.item_id);
       continue;
     }
     const created = await call('POST', '/api/v1/mutations/production-plan', {
@@ -332,8 +339,10 @@ async function previewAll(targets) {
 // Report + close
 // ---------------------------------------------------------------------------
 
-async function reportAll(spec, targets, eventAt) {
-  const posted = [];
+// `posted` is owned by the caller and appended to as each report lands. A
+// mid-way failure throws, and the caller still holds every submission id that
+// already moved stock — which is exactly the moment those ids matter.
+async function reportAll(spec, targets, eventAt, posted) {
   for (const t of targets) {
     const res = await call('POST', `/api/v1/mutations/production-runs/${t.run.run_id}/report`, {
       idempotency_key: `PRODREPORT:${spec.date}:${t.line.item_id}:${t.line.qty}`,
@@ -348,7 +357,53 @@ async function reportAll(spec, targets, eventAt) {
     });
     posted.push({ item_id: t.line.item_id, plan_id: t.plan_id, ...res });
   }
-  return posted;
+}
+
+// Every preview is taken before any report posts, so each one sees the same
+// on-hand. Two runs of a split tank that each draw 60 of a component with 100
+// on hand both look fine alone; the second report is then quietly capped to the
+// remaining 40 and books finished goods the materials do not back. Judge the
+// summed demand, not the individual previews.
+function checkCumulativeDemand(targets) {
+  const demand = new Map();
+  for (const t of targets) {
+    for (const l of t.preview.lines) {
+      const key = `${l.source}:${l.component_id}`;
+      const entry = demand.get(key) ?? {
+        component_id: l.component_id,
+        uom: l.uom,
+        on_hand: Number(l.on_hand_qty),
+        wanted: 0,
+        targets: [],
+      };
+      entry.wanted += Number(l.wanted_qty);
+      entry.targets.push(t);
+      demand.set(key, entry);
+    }
+  }
+
+  for (const [key, e] of demand) {
+    // A component only one run touches was already judged by its own preview.
+    if (e.targets.length < 2 || e.wanted <= e.on_hand + CONSUME_EPS) continue;
+
+    const detail =
+      `${e.component_id}: ${e.targets.map((t) => t.line.item_id).join(' + ')} together need ` +
+      `${e.wanted.toFixed(8)} ${e.uom} against ${e.on_hand.toFixed(8)} on hand`;
+
+    if (e.targets.every((t) => t.line.confirm_negative)) {
+      // Confirmed per line, but no single preview flagged this component, so
+      // the decision has to be added here or the later report still caps.
+      for (const t of e.targets) {
+        const [source, componentId] = [key.slice(0, key.indexOf(':')), e.component_id];
+        if (!t.decisions.some((d) => d.component_id === componentId && d.source === source)) {
+          t.decisions.push({ component_id: componentId, source, confirm_negative: true });
+        }
+      }
+      notes.push(`${detail} — confirmed, posting in full and letting it read negative.`);
+    } else {
+      blockers.push(`${detail}. Each run passes on its own; the later one would be capped.`);
+    }
+  }
 }
 
 // A base-batch plan takes several pack reports, so it never completes through
@@ -426,29 +481,50 @@ async function main() {
 
   const { actions, planOf } = await ensurePlans(spec);
   const targets = blockers.length > 0 ? [] : await resolveRuns(spec, planOf);
-  if (targets.length > 0) await previewAll(targets);
+  if (targets.length > 0) {
+    await previewAll(targets);
+    checkCumulativeDemand(targets);
+  }
 
   const summary = { date: spec.date, event_at: eventAt, dry_run: !!spec.dry_run, plan_actions: actions, notes };
 
   if (blockers.length > 0) {
-    console.log('BLOCKED — nothing was reported.\n');
+    // Plan rows are intent only — they move no stock — but ensurePlans has
+    // already run by this point, so say which ones landed rather than implying
+    // the whole invocation was inert.
+    console.log('BLOCKED — no production was reported, no stock moved.\n');
     for (const b of blockers) console.log(`  • ${b}`);
+    const written = actions.filter((a) => a.kind === 'plan_created' || a.kind === 'plan_split_updated' || a.kind === 'plan_qty_updated');
+    if (written.length > 0) {
+      console.log('\n  Plan rows already written before the block (no stock impact):');
+      for (const a of written) console.log(`   - ${a.kind} ${a.plan_id} ${a.item_id ?? a.base_bom_head_id}`);
+    }
     if (targets.length > 0) printPreview(targets);
-    console.log(`\n${JSON.stringify({ ...summary, status: 'blocked', blockers }, null, 2)}`);
+    console.log(`\n${JSON.stringify({ ...summary, status: 'blocked', blockers, plan_rows_written: written }, null, 2)}`);
     process.exit(2);
   }
 
   if (spec.dry_run) {
+    const complete = notPreviewed.length === 0;
     console.log(`DRY RUN — ${spec.date}, event_at ${eventAt}. No writes.`);
     printPreview(targets);
+    if (!complete) {
+      // Without a plan row there is no run to explode, so there is nothing to
+      // check. Saying "clean" here would be the most dangerous output the
+      // script can produce, because a clean dry run is what licenses the post.
+      console.log(
+        `\n  ⚠ NOT CHECKED: ${[...new Set(notPreviewed)].join(', ')} — no plan row exists for ${spec.date} yet, ` +
+          'so no consumption could be previewed. Their gate runs for real on the live pass.',
+      );
+    }
     for (const n of notes) console.log(`\n  note: ${n}`);
-    console.log(`\n${JSON.stringify({ ...summary, status: 'dry_run' }, null, 2)}`);
+    console.log(`\n${JSON.stringify({ ...summary, status: complete ? 'dry_run' : 'dry_run_incomplete', not_previewed: [...new Set(notPreviewed)] }, null, 2)}`);
     return;
   }
 
-  let posted = [];
+  const posted = [];
   try {
-    posted = await reportAll(spec, targets, eventAt);
+    await reportAll(spec, targets, eventAt, posted);
   } catch (err) {
     console.log('PARTIAL — some reports posted before the failure.\n');
     printPosted(posted);
