@@ -38,7 +38,35 @@
 import { readFileSync } from 'node:fs';
 
 const BASE = process.env.GT_API_BASE ?? 'https://gt-factory-os-api-production.up.railway.app';
-const TOKEN = process.env.GT_API_TOKEN;
+let TOKEN = process.env.GT_API_TOKEN;
+const EMAIL = process.env.GT_API_EMAIL;
+const PASSWORD = process.env.GT_API_PASSWORD;
+const SUPABASE_URL = process.env.GT_SUPABASE_URL ?? 'https://rvadsozabmxkkrktwgnv.supabase.co';
+// Public/publishable anon key — identifies the project, not a secret. Override
+// with GT_API_ANON_KEY only if the project ever rotates it.
+const ANON_KEY = process.env.GT_API_ANON_KEY
+  ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2YWRzb3phYm14a2tya3R3Z252Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNjAwMzEsImV4cCI6MjA5MTgzNjAzMX0.8GV9b60f1sji6N3ZWmSclok6yBB5MkXHO1sJyKyda6Q';
+
+// Signs in once with GT_API_EMAIL/GT_API_PASSWORD and caches the access token,
+// so a long-lived password never has to be pasted by hand the way a token did.
+// GT_API_TOKEN still wins when set, for a one-off run against a pasted token.
+async function resolveToken() {
+  if (TOKEN) return TOKEN;
+  if (!EMAIL || !PASSWORD) {
+    throw new Error('set GT_API_TOKEN, or GT_API_EMAIL + GT_API_PASSWORD, in the environment');
+  }
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: EMAIL, password: PASSWORD }),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(`sign-in failed for ${EMAIL}: ${res.status} ${body.error_description ?? body.msg ?? JSON.stringify(body)}`);
+  }
+  TOKEN = body.access_token;
+  return TOKEN;
+}
 
 const OPEN_PLAN_STATUS = new Set(['planned', 'in_production']);
 const CONSUME_EPS = 1e-8;
@@ -62,7 +90,7 @@ async function call(method, path, body) {
     res = await fetch(`${BASE}${path}`, {
       method,
       headers: {
-        Authorization: `Bearer ${TOKEN}`,
+        Authorization: `Bearer ${await resolveToken()}`,
         ...(body ? { 'Content-Type': 'application/json' } : {}),
       },
       signal: AbortSignal.timeout(method === 'GET' ? TIMEOUT_MS.read : TIMEOUT_MS.write),
@@ -552,8 +580,8 @@ function printPosted(posted) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  if (!TOKEN) {
-    console.error('GT_API_TOKEN is required — a Supabase access token for the reporting user.');
+  if (!TOKEN && !(EMAIL && PASSWORD)) {
+    console.error('set GT_API_TOKEN, or GT_API_EMAIL + GT_API_PASSWORD, in the environment.');
     process.exit(2);
   }
   const spec = loadSpec();

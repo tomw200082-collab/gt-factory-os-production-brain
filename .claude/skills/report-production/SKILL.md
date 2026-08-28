@@ -45,19 +45,21 @@ gate, batch closing and partial-failure reporting.
 
 ## Step 1 — Get API access
 
-The script needs `GT_API_TOKEN`: a Supabase access token for the reporting user.
+The script signs in as `bot@gteveryday.com`, a dedicated operator account, using two
+environment variables that stay valid — nothing to paste, nothing that expires in an
+hour:
 
-If it is not already in the environment, ask Tom for it once and reuse it for the rest
-of the session (it expires after about an hour). The fastest way for him to get it, in
-the portal's browser console:
-
-```js
-JSON.parse(localStorage.getItem(
-  Object.keys(localStorage).find(k => k.includes('auth-token'))
-)).access_token
+```bash
+export GT_API_EMAIL=bot@gteveryday.com
+export GT_API_PASSWORD=<the password Tom set for this account>
 ```
 
-Confirm the path works before doing anything else:
+The script exchanges these for an access token itself at the start of each run. If
+`GT_API_TOKEN` is set instead, it wins over the email/password path — useful for a
+one-off run against a token pasted by hand, but it expires in about an hour and should
+not be the default anymore.
+
+Confirm the API is reachable before doing anything else:
 
 ```bash
 NODE_USE_ENV_PROXY=1 curl -sS https://gt-factory-os-api-production.up.railway.app/health
@@ -123,7 +125,7 @@ snapshot, and stock can move between the preview and the report.
 ```
 
 ```bash
-NODE_USE_ENV_PROXY=1 GT_API_TOKEN=... node scripts/report_production.mjs spec.json
+NODE_USE_ENV_PROXY=1 node scripts/report_production.mjs spec.json
 ```
 
 Read the output. If it is clean, flip `dry_run` to `false` and run it again — that
