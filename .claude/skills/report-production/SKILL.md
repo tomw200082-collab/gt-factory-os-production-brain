@@ -66,8 +66,6 @@ NODE_USE_ENV_PROXY=1 curl -sS https://gt-factory-os-api-production.up.railway.ap
 `NODE_USE_ENV_PROXY=1` matters only behind a proxy (Claude Code web sessions); Node's
 `fetch` ignores `HTTPS_PROXY` without it and the script will look like it is hanging.
 
-If a session has direct database access instead, that is fine for the **reads** below,
-but the writes still go through the API.
 
 ## Step 2 — Resolve what was produced
 
@@ -77,11 +75,11 @@ items could match.
 
 ```sql
 select i.item_id, i.item_name, i.family, i.pack_size, i.sales_uom, i.supply_method,
-       i.base_bom_head_id, i.base_fill_qty_per_unit, i.primary_bom_head_id, i.status
+       i.base_bom_head_id, i.base_fill_qty_per_unit
   from private_core.items i
  where i.status = 'ACTIVE'
    and i.supply_method in ('MANUFACTURED', 'REPACK')
-   and (i.family ilike $1 or i.item_name ilike $1)
+   and (i.family ilike '%<what Tom called it>%' or i.item_name ilike '%<what Tom called it>%')
  order by i.pack_size;
 ```
 
@@ -109,7 +107,8 @@ in the morning is not rejected as being in the future.
 ## Step 4 — Dry run, then report
 
 Write the spec and run it with `dry_run: true` first. The dry run makes no writes at
-all and prints the exact consumption the report will post.
+all and prints the consumption the report intends to post. Read "intends": it is a
+snapshot, and stock can move between the preview and the report.
 
 ```json
 {
@@ -153,10 +152,20 @@ knowing:
 | off-recipe take flagged | A collected quantity differs from the recipe by 2× or more | Ask what really went in, then put it in `explanation` |
 | duplicate open plans | Two plan rows for the same base or item that day | Cancel one in the portal first — otherwise the other stays looking unproduced |
 | no run materialized | The plan's shape does not imply a run for that item | Check the plan in the portal |
-| shared component over-drawn | Two runs in the same batch each pass alone but together exceed on-hand | Real for a split tank, where both pack SKUs draw the same base and cartons. Every preview is taken before any report posts, so each sees the same on-hand; without this check the later report is silently capped and books goods the materials do not back. Split the batch across two runs of the script, or confirm the negative |
+| shared component over-drawn | Two runs in the same batch each pass alone but together exceed on-hand | See below — split the batch across two runs, or confirm the negative |
+| run is CANCELLED | The run exists but was cancelled | Nothing to report against it; ask Tom what actually happened |
 
-Optional per line: `scrap_qty`, `qc_brix`, `qc_ph`, `notes`, and the two
-overrides — `confirm_negative: true` and `explanation: "..."`.
+The shared-component one is worth understanding rather than pattern-matching, because
+it is the split-tank case and therefore the common one: both pack SKUs of a base batch
+draw the same liquids and often the same carton. Every preview is taken before any
+report posts, so each run is measured against the same on-hand and each passes alone.
+Without the summed check the later report is silently capped to what is left and books
+finished goods the materials do not back.
+
+The spec's full field list lives in the script's header comment — that is the one
+definition, so a new field never has to be added in two places. Beyond the four fields
+above it takes `scrap_qty`, `qc_brix`, `qc_ph`, `notes`, `plan_note`, and the two
+overrides `confirm_negative` and `explanation`.
 
 `confirm_negative` is Tom's call and only Tom's. It says the material really did
 leave the shelf even though the projection holds none, which is usually a receipt
@@ -164,8 +173,13 @@ that was never booked rather than a phantom (Tom, 2026-07-27: bottles standing
 unlabelled against a label delivery). The take then posts in full and those
 components read negative until a receipt lands. Prefer booking the missing
 receipt first when the goods are genuinely on site — a negative balance is a debt
-the system carries in the open, not a free pass. When Tom does say to post it
-anyway, set the flag and name the affected components back to him.
+the system carries in the open, not a free pass.
+
+**Name the components rather than passing `true`**: `"confirm_negative": ["PKG-LABEL-UBE-500G"]`.
+The backend models this decision per component for a reason — "the labels arrived
+without a receipt" must not also authorise posting a genuinely missing concentrate in
+the same call. `true` confirms everything the preview flagged on that line, so use it
+only when Tom has actually seen the whole list.
 
 ## Step 5 — Verify, then report back
 
@@ -181,13 +195,24 @@ select movement_type, item_type, item_id, qty_delta::text, uom, notes
 -- finished goods now on hand
 select item_id, sum(calculated_on_hand)::text as on_hand
   from private_core.current_balances
- where site_id = 'GT-MAIN' and item_id = any($1::text[])
+ where site_id = 'GT-MAIN' and item_id = any(array['<component_id>', '...'])
  group by item_id;
 ```
 
 Expect one `PRODUCTION_OUTPUT` row (positive, the finished goods), one
 `PICK_CONSUMPTION` row per component (negative), and a zero-delta `PRODUCTION_SCRAP`
 audit row only when scrap was reported.
+
+**Read the shortfalls before anything else.** A shortfall means the report committed
+with a component capped to what was on hand — finished goods are booked against
+materials that were not fully consumed. `rebuild_verifier()` will still return 0,
+because the ledger is internally consistent; only the shortfall line says otherwise.
+Take any shortfall to Tom with the numbers.
+
+To answer "was this day reported?" use the canonical read model rather than a fresh
+derivation — `GET /api/v1/queries/production-plan-vs-actual?from=&to=` (planned vs
+reported per plan, with `gap_qty` and `no_report_flag`). It is what the 06:30
+daily-ops-guardian reads, so using it keeps the two answers identical by construction.
 
 If the session can write, also run `select * from private_core.rebuild_verifier();` and
 report the count — it must be 0. It rebuilds a shadow table, so a read-only session
@@ -215,14 +240,14 @@ These caused real confusion before; knowing them saves a wrong "fix".
   reported is cosmetic. The script says so and moves on.
 - **BOM lines in `PENDING` status are consumed too**, not just `ACTIVE` ones. That is
   deliberate.
-- **Re-running is safe.** Every mutation carries a fixed idempotency key, and a run that
-  is already `REPORTED` is skipped rather than posted twice.
+- **Re-running is safe**, but not because of the key alone: the report key carries the
+  quantity, so a corrected quantity mints a new one. What actually prevents a double
+  post is that a run already `REPORTED` is skipped before any call is made.
 
 ## Never
 
-- Never write SQL to `stock_ledger` or any projection, and never post a correction as an
-  `UPDATE` or `DELETE` — the ledger is append-only and corrections are reversal rows
-  (`api/src/production-actuals/reverse-handler.ts`).
+- Never post a correction as an `UPDATE` or `DELETE`. The ledger is append-only and a
+  correction is a reversal row — `api/src/production-actuals/reverse-handler.ts`.
 - Never invent a quantity, a UOM, or a date. If the message is ambiguous, ask.
 - Never post past a blocker on your own judgement. A negative projection is Tom's call.
 - Never report a batch twice to "make sure it went in" — check the run's status instead.
