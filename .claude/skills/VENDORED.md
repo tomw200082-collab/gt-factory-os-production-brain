@@ -144,3 +144,27 @@ upstream names no holder.
 
 `apple-design` carries no licence grant at all — see its note above. Treat it as the
 weakest link in this directory and keep it internal.
+
+## Vendored elsewhere in this workspace — ledger pointers
+
+This file is the workspace-wide provenance ledger. Two sets of skills live in
+`Sales-Machine/.claude/skills/` and are recorded in that repo's own
+`VENDORED.md`; they are **not** duplicated here.
+
+| Upstream | Commit | License | Where | Why not here |
+|---|---|---|---|---|
+| [google/skills](https://github.com/google/skills) | `a7123f8` (2026-08-28) | Apache-2.0 | `Sales-Machine` — 17 skills: Google Ads (13), Google Analytics (2), catalog loaders (2) | Advertising and measurement APIs are sales work. The 110 `cloud/` skills were not taken at all |
+| [Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach) | `06c202b` (2026-08-25) | MIT | `Sales-Machine` — `agent-reach`, one skill | Read-only access to Instagram / Facebook / LinkedIn / YouTube / web. Social research is sales work |
+
+Two notes that matter beyond the sales repo:
+
+- **Agent Reach is a Python CLI, not a skill collection.** Only its
+  `agent_reach/skill/` directory was vendored. The routing table it ships names
+  commands that do not exist until `pip install agent-reach` runs, and that
+  install is blocked in the remote container. Its login-backed platforms
+  (Instagram, Facebook, LinkedIn, Reddit) need a real desktop Chrome session and
+  cannot work from any container. Reading them through a logged-in session is
+  against those platforms' terms of service, on a real GT business account —
+  flagged for Tom, not decided.
+- **Neither set is authority.** Same standing as everything above: tools, not
+  truth. The authority order in `CLAUDE.md` is unaffected.
