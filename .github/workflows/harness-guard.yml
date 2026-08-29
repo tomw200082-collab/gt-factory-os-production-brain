@@ -1,0 +1,44 @@
+# GT Factory OS — harness guard
+#
+# The first CI in this repo. Until now every guardrail here was a local hook
+# (.claude/hooks/pre_tool_use.sh and friends), which runs only inside an
+# interactive Claude Code session on someone's machine — never on a pull
+# request, and never in a remote or web session. This workflow closes that gap
+# for the structural checks that can be made mechanically.
+#
+# It does NOT replace the hooks. The hooks block a write before it happens;
+# this catches what reached a branch regardless of how it got there.
+#
+# Same script runs locally:  python3 scripts/harness_guard.py
+
+name: harness-guard
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pinned rather than relying on the runner image's default python, so a
+      # runner-image bump can't silently change what validated the harness.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # PyYAML only. The guard validates frontmatter with a real YAML parser
+      # because a line reader accepts input Claude Code itself would reject.
+      - name: Install PyYAML
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+
+      - name: Harness guard
+        run: python3 scripts/harness_guard.py

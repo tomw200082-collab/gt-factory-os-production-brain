@@ -12,7 +12,7 @@ Project-local harness so Claude Code can work on GT Factory OS with more safe au
 ## What this harness does **not** do
 - It does **not** implement Factory OS features. Agents write prompts and code for the build; they are not live operational components.
 - It does **not** override locked project decisions. Any attempt to do so produces `contract_failure` and halts.
-- It does **not** connect to live integrations. MCP config contains placeholders only; real credentials must be supplied out-of-band.
+- It does **not** connect to live integrations. It carries no MCP config of its own — MCP servers come from the session's own connectors. (The `mcp.json` placeholder was retired 2026-08-29, GAP-014; archived at `docs/archive/mcp.retired-2026-08-29.json`.)
 - It does **not** bypass safety via `--dangerously-skip-permissions`. Destructive commands require explicit escalation.
 
 ## How to run work through W1 / W2 / W4
@@ -57,7 +57,6 @@ The governor agent fulfills the W5 role on-demand. It is not a standing lane.
 ├── README.md              this file
 ├── SIGNALS.md             FILE_READY / RUNTIME_READY / TOOL_FAILURE_UNCLEARED rules
 ├── settings.json          hooks + permissions
-├── mcp.json               MCP starter config (placeholders)
 ├── agents/
 │   ├── executor-w1.md
 │   ├── executor-w2.md
