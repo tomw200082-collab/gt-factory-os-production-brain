@@ -35,5 +35,10 @@ jobs:
         with:
           python-version: '3.12'
 
+      # PyYAML only. The guard validates frontmatter with a real YAML parser
+      # because a line reader accepts input Claude Code itself would reject.
+      - name: Install PyYAML
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+
       - name: Harness guard
         run: python3 scripts/harness_guard.py

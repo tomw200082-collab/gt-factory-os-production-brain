@@ -15,23 +15,39 @@ Read-only. It validates and reports; it never edits a file. Every check prints
 an N/N count per the CLAUDE.md evidence standard, and a failure names the exact
 file and what is wrong with it.
 
-Stdlib only, by design -- this repo has no package manifest and should not grow
-one just to lint itself.
+Requires PyYAML. Frontmatter is validated with a real YAML parser rather than a
+line reader, because the whole point is to reject what Claude Code would reject:
+`description: Routes: production work` looks fine line-by-line and is invalid
+YAML, and a guard that passes it defeats its own purpose.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
+
+try:
+    import yaml
+except ModuleNotFoundError:  # pragma: no cover - environment guard
+    sys.exit(
+        "harness guard needs PyYAML to validate frontmatter honestly.\n"
+        "Install it with:  python3 -m pip install pyyaml"
+    )
 
 ROOT = Path(__file__).resolve().parents[1]
 IN_ACTIONS = bool(os.environ.get("GITHUB_ACTIONS"))
 
 # Tracked paths that should never hold a credential.
 SECRET_PATTERNS = (".env", ".pem", ".p12", ".pfx", "id_rsa", "id_ed25519", "credentials.json")
+
+# A script path inside a hook command, in any of the shapes settings.json uses.
+SCRIPT_TOKEN = re.compile(r"[^\s\"'`;|&()]+\.(?:sh|bash|py|mjs|cjs|js|ts)\b")
+# Leading ${CLAUDE_PROJECT_DIR:-.}/ or $CLAUDE_PROJECT_DIR/ — resolves to the repo root.
+PROJECT_DIR_PREFIX = re.compile(r"^\$\{[A-Za-z_][A-Za-z0-9_]*(?::-[^}]*)?\}/|^\$[A-Za-z_][A-Za-z0-9_]*/")
 
 
 class Report:
@@ -56,28 +72,54 @@ def rel(path: Path) -> str:
     return path.relative_to(ROOT).as_posix()
 
 
-def read_frontmatter(path: Path) -> dict[str, str] | None:
-    """Return top-level `key: value` pairs from a YAML frontmatter block.
-
-    Deliberately minimal: the harness only ever reads `name` and `description`
-    off the top level, so a full YAML parser would be a dependency bought for
-    nothing. Returns None when the file opens without a `---` fence.
-    """
+def read_frontmatter(path: Path) -> tuple[dict | None, str]:
+    """Parse a file's YAML frontmatter. Returns (mapping, "") or (None, reason)."""
     try:
         lines = path.read_text(encoding="utf-8-sig").splitlines()
-    except (OSError, UnicodeDecodeError):
-        return None
+    except (OSError, UnicodeDecodeError) as exc:
+        return None, f"unreadable: {exc}"
     if not lines or lines[0].strip() != "---":
-        return None
-    fields: dict[str, str] = {}
-    for line in lines[1:]:
-        if line.strip() == "---":
-            return fields
-        if line.startswith((" ", "\t", "-")) or ":" not in line:
-            continue  # nested value or list item — not a top-level key
-        key, _, value = line.partition(":")
-        fields[key.strip()] = value.strip()
-    return None  # fence opened but never closed
+        return None, "no YAML frontmatter block — the asset will not register"
+    try:
+        end = lines.index("---", 1)
+    except ValueError:
+        return None, "frontmatter fence opened but never closed"
+    try:
+        data = yaml.safe_load("\n".join(lines[1:end]))
+    except yaml.YAMLError as exc:
+        detail = str(exc).splitlines()[0]
+        return None, f"frontmatter is not valid YAML ({detail}) — the asset will not register"
+    if not isinstance(data, dict):
+        kind = type(data).__name__
+        return None, f"frontmatter parses as {kind}, not a mapping of fields"
+    return data, ""
+
+
+def check_named_asset(
+    report: Report, title: str, targets: list[tuple[Path, str, str]]
+) -> None:
+    """Shared frontmatter contract: name + description, name matching its owner.
+
+    targets is (file, expected name, what the name must match) — the filename for
+    agents, the directory for skills.
+    """
+    ok, bad = 0, []
+    for path, expected, owner in targets:
+        if not path.is_file():
+            bad.append((rel(path.parent), f"{owner} has no {path.name}"))
+            continue
+        fields, reason = read_frontmatter(path)
+        if fields is None:
+            bad.append((rel(path), reason))
+        elif not fields.get("name"):
+            bad.append((rel(path), "frontmatter has no `name`"))
+        elif fields["name"] != expected:
+            bad.append((rel(path), f"frontmatter name `{fields['name']}` != {owner} `{expected}`"))
+        elif not fields.get("description"):
+            bad.append((rel(path), "frontmatter has no `description` — it can never be selected"))
+        else:
+            ok += 1
+    report.check(title, ok, bad)
 
 
 def check_json_parses(report: Report) -> None:
@@ -97,80 +139,47 @@ def check_json_parses(report: Report) -> None:
 
 
 def check_settings_hooks_exist(report: Report) -> None:
-    """Every hook script settings.json dispatches must be on disk.
+    """Every repo-local script a hook dispatches must be on disk.
 
-    A renamed or deleted hook script does not fail loudly — the harness just
-    stops enforcing whatever that hook enforced.
+    Not just .claude/hooks/ — SessionStart also runs scripts/setup-graphify.sh,
+    and a hook whose script has been deleted does not fail loudly; enforcement
+    just stops.
     """
     settings = ROOT / ".claude" / "settings.json"
     try:
         config = json.loads(settings.read_text(encoding="utf-8-sig"))
     except (json.JSONDecodeError, OSError, UnicodeDecodeError) as exc:
-        report.check("settings.json hook scripts exist", 0, [(rel(settings), f"unreadable: {exc}")])
+        report.check("hook scripts exist", 0, [(rel(settings), f"unreadable: {exc}")])
         return
 
-    referenced: set[str] = set()
+    tokens: set[str] = set()
     for groups in config.get("hooks", {}).values():
         for group in groups:
             for hook in group.get("hooks", []):
-                command = hook.get("command", "")
-                for token in command.replace('"', " ").replace("'", " ").split():
-                    if ".claude/hooks/" in token:
-                        referenced.add(token[token.index(".claude/hooks/"):])
+                command = hook.get("command", "").replace('"', " ").replace("'", " ")
+                tokens.update(SCRIPT_TOKEN.findall(command))
 
     ok, bad = 0, []
-    for script in sorted(referenced):
-        if (ROOT / script).is_file():
+    where = ".claude/settings.json"
+    for token in sorted(tokens):
+        script = PROJECT_DIR_PREFIX.sub("", token)
+        if script.startswith("./"):
+            script = script[2:]
+        if script.startswith("/"):
+            bad.append((where, f"dispatches absolute path {token} — CLAUDE.md forbids machine paths"))
+        elif "$" in script:
+            bad.append((where, f"dispatches {token}, whose path cannot be resolved to verify it exists"))
+        elif (ROOT / script).is_file():
             ok += 1
         else:
-            bad.append((".claude/settings.json", f"dispatches {script}, which does not exist"))
-    report.check("settings.json hook scripts exist", ok, bad)
-
-
-def check_agent_frontmatter(report: Report) -> None:
-    """Agents need name + description, and the name must match the filename."""
-    ok, bad = 0, []
-    for path in sorted((ROOT / ".claude" / "agents").glob("*.md")):
-        fields = read_frontmatter(path)
-        if fields is None:
-            bad.append((rel(path), "no closed YAML frontmatter block — agent will not register"))
-        elif not fields.get("name"):
-            bad.append((rel(path), "frontmatter has no `name`"))
-        elif fields["name"] != path.stem:
-            bad.append((rel(path), f"frontmatter name `{fields['name']}` != filename `{path.stem}`"))
-        elif not fields.get("description"):
-            bad.append((rel(path), "frontmatter has no `description` — the router cannot route to it"))
-        else:
-            ok += 1
-    report.check("agent frontmatter", ok, bad)
-
-
-def check_skill_frontmatter(report: Report) -> None:
-    """Skills need SKILL.md with name + description, name matching the directory."""
-    ok, bad = 0, []
-    for directory in sorted(p for p in (ROOT / ".claude" / "skills").iterdir() if p.is_dir()):
-        path = directory / "SKILL.md"
-        if not path.is_file():
-            bad.append((rel(directory), "skill directory has no SKILL.md"))
-            continue
-        fields = read_frontmatter(path)
-        if fields is None:
-            bad.append((rel(path), "no closed YAML frontmatter block — skill will not register"))
-        elif not fields.get("name"):
-            bad.append((rel(path), "frontmatter has no `name`"))
-        elif fields["name"] != directory.name:
-            bad.append((rel(path), f"frontmatter name `{fields['name']}` != directory `{directory.name}`"))
-        elif not fields.get("description"):
-            bad.append((rel(path), "frontmatter has no `description` — the skill will never be selected"))
-        else:
-            ok += 1
-    report.check("skill frontmatter", ok, bad)
+            bad.append((where, f"dispatches {token}, which does not exist"))
+    report.check("hook scripts exist", ok, bad)
 
 
 def check_command_heading(report: Report) -> None:
     """Commands in this repo carry no frontmatter; the H1 is the contract.
 
-    Convention across all 15: the first line is `# /<filename>`.
+    Convention across all 15: the first line is `# /` plus the filename.
     """
     ok, bad = 0, []
     for path in sorted((ROOT / ".claude" / "commands").glob("*.md")):
@@ -210,12 +219,25 @@ def check_no_secret_files(report: Report) -> None:
 def main() -> int:
     print(f"harness guard — {rel(ROOT / '.claude')} structural checks\n")
     report = Report()
+
     check_json_parses(report)
     check_settings_hooks_exist(report)
-    check_agent_frontmatter(report)
-    check_skill_frontmatter(report)
+    check_named_asset(
+        report,
+        "agent frontmatter",
+        [(p, p.stem, "filename") for p in sorted((ROOT / ".claude" / "agents").glob("*.md"))],
+    )
+    check_named_asset(
+        report,
+        "skill frontmatter",
+        [
+            (d / "SKILL.md", d.name, "directory")
+            for d in sorted(p for p in (ROOT / ".claude" / "skills").iterdir() if p.is_dir())
+        ],
+    )
     check_command_heading(report)
     check_no_secret_files(report)
+
     print()
     if report.failed:
         print("harness guard: FAIL — see the annotated lines above.")
