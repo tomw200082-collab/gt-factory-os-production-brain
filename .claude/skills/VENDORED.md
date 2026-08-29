@@ -144,3 +144,89 @@ upstream names no holder.
 
 `apple-design` carries no licence grant at all — see its note above. Treat it as the
 weakest link in this directory and keep it internal.
+
+## `agent-reach` — vendored here, 2026-08-29
+
+| Upstream | Commit | License | Skills |
+|---|---|---|---|
+| [Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach) | `06c202b` (2026-08-25, v1.5.0) | MIT (`agent-reach/LICENSE`) | `agent-reach` |
+
+Read-only access to 15 platforms — Instagram, Facebook, LinkedIn, YouTube
+transcripts, Twitter/X, Reddit, RSS, GitHub, Exa web search, and any web page.
+Vendored into this repo on Tom's call because the research-flavoured skills that
+live here (`messi`, `chief-of-staff-daily`, `domain-investigation`,
+`gt-marketing-architect`) are the ones most likely to reach for it.
+
+**It is a Python CLI, not a skill collection.** Only upstream's
+`agent_reach/skill/` directory was copied — the package, tests, config and
+`pyproject.toml` were not, and must not be (this repo takes no runtime code).
+**The commands in the routing table do not exist until `pip install agent-reach`
+has run**, and that install is blocked in the remote Claude Code container. In a
+web or remote session this skill is documentation, not capability.
+
+**Instagram, Facebook, LinkedIn, Reddit and XiaoHongShu route through OpenCLI
+reusing a real logged-in desktop Chrome session.** No container has one, so
+those paths cannot work from here at all — only from Claude Code running on a
+local machine. The zero-config channels (web page reading, YouTube transcripts,
+RSS, GitHub, Exa search, V2EX) work anywhere.
+
+### Account risk — decided 2026-08-29
+
+Reading Instagram, Facebook and LinkedIn through a logged-in browser session is
+against those platforms' terms of service, and the session at risk is a live GT
+business account. Tom was told, said he understood the risk, and handed the
+decision over. **The standing rule, workspace-wide, until Tom overrides it:**
+
+- **Never point Agent Reach at a GT-owned social login.**
+- **Use the zero-config channels freely** — public Instagram, Facebook and
+  LinkedIn pages read fine through Jina Reader, no session involved.
+- **Where authenticated data is genuinely needed**, use the platform's own
+  sanctioned API (Meta Graph, LinkedIn), not a browser session.
+- **If a logged-in read is ever unavoidable**, throwaway account only — never
+  the business account.
+
+Working rule, not doctrine. It changes nothing in the authority order.
+
+### One edit on adoption
+
+Upstream's description is `MUST USE ... anything on the internet`, which would
+fire on a large share of ordinary requests in a workspace where the CLI is
+absent, sending sessions after commands that do not exist. A **GT note** was
+prepended to the body of `SKILL.md` telling the reader to run
+`agent-reach doctor --json` first and stop if the command is not found. That is
+the only change; the seven `references/` files and `SKILL_zh.md` are
+byte-identical to upstream.
+
+`SKILL.md` here is upstream's **English** `SKILL_en.md` (so the loader reads
+English); the Chinese original is kept as `SKILL_zh.md`. Note `references/` is
+Chinese-only upstream, the LinkedIn one included.
+
+### Keep the two copies identical
+
+The same tree lives at `Sales-Machine/.claude/skills/agent-reach/` and the two
+are **byte-identical, GT note included**. Keep them that way when updating. The
+note's `.claude/skills/VENDORED.md` pointer is repo-relative, so it resolves in
+both. Not copied into `gt-factory-os` or `gt-factory-os-portal` — neither has
+any use for reading Instagram, and their lane rules forbid writing outside the
+dispatched lane.
+
+Updating: re-clone upstream and copy `agent_reach/skill/` over both directories,
+re-applying the English/Chinese filename swap and the GT note. Better: install
+the real tool and let it ship its own current skill — upstream's whole value is
+chasing platform breakage, which a frozen copy does not receive.
+
+License: MIT, copyright (c) 2025 Agent Eyes; full text in `agent-reach/LICENSE`.
+
+## Vendored in `Sales-Machine`, not here
+
+`Sales-Machine/.claude/skills/` also carries 10 skills from
+[google/skills](https://github.com/google/skills) `a7123f8` (Apache-2.0) — Google
+Ads (5), Google Analytics (2), Data Manager (3, customer-PII uploads) — plus two
+catalog loaders. Advertising and measurement APIs are sales work, so they live
+in the sales brain and are **not** duplicated here; that repo's own `VENDORED.md`
+carries the full entry. Seven mobile-ads/IMA skills from the same upstream were
+taken and deleted the same day on Tom's call — GT has neither a mobile app nor a
+video player. Recorded so nobody re-imports them.
+
+Neither set is authority. Same standing as everything above: tools, not truth.
+The authority order in `CLAUDE.md` is unaffected.
