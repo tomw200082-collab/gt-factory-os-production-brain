@@ -17,6 +17,36 @@
 
 ## Entries
 
+### 2026-08-29: The remote Claude Code container cannot install packages or reuse a browser login
+
+**What happened:** While evaluating Agent Reach (a Python CLI that gives an agent read
+access to Instagram, Facebook, LinkedIn, YouTube, Reddit and the web) as a candidate tool
+for the digital roadmap, two hard limits of the web/remote session surfaced only on
+contact. `pip install agent-reach` was **denied by the sandbox permission classifier** — no
+package installs from a remote session. And the tool's most valuable paths (Instagram,
+Facebook, LinkedIn, Reddit, XiaoHongShu) route through OpenCLI reusing a **real logged-in
+desktop Chrome profile**, which no container has or can have.
+
+**Why it was surprising:** Both limits are invisible until you hit them. A tool's README,
+its skill file and its install docs all read as if any agent that "can run a command line"
+can use it — the phrase Agent Reach's own README uses. Nothing in the repo distinguishes
+"works in any agent" from "works only on a machine a human is logged into". The result is
+that a tool can be genuinely well-suited to the job and still be unusable from where the
+session actually runs.
+
+**Corrective:** Before adopting any tool that (a) installs a package, or (b) reads a
+platform that requires a login, decide **where it will run** first. Remote/web sessions get
+only the zero-config surface — plain web page reads (Jina Reader), YouTube transcripts,
+RSS, GitHub, MCP connectors already wired to the account. Anything needing an install or a
+browser session is a **local Claude Code** task on Tom's own machine, and should be scoped
+that way from the start rather than discovered halfway in. Vendoring such a tool's skill
+file into a repo is still worth doing — but the skill must say so at the top, or every
+future session will chase commands that do not exist. (See
+`.claude/skills/agent-reach/SKILL.md`, where exactly such a note was prepended, and
+`.claude/skills/VENDORED.md` for the full account.)
+
+---
+
 ### 2026-04-23: Wrong portal directory analyzed, led to incorrect Layer 0 estimate
 
 **What happened:** An exploration agent analyzed `PRODUCTION/portal/` instead of the canonical portal at `C:/Users/tomw2/Projects/window2-portal-sandbox/`. Concluded that auth was "completely unimplemented" and portal made "zero real API calls". Layer 0 was estimated as 2-4 weeks of bridge work. Direct investigation found fully implemented auth + API proxy, 86/100 scorecard, and deployed system. Layer 0 revised to 3-5 days validation sprint.
