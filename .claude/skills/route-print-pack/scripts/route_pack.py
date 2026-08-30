@@ -101,6 +101,33 @@ def lw_list_open():
     return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
 
 
+def _eta(visit):
+    """Visit ETA as HH:MM. LionWheel returns either a bare "11:29" or a full
+    ISO timestamp; fall back to the early ETA window when eta_at is empty."""
+    for raw in (visit.get("eta_at"), visit.get("early_eta_at")):
+        if not raw:
+            continue
+        raw = str(raw)
+        if re.fullmatch(r"\d{2}:\d{2}", raw):
+            return raw
+        m = re.search(r"[T ](\d{2}:\d{2})", raw)
+        if m:
+            return m.group(1)
+    return ""
+
+
+def _same_day(raw, date):
+    """LionWheel dates come back as DD/MM/YYYY (and sometimes ISO). Compare
+    against the caller's YYYY-MM-DD without guessing the format."""
+    if not raw:
+        return False
+    raw = str(raw)[:10]
+    if raw.startswith(date):
+        return True
+    m = re.fullmatch(r"(\d{2})/(\d{2})/(\d{4})", raw)
+    return bool(m) and f"{m.group(3)}-{m.group(2)}-{m.group(1)}" == date
+
+
 def fetch_route(driver, date, all_statuses=False):
     """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
 
@@ -111,15 +138,20 @@ def fetch_route(driver, date, all_statuses=False):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        v0 = (t.get("visits") or [{}])[0]
+        # LionWheel returns the driver name on the visit; the task-level
+        # driver_str is often null. Accept either, and accept a full name
+        # ("מיידן גבאי") when the caller gave the first name ("מיידן").
+        names = [n for n in (t.get("driver_str"), v0.get("driver_str")) if n]
+        if not any(n == driver or n.split()[0] == driver.split()[0] for n in names):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        if not _same_day(t.get("pickup_at") or v0.get("visit_at"), date):
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
         driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        eta = _eta(v)
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
@@ -132,7 +164,10 @@ def fetch_route(driver, date, all_statuses=False):
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    # LionWheel does not always fill daily_order (it stays null until the route
+    # is sequenced). Driving order then comes from the visit ETA — never from the
+    # arbitrary order the task list happened to return.
+    stops.sort(key=lambda s: (s["do"] is None, s["do"] or 0, s["eta"] or "99:99"))
     return driver_id, stops
 
 
@@ -705,6 +740,10 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         jobs.append((wo_url, wo, True))
     jobs += [(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", f"{OUT}/wb_{s['tid']}.pdf", False)
              for s in waybill_stops]
+    if jobs and not os.environ.get("LIONWHEEL_WEB_USER"):
+        print("WARN: LIONWHEEL_WEB_USER not set — skipping the LionWheel work "
+              "order and every waybill. Invoice pages still build.")
+        jobs = []
     if jobs:
         render_pages(jobs)
 
@@ -741,7 +780,8 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             except (TypeError, ValueError, KeyError):
                 continue
             if pq < q:
-                disc.append({"stop": s["do"], "recipient": s["recipient"],
+                disc.append({"tid": s["tid"], "stop": s["do"],
+                             "recipient": s["recipient"],
                              "item": it["name"], "ordered": int(q), "picked": int(pq)})
 
     summary = {
@@ -775,23 +815,23 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
              f"LionWheel waybills (×{summary['copies']} each).")
     L.append("")
     L.append("## Stops (driving order)")
-    for s in stops:
+    for pos, s in enumerate(stops, 1):
         recip = (s.get("recipient") or "").strip()
         city = (s.get("city") or "").strip()
         tags = []
         if any(p["lw_task_id"] == s["tid"] for p in proposals):
             tags.append("special-handling")
-        if any(d["stop"] == s["do"] for d in disc):
+        if any(d["tid"] == s["tid"] for d in disc):
             tags.append("picking-shortfall")
         tag = f" — {', '.join(tags)}" if tags else ""
-        L.append(f"- Stop {s.get('do')} at {s.get('eta') or '?'}: **{recip}** "
+        L.append(f"- Stop {s.get('do') or pos} at {s.get('eta') or '?'}: **{recip}** "
                  f"({city}) — {s.get('items')} items, {s.get('packages')} "
                  f"packages{tag}")
     L.append("")
     L.append("## Picking shortfalls")
     if disc:
         for d in disc:
-            L.append(f"- Stop {d['stop']} **{d['recipient']}**: {d['item']} — "
+            L.append(f"- **{d['recipient']}**: {d['item']} — "
                      f"picked {d['picked']} of {d['ordered']}")
     else:
         L.append("- None.")
