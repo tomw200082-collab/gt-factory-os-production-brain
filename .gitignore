@@ -69,3 +69,7 @@ credentials/
 *.key
 .aws/
 .ssh/
+
+# python bytecode from re-running the cost model
+__pycache__/
+*.pyc

@@ -71,7 +71,35 @@ Anything weaker — a shared holding-company prefix, a shared street name, a gen
 — is deliberately not grouped, and the rejected candidates are recorded in the JSON
 (`meta.not_grouped`). A wrong merge hides a real gap behind another branch's orders.
 
-## W3 · Two gap types, computed separately, ranked together
+## Retired families — a line GT no longer sells
+
+`RETIRED_F` names the families GT has stopped selling (`MUZA`, Tom 2026-08-30). Revenue
+on them is real history, but it is not a base to grow from, so the family leaves `rev12`,
+the archetype axis, every peer statistic and the pushable set. What each account spent on
+it is kept separately as `retired_rev_ag`.
+
+The distributor rule is the one place that measures **total** trade, retired families
+included: what kind of business an account is does not change because GT stopped selling
+one line to it. Without that, a wholesaler whose basket was mostly the retired family
+drops out of the distributor set and onto the call list.
+
+## W3 · Three gap types, computed separately, ranked together
+
+**Replacement** — the account bought a retired family inside the window:
+
+```
+EV = the account's own 12-month spend on the retired family
+```
+
+No peer term, no floor, no cap. Every other row on this plan is an extrapolation from
+comparable venues; this one is the account's own money, which is the strongest evidence
+class available, and dropping the floor makes the row totals reconcile with the account's
+retired revenue to the shekel. The substitute is the bar family GT still sells with the
+highest adoption in that archetype which the account does not already carry.
+`conversion_weight` 0.8 — higher intent than breadth, because the appetite is proven and
+the supply is gone; lower than depth, because it still needs a menu swap. `inferred`.
+
+## W3 (continued) · Two gap types, computed separately, ranked together
 
 Both require at least **8 buyers** in the peer cell. A median over fewer is an anecdote.
 
@@ -99,8 +127,9 @@ The p90 cap is the honesty clause: the promise never exceeds what the 90th-perce
 comparable venue actually pays for that family. A linear `size_index` alone extrapolates a
 ₪1,300 median into a number no real peer has ever spent.
 
-**Ranking:** `score = EV × conversion_weight` — depth 1.0 · breadth into a family with
-co-purchase lift ≥ 1.5 from something the account already buys 0.7 · breadth otherwise 0.4.
+**Ranking:** `score = EV × conversion_weight` — depth 1.0 · replacement 0.8 · breadth into
+a family with co-purchase lift ≥ 1.5 from something the account already buys 0.7 · breadth
+otherwise 0.4.
 **These weights are a modelling assumption, graded `inferred`, not a measurement.** They
 are printed next to the ranking so a future session can correct them from outcomes.
 
@@ -160,7 +189,7 @@ cd gt-factory-os/scripts/sales-report
 # 1 Shopify bulk operation -> raw/orders.jsonl, ShopifyQL month anchor -> shopifyql_month.json
 python3 build_facts.py && python3 analyze_bridge.py     # gate 1 must PASS
 python3 growth_plan.py && python3 growth_lists.py && python3 growth_scripts.py
-python3 verify_growth.py                                # D1-D8, exits non-zero on any failure
+python3 verify_growth.py                                # D1-D9, exits non-zero on any failure
 GT_SCRATCH=<scratch> python3 build_growth_artifact.py               # with phones, local only
 GT_SCRATCH=<scratch> GT_PHONES=0 python3 build_growth_artifact.py   # publishable build
 ```
