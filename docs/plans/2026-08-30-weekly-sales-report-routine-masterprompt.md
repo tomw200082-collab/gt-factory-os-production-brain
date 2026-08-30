@@ -114,7 +114,7 @@ Approved by Tom 2026-08-24, re-confirmed in the 2026-08-30 run:
 
 ```
 orders pulled 7,255 · counted 6,882 · cancelled 360 · test 0 · no customer 0
-fact rows 20,371 · SKUs 203 · customers 806 · historical SKUs 98
+fact rows 20,371 · SKUs 203 · customers 806 · mapped 108 · historical SKUs 94
 FULL WINDOW 2024-08..2026-07 (24 months)  identity=9,565,345  total_sales=9,579,699
                                           delta=-0.150%  tolerance=±0.5%  ->  PASS
 months matching to the shekel 14/24 · order-count match 24/24 · coverage 203/203
@@ -137,10 +137,6 @@ bulk operation                    33,602 objects, 18.1 MB, ~8 minutes wall clock
 
 ### 2.4 Known-broken, adjacent, out of scope
 
-- Four SKUs of the 0.3-litre extract line — `GT-HIB-LOW-0.3L`, `GT-LUI-LOW-0.3L`,
-  `GT-CHA-LOW-0.3L`, `GT-SEN-LOW-0.3L` — did ₪243,000 in `2026-08` and are **not** in
-  the price map, so they land in the visible historical bucket. Correct behaviour, but
-  the mapping wants updating: Tom's call, §6C.
 - `2026-04` shows a −₪269,006 reversal spike: a retroactive cleanup that cancelled ~60
   orders from 2024–2025 in one month. Pre-existing, explained, not a defect.
 - `2026-08` is skewed by one live ₪229,500 order plus two cancelled versions of it from
@@ -167,8 +163,9 @@ TZ=Asia/Jerusalem date +%Y-%m
 
 Any of the greps returning `0`, or a missing `bulk_query.graphql`, means you are on a
 checkout that predates the fixes: landmines 1–3 are live and will crash or silently
-mislead you. Halt and tell Tom the branch is stale rather than patching around it in a
-scheduled run.
+mislead you. These landed on `main` on 2026-08-30, so their absence means the checkout
+is wrong, not that the work was never done. Halt and tell Tom, rather than patching
+around it in a scheduled run.
 
 **Where the run happens:** copy the scripts into the session's scratchpad directory and
 work there — `<scratchpad>/sr/`, with `raw/` and `out/` beneath it. Never run them inside
@@ -242,38 +239,28 @@ an unmapped SKU cleared ₪20,000 in the latest month (`SKILL.md` step 5, non-bl
 - `Sales-Machine/evidence/` — weekly runs do not write snapshots. Tom asks when he wants
   one.
 - The second sales artifact `9d94c4ff-7ea2-4ddc-a148-0a1781ad1c3e` (the approval gate
-  page). It changes only when taxonomy changes, which is §6C.
+  page). It changes only when taxonomy changes, and taxonomy changes need Tom (§1.1).
 - Any factory-os core table. `Sales-Machine/CLAUDE.md` §Hard boundaries.
 
 ## 6. Tom's part — the complete list, nothing else is his
 
 **A. Create the Routine.** Connectors, cron and the ready-to-paste prompt are in the
-appendix. Two minutes.
+appendix. Two minutes. **This is the only open item.**
 
-**B. Reconcile the cadence wording.** `SKILL.md` line 13 currently reads
-`בכל רביעי בבוקר` — Wednesday. The Routine is Sunday 08:00. One of the two is wrong;
-Tom says which, then the skill line gets a one-line edit. Until then, follow the
-Routine's schedule and note the conflict in the run report.
+Closed on 2026-08-30, recorded here so nobody reopens them:
 
-**C. The 0.3-litre mapping.** Four SKUs, ₪243,000 in `2026-08`, unmapped (§2.4). Adding
-them to the price map is a taxonomy change and needs Tom's written approval plus the
-gate page. Until approved they stay in the visible historical bucket — which is correct,
-just noisier than it needs to be.
-
-**D. Define "what to check this week."** `SKILL.md` step 7d asks for the biggest YoY
-drop **in the last full month**. Computed in the 2026-08-30 run over 2026-07 vs 2025-07,
-that yields a largest drop of ₪8,400 — noise. The same run over 12 months yields
-`המגדלור 17 - תל כודאדי` at −₪108,136 (₪124,264 → ₪16,128), which is decision-grade.
-**Default if Tom says nothing: use the 12-month window and label it as such in the
-email.**
-
-**E. Merge both branches before the first Sunday firing** — `claude/update-sales-report-dhbejx`
-in `gt-factory-os` (the script fixes and `bulk_query.graphql`) and the same branch in
-`gt-factory-os-production-brain` (this document). A fired session clones the **default**
-branch: until these land there, the script fixes are absent (landmines 1–3 go live) and
-this file does not exist for the Routine to read. Its prompt then takes the
-"file is missing" path in the appendix — an email saying nothing ran, which is the
-correct failure but still a wasted Sunday.
+- **Cadence:** Sunday 08:00 Israel time, Tom's decision. `SKILL.md` was Wednesday and has
+  been corrected; the meeting stays Wednesday and now opens on a report that has been
+  ready since the start of the week.
+- **The 0.3-litre mapping:** approved. `GT-HIB-LOW-0.3L`, `GT-LUI-LOW-0.3L`,
+  `GT-CHA-LOW-0.3L`, `GT-SEN-LOW-0.3L` are in the price map as type `Tea 0.3 l` at
+  ₪13.50 ex-VAT, read live from Shopify that morning. They now classify to families
+  `FRESH` / `DETOX` / `CALM` / `REVIVE` under `תמציות תה` instead of the historical
+  bucket. Revenue is untouched — mapped 104→108, historical 98→94, the exceptions
+  bucket ₪1,437,871→₪1,194,871, and every gate unchanged.
+- **"What to check this week":** the 12-month window, approved. `SKILL.md` step 7d now
+  states it, with the measurement that rejected the monthly one.
+- **The branches:** both merged to `main` on 2026-08-30.
 
 ## 7. Landmines — do not rediscover these
 
@@ -308,7 +295,7 @@ correct failure but still a wasted Sunday.
    dies on a missing file — check §2.5 item 2 before blaming the data.
 9. **Israel leaves DST on 2026-10-25.** A UTC cron of `0 5 * * 0` fires at 08:00 while
    IDT (UTC+3) holds and at **07:00** from 2026-11-01. Either accept the hour or move
-   the cron to `0 6 * * 0` that week (§6A).
+   the cron to `0 6 * * 0` that week.
 10. **`build_excel.py` will fail** with `ModuleNotFoundError: No module named 'openpyxl'`.
     It is not part of the weekly path. Do not install packages inside a scheduled run.
 

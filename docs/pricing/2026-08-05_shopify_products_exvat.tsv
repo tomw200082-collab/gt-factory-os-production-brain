@@ -1,23 +1,30 @@
 # GT Everyday — active Shopify products, snapshot 2026-08-05
 # price_ils = the number stored in Shopify. Tom confirmed 2026-08-05: this is EX-VAT (מחיר ללא מע"מ).
 # NOTE: Shopify is currently configured taxesIncluded=true at 17% — WRONG on both counts. See docs/pricing/SESSION_HANDOFF_MASTER_PROMPT.md §Shopify.
+# 2026-08-30: added the four 0.3 l extract SKUs (GT-HIB/LUI/CHA/SEN-LOW-0.3L), Tom approved in session.
+#   Prices read live from Shopify that morning: 13.50 ex-VAT each. They were selling since 08/2026 and had been
+#   falling into the visible historical bucket; this maps them without changing any other row.
 sku	title	type	price_ils_exvat
 GT-HIB-LOW-1L	FRESH 1000ml	Tea 1 l	65.00
 GT-HIB-LOW-0.5L	FRESH 500ml	Tea 0.5 l	33.00
+GT-HIB-LOW-0.3L	FRESH 300ml	Tea 0.3 l	13.50
 GT-HIB-FRE-1L	FRESH Sugar-Free 1000ml	Tea 1 l	65.00
 GT-HIB-FRE-0.5L	FRESH Sugar-Free 500ml	Tea 0.5 l	33.00
 GT-LUI-LOW-1L	DETOX 1000ml	Tea 1 l	65.00
 GT-LUI-LOW-0.5L	DETOX 500ml	Tea 0.5 l	33.00
+GT-LUI-LOW-0.3L	DETOX 300ml	Tea 0.3 l	13.50
 GT-LUI-FRE-1L	DETOX Sugar-Free 1000ml	Tea 1 l	65.00
 GT-LUI-FRE-0.5L	DETOX Sugar-Free 500ml	Tea 0.5 l	33.00
 GT-LEM-LOW-1L	ENERGY 1000ml	Tea 1 l	65.00
 GT-LEM-LOW-0.5L	ENERGY 500ml	Tea 0.5 l	33.00
 GT-CHA-LOW-1L	CALM 1000ml	Tea 1 l	65.00
 GT-CHA-LOW-0.5L	CALM 500ml	Tea 0.5 l	33.00
+GT-CHA-LOW-0.3L	CALM 300ml	Tea 0.3 l	13.50
 GT-JAS-LOW-1L	CONSCIOUSNESS 1000ml	Tea 1 l	65.00
 GT-JAS-LOW-0.5L	CONSCIOUSNESS 500ml	Tea 0.5 l	33.00
 GT-SEN-LOW-1L	REVIVE 1000ml	Tea 1 l	65.00
 GT-SEN-LOW-0.5L	REVIVE 500ml	Tea 0.5 l	33.00
+GT-SEN-LOW-0.3L	REVIVE 300ml	Tea 0.3 l	13.50
 GT-INF-DES-1L	Desert Infusion 1000ml	Tea 1 l	65.00
 GT-INF-DES-0.5L	DESERT Infusion 500ml	Tea 0.5 l	33.00
 GT-MAS-CHA-1L	NAMASTEA 1000ml	Tea 1 l	65.00
