@@ -652,3 +652,76 @@ Dashboard (this is the one Tom sends): `https://claude.ai/code/artifact/9267cc69
 · `Sales-Machine/evidence/2026-08-31-q4-plan.md` · `-q4-assignment.md` · `-q4-daily-plan.csv`
 · `-q4-collateral/mixer-serve-cards.md` · `-q4-collateral/muza-migration-map.md`
 · `gt-factory-os/scripts/sales-report/q4_plan_v2.py` · `q4_sales_system_load.py` · `q4_scoreboard.py`
+
+---
+
+## 12. Revision 3 — 2026-08-31, the focus was wrong
+
+Tom: *switching a customer off MUZA is less likely than adding matcha or ube to them.*
+He was right, and this document is part of why the plan got it wrong twice.
+
+### The document's own bias
+
+§2.2 named the `MUZA` hole **"the most time-sensitive money in the company"** and §7 landmine 1
+called it **"a decaying asset"**. Both are true about urgency and neither is true about size,
+and the plan inherited the emphasis without ever testing it. §W4 sequenced `MUZA` as phase B,
+ahead of everything; §W5 modelled the whole target off the board's play types — replacement,
+depth, breadth — and **never once aggregated opportunity by product family**. Doing that takes
+one query and it is what finally exposed the problem.
+
+### The model was circular
+
+Every version until now trusted the growth board's opportunity model, which prices a family
+from the median of a comparison group capped at a percentile. That is sound for a family most
+customers already buy, and **circular for one they do not**: matcha is under-penetrated, so
+most of the comparison group does not buy it, so the model reads "few buy it" and concludes
+"small opportunity". It priced matcha at **₪43,942** across the 153 accounts.
+
+Twelve months of real orders — 3,872 of them, matched to 151 of the 153 — say otherwise:
+
+| | buying | ₪ over 12m | the model | gap |
+|---|---|---|---|---|
+| tea extracts | 142 · 94% | 1,894,224 | 432,738 | ×4.4 |
+| **matcha** | **73 · 48%** | **423,949** | 43,942 | **×9.6** |
+| fruit purée | 45 · 30% | 94,056 | 44,494 | ×2.1 |
+| ube | 23 · 15% | 19,965 | 2,537 | ×7.9 |
+
+**Matcha is already GT's second-largest category.** 74 accounts buy tea and no matcha —
+**₪351,270** priced at the median comparable buyer in the same revenue band. Six are A-band,
+hold **₪202,860**, and were already in the joint-meeting lane. `R2M` alone is ₪120,726 of
+revenue, entirely tea, zero matcha.
+
+### What changed
+
+The plan now leads with catalog expansion. **Changing a product is a decision; adding one is
+an order.** MUZA is a second sentence for the 15 accounts that still buy tea, and the opening
+line only for the **5 that stopped buying tea as well** — for those the account is the prize,
+not a line item, which is exactly the narrowing Tom asked for.
+
+Two gates make it mechanical rather than a matter of judgement:
+`MUZA never leads a live account` — **it caught one that had slipped through** — and
+`ube never a first product`, which holds §7 landmine 9.
+
+Target: **₪147,644 → ₪262,661** run-rate, ₪212,492 gross. **No customer was added.**
+
+### The lesson for the next masterprompt
+
+This document supplied the plan's numbers, its phases and its emphasis, and the emphasis was
+the one thing it never asked anyone to verify. §1.1 froze the board's play types as *settled —
+do not reopen*, and that freeze is what kept three versions inside a model that could not see
+its own blind spot. **A masterprompt should name what it wants checked, not only what it wants
+left alone.** The check that would have caught this — *aggregate opportunity by product family,
+then measure penetration against it* — belongs in §2.5 next to the drift query.
+
+### Newly blocking
+
+`U-022` — **80 matcha bags in stock against 74 target accounts.** Enough for one wave, not a
+quarter. It now blocks the plan's lead motion, and it is the first task, 2026-09-01.
+`U-023` — `GT-MAT-KIT` (₪170) contents are undocumented; not offered until they are.
+
+### Artifacts
+
+Dashboard: `https://claude.ai/code/artifact/9267cc69-a432-43d5-8e18-94b6057db483` ·
+`Sales-Machine/evidence/2026-08-31-q4-plan.md` · `-q4-assignment.md` · `-q4-daily-plan.csv` ·
+`-q4-collateral/matcha-business-case.md` ·
+`gt-factory-os/scripts/sales-report/q4_penetration.py` · `q4_plan_v3.py`
