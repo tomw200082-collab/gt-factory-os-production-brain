@@ -1,6 +1,8 @@
 # Decision — lead intake architecture: CTWA, the lead form, and the number GT already runs
 
-> **Status: RECOMMENDATION — awaiting Tom's decision.** Not authority until Tom answers §7.
+> **Status: PARTLY DECIDED.** §7 **A3 is answered** (Tom, 2026-08-31 — a second dedicated
+> number, `054-758-8132`; `Sales-Machine/doctrine/decisions.md` D-014). A1, A2 and A4 remain
+> recommendations awaiting Tom and are not authority until he answers.
 > **Date:** 2026-08-31 · **Branch:** `claude/caveman-mode-phzjqa`
 > **Requested by:** `docs/plans/2026-08-31-lead-response-system-masterprompt.md` §W1 (D1).
 > **Governing:** `docs/decisions/modules/sales-declaration.md` (APPROVED, Amendment A) ·
@@ -323,18 +325,50 @@ GT has a WABA, so this is not a research question, it is a two-minute look.
 
 ---
 
-## 7. What Tom decides
+## 7. What Tom decides — **A3 ANSWERED 2026-08-31**
 
-| # | Question | Default if Tom says nothing |
+| # | Question | Status |
 |---|---|---|
-| A1 | CTWA **beside** the form, or **instead of** it? | beside (§Q1) |
-| A2 | Write an unknown WhatsApp sender into `sales_core` as a lead on first message? | yes, with the two qualifiers in §Q2 |
-| A3 | Is the working WhatsApp number the one ads point at, or is a second number provisioned? | the working number (§6) |
-| A4 | Recover the two lost 2026-08-24 leads from Meta before 2026-11-22? | yes — it is two records and a token fix |
+| A1 | CTWA **beside** the form, or **instead of** it? | open — default: beside (§Q1) |
+| A2 | Write an unknown WhatsApp sender into `sales_core` as a lead on first message? | open — default: yes, with the two qualifiers in §Q2 |
+| A3 | Is the working WhatsApp number the one ads point at, or is a second number provisioned? | **ANSWERED — a second, dedicated number.** See below |
+| A4 | Recover the two lost 2026-08-24 leads from Meta before 2026-11-22? | open — default: yes |
 
-Everything else in §4 is a build detail and does not need Tom.
+### A3 — answered: `054-758-8132` is the lead number
 
----
+**Tom, 2026-08-31, in writing.** Recorded as `Sales-Machine/doctrine/decisions.md` **D-014**.
+This also answers the masterprompt's §6.F, which asked what that number is for.
+
+`054-758-8132` becomes the single destination for every inbound enquiry reaching GT from any
+Meta platform, carrying automated first responses and, later, a basic AI agent. The number
+already in the Cloud API — GT's working order/customer line under Dualhook coexistence since
+2026-06-26 — **stays exactly as it is.**
+
+**What this decision buys.** §3 of this document names the risk in pointing ads at the
+working number: a lead landing unidentified in an inbox that already carries 300–500 order
+events a day, which is measurably what happens to 163 unknown senders a month. A separate
+number removes that risk structurally rather than by classification. It costs the
+conversation-history unification §Q4 assumed — two numbers means two `wa_phone` streams —
+but `order_intake.wa_event_log` already keys on the phone, so the pointer design survives
+unchanged.
+
+**Two consequences, recorded now rather than discovered later.**
+
+1. **A number entering the API leaves the WhatsApp app permanently.** Whoever installs
+   WhatsApp with `054-758-8132` afterwards disconnects the integration. Whether anyone is
+   using it today is open as `U-022` and must be settled **before** provisioning, not after.
+2. **Automated messages to leads are exactly what `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED`
+   gates** (`Sales-Machine/doctrine/decisions.md` D-005). Provisioning, webhook wiring,
+   template submission and dry-runs may all proceed. **Sending may not** — that needs Tom's
+   written approval plus a dry-run plus a ≥24 h soak. The AI agent Tom wants "later" sits
+   behind the same gate and behind the answer bank, per the masterprompt's first
+   prohibition: no lead is answered by a machine with a sentence a human did not approve.
+
+**What §Q1 and §Q2 now mean in practice.** A dedicated lead number makes A2 easier, not
+harder: on that number an unknown sender is a lead by construction, so the "no prior inbound
+history" qualifier in §Q2 stops being a heuristic and becomes the normal case. The
+`whatsapp_unattributed` source distinction still matters — a message with a CTWA
+`referral.source_id` is attributable and a bare one is not.
 
 ## 8. UNRESOLVED opened by this document
 
@@ -344,6 +378,7 @@ Everything else in §4 is a build detail and does not need Tom.
 | U-015 | Meta's current marketing-template rate for Israel | Tom, from GT's Meta Business Manager billing page |
 | U-016 | `META_PAGE_ACCESS_TOKEN` has no Leads Access on the page — the cause of the two lost leads. Related to but distinct from D-006 (Make carries leads; this token is used for the *content* lookup) | technical, next intake session |
 | U-017 | Second Facebook form id `1771287887148857` — live, or a stale test form? The pulse sees one form; rejects came from two | Alex / Meta Ads Manager |
+| U-022 | Is `054-758-8132` in active use in the WhatsApp app by a person today? Settle **before** provisioning — the move is one-way | Tom |
 
 ---
 
