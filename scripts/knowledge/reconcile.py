@@ -379,8 +379,12 @@ def _selftest():
     assert prices["GT-HIB-LOW-1L"]["price"] == 65.0 and prices["GT-SHI-CER-500"]["price"] == 590.0
     sellable, negative, no_sku = load_catalog_truth()
     assert "GT-SHI-CER-50" in {v["sku"] for v in negative.values()}, negative
-    assert any("AMERICAN" in k for k in no_sku), no_sku
     assert "GT-HIB-LOW-1L" in sellable
+    # 2026-08-31: AMERICAN and HOJICHA were recorded as "no active SKU" and both had one.
+    # The list is now empty; assert it stays empty rather than that those two are in it.
+    assert not no_sku, f"a row is back to 'no active SKU': {no_sku}"
+    assert {"GT-AME-LOW-1L", "GT-AME-LOW-0.5L", "GT-HOJ-BLK-500"} <= sellable, sellable
+    assert prices["GT-AME-LOW-1L"]["price"] == 65.0 and prices["GT-AME-LOW-0.5L"]["price"] == 33.0
     print("selftest OK — 48 drinks, margins derive, price/sellability joins live")
 
 
