@@ -125,8 +125,17 @@ Anything not on these lists is out of scope unless Tom asks.
 lead_event by actor        Avi 113 · Tom 16 · system 200 · system:* 31
 Avi's events, last 7 days  113 of 113          <- he started this week
 Avi's last event           2026-08-31 12:13 Asia/Jerusalem
-leads with first_touch_at  58 of 200
+Avi's working days         two: 2026-08-30 (55 status changes) and 2026-08-31 (1)
+leads with first_touch_at  58 of 200           <- DO NOT read this as "58 contacted"
+leads with an outreach ev   7                  <- this is the real contact count
 ```
+
+**`first_touch_at` is set by dismissing a lead, not only by contacting one.** All 42
+leads Avi moved `new → lost` (reason `לא רלוונטי`, from a 2023–2026 import backlog)
+carry it, with zero outreach events. He took 11 to `working` and contacted 7, all by
+`whatsapp`; outcomes were `whatsapp_sent` ×3, `answered_progressing` ×2, `no_answer` ×1.
+Read `first_touch_at` as *triaged*, never as *contacted* — the two differ by 8×, and any
+adoption metric built on it will overstate by that factor.
 
 Measured 2026-08-31 ~16:10Z from `sales_core.lead_event`. **The Q4 plan starts
 2026-09-01 — tomorrow.** Avi learned this tool this week and gets 22 solo accounts plus
@@ -195,8 +204,12 @@ buy matcha**, which is exactly why a target SKU on an order is a signal and not 
 - No agent declarations. `Sales-Machine/agents/` holds a `README.md` listing five
   **planned** agents and an explicit rule: *no agent without a declaration*, read-only
   first, anything that writes last and gated.
-- Nothing to send. `Sales-Machine` `U-020`: the Drive folder `05 · מה שולחים ללקוח` is
-  empty — no catalogue PDF, no customer price list, no training videos.
+- Nothing to send — **and something is being sent anyway.** `Sales-Machine` `U-020`: the
+  Drive folder `05 · מה שולחים ללקוח` is empty. Yet `נשלח קטלוג מוצרים` appears in five
+  of Avi's twelve notes from 2026-08-30. Material is already reaching customers daily,
+  unversioned and unreviewed, and no system knows what it is. This is worse than a gap:
+  it is an uncontrolled surface. Establish what is actually being sent before designing
+  anything that sends.
 - Nowhere to escalate. `U-021`: all 17 rules in `knowledge/boundaries/refusals.yaml` end
   in `מעביר לאלכסנדר` and **no phone, email or group for him exists in any file**.
 
@@ -469,23 +482,31 @@ Everything else is yours to decide and do.
    passed while the report path held a `KeyError` on a key absent even in the prior
    version — because only the offline path was ever exercised. **Run both paths.** A
    green selfcheck is not evidence the tool works.
-4. **`customer.amountSpent` and ShopifyQL tax columns lie** — the store is misconfigured
+4. **Eight of twelve `working` leads are overdue, four with zero outreach.** They were
+   assigned and scheduled and never contacted (`Wesam Amara saleh`, `עגלת נוב`,
+   `Booza85`, `Elinor Ifergan`; one overdue since 2026-08-25). Do not read `working` as
+   "in progress", and do not add growth tasks on top of a follow-up queue that is
+   already not being served — that is the §6.C cap decision, in evidence.
+5. **A note reads `המידע לא נשמר`** — Avi used a free-text note to report that a save
+   failed, because there was nowhere to report it. Assume unreported UI failures exist;
+   ask him before assuming a data gap is a behaviour gap.
+6. **`customer.amountSpent` and ShopifyQL tax columns lie** — the store is misconfigured
    `taxesIncluded=true @17%`. Only `discountedTotalSet.shopMoney`. One account shows 58
    orders and ₪0.00 spend (`U-009`).
-5. **Private-label SKUs are not GT's to sell.** `GTCC-NON-SAN-*` is Nonomimi's,
+7. **Private-label SKUs are not GT's to sell.** `GTCC-NON-SAN-*` is Nonomimi's,
    `GTEL-BAB-*` is Babka's. A previous revision offered ₪168,418 of other people's
    branded product to their competitors — in the SKU **and** in the script copy, and
    fixing the SKU did not fix the copy. Gate both surfaces.
-6. **`psql` does not work from this environment** — egress is restricted to the agent
+8. **`psql` does not work from this environment** — egress is restricted to the agent
    proxy. Use the Supabase MCP `execute_sql`. Large results auto-save to a file.
-7. **A win and a signal are different things**, and the plan's own data proves it: 6 of 7
+9. **A win and a signal are different things**, and the plan's own data proves it: 6 of 7
    current signals are `מאצ'ה — עומק`, accounts that already buy matcha. Never book
    run-rate from a signal.
-8. **The plan CSV's first column carries a BOM.** Read it `utf-8-sig` or `תאריך` will
+10. **The plan CSV's first column carries a BOM.** Read it `utf-8-sig` or `תאריך` will
    `KeyError`.
-9. **Do not `git add -A` or `git add .`** — a stop condition, not a style note. Stage
+11. **Do not `git add -A` or `git add .`** — a stop condition, not a style note. Stage
    named paths.
-10. **Jerusalem rides the Wednesday delivery run**, not the centre run — measured from
+12. **Jerusalem rides the Wednesday delivery run**, not the centre run — measured from
     1,776 LionWheel deliveries. Route day is measured, never inferred from geography.
 
 ---
