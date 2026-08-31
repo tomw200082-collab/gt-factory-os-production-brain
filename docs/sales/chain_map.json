@@ -7,7 +7,8 @@
       "chain": "2+ branches buying from us, OR a single record Tom has ruled a chain (a central warehouse, a partner) — those carry `single_record_note`.",
       "kind": "רשת = a brand we sell to directly. מפיץ = a distributor who resells us onward; its revenue is ours, its branches are not our accounts.",
       "segment": "the commercial world the account lives in — drives the segment rollup on the chains sheet.",
-      "threshold": "below ₪10,000 over the window a 2-branch brand stays unassigned (Tom, 2026-08-31: 'אל תתייחס לקטנים האלה כרגע')."
+      "threshold": "below ₪10,000 over the window a 2-branch brand stays unassigned (Tom, 2026-08-31: 'אל תתייחס לקטנים האלה כרגע').",
+      "not_a_chain": "Removed 2026-08-31 on Tom's instruction that the sheet hold chains and nothing else — וויקס (one company: a campus canteen and a deli shop, not two branches of a brand), אליטה אופק (a B2C reselling partner, no branches), הרואה בקפה (הרואה is a Ramat Gan street carrying several unrelated cafés — 'הרואה בקפה' and 'הרואה 39' are not verified as one brand; sources describe them as different places). They remain customers and appear on the customers sheet; they are simply not chains."
     },
     "owner": "Tom — sole approver of chain membership. Decisions dated 2026-08-31 unless noted.",
     "updated": "2026-08-31"
@@ -76,7 +77,6 @@
     "בייגל קפה": { "segment": "HoReCa", "kind": "רשת", "match": ["בייגל קפה", "בייגל לנדמרק", "בייגל צפון"], "note": "רשת זיכיון." },
     "ג׳ירף": { "segment": "HoReCa", "kind": "רשת", "match": ["ג ירף", "ירף מסעדות"], "exclude": ["נונו ג ירף", "נונומימי"], "note": "רשת זיכיון." },
     "סטקיית הבוקרים": { "segment": "HoReCa", "kind": "רשת", "match": ["הבוקרים"] },
-    "הרואה בקפה": { "segment": "HoReCa", "kind": "רשת", "match": ["הרואה בקפה", "הרואה 39"] },
     "האופט": { "segment": "HoReCa", "kind": "רשת", "match": ["האופט"] },
     "קפה מלבן": { "segment": "HoReCa", "kind": "רשת", "match": ["קפה מלבן"] },
     "גוטה": { "segment": "HoReCa", "kind": "רשת", "match": ["גוטה"] },
@@ -107,20 +107,13 @@
     "בייקר": { "segment": "HoReCa", "kind": "רשת", "match": ["בייקר ע י", "בייקר הוד השרון"] },
     "אורן משי": { "segment": "HoReCa", "kind": "רשת", "match": ["אורן משי"] },
 
-    "וויקס": { "segment": "הייטק · קמפוסים", "kind": "רשת", "match": ["וויקס"] },
 
     "יונימרקט · ג׳פניקה": {
       "segment": "קמעונאות", "kind": "רשת",
       "match": ["יונימרקט"],
-      "roster_badge": "מרלו״ג · מחלק לכל הסניפים",
       "serves": ["ג׳פניקה", "קינג קונג (לה טאבל)"],
+      "roster_badge": "מרלו״ג · ג׳פניקה · קינג קונג",
       "single_record_note": "רשומת לקוח אחת = מרכז הלוגיסטיקה של ג׳פניקה, ⊥ חנות. הוא מחלק לכל סניפי הרשת (תום 2026-08-31). הסחורה מתפצלת לסניפים אצלם, ולכן אין ואינו צפוי להיות פילוח סניפים בצד שלנו. מסומנת רשת כדי שתיספר בניתוח הרשתות (תום 2026-08-31)."
-    },
-    "אליטה אופק": {
-      "segment": "B2C · שותפה", "kind": "רשת",
-      "match": ["אליטה אופק"],
-      "roster_badge": "שותפה B2C · ⊥ סניפים",
-      "single_record_note": "שותפה שמוכרת B2C. רשומה אחת, ⊥ סניפים. מסומנת רשת בהחלטת תום 2026-08-31."
     },
     "מלונות דן": { "segment": "מלונאות", "kind": "רשת", "match": ["מלונות דן"], "roster_badge": "סניף אחד אצלנו", "single_record_note": "רשת מלונות; אצלנו סניף אחד (המלך דוד)." },
     "פתאל": { "segment": "מלונאות", "kind": "רשת", "match": ["מלון בוטניקה"], "roster_badge": "סניף אחד אצלנו", "single_record_note": "רשת מלונות; אצלנו סניף אחד (בוטניקה)." },
@@ -128,6 +121,7 @@
     "אלי אברהמי": {
       "segment": "מפיץ", "kind": "מפיץ",
       "match": ["אלי אברהמי"],
+      "roster_badge": "מפיץ · לנדוור · מינה טומיי",
       "serves": ["לנדוור", "מינה טומיי"],
       "note": "המפיץ שלנו לרשתות לנדוור ומינה טומיי (תום 2026-08-31). ההכנסה שלו היא שלנו; הסניפים שהוא משרת ⊥ לקוחות שלנו ולכן ⊥ נספרים פעמיים. מינה טומיי עברה אליו ב-02/2026."
     }
