@@ -1,0 +1,730 @@
+{
+  "_meta": {
+    "what": "Verbatim transcription of every number published in GT's knowledge book (ספר העבודה) as it stood on 2026-08-31.",
+    "source": "https://claude.ai/code/artifact/f0457ed1-6e3a-4180-9101-4fc7451d863a — full page text supplied by Tom in session 2026-08-31 (the artifact is shared, not owned by this session, so it cannot be read through the Artifact tool).",
+    "date": "2026-08-31",
+    "purpose": "Input to scripts/knowledge/reconcile.py. Frozen: it records what the book SAID, not what is true. Never edit to make a diff go away.",
+    "vat_note": "price list is ex-VAT; drink prices are VAT-inclusive at 18%; drink costs are ex-VAT ingredients only."
+  },
+  "headline": {
+    "cost_per_cup_iced_tea": 3.25,
+    "recommended_price_iced_tea": 20,
+    "margin_pct_iced_tea": 81,
+    "drinks_total": 48,
+    "bottle_1l_price_exvat": 65,
+    "cups_per_1l_bottle": 20,
+    "serving_ml": 50,
+    "minimum_order_exvat": 800
+  },
+  "per_serving": [
+    {
+      "item": "תמצית תה · 1 ליטר",
+      "unit_price": 65,
+      "serving": "50 מ\"ל",
+      "servings": 20,
+      "cost_per_serving": 3.25
+    },
+    {
+      "item": "תמצית תה · 500 מ\"ל",
+      "unit_price": 33,
+      "serving": "50 מ\"ל",
+      "servings": 10,
+      "cost_per_serving": 3.3
+    },
+    {
+      "item": "מאצ'ה · 500 גרם",
+      "unit_price": 590,
+      "serving": "1.8 גרם",
+      "servings": 277,
+      "cost_per_serving": 2.13
+    },
+    {
+      "item": "מאצ'ה · 50 גרם",
+      "unit_price": 65,
+      "serving": "1.8 גרם",
+      "servings": 27,
+      "cost_per_serving": 2.34
+    },
+    {
+      "item": "אובה · 500 גרם",
+      "unit_price": 175,
+      "serving": "2 גרם",
+      "servings": 250,
+      "cost_per_serving": 0.7
+    },
+    {
+      "item": "אובה · 1 ק\"ג",
+      "unit_price": 340,
+      "serving": "2 גרם",
+      "servings": 500,
+      "cost_per_serving": 0.68
+    },
+    {
+      "item": "מחית פרי · 1 ליטר",
+      "unit_price": 60,
+      "serving": "40 מ\"ל",
+      "servings": 25,
+      "cost_per_serving": 2.4
+    }
+  ],
+  "category_summary": [
+    {
+      "category": "תה",
+      "drinks": 16,
+      "cost_min": 2.88,
+      "cost_max": 4.8,
+      "price_min": 20,
+      "price_max": 33,
+      "margin_min": 79,
+      "margin_max": 86
+    },
+    {
+      "category": "צ'אי",
+      "drinks": 11,
+      "cost_min": 3.7,
+      "cost_max": 6.57,
+      "price_min": 22,
+      "price_max": 32,
+      "margin_min": 76,
+      "margin_max": 84
+    },
+    {
+      "category": "אבקות",
+      "drinks": 21,
+      "cost_min": 2.85,
+      "cost_max": 6.86,
+      "price_min": 26,
+      "price_max": 44,
+      "margin_min": 76,
+      "margin_max": 87
+    }
+  ],
+  "price_list": [
+    {
+      "name": "DETOX",
+      "group": "tea",
+      "sku_hint": "GT-LUI-LOW",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "REVIVE",
+      "group": "tea",
+      "sku_hint": "GT-SEN-LOW",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "ENERGY",
+      "group": "tea",
+      "sku_hint": "GT-LEM-LOW",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "CONSCIOUSNESS",
+      "group": "tea",
+      "sku_hint": "GT-JAS-LOW",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "AMERICAN",
+      "group": "tea",
+      "sku_hint": null,
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "FRESH",
+      "group": "tea",
+      "sku_hint": "GT-HIB-LOW",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "DESERTEA",
+      "group": "tea",
+      "sku_hint": "GT-INF-DES",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "CALM",
+      "group": "tea",
+      "sku_hint": "GT-CHA-LOW",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "NAMASTEA",
+      "group": "tea",
+      "sku_hint": "GT-MAS-CHA",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "FRESH ללא סוכר",
+      "group": "tea",
+      "sku_hint": "GT-HIB-FRE",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "DETOX ללא סוכר",
+      "group": "tea",
+      "sku_hint": "GT-LUI-FRE",
+      "price_500": 33,
+      "price_1000": 65
+    },
+    {
+      "name": "MATCHA 500 גרם",
+      "group": "powder",
+      "sku_hint": "GT-SHI-CER-500",
+      "price": 590
+    },
+    {
+      "name": "MATCHA 22×18 גרם",
+      "group": "powder",
+      "sku_hint": "GT-SHI-CER-18*22",
+      "price": 590
+    },
+    {
+      "name": "MATCHA 50 גרם",
+      "group": "powder",
+      "sku_hint": "GT-SHI-CER-50",
+      "price": 65
+    },
+    {
+      "name": "GT ELITA 30 גרם",
+      "group": "powder",
+      "sku_hint": "GT-SHI-CER-30",
+      "price": 38
+    },
+    {
+      "name": "HOJICHA 500 גרם",
+      "group": "powder",
+      "sku_hint": null,
+      "price": 375
+    },
+    {
+      "name": "UBE 1 ק\"ג",
+      "group": "powder",
+      "sku_hint": "UBE-POWDER-1-KG",
+      "price": 340
+    },
+    {
+      "name": "UBE 500 גרם",
+      "group": "powder",
+      "sku_hint": "UBE-POWDER-0.5-KG",
+      "price": 175
+    },
+    {
+      "name": "MATCHA KIT",
+      "group": "powder",
+      "sku_hint": "GT-MAT-KIT",
+      "price": 170
+    },
+    {
+      "name": "ODK מחית מנגו 1 ליטר",
+      "group": "puree",
+      "sku_hint": "GT-ODK-MAN-1",
+      "price": 60
+    },
+    {
+      "name": "ODK מחית תות 1 ליטר",
+      "group": "puree",
+      "sku_hint": "GT-ODK-STR-1",
+      "price": 60
+    },
+    {
+      "name": "ODK מחית אפרסק 1 ליטר",
+      "group": "puree",
+      "sku_hint": "GT-ODK-PEA-1",
+      "price": 60
+    },
+    {
+      "name": "קערת מאצ'ה קרמית",
+      "group": "accessory",
+      "sku_hint": "AP-BWL-MAT",
+      "price": 118
+    },
+    {
+      "name": "מקציף מאצ'ה חשמלי",
+      "group": "accessory",
+      "sku_hint": "AP-FRO-MAT",
+      "price": 100
+    },
+    {
+      "name": "מקציף קוקטיילים",
+      "group": "accessory",
+      "sku_hint": "GTCFR-GTCOC-FRO",
+      "price": 75
+    },
+    {
+      "name": "מטרפת במבוק",
+      "group": "accessory",
+      "sku_hint": "AP-WHK-MAT",
+      "price": 37
+    },
+    {
+      "name": "קנקן זכוכית עם מסננת",
+      "group": "accessory",
+      "sku_hint": "AP-JUG-NEA",
+      "price": 36
+    },
+    {
+      "name": "כוס זכוכית 600 מ\"ל",
+      "group": "accessory",
+      "sku_hint": "AP-CUP-MAT-600",
+      "price": 30
+    },
+    {
+      "name": "מעמד למטרפה",
+      "group": "accessory",
+      "sku_hint": "AP-STA-MAT",
+      "price": 25
+    },
+    {
+      "name": "כוס מדידה",
+      "group": "accessory",
+      "sku_hint": "GT-GLA-CUP",
+      "price": 20
+    },
+    {
+      "name": "כף מדידה במבוק",
+      "group": "accessory",
+      "sku_hint": "AP-SCO-MAT",
+      "price": 11
+    },
+    {
+      "name": "בקבוק מאצ'ה 500 מ\"ל",
+      "group": "accessory",
+      "sku_hint": "GT-MAT-BTL-RU",
+      "price": 10
+    }
+  ],
+  "drinks": [
+    {
+      "page": 8,
+      "name": "חליטת היביסקוס וליים",
+      "category": "תה",
+      "cost": 3.25,
+      "price": 20,
+      "margin": 81
+    },
+    {
+      "page": 9,
+      "name": "חליטת קמומיל ותפוח",
+      "category": "תה",
+      "cost": 3.25,
+      "price": 20,
+      "margin": 81
+    },
+    {
+      "page": 10,
+      "name": "חליטה מדברית",
+      "category": "תה",
+      "cost": 3.25,
+      "price": 20,
+      "margin": 81
+    },
+    {
+      "page": 11,
+      "name": "חליטת סנצ'ה ופסיפלורה",
+      "category": "תה",
+      "cost": 3.25,
+      "price": 20,
+      "margin": 81
+    },
+    {
+      "page": 12,
+      "name": "חליטת תה ירוק לואיזה וליים",
+      "category": "תה",
+      "cost": 3.25,
+      "price": 20,
+      "margin": 81
+    },
+    {
+      "page": 13,
+      "name": "חליטת תה ירוק ולמון גראס",
+      "category": "תה",
+      "cost": 3.25,
+      "price": 20,
+      "margin": 81
+    },
+    {
+      "page": 14,
+      "name": "חליטת יסמין וליצ'י",
+      "category": "תה",
+      "cost": 3.25,
+      "price": 20,
+      "margin": 81
+    },
+    {
+      "page": 16,
+      "name": "לימונדת היביסקוס וליים",
+      "category": "תה",
+      "cost": 3.95,
+      "price": 22,
+      "margin": 79
+    },
+    {
+      "page": 17,
+      "name": "לימונדה מדברית",
+      "category": "תה",
+      "cost": 3.95,
+      "price": 22,
+      "margin": 79
+    },
+    {
+      "page": 20,
+      "name": "חליטת אפרסק מדברית",
+      "category": "תה",
+      "cost": 4.8,
+      "price": 31,
+      "margin": 82
+    },
+    {
+      "page": 21,
+      "name": "חליטת תות לואיזה",
+      "category": "תה",
+      "cost": 4.8,
+      "price": 31,
+      "margin": 82
+    },
+    {
+      "page": 22,
+      "name": "חליטת מנגו סנצ'ה",
+      "category": "תה",
+      "cost": 4.8,
+      "price": 31,
+      "margin": 82
+    },
+    {
+      "page": 23,
+      "name": "חליטת תפוח היביסקוס",
+      "category": "תה",
+      "cost": 2.88,
+      "price": 24,
+      "margin": 86
+    },
+    {
+      "page": 25,
+      "name": "גזוז יסמין וליצ'י",
+      "category": "תה",
+      "cost": 3.08,
+      "price": 25,
+      "margin": 85
+    },
+    {
+      "page": 26,
+      "name": "גזוז מדברי ואפרסק",
+      "category": "תה",
+      "cost": 4.8,
+      "price": 33,
+      "margin": 83
+    },
+    {
+      "page": 27,
+      "name": "גזוז היביסקוס ותפוח",
+      "category": "תה",
+      "cost": 2.88,
+      "price": 22,
+      "margin": 85
+    },
+    {
+      "page": 48,
+      "name": "אייס צ'אי מסאלה קלאסי",
+      "category": "צ'אי",
+      "cost": 5.57,
+      "price": 28,
+      "margin": 77
+    },
+    {
+      "page": 49,
+      "name": "צ'אי מסאלה על הקרח",
+      "category": "צ'אי",
+      "cost": 3.7,
+      "price": 24,
+      "margin": 82
+    },
+    {
+      "page": 50,
+      "name": "דירטי צ'אי",
+      "category": "צ'אי",
+      "cost": 6.57,
+      "price": 32,
+      "margin": 76
+    },
+    {
+      "page": 51,
+      "name": "צ'אי מסאלה תפוז וטוניק",
+      "category": "צ'אי",
+      "cost": 4.75,
+      "price": 26,
+      "margin": 78
+    },
+    {
+      "page": 52,
+      "name": "צ'אי מסאלה פינק טוניק",
+      "category": "צ'אי",
+      "cost": 4.75,
+      "price": 24,
+      "margin": 77
+    },
+    {
+      "page": 53,
+      "name": "צ'אי מסאלה ומיץ תפוזים",
+      "category": "צ'אי",
+      "cost": 5.25,
+      "price": 28,
+      "margin": 78
+    },
+    {
+      "page": 55,
+      "name": "צ'אי מסאלה קולד פואם וניל",
+      "category": "צ'אי",
+      "cost": 4.0,
+      "price": 28,
+      "margin": 83
+    },
+    {
+      "page": 56,
+      "name": "צ'אי מסאלה קולד פואם פיסטוק",
+      "category": "צ'אי",
+      "cost": 4.9,
+      "price": 30,
+      "margin": 81
+    },
+    {
+      "page": 57,
+      "name": "צ'אי תאילנדי קוקוס קולד פואם",
+      "category": "צ'אי",
+      "cost": 4.9,
+      "price": 32,
+      "margin": 82
+    },
+    {
+      "page": 58,
+      "name": "צ'אי מסאלה קולד פואם בננה",
+      "category": "צ'אי",
+      "cost": 4.2,
+      "price": 31,
+      "margin": 84
+    },
+    {
+      "page": 18,
+      "name": "לימונדת צ'אי מסאלה",
+      "category": "צ'אי",
+      "cost": 3.95,
+      "price": 22,
+      "margin": 79
+    },
+    {
+      "page": 29,
+      "name": "אייס מאצ'ה קלאסי",
+      "category": "אבקות",
+      "cost": 4.26,
+      "price": 26,
+      "margin": 81
+    },
+    {
+      "page": 30,
+      "name": "אייס מאצ'ה מנגו",
+      "category": "אבקות",
+      "cost": 6.46,
+      "price": 39,
+      "margin": 80
+    },
+    {
+      "page": 31,
+      "name": "אייס מאצ'ה תות",
+      "category": "אבקות",
+      "cost": 6.46,
+      "price": 39,
+      "margin": 80
+    },
+    {
+      "page": 32,
+      "name": "אייס מאצ'ה אפרסק",
+      "category": "אבקות",
+      "cost": 6.46,
+      "price": 39,
+      "margin": 80
+    },
+    {
+      "page": 33,
+      "name": "אייס מאצ'ה מסאלה",
+      "category": "אבקות",
+      "cost": 6.86,
+      "price": 37,
+      "margin": 78
+    },
+    {
+      "page": 34,
+      "name": "מאצ'ה אגבה על הקרח",
+      "category": "אבקות",
+      "cost": 2.85,
+      "price": 26,
+      "margin": 87
+    },
+    {
+      "page": 36,
+      "name": "אייס מאצ'ה וניל",
+      "category": "אבקות",
+      "cost": 4.56,
+      "price": 28,
+      "margin": 81
+    },
+    {
+      "page": 37,
+      "name": "אייס מאצ'ה פיסטוק",
+      "category": "אבקות",
+      "cost": 5.46,
+      "price": 28,
+      "margin": 77
+    },
+    {
+      "page": 38,
+      "name": "אייס מאצ'ה שומשום שחור",
+      "category": "אבקות",
+      "cost": 5.06,
+      "price": 28,
+      "margin": 79
+    },
+    {
+      "page": 39,
+      "name": "אייס מאצ'ה קפה",
+      "category": "אבקות",
+      "cost": 5.26,
+      "price": 29,
+      "margin": 79
+    },
+    {
+      "page": 40,
+      "name": "אייס מאצ'ה בננה",
+      "category": "אבקות",
+      "cost": 4.76,
+      "price": 28,
+      "margin": 80
+    },
+    {
+      "page": 42,
+      "name": "מאצ'ה קוקוס אגבה",
+      "category": "אבקות",
+      "cost": 4.04,
+      "price": 34,
+      "margin": 86
+    },
+    {
+      "page": 43,
+      "name": "מאצ'ה קוקוס ליצ'י",
+      "category": "אבקות",
+      "cost": 4.07,
+      "price": 32,
+      "margin": 85
+    },
+    {
+      "page": 44,
+      "name": "מאצ'ה קוקוס תות",
+      "category": "אבקות",
+      "cost": 5.79,
+      "price": 44,
+      "margin": 84
+    },
+    {
+      "page": 45,
+      "name": "מאצ'ה קוקוס מנגו",
+      "category": "אבקות",
+      "cost": 5.79,
+      "price": 44,
+      "margin": 84
+    },
+    {
+      "page": 46,
+      "name": "מאצ'ה קוקוס אפרסק",
+      "category": "אבקות",
+      "cost": 5.79,
+      "price": 44,
+      "margin": 84
+    },
+    {
+      "page": 60,
+      "name": "אייס אובה תות",
+      "category": "אבקות",
+      "cost": 5.22,
+      "price": 30,
+      "margin": 79
+    },
+    {
+      "page": 61,
+      "name": "אייס אובה מנגו",
+      "category": "אבקות",
+      "cost": 5.22,
+      "price": 30,
+      "margin": 79
+    },
+    {
+      "page": 62,
+      "name": "אייס אובה אפרסק",
+      "category": "אבקות",
+      "cost": 5.22,
+      "price": 30,
+      "margin": 79
+    },
+    {
+      "page": 63,
+      "name": "אייס אובה מסאלה",
+      "category": "אבקות",
+      "cost": 6.27,
+      "price": 31,
+      "margin": 76
+    },
+    {
+      "page": 64,
+      "name": "אייס אובה מאצ'ה",
+      "category": "אבקות",
+      "cost": 4.96,
+      "price": 28,
+      "margin": 79
+    }
+  ],
+  "claims": [
+    {
+      "claim": "כ-700 לקוחות",
+      "used_in": "stage-02 human explainer + answer bank 'איך אדע שזה טעים'",
+      "claim_id": "customers_700"
+    },
+    {
+      "claim": "8 שנים בשוק",
+      "used_in": "stage-02 human explainer + answer bank 'איך אדע שזה טעים'",
+      "claim_id": "years_8"
+    },
+    {
+      "claim": "כשרות בד\"ץ בית יוסף בהשגחת הרבנות חולון",
+      "used_in": "answer bank 'כשרות'",
+      "claim_id": "kashrut_badatz"
+    },
+    {
+      "claim": "חיי מדף: תמציות שנה סגור / 3 חודשים בקירור אחרי פתיחה; אבקות שנתיים",
+      "used_in": "answer bank 'חיי מדף'",
+      "claim_id": "shelf_life"
+    },
+    {
+      "claim": "כ-17 קלוריות ל-100 מ\"ל משקה מוכן",
+      "used_in": "answer bank 'יש סוכר'",
+      "claim_id": "calories_17"
+    },
+    {
+      "claim": "אספקה לכל הארץ דרך אייס דרים, לפחות פעמיים בשבוע לכל אזור",
+      "used_in": "answer bank 'מספקים לכל הארץ'",
+      "claim_id": "distributor_ice_dream"
+    },
+    {
+      "claim": "לקוחות לציטוט: R2M, קבוצת קיסו, נונו מימי, ויוינו, אליטה אופק, בבקה",
+      "used_in": "stage-02 + answer bank",
+      "claim_id": "named_customers"
+    }
+  ]
+}
