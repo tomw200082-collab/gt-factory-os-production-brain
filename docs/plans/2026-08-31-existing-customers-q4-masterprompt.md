@@ -567,3 +567,88 @@ path, not a side effect of planning. The two sibling masterprompts this document
 `Sales-Machine/evidence/2026-08-31-q4-plan.md` · `-q4-assignment.md` · `-q4-daily-plan.csv` ·
 `-q4-collateral/` · `Sales-Machine/recipes/q4-scoreboard.md` ·
 `gt-factory-os/scripts/sales-report/q4_scoreboard.py`.
+
+---
+
+## 11. Revision 2 — 2026-08-31, after Tom's corrections
+
+Tom returned four corrections and a mandate. All four landed; the plan was rebuilt,
+not patched.
+
+### What he corrected
+
+1. **Avi has no defined role or hours, and he is already in the system.** Found:
+   `private_core.app_users` → `avi@gteveryday.com`, display_name `Avi`, role `planner`,
+   active since 2026-08-25, portal password set. 3–4 calls a day. `U-017` closed.
+2. **GT no longer produces cocktails or mixers.** The only alcohol GT markets that is
+   not another customer's private label is GT Pink and GT White Sangria. White was then
+   dropped (zero stock, Tom's call). §W3 and §2.2 of this document were written on the
+   assumption that "sangria" was a single available answer; it was not.
+3. **§6.D approved** — chain or ≥ ₪25,000. §6.C, §6.E approved. §6.B given to Claude on
+   mandate. §6.G deferred. §6.F becomes: build the artifact, Tom sends it.
+4. **All MUZA is gone** — mixers included — so the replacement is GT's sangrias *or*
+   tea extracts as a mixer, and deciding which was explicitly a commercial judgement.
+
+### The judgement, and the arithmetic behind it
+
+The extract leads; the sangria is the fallback. MUZA averaged **₪81.60/L**. Pink Sangria
+is ₪45, a tea extract ₪65 — so a like-for-like litre swap can return **₪143,891** of the
+₪192,147, never the whole of it, and it reaches that ceiling only if the extract carries
+the play. On GT's own documented 50 ml build (`docs/pricing/canva_workfiles/recipes.json`)
+a ₪65 litre is **20 serves**: ₪3.25 of GT plus ~₪7 of the venue's own spirit is ₪10.25 of
+pour cost against MUZA's ₪13.10 — **23% food cost against 29%**. The venue keeps more per
+glass than MUZA left them, and one bottle now serves the iced-tea menu, the bar, and the
+zero-proof list. MUZA served one. Tom named FRESH and CALM specifically because both are
+caffeine-free, which is what lets the same bottle work at eight in the evening.
+
+Three motions, ordered by how short the sell is — M1 same bottle, evening menu (zero new
+SKU, the shortest sell in the whole plan) · M2 extract as the cocktail base · M3 Pink
+Sangria for whoever wants nothing to prepare.
+
+### The defect this uncovered
+
+The growth board pointed **37 opportunity lines across 35 accounts — ₪168,418 —** at
+`GTCC-NON-SAN-1L` and `GTCC-NON-SAN-3.85L` (Nonomimi's own branded sangria),
+`GTEL-BAB-RED-0.75L` (Babka's), and the unruled `GTCC-NM-SAN-3.85L`. Seven of the twenty
+MUZA accounts, worth ₪90,553, would have been offered another customer's product by name.
+
+Fixing the SKU field was not enough: the first render showed the WhatsApp copy for
+`גאפן גאפן` still reading *"GT Nonomimi Sangria Cocktail 1000ml"*. Twenty-four script
+lines were scrubbed and all twenty MUZA accounts given purpose-written openings. Two
+gates in `q4_plan_v2.py` now assert both surfaces are clean.
+
+### Structure
+
+`עם כמה ואיזה לקוחות אלכס נפגש עם אבי` was read as joint meetings, and the plan is built
+on that reading: **Alex only appears in the room with Avi.**
+
+| | channel | accounts | 12m revenue | opportunity | target | cadence |
+|---|---|---|---|---|---|---|
+| T1 | joint meeting, Alex + Avi | 15 | ₪1,450,872 | ₪356,537 | **₪86,465** | one a week |
+| T2 | call, Avi | 22 | ₪508,931 | ₪124,292 | ₪21,123 | 3–4 a day |
+| T3 | WhatsApp, Tom | 116 | ₪926,276 | ₪295,705 | ₪40,057 | 10 a day, no Wednesday |
+
+**₪147,644 run-rate · ₪119,444 gross profit · 755 dated tasks · 84 working days, none empty.**
+Down 26% from v1, and the first figure that survives its own arithmetic.
+
+### Newly blocking
+
+`U-020` — **FRESH and DETOX are both at zero stock** (Shopify, verified 2026-08-31).
+**79 accounts and ₪490,702 of opportunity** depend on one of them. CALM 340, NAMASTEA 353,
+ENERGY 251, REVIVE 259 are ready. A production order is the first task in the plan.
+
+`U-021` — `sales-leads-poll` `routeDaily()` selects conversion candidates with
+`status in (new,working) and shopify_customer_id is not null`. Every one of the 153 is a
+Shopify customer ordering every nine days on average, so loading the plan as leads would
+mark all of them `won` on their next **routine** order and the target would read as met the
+week it shipped. The load stays dry-run until `and l.source <> 'q4_existing_2026'` lands.
+
+`U-019` — `GTCC-NM-SAN-3.85L` is titled "GT Sangria" but its SKU carries `NM` and
+`GTCC-NON-SAN-3.85L` exists beside it. Offered to nobody until Tom rules.
+
+### Artifacts
+
+Dashboard (this is the one Tom sends): `https://claude.ai/code/artifact/9267cc69-a432-43d5-8e18-94b6057db483`
+· `Sales-Machine/evidence/2026-08-31-q4-plan.md` · `-q4-assignment.md` · `-q4-daily-plan.csv`
+· `-q4-collateral/mixer-serve-cards.md` · `-q4-collateral/muza-migration-map.md`
+· `gt-factory-os/scripts/sales-report/q4_plan_v2.py` · `q4_sales_system_load.py` · `q4_scoreboard.py`
