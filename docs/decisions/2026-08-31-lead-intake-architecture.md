@@ -354,9 +354,18 @@ unchanged.
 
 **Two consequences, recorded now rather than discovered later.**
 
-1. **A number entering the API leaves the WhatsApp app permanently.** Whoever installs
-   WhatsApp with `054-758-8132` afterwards disconnects the integration. Whether anyone is
-   using it today is open as `U-022` and must be settled **before** provisioning, not after.
+1. **`054-758-8132` joins the API via coexistence, and stays in the WhatsApp app.** Tom
+   confirmed on 2026-08-31 that the number is in active use. Under **classic** onboarding
+   that would have been a hard blocker — there, a number entering the API leaves the app
+   permanently and cannot be handed back. **Coexistence removes the conflict rather than
+   trading one loss for another:** the number stays live in the app for whoever uses it
+   today while the Cloud API reads and sends on the same number alongside. GT is not
+   guessing that this works — the order line has run exactly this way since 2026-06-26,
+   with 9,440 staff-echo events proving the bot sees a human reply and stands down.
+   Recorded as `Sales-Machine/doctrine/decisions.md` **D-015**; `U-022` closes as a
+   non-blocker. **The standing requirement this creates needs a named owner:** the app must
+   be opened at least once every 13 days and never uninstalled, or coexistence lapses
+   silently and the integration dies with it.
 2. **Automated messages to leads are exactly what `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED`
    gates** (`Sales-Machine/doctrine/decisions.md` D-005). Provisioning, webhook wiring,
    template submission and dry-runs may all proceed. **Sending may not** — that needs Tom's
@@ -378,7 +387,7 @@ history" qualifier in §Q2 stops being a heuristic and becomes the normal case. 
 | U-015 | Meta's current marketing-template rate for Israel | Tom, from GT's Meta Business Manager billing page |
 | U-016 | `META_PAGE_ACCESS_TOKEN` has no Leads Access on the page — the cause of the two lost leads. Related to but distinct from D-006 (Make carries leads; this token is used for the *content* lookup) | technical, next intake session |
 | U-017 | Second Facebook form id `1771287887148857` — live, or a stale test form? The pulse sees one form; rejects came from two | Alex / Meta Ads Manager |
-| U-022 | Is `054-758-8132` in active use in the WhatsApp app by a person today? Settle **before** provisioning — the move is one-way | Tom |
+| ~~U-022~~ | **CLOSED 2026-08-31.** The number is in use, and coexistence makes that a non-blocker (D-015) — it keeps the app and gains the API. Residual, and it is real: the 13-day open-the-app requirement has no owner | closed; the 13-day owner is open |
 
 ---
 
