@@ -11,13 +11,18 @@ Hebrew build and the image migration are done, and the site went to Shopify as a
 > the site from "an unpublished theme nobody has seen rendered" to "publishable, and every
 > number on it defensible." It halts for you only where §6 says.
 >
+> **Start from `gt-site` `main`.** PR #1 merged 2026-08-31T11:53Z at `854011c`; the build,
+> the theme layer and the Hebrew page are all on `main` now. Branch from there — do not
+> resurrect `claude/file-to-website-8quodp`.
+>
 > **Provenance:** written 2026-08-31, after the first build session, from direct
 > measurement of `gt-site@afb7e17` and the live store — not from that session's report.
 > `COLS` and `MK` were parsed out of `src/index.html` and compared in code against
 > `.claude/skills/drinks-pricelist/drinks_final_figures.json`; theme `162206646513` was
 > queried on the store; the preview URL and a local render were both attempted in
-> Chromium. Prior work: `gt-site` PR #1, `gt-factory-os-production-brain` PR #187
-> (`shopify-theme` skill, commit `1cdfb7c`).
+> Chromium. Prior work, **both merged 2026-08-31**: `gt-site` PR #1 (`main` @ `854011c`)
+> and `gt-factory-os-production-brain` PR #187 (`main` @ `b0871c6` — the `shopify-theme`
+> skill and the false-green entry).
 >
 > **Shelf life:** §2 is presumed stale after 2026-09-14. Re-run §2.6. If the theme id or
 > the live theme has changed, **halt and surface it** before touching the store.
@@ -32,12 +37,15 @@ Hebrew build and the image migration are done, and the site went to Shopify as a
 - **Read first, in order:**
   1. `gt-factory-os-production-brain/CLAUDE.md`
   2. `gt-factory-os-production-brain/.claude/skills/shopify-theme/SKILL.md` — **every trap
-     in it was paid for once already.** If it is not on your branch, it is on
-     `origin/claude/file-to-website-8quodp` in this repo, commit `1cdfb7c`.
+     in it was paid for once already.** On `main` since 2026-08-31 (PR #187).
   3. `gt-site/README.md` — the build, the theme id, how a change is deployed
-  4. `gt-site` PR #1 in full — what was done and what was left open
-  5. `docs/pricing/2026-08-27_COST_MODEL.md` — **especially line 78**
-  6. `Sales-Machine/CLAUDE.md` and `doctrine/pricing-logic.md`
+  4. `gt-site` PR #1 in full — what was done and what was left open (merged, but its body
+     is the build record)
+  5. `gt-factory-os-production-brain` PR #188 — the lead session's intake decision. It owns
+     the `source_id` you need in W2, and it found that GT's WhatsApp Cloud API has been live
+     since 2026-06-26. Read its decision doc before wiring the form.
+  6. `docs/pricing/2026-08-27_COST_MODEL.md` — **especially line 78**
+  7. `Sales-Machine/CLAUDE.md` and `doctrine/pricing-logic.md`
 - **Authority:** the repos' `CLAUDE.md` files win. Halt conditions, evidence standard and
   git discipline are inherited from `gt-factory-os-production-brain/CLAUDE.md` — §8 lists
   only the additions.
@@ -99,8 +107,8 @@ Anything not on this list is out of scope unless Tom asks.
 
 | | |
 |---|---|
-| Branch | `gt-site` `claude/file-to-website-8quodp` @ `afb7e17`, 6 commits, 91 files |
-| PR | `gt-site` #1 — draft, `mergeable_state: clean` |
+| Branch | `gt-site` **`main` @ `854011c`** — PR #1 merged `2026-08-31T11:53Z`, 91 files |
+| Skill | `shopify-theme` on brain `main` @ `b0871c6` — PR #187 merged the same minute |
 | Theme | `162206646513` · `GT Site v5 — Hebrew (do not publish)` · **UNPUBLISHED** · created `2026-08-31T10:57:51Z` |
 | Live theme | `131669328113` · `HE-RU Vodoma 2024` · **MAIN**, last touched `2026-03-29` — untouched |
 | Translation | 1,178 strings; `--identity` round-trip byte-identical |
@@ -280,9 +288,11 @@ report so he is not surprised by a ₪28 that became ₪44.
 ### W2 — The form writes to `sales_core`
 
 Replace the `mailto:` path with a POST to `/ingest`, carrying a `source_id` that identifies
-the brand site. **The `source_id` registry is owned by the lead-system session** —
-`docs/plans/2026-08-31-lead-response-system-masterprompt.md`, contract C1 in the war room.
-Request a value; do not invent one.
+the brand site. **The `source_id` registry is owned by the lead-system session** — war-room contract C1,
+and that session has now published its decision in
+`docs/decisions/2026-08-31-lead-intake-architecture.md` (PR #188): one `source_id` format
+across every path, and the ad→category map is a table, not a sheet. Read it and request a
+value; do not invent one.
 
 Then prove it end to end: submit a real test enquiry, show the row in `sales_core.lead`,
 and show the alert arriving. A `200` proves the request was accepted and nothing more —
@@ -442,8 +452,12 @@ or the block comes off the page — it cannot go live either way.
 10. **The theme is a duplicate of the live one**, so it carries Vodoma's apps and assets
     (`bss-b2b-js.js` is 948 KB). Product, cart and account routes render from that layer —
     if one of them looks wrong, it is Vodoma, not your section.
-11. **`gt-site` may have more than one session on it.** `fetch` before your first commit and
-    again before your first push.
+11. **`gt-site` may have more than one session on it**, and the category-menus session is
+    briefed to add four landing pages on top of your foundation (war-room contract C3).
+    `fetch` before your first commit and again before your first push.
+12. **PR #1 is merged, so `main` is the base.** Anything you find referring to
+    `claude/file-to-website-8quodp` as "the branch" is describing the state before 11:53Z
+    on 2026-08-31.
 
 ---
 
