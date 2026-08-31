@@ -4,6 +4,10 @@
 # 2026-08-30: added the four 0.3 l extract SKUs (GT-HIB/LUI/CHA/SEN-LOW-0.3L), Tom approved in session.
 #   Prices read live from Shopify that morning: 13.50 ex-VAT each. They were selling since 08/2026 and had been
 #   falling into the visible historical bucket; this maps them without changing any other row.
+# 2026-08-31: four rows that were live in Shopify but missing from this snapshot.
+#   AMERICAN (created 04/23) and HOJICHA 0.5KG (07/27) predate the snapshot and were simply not captured;
+#   HOJICHA 1KG (08/18) postdates it and was added on Tom's word. AMERICAN's two prices were swapped in
+#   Shopify (1L=33, 0.5L=65) and were corrected there the same day. Nothing else in this file changed.
 sku	title	type	price_ils_exvat
 GT-HIB-LOW-1L	FRESH 1000ml	Tea 1 l	65.00
 GT-HIB-LOW-0.5L	FRESH 500ml	Tea 0.5 l	33.00
@@ -122,3 +126,7 @@ PCKBX-CAR-BOX-1L	Cardboard Box for 1000ml	Packaging	2.50
 PCKBX-CAR-BOX-0.2L	Cardboard Box for 200ml	Packaging	2.50
 MM-CAN-CLO-MACHI	Can Sealing Machine	Equipment	5000.00
 GTMN-PIK-254	Pikadon 254	Other	0.25
+GT-AME-LOW-1L	AMERICAN 1000ml	Tea 1 l	65.00
+GT-AME-LOW-0.5L	AMERICAN 500ml	Tea 0.5 l	33.00
+GT-HOJ-BLK-500	Hojicha Black Matcha 0.5KG	Powder	375.00
+GT-HOJ-BLK-1000	Hojicha Black Matcha 1KG	Powder	750.00
