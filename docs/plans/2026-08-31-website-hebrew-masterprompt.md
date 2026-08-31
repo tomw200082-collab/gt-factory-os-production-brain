@@ -1,6 +1,17 @@
 # MASTERPROMPT — GT's site: Hebrew, owned, and able to survive a Tuesday
 
-**STATUS: LIVE — not yet executed**
+**STATUS: SUPERSEDED by `docs/plans/2026-08-31-website-publish-masterprompt.md` — 2026-08-31**
+
+> Executed the same day it was written. Its two headline deliverables landed — the Hebrew
+> build (1,178 strings, round-trip byte-identical) and the image migration (147 of 152 off
+> the third-party proxy, 0 remote URLs left in any theme file) — but by a different route
+> than this document assumed: the site went to Shopify as unpublished theme `162206646513`,
+> not to a static host. Evidence: `gt-site` PR #1 @ `afb7e17`;
+> `gt-factory-os-production-brain` PR #187 (`shopify-theme` skill).
+>
+> **Do not paste this file.** Everything from here on is in the successor, which was written
+> against the built state and carries the finding this one could not have known: all 48
+> drink figures on the site are the superseded 2026-08-05 set.
 
 > **Usage (Tom):** paste this whole file as the first message of a fresh Claude Code
 > session with `gt-site`, `gt-factory-os-production-brain` and `Sales-Machine` attached,
