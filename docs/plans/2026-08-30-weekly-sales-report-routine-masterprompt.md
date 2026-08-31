@@ -1,4 +1,8 @@
-# MASTERPROMPT — the sales report is final and in Tom's inbox every Sunday by 09:00 IL
+# MASTERPROMPT — the sales report is true every business morning, and in Tom's inbox by 09:15 IL
+
+<!-- The filename still says "weekly": the Routine's prompt and this repo's history point at
+this exact path, and a rename would break the pointer for no gain. The cadence below is
+the authority, not the filename. -->
 
 **STATUS: LIVE — not yet executed**
 <!-- The executing session's last act is to change this to SHIPPED / SUPERSEDED by <path> /
@@ -7,10 +11,13 @@ document is the Routine's standing instruction, not a one-shot plan. Stamp it on
 the Routine itself is retired or replaced. -->
 
 > **Usage:** this is the standing instruction for a scheduled Routine that fires a fresh
-> session every Sunday at 08:00 Israel time with `gt-factory-os`,
-> `gt-factory-os-production-brain` and `Sales-Machine` attached. It takes the sales
-> report from "last week's numbers" to "this morning's numbers, gate-verified, link in
-> Tom's inbox". It halts for Tom only where §6 says so.
+> session **Sunday through Thursday at 09:00 Israel time** (Tom, 2026-08-31) with
+> `gt-factory-os`, `gt-factory-os-production-brain` and `Sales-Machine` attached. It takes
+> the sales report from "yesterday's numbers" to "this morning's numbers, gate-verified,
+> link in Tom's inbox". It halts for Tom only where §6 says so.
+>
+> **Friday and Saturday do not fire.** There is no delivery run, and the only figure that
+> would move is a stray online order — which Sunday's pull picks up anyway.
 >
 > **Provenance:** written 2026-08-30, from a full manual run of the pipeline that
 > morning — Shopify bulk operation `gid://shopify/BulkOperation/8003722150129`
@@ -63,9 +70,9 @@ the Routine itself is retired or replaced. -->
 
 ## 1. Mission and definition of done
 
-**One testable sentence:** every Sunday morning the artifact at the fixed URL carries
+**One testable sentence:** every business morning the artifact at the fixed URL carries
 gate-verified numbers stamped with this morning's pull time, and Tom has one email
-holding the link, the stamp, three opening numbers and one thing to check.
+holding the link, the stamp, and the numbers his day actually turns on.
 
 | # | Condition | The observation that would prove it false |
 |---|---|---|
@@ -74,7 +81,7 @@ holding the link, the stamp, three opening numbers and one thing to check.
 | D3 | Order counts reconcile exactly | `out/gates.json` → any entry in `gate2` with `match_all: false` |
 | D4 | Taxonomy coverage total, nothing discarded | `out/gates.json` → `gate3.skus_total != gate3.mapped_tsv + gate3.historical` |
 | D5 | Manual sanity holds | the three orders in `gates.json.gate5_sample` re-pulled live differ from the file on any SKU, quantity or `discountedTotalSet` |
-| D6 | Exactly one email delivered to `tom@gteveryday.com` | Gmail shows zero, or two, messages with today's subject |
+| D6 | Exactly one email delivered to `tom@gteveryday.com`, in the shape this weekday calls for | Gmail shows zero, or two, messages with today's subject — or a Monday-to-Thursday mail carrying the Sunday weekly block instead of the daily pulse (`SKILL.md` step 7, its two weekday branches) |
 | D7 | A failed gate published nothing | the artifact's stamp advanced on a morning whose run report records a `FAIL` |
 | D8 | The run left no repository dirty | `git status --porcelain` non-empty in any of the three repos |
 
@@ -108,7 +115,13 @@ Approved by Tom 2026-08-24, re-confirmed in the 2026-08-30 run:
   `shopifyql_month.json` live beside the scripts and are not in git.
 - **The price map:** `gt-factory-os-production-brain/docs/pricing/2026-08-05_shopify_products_exvat.tsv`
   (hardcoded absolute path inside `build_facts.py` — see landmine 8).
-- **The procedure:** `weekly-sales-report` skill, present in the brain repo.
+- **The procedure:** `weekly-sales-report` skill, present in the brain repo. Its step 7
+  splits by weekday: Sunday sends the weekly block, Monday-Thursday the daily pulse.
+- **The page's sheets:** `יומי` · `לקוחות` · `מוצרים` · `רשתות` · `מגמה`. The daily sheet
+  (added 2026-08-31) is built entirely from the order-level data already in the page —
+  last closed business day, today so far, 7 closed days, month to date, a daily bar chart
+  with a 7-day moving average, the median per weekday, and a 14-day retro table. It needs
+  no extra pull; a normal run fills it.
 
 ### 2.2 The numbers — run of 2026-08-30, window `2024-08` → `2026-08`
 
@@ -249,9 +262,9 @@ appendix. Two minutes. **This is the only open item.**
 
 Closed on 2026-08-30, recorded here so nobody reopens them:
 
-- **Cadence:** Sunday 08:00 Israel time, Tom's decision. `SKILL.md` was Wednesday and has
-  been corrected; the meeting stays Wednesday and now opens on a report that has been
-  ready since the start of the week.
+- **Cadence:** Sunday-Thursday 09:00 Israel time, Tom's decision on 2026-08-31 (it was
+  Wednesday, then Sunday-only for a day). `SKILL.md` carries it. The meeting stays
+  Wednesday and now opens on a report that was true that morning, not five days earlier.
 - **The 0.3-litre mapping:** approved. `GT-HIB-LOW-0.3L`, `GT-LUI-LOW-0.3L`,
   `GT-CHA-LOW-0.3L`, `GT-SEN-LOW-0.3L` are in the price map as type `Tea 0.3 l` at
   ₪13.50 ex-VAT, read live from Shopify that morning. They now classify to families
@@ -293,9 +306,9 @@ Closed on 2026-08-30, recorded here so nobody reopens them:
 8. **`build_facts.py` hardcodes an absolute path** to the price TSV under
    `/home/user/gt-factory-os-production-brain/...`. If the clone lands elsewhere the run
    dies on a missing file — check §2.5 item 2 before blaming the data.
-9. **Israel leaves DST on 2026-10-25.** A UTC cron of `0 5 * * 0` fires at 08:00 while
-   IDT (UTC+3) holds and at **07:00** from 2026-11-01. Either accept the hour or move
-   the cron to `0 6 * * 0` that week.
+9. **Israel leaves DST on 2026-10-25.** A UTC cron of `0 6 * * 0-4` fires at 09:00 while
+   IDT (UTC+3) holds and at **08:00** from 2026-10-25. Either accept the hour or move
+   the cron to `0 7 * * 0-4` that week.
 10. **`build_excel.py` will fail** with `ModuleNotFoundError: No module named 'openpyxl'`.
     It is not part of the weekly path. Do not install packages inside a scheduled run.
 
@@ -346,8 +359,8 @@ Nothing else. The `Artifact` tool is built in — it is not a connector and must
 requested as one. No Supabase, no LionWheel, no Green Invoice: this report never touches
 them.
 
-**Schedule:** Sunday 08:00 Israel time → cron `0 5 * * 0` in UTC while IDT holds. See
-landmine 9 for the 2026-10-25 DST change.
+**Schedule:** Sunday-Thursday 09:00 Israel time → cron `0 6 * * 0-4` in UTC while IDT
+holds. See landmine 9 for the 2026-10-25 DST change.
 
 **Session mode:** a fresh session per firing. Do not bind it to an existing session —
 each week must start from a clean context, and the numbers must be pulled, not
@@ -356,13 +369,16 @@ remembered.
 **Routine prompt — paste this as the Routine's message:**
 
 ```
-Run the GT weekly sales-report refresh.
+Run the GT sales-report refresh for this morning.
 
 Read and execute, in this order:
 1. gt-factory-os-production-brain/docs/plans/2026-08-30-weekly-sales-report-routine-masterprompt.md
    — the standing instruction for this Routine. Follow it, including its halt conditions.
 2. gt-factory-os-production-brain/.claude/skills/weekly-sales-report/SKILL.md
    — the procedure itself, steps 1-8.
+
+Today's email shape follows SKILL.md step 7: Sunday sends the weekly block, Monday to
+Thursday the short daily pulse. Check today's weekday before writing it.
 
 If either file is missing, stop and email tom@gteveryday.com saying the report did not
 run this morning and why. Do not improvise the pipeline from memory.
