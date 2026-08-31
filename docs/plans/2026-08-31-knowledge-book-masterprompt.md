@@ -1,6 +1,6 @@
 # MASTERPROMPT — GT's knowledge book: from a good page to the outbound database
 
-**STATUS: LIVE — not yet executed**
+**STATUS: SHIPPED — 2026-08-31**
 
 > **Usage (Tom):** paste this whole file as the first message of a fresh Claude Code
 > session with `Sales-Machine` and `gt-factory-os-production-brain` attached, and the
@@ -18,6 +18,26 @@
 >
 > **Shelf life:** §2 is presumed stale after 2026-09-21. Re-run §2.5. If a figure has
 > moved since, **halt and surface it** — a wrong number in this book reaches a customer.
+>
+> ---
+>
+> ## Execution record — 2026-08-31
+>
+> | Done | Evidence |
+> |---|---|
+> | D1 — every published figure reconciles | ⚠ **partial.** 48/48 drinks, the category summary and all 32 price-list rows: **0 diffs**. 9 findings remain and every one is Tom's: 6 products with no sellable record behind the printed price, 3 unsourced claims. Run: `scripts/knowledge/reconcile.py book` |
+> | D2 — every card graded, dated, registered | ✅ `scripts/knowledge/reconcile.py cards` → **0 rows** |
+> | D3 — one answer bank, shared | ⚠ **partial.** One bank exists (`knowledge/answers/answer-bank.yaml`, 30 rows, the six specified columns). The lead system's sheet is not built and the sync direction is not agreed — `CURRENT_STATE.md` U-017 |
+> | D4 — every printed product has an active SKU or is marked | ✅ all six are `customer_facing: false` with the reason and the open item on the row |
+> | D5 — book UNRESOLVED == CURRENT_STATE UNRESOLVED | ✅ U-014…U-018 + TOM-A…F + CL-1…3, and the artifact's §09 renders from them |
+> | D6 — an agent answers from `knowledge/` alone | ✅ **42/42** (41/42 as first written; the one miss was the expectation, not the data — see `knowledge/eval/questions.yaml` `last_run`) |
+> | D7 — artifact republished to the same URL | ❌ **blocked, not skipped.** The original artifact is served to this session as a public reader — read and publish both refused, confirmed by an actual attempt (landmine #7). The rendering is generated and published, with build date and both source commits, at a **new** URL: `https://claude.ai/code/artifact/513456cd-5fa3-4ff1-8616-8ea82e020b22`. Said loudly rather than splitting state quietly |
+>
+> **Corrections to this document, found while executing it:**
+> 1. §2.3(d) cites "the 12-month fact table (`Sales-Machine/evidence/`, rebuilt `2026-08-30`)" showing **153 customers**. That file does not exist — the latest evidence is `2026-08-24`, and the figure could not be reproduced. Live measurement 2026-08-31: **599** ordering customers in the trailing 12 months (4,088 orders), **3,239** since 2015; the 2026-08-24 fact table counts **804** over 25 months. `700` matches none of them. Nothing was written from the 153.
+> 2. §4 W5.2 says to ground the segment scripts in "the archetypes the fact table already uses: `TEA-ONLY`, `SPECIALTY-LED`, `MIXED`, `BAR-LED`". Those strings appear nowhere in either repo. The segment card says so on its face and is built on what is verifiable instead.
+> 3. §2.4 hands the Canva defects to `docs/plans/2026-08-31-category-menus-masterprompt.md`. That file does not exist yet; the defects are recorded as `CL-2` in `CURRENT_STATE.md` and handed over there.
+> 4. Two findings this document did not list: the book renames drink page 12 (`חליטת תה ירוק לואיזה וליים` vs the authority's `חליטת תה ירוק וליים`), and its per-serving table divides the 50 g matcha by 27.78 while printing 27 servings (₪2.34 against ₪2.41). Both closed by the cards.
 
 ---
 

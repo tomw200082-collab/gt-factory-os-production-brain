@@ -311,9 +311,11 @@ already been shown to anyone, you may want to know who. ~5 minutes.
 no vanilla in it, at a different price (`₪28` against `₪26`). Either it has a real recipe
 nobody wrote down, or it is a duplicate that should be removed from the 48.
 
-**D. `HOJICHA`.** Priced at `₪375` with no recipe in any catalog. Commission recipes for
-it, or drop it from the price list. Same decision as the knowledge book's §6.E — make it
-once.
+**D. `HOJICHA` has no recipe.** Corrected 2026-08-31 by the knowledge-book session (brain
+`main` @ `cee556b`): it is **not** absent from the catalog — `GT-HOJ-BLK-500` has been
+ACTIVE since `2026-07-27` with stock on hand, and `GT-HOJ-BLK-1000` (`₪750`) since
+`2026-08-18`. What is missing is a recipe: a product GT actively sells that no menu can
+show. Commission recipes for it, or accept that it stays off the menus.
 
 **E. The cocktail menu — this is the money question in this document.** GT discontinued the
 `MUZA` line. 20 existing customers have a `₪192,147`/year hole in their menu right now and
@@ -343,6 +345,12 @@ list and it should be built before the other three.
 4. **`catalog-truth.md` outranks Shopify `ACTIVE`**, by its own header. Four products in
    the current price list are Tom-graded negative records and must not appear on a menu:
    `MATCHA 50 גרם`, `GT ELITA 30 גרם`, `מקציף קוקטיילים`, `קנקן זכוכית עם מסננת`.
+   **But the file can be stale in the other direction too, and was:** it recorded "no
+   active SKU" for `AMERICAN` and `HOJICHA` while both had been live in Shopify for
+   months, and `AMERICAN`'s two prices were swapped in the approved list. A live check on
+   2026-08-31 found it and Tom approved the fix (brain `main` @ `cee556b`). Treat the file
+   as authority on *what GT chooses to sell*, and verify existence against the live system
+   before concluding a product does not exist.
 5. **Canva has no agent-reachable undo.** Back up the design JSON before the first edit —
    `docs/pricing/backups/` shows the pattern and `RESTORE_DAHTYkRvEnM.md` exists because
    this was learned the hard way.
