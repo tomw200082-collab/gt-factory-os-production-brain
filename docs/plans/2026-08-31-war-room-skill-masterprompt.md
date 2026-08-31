@@ -73,7 +73,7 @@ repo-read tracking, self-correction, three live asks — without being told any 
 | D4 | Ownership contracts are generated **before** dispatch, from the briefs themselves | Give it two briefs that both name one shared resource; if neither brief gains an owner line, fail |
 | D5 | Tracking reads the repo and the PRs, not the user's relayed messages | The skill's tracking step must name the commands. "Ask the user for an update" as the primary channel = fail |
 | D6 | A subagent given only the skill and a task dump produces the expected behaviour | Run the `testing-skills-with-subagents` procedure. Any of D3, D4, D5 not observed in its behaviour = fail |
-| D7 | At most three live asks are surfaced to the human at once | Feed it a scenario with nine human-blocked items; a reply listing all nine = fail |
+| D7 | Every human-blocked ask across every workstream lands in **one** queue with state | Feed it a scenario with nine human-blocked items across five workstreams. Nine items living only inside five separate briefs, or a queue that drops any of them, = fail |
 | D8 | The self-correction rule is present and specific | The skill must name the trigger, not the sentiment. "Be humble" = fail; "a session that contradicts you ran queries you did not" = pass |
 
 Anything not on this list is out of scope unless Tom asks.
@@ -155,8 +155,18 @@ can execute, because sessions cannot talk to each other.
 **d. Blind between messages.** Every update arrived either as a paste from Tom or as a
 merged commit the board happened to check.
 
-**e. Fifteen live asks.** `T1`–`T15` was a backlog presented to a man who had asked to be
-focused.
+**e. The asks were scattered and stateless — three representations, none authoritative.**
+Human-blocked work existed in `§6` of each of six briefs, again as `T1`–`T15` on the board,
+and again as checkboxes in an artefact whose state lives in one browser's `localStorage`
+and is invisible to everyone else, the war room included. Nothing could answer "which are
+still open" without asking Tom.
+
+*This entry originally read "fifteen live asks is a backlog, not focus," and proposed
+capping what the human sees at three. Tom corrected it on 2026-08-31:* **the open asks are
+what keep him from drifting onto something else, and they want one dedicated place so he
+can close them in a concentrated sweep.** Capping the view would have hidden work and
+forced him to hold the remainder in his head — the opposite of the goal. The defect was
+never the count. It was the scattering and the missing state.
 
 **f. No cost awareness.** Six frontier sessions ran in parallel and the board never
 mentioned what that costs.
@@ -218,14 +228,18 @@ than as a checklist item:
   Check the source's currency — its recency, and whether anything names a different file
   as the record — before writing the finding down.
 
-**Reframe 4 — the human's attention is the scarcest thing in the system, and it is
-already spoken for.** Every mechanism should reduce either what Tom must *relay* or what
-he must *decide*; those are the only two currencies. But he already has a task layer —
-`messi` and Notion — and the kernel forbids a second writable system. `T1`–`T15` was, in
-plain terms, a second task list. This is the fork the skill cannot resolve on its own
-(§6.A): either war-room asks are short-lived session-blockers that never enter Notion, or
-they are Notion items and the board only points at them. Design for whichever Tom picks;
-do not build both.
+**Reframe 4 — focus comes from gathering the asks, not from rationing them.** The
+intuitive move is to protect the human's attention by showing less. Tom rejected that
+directly on 2026-08-31: the open asks are what keep him from drifting onto something else,
+and he wants them in one dedicated place so he can close them in a batch. So the mechanism
+is a queue, not a filter — every human-blocked item across every workstream, with state
+the war room can read, ordered by what it unblocks, grouped so a sweep does not thrash.
+What the war room owes him is *fewer interruptions and less relaying*, not a shorter list.
+
+The unresolved half is where that queue lives. He already has a task layer — `messi` and
+Notion — and the kernel forbids a second writable system, while today's board held
+`T1`–`T15` itself. That is the fork the skill cannot resolve on its own (§6.A). Design for
+whichever Tom picks; do not build both.
 
 **Reframe 5 — dispatch is a fan-out with no back-channel, and that is a design constraint,
 not a limitation to apologise for.** Six sessions, no inter-session communication, one
@@ -265,21 +279,36 @@ each with its own trigger to move on:
 
 **Acceptance:** D1, D2, D3, D4, D5, D8.
 
-### W2 — The focus mechanism
+### W2 — The ask queue
 
-The weakest part of the day (§2.4e) and the thing Tom explicitly asked for. Specify:
+The weakest part of the day (§2.4e) and the thing Tom explicitly asked for. **The queue is
+the focus mechanism**, not a cap on it: everything only the human can do, gathered in one
+dedicated place, so he closes a batch in one sitting instead of being pulled one item at a
+time out of whatever he is doing.
 
-- **Three live asks, maximum.** Ranked by what each unblocks — count the workstreams, not
-  the effort.
-- **One next action.** Every report to the human ends with the single highest-leverage
-  thing only he can do.
-- **Retirement is active.** An ask stays live until the board has evidence it is done —
-  from a PR, a commit, or the human saying so. It does not linger because nobody looked.
-- **Held asks stay visible but quiet** — one line saying how many are waiting behind the
-  three, so the human knows the list is bounded and not lost.
+Specify:
 
-Whether these asks are war-room-local or Notion items is §6.A. **Write the mechanism so
-either answer drops in.**
+- **One queue, everything in it.** Every `§6` item from every brief, plus anything the
+  tracking phase discovers. A brief's `§6` is a *source*; the queue is the record. Nothing
+  human-blocked exists only inside a brief.
+- **Shared, durable state.** Each ask carries: which workstreams it unblocks · its status ·
+  when it was raised · what evidence closes it. **State the war room cannot read is not
+  state** — the artefact checkbox failure in §2.4e is the anti-pattern, and it must be
+  named in the skill so nobody rebuilds it.
+- **Ordered by what it unblocks**, counting workstreams rather than effort — so a sweep
+  starts where it frees the most work. Order is a *view*; it never renumbers an ask's id
+  (same rule as workstream ids, D3).
+- **Built for a batch.** The queue's default presentation is the whole list, grouped so
+  related asks are closed together — decisions in one group, access and credentials in
+  another, approvals in a third. A sweep should not thrash between contexts.
+- **Retirement is active and evidence-based.** An ask closes when a PR, a commit or the
+  human says so — not because nobody looked at it. The war room retires asks itself as the
+  tracking phase finds the evidence, and says which it closed.
+- **One next action, in addition to the queue, never instead of it.** Every report ends
+  with the single highest-leverage open ask. The queue stays whole above it.
+
+Where the queue physically lives is §6.A. **Write the mechanism so either answer drops
+in** — the properties above hold whether each ask is a Notion item or a war-room row.
 
 **Acceptance:** D7.
 
@@ -341,12 +370,16 @@ it. If he does not want it, drop it entirely rather than making it optional-and-
 
 ## 6. Tom's part — the complete list, nothing else is yours
 
-**A. The one that changes the skill's shape: does the war room hold your action list, or
-point at Notion?** Today it held `T1`–`T15` itself, which is in plain terms a second task
-system — and the kernel forbids one, while `messi` says Notion is master. Two workable
-answers: war-room asks are short-lived session-blockers that never enter Notion and die
-when the workstream closes; or every ask is a Notion item and the board only points. Pick
-one. **W2 cannot be written until you do.** ~10 minutes.
+**A. The one that changes the skill's shape: where does the ask queue live?** You have
+said the queue is the point — one dedicated place holding every open ask, so you close
+them in a concentrated sweep. The open question is where that place is. Today it was the
+board itself, which is in plain terms a second task system — and the kernel forbids one,
+while `messi` says Notion is master. Two workable answers: the queue is war-room-local,
+holding short-lived session-blockers that die when their workstream closes and never enter
+Notion; or every ask is a Notion item and the war room writes into it and reads back. The
+second is more work and gives you one list for everything; the first is cheaper and gives
+you two. **W2's properties hold either way, but it cannot be built until you pick.**
+~10 minutes.
 
 **B. Do sessions write a status file, or is the PR body enough?** The recommendation is
 the PR body — it already exists, it was the best account of any workstream today, and it
