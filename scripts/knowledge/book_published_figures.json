@@ -4,7 +4,8 @@
     "source": "https://claude.ai/code/artifact/f0457ed1-6e3a-4180-9101-4fc7451d863a — full page text supplied by Tom in session 2026-08-31 (the artifact is shared, not owned by this session, so it cannot be read through the Artifact tool).",
     "date": "2026-08-31",
     "purpose": "Input to scripts/knowledge/reconcile.py. Frozen: it records what the book SAID, not what is true. Never edit to make a diff go away.",
-    "vat_note": "price list is ex-VAT; drink prices are VAT-inclusive at 18%; drink costs are ex-VAT ingredients only."
+    "vat_note": "price list is ex-VAT; drink prices are VAT-inclusive at 18%; drink costs are ex-VAT ingredients only.",
+    "amended": "2026-08-31: AMERICAN and HOJICHA were transcribed with sku_hint null because catalog-truth.md recorded 'no active SKU'. A live check found both. The hints now point at the real SKUs; the printed figures themselves are unchanged and stay frozen."
   },
   "headline": {
     "cost_per_cup_iced_tea": 3.25,
@@ -131,7 +132,7 @@
     {
       "name": "AMERICAN",
       "group": "tea",
-      "sku_hint": null,
+      "sku_hint": "GT-AME-LOW",
       "price_500": 33,
       "price_1000": 65
     },
@@ -204,7 +205,7 @@
     {
       "name": "HOJICHA 500 גרם",
       "group": "powder",
-      "sku_hint": null,
+      "sku_hint": "GT-HOJ-BLK-500",
       "price": 375
     },
     {

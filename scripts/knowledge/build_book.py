@@ -266,8 +266,8 @@ def build():
     tea_names = sorted({p["name_he"] for p in teas})
     iced = next(d for d in drinks if d["canva_page"] == 8)
 
-    # the prose claims ten concentrates — prove it rather than trust it
-    assert len(tea_names) == 10, f"tea concentrate count drifted: {len(tea_names)}"
+    # the prose claims eleven concentrates — prove it rather than trust it
+    assert len(tea_names) == 11, f"tea concentrate count drifted: {len(tea_names)}"
     assert len(drinks) == 48, len(drinks)
 
     cats = ["תה", "צ'אי", "אבקות"]
@@ -600,10 +600,11 @@ def build():
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("-o", "--out", default=os.path.join(
-        "/tmp/claude-0/-home-user/f269eb24-76a2-5515-bf81-6a3bfa3dd965/scratchpad", "gt-knowledge-book.html"))
+    ap.add_argument("-o", "--out", default=os.path.join(SALES, "docs/book/gt-sefer-avoda.html"),
+                    help="default: Sales-Machine/docs/book/gt-sefer-avoda.html (the repo is where it lives)")
     a = ap.parse_args()
     doc = build()
+    os.makedirs(os.path.dirname(a.out), exist_ok=True)
     with open(a.out, "w", encoding="utf-8") as fh:
         fh.write(doc)
     print(f"wrote {a.out} — {len(doc):,} bytes")

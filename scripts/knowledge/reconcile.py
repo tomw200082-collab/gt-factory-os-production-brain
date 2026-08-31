@@ -324,10 +324,11 @@ def _check_entry_numbers(cid, label, e, pages, prices, neg_skus):
 # card is where the fix lands. OPEN means only Tom can close it.
 RESOLUTION = {
     "DRINK-NAME":  ("closed", "knowledge/drinks/catalog.yaml carries the authority name"),
-    "PER-SERVING": ("closed", "the row is dropped — the product is a negative record (TOM-B)"),
-    "SELLABILITY": ("open",   "TOM-B — remove from the customer price list, or reinstate"),
-    "NO-SKU":      ("open",   "TOM-B / TOM-E — no active SKU behind the printed price"),
-    "CLAIM":       ("open",   "TOM-D / CLAIM-3 — give the figure and its basis, or drop the sentence"),
+    "PER-SERVING": ("closed", "the row is dropped with the product (Tom 2026-08-31)"),
+    "SELLABILITY": ("closed", "Tom 2026-08-31: off the customer price list. Still orderable in the "
+                              "store — that is drift_scan.py's business, not the book's"),
+    "NO-SKU":      ("open",   "no active SKU behind a printed price"),
+    "CLAIM":       ("open",   "unsourced — give the figure and its basis, or drop the sentence"),
 }
 
 
