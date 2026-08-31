@@ -325,14 +325,55 @@ GT has a WABA, so this is not a research question, it is a two-minute look.
 
 ---
 
-## 7. What Tom decides — **A3 ANSWERED 2026-08-31**
+## 7. What Tom decides — **A1 and A3 ANSWERED 2026-08-31**
 
 | # | Question | Status |
 |---|---|---|
-| A1 | CTWA **beside** the form, or **instead of** it? | open — default: beside (§Q1) |
+| A1 | CTWA **beside** the form, or **instead of** it? | **ANSWERED — beside, with a switch trigger.** See below |
 | A2 | Write an unknown WhatsApp sender into `sales_core` as a lead on first message? | open — default: yes, with the two qualifiers in §Q2 |
 | A3 | Is the working WhatsApp number the one ads point at, or is a second number provisioned? | **ANSWERED — a second, dedicated number.** See below |
 | A4 | Recover the two lost 2026-08-24 leads from Meta before 2026-11-22? | open — default: yes |
+
+### A1 — answered: beside, and the switch is a measurement, not a meeting
+
+**Tom, 2026-08-31.** Recorded as `Sales-Machine/doctrine/decisions.md` **D-016**.
+
+Both paths write into `sales_core` carrying a campaign-bearing `source_id`. The form is
+**not** switched off on the strength of an argument. It is switched off by a number:
+
+> After one full month in which both run at comparable budget — **if CTWA's first-order
+> rate matches or beats the form's, the form is retired, and the Make dependency goes with
+> it.**
+
+Three conditions keep that trigger honest, and each one exists because its absence is a
+known way to decide wrongly:
+
+| Condition | Why |
+|---|---|
+| **Orders, not leads** | A campaign can buy many cheap leads and produce zero orders, and it wins every lead-level metric while doing it |
+| **Cohort, not calendar** | Leads that *arrived* in the window and have since ordered — not conversions *recorded* in it. §2 of the funnel work shows the calendar reading printing a 13.6 % rate that never happened |
+| **≥30 leads per path**, or extend | Otherwise a 1-versus-0 month decides the architecture |
+
+**No new build is needed for the trigger.** `sales_core.campaign_map` and
+`api_read.v_sales_category_funnel` (migration `0340`) compute exactly this. What they need
+is only that campaigns carry `source_id` — which is task 2.3, and which is why the naming
+convention (2.4) must be fixed before the first ad runs.
+
+**Execution split, agreed with Tom the same day and recorded so it is not re-litigated:**
+
+| Link | Owner |
+|---|---|
+| The write branch — CTWA message → `sales_core` row with `source_id` | Claude |
+| `campaign_map` populated once ad ids exist | Claude |
+| The measurement and the verdict | Claude — already written |
+| **Embedded Signup for the number** | **Tom** — an interactive Meta login |
+| **Creating the campaigns in Ads Manager** | **Tom** — no Graph access exists, per D-006 |
+
+The last two are not a gap that can be closed in code. They are the reason the setup plan
+names "טכני" and "שיווק" as separate owners.
+
+**Reversal, stated so it is not forgotten:** retiring the form removes GT's only source of
+lead **email addresses**. That cost is accepted knowingly if the trigger fires.
 
 ### A3 — answered: `054-758-8132` is the lead number
 
