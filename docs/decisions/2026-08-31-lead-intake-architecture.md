@@ -224,7 +224,22 @@ unknown. No new transport, no new webhook, no second provider.
    construction; a bare message is a candidate and should be written with
    `source='whatsapp_unattributed'` so the two are never mixed in a metric.
 
-### Q3 — The `source_id` taxonomy
+### Q3 — The campaign taxonomy
+
+> **Corrected 2026-08-31, after `docs/plans/2026-08-31-category-landing-pages-spec.md`
+> merged.** That spec read this section as claiming a `source_id` column on
+> `sales_core.lead` and corrected it. The correction is right about the schema and this
+> section was ambiguous enough to earn it, so the two things are now named apart:
+>
+> | Name | What it is | Where it lives |
+> |---|---|---|
+> | `referral.source_id` | **Meta's** ad id, arriving in the CTWA webhook payload | nowhere in `sales_core` — it is an *input* |
+> | `campaign_map.source_id` | the key of GT's own ad → category map | `sales_core.campaign_map` (0340) |
+> | `lead.source` | the **channel** a lead arrived through | `sales_core.lead`, `not null`, half of `unique (source, external_id)` |
+>
+> There is no `lead.source_id` and this document never proposed one. Verified
+> 2026-08-31 against `information_schema.columns`: `lead` carries `source`,
+> `external_id`, `campaign_name`, `ad_name`, `form_id`, `form_name`, `platform`.
 
 One column already exists and is unused for this: `sales_core.lead.campaign_name`, with
 `ad_name`, `form_id`, `form_name`, `platform` beside it. No migration is needed for the
@@ -243,7 +258,7 @@ GT_<year>_<path>_<category>_<audience>_<version>
 |---|---|---|
 | CTWA | `referral.source_id` (the ad id) + `referral.headline`, resolved through a mapping table | `campaign_name`, `ad_name` |
 | Meta lead form | `form_id` (**both** ids per §2.6) + campaign fields from Make | `form_id`, `campaign_name` |
-| Landing page | a hidden field posted to `/ingest` | `campaign_name` |
+| Landing page | the page slug, posted to `/ingest` as `form_name` | `form_name` (+ `campaign_name` from `utm_campaign` when there is one) |
 
 The ad-id → category mapping must live **in the database**, not in a spreadsheet
 (artifact task 2.3 proposes a sheet). A sheet is a second truth by definition; a
@@ -252,6 +267,69 @@ computes conversion by category (D5/W3).
 
 Naming convention (artifact 2.4) is agreed and should be fixed **before the first ad
 goes live**, because it cannot be applied retroactively to spend.
+
+#### Q3.1 — `U-L6` answered: the landing pages keep `source = website_form`
+
+`docs/plans/2026-08-31-category-landing-pages-spec.md` §7 asks the intake owner to agree
+`site-chai` · `site-matcha` · `site-iced-tea` · `site-ube` as `sales_core.lead.source`,
+and marks it blocking. **Answer: no — keep `source` as the channel, put the category in
+`form_name`.** Not a style preference; three specific things break.
+
+**1. `source` is channel-shaped today, and one existing row already proves the pattern.**
+Measured 2026-08-31:
+
+| `source` | leads | `form_name` | `campaign_name` | `form_id` |
+|---|---|---|---|---|
+| `import_meta_export` | 188 | 150 | 0 | 0 |
+| `facebook` | 12 | 0 | 12 | 12 |
+| `website_form` | 1 | **1** | **0** | 0 |
+
+The single website lead that exists — written 2026-08-31, the only one the path has ever
+produced — already carries its identity in `form_name` and has a null `campaign_name`.
+The convention is not hypothetical; it is the one data point there is.
+
+**2. It splits website history on day one.** `website_form` already exists. Adding
+`site-*` beside it means every "how many leads from the site?" question has to know both
+schemes, and silently under-counts the moment a fifth page is added — a page should not
+need a migration and a dashboard edit to be counted.
+
+**3. It breaks deduplication, which is what `source` is structurally for.**
+`lead` carries `unique (source, external_id)` (0318). One café owner who fills the chai
+form and then the matcha form is two rows under two *different* sources, and no query can
+collapse them without enumerating the whole `site-*` family. Under one `website_form`
+source, dedupe by phone within source is a one-line query.
+
+**What the pages should send** — all of it already in the accepted `/ingest` body, so this
+costs the landing-page work nothing:
+
+```json
+{ "source": "website_form", "form_name": "landing-chai", "campaign_name": "<utm_campaign, or omitted>" }
+```
+
+`form_name` ∈ `landing-chai` · `landing-matcha` · `landing-iced-tea` · `landing-ube`.
+Category attribution is then one `campaign_map` row per page, `path='landing_page'`,
+`source_id = form_name`.
+
+**A defect this answer found in our own migration, now fixed.** `0340`'s
+`v_sales_category_funnel` joined `path='landing_page'` on `l.campaign_name`. Since
+`campaign_name` is populated from `utm_campaign`, it is null on direct traffic, a typed
+URL or an organic share — so paid visits would have attributed and free ones would have
+fallen into `unmapped`, giving a category breakdown that looked populated while
+under-reporting exactly the traffic the pages exist to earn. Run against live data with a
+stub map, on the one real `website_form` lead:
+
+| join | result |
+|---|---|
+| `landing_page` → `campaign_name` (old) | `unmapped`, 1 lead |
+| `landing_page` → `form_name` (new) | `tea`, 1 lead |
+
+Fixed in `gt-factory-os#253`. Each path now joins the field that identifies it:
+`form → form_id`, `landing_page → form_name`, `ctwa → campaign_name`.
+
+**Reversible.** If Tom prefers category-shaped sources later, it is an `update` over a
+handful of rows plus one `campaign_map` edit — no schema change either way. Recorded here
+rather than decided silently, because the spec asked the owner and this is the owner's
+answer.
 
 ### Q4 — Where does conversation history live, and what does `sales_core` store?
 
