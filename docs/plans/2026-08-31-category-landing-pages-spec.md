@@ -1,6 +1,8 @@
 # Category landing pages — design + lead-capture spec
 
-**STATUS: SPEC — nothing built. No theme file written.**
+**STATUS: SUPERSEDED IN PART — all four pages are built and deployed to theme
+`162206646513`. D1 was reversed by Tom the same day; see §0.1. Read §0.1 before
+treating anything below as current.**
 
 > Four Hebrew landing pages, one per product family, whose only job is to turn ad
 > traffic into a lead in `sales_core`. Written 2026-08-31 after reading the live
@@ -13,10 +15,47 @@
 
 | # | Decision | Consequence |
 |---|---|---|
-| D1 | **No cost, price or margin figure appears on these pages.** | The economics move behind the form. See §3. |
+| D1 | ~~**No cost, price or margin figure appears on these pages.**~~ **REVERSED — see §0.1.** | Superseded 2026-08-31. |
 | D2 | **Leads land in the sales system attached to the ops system** — `sales_core` in `gt-factory-os`. | Not Shopify customers, not a mailbox. See §5. |
 
 Everything else in §7 is still open.
+
+---
+
+## 0.1 What changed after this spec was written (2026-08-31)
+
+**D1 was reversed by Tom, in writing, the same day**: *"שים עלויות של משקאות לפי
+הקטלוג הזה"* — put drink costs on the pages, sourced from his Canva catalog
+`DAHTYkRvEnM`. The pages now lead with the economics rather than hiding them: every
+drink card carries cost per serving, recommended price and the percentage the venue
+keeps. §3 and §4 are written against the reversed decision and are stale wherever
+they argue for withholding figures. D2 stands unchanged.
+
+That catalog was verified against the frozen authority `drinks_final_figures.json`
+(2026-08-27) before a single figure was transcribed: **48/48 names matched, 0 figure
+deviations, 0 authority names absent, and an independent VAT re-derivation gave 0/48
+mismatches.** Tom's source and the frozen authority are the same numbers.
+
+Also settled since:
+
+- **All four pages are built**, not one then three clones. §6's "chai first" sequence
+  did not survive contact — the generator made per-page hand-building pointless.
+- **The matcha page covers hojicha**, at Tom's instruction, as a small secondary block
+  rather than a page of its own.
+- **`gt-site.css` reuse was wrong.** §1.2 claimed four pages needed zero new CSS. They
+  needed their own stylesheet, and — more importantly — their own class namespace:
+  `gt-site.css` carries unscoped `.glass`, `.hero`, `.btn`, `.wrap`, `.eyebrow`,
+  `.logo`, `.serif` rules that reach into any markup reusing those names and set every
+  property the new stylesheet does not declare. `.glass` (`position:absolute;
+  opacity:0`) hid the pages' signature element on all four pages while the rest of the
+  layout looked correct.
+- **Preview needs no publishing.** Alternate index templates plus Shopify's
+  `?view={suffix}` render all four pages inside the theme preview with no page record
+  involved, so `/pages/{slug}` stays 404 on the live storefront. The page records stay
+  unpublished until Tom says otherwise.
+
+Runtime lives in `gt-site`, `tools/landing-pages/` (PR #3). This file stays a plan
+record; it is not the authority on what shipped.
 
 ---
 
@@ -117,7 +156,8 @@ No section repeats a claim from another. No page contradicts another.
 
 ## 4. What must not appear
 
-- Any cost, price, margin or profit figure (D1).
+- ~~Any cost, price, margin or profit figure (D1).~~ **Reversed — §0.1.** The figures
+  are now the pages' argument, and every one traces to the frozen 48-drink authority.
 - Any drink whose preparation is not documented.
 - Any product on the `catalog-truth.md` negative-record list.
 - Any partner, venue or customer name without recorded permission.
