@@ -60,7 +60,7 @@ substantially finished.**
 |---|---|---|---|
 | 2.1 | Switch to Click-to-WhatsApp | `OPEN` — marketing | Blocked on architecture doc §7 A1 (CTWA beside the form, or instead of it) |
 | 2.2 | A separate campaign per category | `OPEN` — marketing | Start with chai — 1 SKU, 11 drinks — as the artifact says |
-| 2.3 | Automatic category detection | `SUPERSEDED` in part | The artifact specifies a Google Sheet mapping `source_id → category`. A sheet is a second truth by construction. Landed instead as **`sales_core.campaign_map`** (migration `0341`… see note) — a table the same query can join for both kit routing and conversion-by-category. The `referral.source_id` capture itself is still `OPEN` |
+| 2.3 | Automatic category detection | `SUPERSEDED` in part | The artifact specifies a Google Sheet mapping `source_id → category`. A sheet is a second truth by construction. Landed instead as **`sales_core.campaign_map`** (migration `0340`, see note) — a table the same query can join for both kit routing and conversion-by-category. The `referral.source_id` capture itself is still `OPEN` |
 | 2.4 | Naming convention | `OPEN` — marketing | Format proposed in architecture doc §Q3. **Must be fixed before the first ad runs** — it cannot be applied retroactively to spend |
 | 2.5 | Exclude the ~700 existing customers | `OPEN` — marketing | Also the Lookalike seed |
 
