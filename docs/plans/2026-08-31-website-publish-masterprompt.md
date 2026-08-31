@@ -94,6 +94,11 @@ Anything not on this list is out of scope unless Tom asks.
   serving product, cart and account routes underneath.
 - **The image migration is complete and correct.** See §2.3 — and read the landmine in §7.1
   before you "fix" anything about it.
+- **The drink figures shown to customers include cost, price and margin.** Tom reversed
+  the withhold-the-numbers decision in writing on 2026-08-31, instructing that drink costs
+  go on the pages: `שים עלויות של משקאות לפי הקטלוג הזה`
+  The landing pages lead with the economics. That settles the *display* question for drink
+  cards — it does not settle §6.C, which is about the 116-line wholesale **price list**.
 - **`glassSVG` is dead code, not a broken feature.** One reference: its own definition. A
   false-green entry already records the earlier misreport. Do not "repair" it; wiring it up
   is a feature request, not a bug.
@@ -379,9 +384,10 @@ and who to tell. Then stop. **Publishing is §6.F and it is Tom's.**
 - `src/index.en.html` — never edited, by design.
 - Rewriting `tools/`. Extend it.
 - `glassSVG` — dead code, already misreported once.
-- The four category landing pages — those belong to
-  `docs/plans/2026-08-31-category-menus-masterprompt.md`, built on your foundation
-  (war-room contract C3).
+- **The four category landing pages — already built and deployed to the same theme
+  `162206646513`** (`docs/plans/2026-08-31-category-landing-pages-spec.md`, merged
+  2026-08-31). They are not yours to change, and they are not yours to break: read
+  landmine §7.13 before you touch `gt-site.css`.
 - The old blog posts and their health claims — record, do not edit.
 
 ---
@@ -458,6 +464,16 @@ or the block comes off the page — it cannot go live either way.
 12. **PR #1 is merged, so `main` is the base.** Anything you find referring to
     `claude/file-to-website-8quodp` as "the branch" is describing the state before 11:53Z
     on 2026-08-31.
+13. **`gt-site.css` leaks into everything that reuses its class names.** It carries
+    unscoped `.glass`, `.hero`, `.btn`, `.wrap`, `.eyebrow`, `.logo` and `.serif` rules
+    that reach into any other markup on the theme and set every property that markup does
+    not declare itself. The four category landing pages hit this on 2026-08-31:
+    `.glass` (`position:absolute; opacity:0`) hid their signature element on all four
+    pages, and they had to be given their own stylesheet and class namespace. **Those
+    pages now share this theme with your section.** Any selector you add or widen in
+    `gt-site.css` can blank a page you never opened — scope new rules under the section's
+    own class, and re-check the four `/chai /matcha /iced-tea /ube` pages after any CSS
+    change.
 
 ---
 
