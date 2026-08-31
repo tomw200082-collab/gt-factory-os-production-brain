@@ -704,6 +704,12 @@ Two gates make it mechanical rather than a matter of judgement:
 
 Target: **₪147,644 → ₪262,661** run-rate, ₪212,492 gross. **No customer was added.**
 
+What shipped, recomputed from the committed CSV rather than a build log: **716 tasks over 84
+working days**, none empty — 642 customer touches, 74 internal. Base ₪1,202,176. Lead motion
+per account: matcha new line 73 · matcha depth 35 · purée 21 · tea 11 · ube 8 · win-back 5 —
+and **MUZA leads none**. (§10 records 740 tasks and §11 755; those were v1 and v2, and are
+left standing as what those runs produced.)
+
 ### The lesson for the next masterprompt
 
 This document supplied the plan's numbers, its phases and its emphasis, and the emphasis was
@@ -715,9 +721,35 @@ then measure penetration against it* — belongs in §2.5 next to the drift quer
 
 ### Newly blocking
 
-`U-022` — **80 matcha bags in stock against 74 target accounts.** Enough for one wave, not a
+`U-030` — **80 matcha bags in stock against 74 target accounts.** Enough for one wave, not a
 quarter. It now blocks the plan's lead motion, and it is the first task, 2026-09-01.
-`U-023` — `GT-MAT-KIT` (₪170) contents are undocumented; not offered until they are.
+`U-031` — `GT-MAT-KIT` (₪170) contents are undocumented; not offered until they are.
+
+### The unknown-ids in this document were renumbered — read §1–§9 with this map
+
+`Sales-Machine` `main` landed its knowledge layer while the plan was being built. The merge
+base carried only `U-001`–`U-013`, so **two sessions independently allocated `U-014`–`U-021`**
+to different unknowns. `main` is the trunk and its numbering was already cited by
+`open-items/alex-meeting.md`, so the plan's ids moved instead:
+
+| written here (§1–§9, §10, §11) | live id in `CURRENT_STATE.md` |
+|---|---|
+| `U-014` cocktail collateral | `U-022` |
+| `U-015` 19 brand groupings | `U-023` |
+| `U-016` פתאל / ליאוני route day | `U-024` |
+| `U-017` Avi absent — closed | `U-025` |
+| `U-018` chains spanning regions | `U-026` |
+| `U-019` `GTCC-NM-SAN-3.85L` | `U-027` |
+| `U-020` FRESH / DETOX zero stock | `U-028` |
+| `U-021` `sales-leads-poll` guard | `U-029` |
+
+**§1–§9 are left as written** — they are the dated record of what was asked, and editing a
+masterprompt after the fact to match its own consequences is the failure this repo exists to
+prevent. Follow a pointer through this table, not directly.
+
+Under the trunk numbering `U-014`, `U-018` and `U-019` are all **closed** decisions about
+something else entirely, so a stale pointer here would have resolved silently to the wrong
+answer rather than failing loudly. That is the argument for the table.
 
 ### Artifacts
 
