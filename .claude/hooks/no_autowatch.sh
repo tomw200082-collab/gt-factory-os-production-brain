@@ -33,6 +33,18 @@
 # the container is ephemeral, so consent does not leak into the next session:
 # each one starts closed again. Deleting the file re-arms the block immediately.
 #
+#
+# ONE GAP, MEASURED — the hook cannot close it, the rule below does
+#
+# Creating a pull request subscribes the session to it SERVER-SIDE. No
+# subscribe_pr_activity call is made, so there is nothing for a PreToolUse hook
+# to intercept. Observed 2026-09-01 on gt-site#4: the hook was already live and
+# the subscription still arrived.
+#
+# ∴ after opening a PR, a session MUST call unsubscribe_pr_activity unless Tom
+# asked for that PR to be watched. This hook never blocks that call — that is
+# why the exit path is kept open by design, not merely as a courtesy.
+#
 # Actions minutes are not the reason. Check-ins run in Claude's container and
 # cost zero Actions minutes; only a push to an open PR starts a workflow. The
 # reason is that unrequested background work is unrequested.

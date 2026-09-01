@@ -90,6 +90,8 @@ Claude MAY read, write, act through connected systems (Postgres/Supabase, LionWh
 
 Enforced ⊥ by trust: `.claude/hooks/no_autowatch.sh` (PreToolUse) blocks `subscribe_pr_activity` · `send_later` · `create_trigger` · `ScheduleWakeup` · `CronCreate`. Opt-in = `.claude/state/watch_enabled` — written only on Tom's word, gitignored, dies with the container ∴ consent ⊥ leaks into the next session.
 
+**Opening a PR subscribes the session server-side** — ⊥ tool call, ∴ ⊥ interceptable by the hook (measured 2026-09-01, gt-site#4: hook live, subscription still arrived). ∴ after `create_pull_request`, **call `unsubscribe_pr_activity` immediately** unless Tom asked for that PR to be watched. This is why the exit path is kept open by design.
+
 Cleanup never blocked: `unsubscribe_pr_activity` · `delete_trigger` · `list_triggers` · `update_trigger`.
 
 ⊥ the Actions bill — check-ins run in Claude's container, 0 Actions minutes; only a push to an open PR starts a workflow. The reason is that unrequested background work is unrequested.
