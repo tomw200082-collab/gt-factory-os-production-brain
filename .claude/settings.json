@@ -22,6 +22,15 @@
                                        }
                                    ],
                   "PreToolUse":  [
+                      {
+                      "matcher": "subscribe_pr_activity|send_later|create_trigger|ScheduleWakeup|CronCreate",
+                      "hooks": [
+                      {
+                      "type": "command",
+                      "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/no_autowatch.sh"
+                      }
+                      ]
+                      },
                                      {
                                          "matcher":  "Write|Edit|NotebookEdit|Bash",
                                          "hooks":  [
