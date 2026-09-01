@@ -121,3 +121,54 @@ matching invoice arrives, diff prices and alert.
   (precedent: Kill Bill held_lines) and ask.
 - Invoice math must close (lines → net → VAT → total) before posting.
 - All evidence (document numbers, splits, discrepancies) goes into `raw_payload`.
+
+## LEARNED — append-only log
+
+> Self-compaction: when this log passes 30 lines, distil it into the sections above,
+> clear the log, and stamp "Last distilled &lt;date&gt;" here.
+
+**2026-08-30 — how to actually write, from a Claude-Code-on-the-web session.**
+The Supabase MCP `execute_sql` is **read-only** — any INSERT/UPDATE, and even
+`rebuild_verifier()` (it truncates a shadow table), fails with
+`25006: cannot execute ... in a read-only transaction`. Writes go through
+`apply_migration`. Direct Postgres is also out: `psql` exists and `DATABASE_URL` /
+`DATABASE_URL_POOLED` are set, but sandbox egress is HTTPS-only — the direct host
+errors instantly and the pooler hangs until timeout. Do not burn minutes there.
+Established naming precedent in `supabase_migrations.schema_migrations`, follow it:
+`data_goods_receipt_<supplier>_inv_<number>` for the receipt, then a separate
+`check_rebuild_verifier_after_gr_<number>`. A migration that raises an exception
+rolls back cleanly and is not recorded — safe to use a deliberate `RAISE EXCEPTION`
+as a read channel for a function that needs write access.
+
+**2026-08-30 — `rebuild_verifier()` returns a scalar, not a row set.**
+`SELECT count(*) FROM private_core.rebuild_verifier()` is **always 1** and looks like
+one mismatch. Correct gate: `SELECT private_core.rebuild_verifier()` INTO a numeric
+and compare to 0. This produced a false "STOCK TRUTH GATE FAILED" on a healthy DB.
+
+**2026-08-30 — Neve HaTavlin (SUP-023) document shape,** invoice SI266009841.
+Numbering series is `SI266xxxxxx`; note that a `supplier_items.source_basis` on the
+**Tavlinei Bar** row cites "SI266008217", which is this series — that price basis is
+probably mis-attributed between the two spice suppliers, verify before trusting it.
+Document type `חשבונית מס מרכזת` (consolidating tax invoice) can cover several
+delivery notes: **confirm with Tom it was one physical shipment before posting**, or
+the receipt double-counts goods already received. Their totals block prints a
+`הנחה כללית` line whose **sign is inverted** — the "-0.16 discount" was really a
++0.16 round-up to land the grand total on a round ₪3,752.00. Reconcile
+lines → net → adjustment → VAT → total and record the adjustment as its own
+rounding fact in `raw_payload`; never fold it into a unit price.
+Line UOM trap: line 1 was `38.00 יח` of "היבסקוס מצרי 1 ק\"ג" — units, where each
+unit is a 1 kg bag, so 38 units = 38 KG. Line 2 was priced per kg directly.
+
+**2026-08-30 — check "first purchase from this supplier" against the data.**
+Handwriting on the invoice said `קנייה ראשונה`; `SELECT count(*) FROM goods_receipts
+WHERE supplier_id = ...` returned 0, which confirmed it. Cheap, and it catches both a
+missed earlier receipt and a supplier record that is a duplicate of an existing one.
+
+**2026-08-30 — `supplier_items` has a partial unique index
+`uniq_supplier_items_component_primary` on `(component_id) WHERE is_primary`.**
+Only one primary supplier per component. When switching primaries in bulk you must
+**demote the incumbents first, then promote** — doing it in the other order fails with
+`23505 duplicate key`. Note also that `relationship` (text) and `is_primary` (bool)
+drift apart: rows exist with `relationship='PRIMARY', is_primary=false` and the
+reverse. `is_primary` is the one the index enforces; treat `relationship` as a label
+that needs repairing alongside it.
