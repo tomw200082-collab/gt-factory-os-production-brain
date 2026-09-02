@@ -1,30 +1,37 @@
-# MASTERPROMPT — the sales report is final and in Tom's inbox every Sunday by 09:00 IL
+# MASTERPROMPT — the sales report is true every business morning, and in Tom's inbox by 09:15 IL
 
-**STATUS: LIVE — not yet executed**
+<!-- The filename still says "weekly": the Routine's prompt and this repo's history point at
+this exact path, and a rename would break the pointer for no gain. The cadence below is
+the authority, not the filename. -->
+
+**STATUS: LIVE**
 <!-- The executing session's last act is to change this to SHIPPED / SUPERSEDED by <path> /
 ABANDONED — why, with evidence pointers. A weekly Routine does NOT stamp this: the
 document is the Routine's standing instruction, not a one-shot plan. Stamp it only when
 the Routine itself is retired or replaced. -->
 
 > **Usage:** this is the standing instruction for a scheduled Routine that fires a fresh
-> session every Sunday at 08:00 Israel time with `gt-factory-os`,
-> `gt-factory-os-production-brain` and `Sales-Machine` attached. It takes the sales
-> report from "last week's numbers" to "this morning's numbers, gate-verified, link in
-> Tom's inbox". It halts for Tom only where §6 says so.
+> session **Sunday through Thursday at 09:00 Israel time** (Tom, 2026-08-31) with
+> `gt-factory-os`, `gt-factory-os-production-brain` and `Sales-Machine` attached. It takes
+> the sales report from "yesterday's numbers" to "this morning's numbers, gate-verified,
+> link in Tom's inbox". It halts for Tom only where §6 says so.
 >
-> **Provenance:** written 2026-08-30, from a full manual run of the pipeline that
-> morning — Shopify bulk operation `gid://shopify/BulkOperation/8003722150129`
-> (33,602 objects, completed `2026-08-30T07:00:48Z`), all four gates green, artifact
-> republished and email sent at 10:00 IL. Every number in §2 was observed in that run,
-> not recalled.
+> **Friday and Saturday do not fire.** There is no delivery run, and the only figure that
+> would move is a stray online order — which Sunday's pull picks up anyway.
+>
+> **Provenance:** written 2026-08-30 and rewritten 2026-09-02, each time from a full
+> manual run of the pipeline that morning. The current §2 numbers come from Shopify bulk
+> operation `gid://shopify/BulkOperation/8016916807921` (32,653 objects, completed
+> `2026-09-02T08:53:27Z`), every gate green, artifact republished at 11:53 IL. Every
+> number in §2 was observed in that run, not recalled.
 > Authority: `gt-factory-os-production-brain/CLAUDE.md` ·
 > `gt-factory-os-production-brain/EXECUTION_POLICY.md` ·
 > `gt-factory-os-production-brain/.claude/skills/weekly-sales-report/SKILL.md` — cited
 > below, never copied.
 >
-> **Shelf life:** §2 numbers are a fingerprint, not a target — they change every week by
-> design. What must stay true is the *shape*: same artifact URL, same four gates, same
-> script paths. If a boot check in §2.5 contradicts this document, **halt and surface to
+> **Shelf life:** §2 numbers are a fingerprint, not a target — they change every morning
+> by design. What must stay true is the *shape*: same artifact URL, same five gates, same
+> five sheets, same script paths. If a boot check in §2.5 contradicts this document, **halt and surface to
 > Tom** rather than adapting — a silently changed pipeline is exactly the failure this
 > report exists to prevent.
 
@@ -34,12 +41,12 @@ the Routine itself is retired or replaced. -->
   hold the Shopify MCP connector (read-only use here), the Gmail MCP connector, the
   `Artifact` tool, and local clones of the three repos above. You may decide everything
   inside §4 alone. You may not change taxonomy, thresholds, or the recipient.
-- **First action, before anything else:** run the boot checks in §2.5. They cost one
-  paste and they are the difference between a stale checkout crashing at minute nine and
-  you knowing at minute one.
+- **First action, before anything else:** run the boot checks in §2.5 — starting with the
+  `git pull` at item 0. They cost one paste, and they are the difference between a stale
+  checkout quietly overwriting a good report and you knowing at minute one.
 - **Read first, in order:**
   1. `gt-factory-os-production-brain/.claude/skills/weekly-sales-report/SKILL.md` — **the
-     procedure. Follow its steps 1–8 verbatim.** This document does not restate them; it
+     procedure. Follow its steps 0–8 verbatim.** This document does not restate them; it
      supplies the cadence, the ground truth, and the traps.
   2. `Sales-Machine/recipes/sales-report.md` — the method and the five correctness gates.
   3. `gt-factory-os/scripts/sales-report/README.md` — the run order.
@@ -63,9 +70,9 @@ the Routine itself is retired or replaced. -->
 
 ## 1. Mission and definition of done
 
-**One testable sentence:** every Sunday morning the artifact at the fixed URL carries
+**One testable sentence:** every business morning the artifact at the fixed URL carries
 gate-verified numbers stamped with this morning's pull time, and Tom has one email
-holding the link, the stamp, three opening numbers and one thing to check.
+holding the link, the stamp, and the numbers his day actually turns on.
 
 | # | Condition | The observation that would prove it false |
 |---|---|---|
@@ -74,9 +81,10 @@ holding the link, the stamp, three opening numbers and one thing to check.
 | D3 | Order counts reconcile exactly | `out/gates.json` → any entry in `gate2` with `match_all: false` |
 | D4 | Taxonomy coverage total, nothing discarded | `out/gates.json` → `gate3.skus_total != gate3.mapped_tsv + gate3.historical` |
 | D5 | Manual sanity holds | the three orders in `gates.json.gate5_sample` re-pulled live differ from the file on any SKU, quantity or `discountedTotalSet` |
-| D6 | Exactly one email delivered to `tom@gteveryday.com` | Gmail shows zero, or two, messages with today's subject |
+| D6 | Exactly one email delivered to `tom@gteveryday.com`, in the shape this weekday calls for | Gmail shows zero, or two, messages with today's subject — or a Monday-to-Thursday mail carrying the Sunday weekly block instead of the daily pulse (`SKILL.md` step 7, its two weekday branches) |
 | D7 | A failed gate published nothing | the artifact's stamp advanced on a morning whose run report records a `FAIL` |
 | D8 | The run left no repository dirty | `git status --porcelain` non-empty in any of the three repos |
+| D9 | The published page is not a regression | `SKILL.md` step 5.5: `report.html` missing `data-s="daily"` or `data-s="chain"`, `out/chain_conflicts.json` non-empty, or fewer than 250 customers carrying a chain — **and it was published anyway** |
 
 Anything not on this list is out of scope unless Tom asks.
 
@@ -91,13 +99,17 @@ Approved by Tom 2026-08-24, re-confirmed in the 2026-08-30 run:
 - Month attribution is `Asia/Jerusalem`, not UTC.
 - Cancelled orders are excluded from revenue and reported separately; refunds are zero
   across the whole window because GT cancels rather than refunds.
-- The SKU mapping table approved by Tom on 2026-08-24 (202 SKUs then, 203 in the
-  2026-08-30 run — §2.2), the historical bucket, and the three manual chain assignments
-  are frozen. `*-chain` tags from the field were **not** adopted.
+- The SKU mapping table approved by Tom on 2026-08-24 (202 SKUs then, 201 in the
+  2026-09-02 run — §2.2) and the historical bucket are frozen.
+- Chain membership comes from `docs/sales/chain_map.json` alone. `*-chain` tags from the
+  field were **not** adopted, and the three manual assignments that used to sit in
+  `build_report.py` are entries in that file now. A chain is **2+ branches**; the sheet
+  carries chains only — no `ללא רשת` row. Editing the map is a Tom decision on a weekday,
+  never inside a scheduled run.
 - Recipient: `tom@gteveryday.com` only. No customer-facing message, ever
   (`SALES_CUSTOMER_OUTREACH_WRITE_ENABLED=false`).
 
-## 2. Ground truth — measured 2026-08-30 10:00 IL; re-verify at boot
+## 2. Ground truth — measured 2026-09-02 11:53 IL; re-verify at boot
 
 ### 2.1 What is built and live
 
@@ -108,24 +120,43 @@ Approved by Tom 2026-08-24, re-confirmed in the 2026-08-30 run:
   `shopifyql_month.json` live beside the scripts and are not in git.
 - **The price map:** `gt-factory-os-production-brain/docs/pricing/2026-08-05_shopify_products_exvat.tsv`
   (hardcoded absolute path inside `build_facts.py` — see landmine 8).
-- **The procedure:** `weekly-sales-report` skill, present in the brain repo.
+- **The chain map:** `gt-factory-os-production-brain/docs/sales/chain_map.json` — the only
+  authority on which customer belongs to which chain. 48 chains, 301 branches, 55% of
+  revenue. `build_facts.py` resolves it relative to the repo. Two pattern matches on one
+  customer is a **conflict**, never a guess: it lands in `out/chain_conflicts.json` and
+  the customer stays unassigned. A non-empty conflicts file is a halt, not a warning.
+- **The procedure:** `weekly-sales-report` skill, present in the brain repo. Its step 7
+  splits by weekday: Sunday sends the weekly block, Monday-Thursday the daily pulse.
+- **The page's sheets:** `יומי` · `לקוחות` · `מוצרים` · `רשתות` · `מגמה`. The daily sheet
+  (added 2026-08-31) is built entirely from the order-level data already in the page —
+  last closed business day, today so far, 7 closed days, month to date, a daily bar chart
+  with a 7-day moving average, the median per weekday, and a 14-day retro table. The
+  chains sheet (rebuilt 2026-09-01) drills `רשת → סניפים → מוצרים` with the month columns
+  carried down, plus a KPI strip and a `שקט N יום` badge on a branch with no order in 90
+  days. Neither needs an extra pull; a normal run fills both.
 
-### 2.2 The numbers — run of 2026-08-30, window `2024-08` → `2026-08`
+### 2.2 The numbers — run of 2026-09-02, window `2024-09` → `2026-09`
 
 ```
-orders pulled 7,255 · counted 6,882 · cancelled 360 · test 0 · no customer 0
-fact rows 20,371 · SKUs 203 · customers 806 · mapped 108 · historical SKUs 94
-FULL WINDOW 2024-08..2026-07 (24 months)  identity=9,565,345  total_sales=9,579,699
-                                          delta=-0.150%  tolerance=±0.5%  ->  PASS
-months matching to the shekel 14/24 · order-count match 24/24 · coverage 203/203
-manual sanity 3/3  (#GT11030, #GT9836, #GT12842 re-pulled live, identical line by line)
+orders pulled 7,064 · counted 6,713 · cancelled 350 · test 0 · no customer 0
+fact rows 19,852 · SKUs 201 · customers 781 · mapped 108 · historical SKUs 92
+FULL WINDOW 2024-09..2026-08 (24 months)  identity=10,050,324  total_sales=10,070,492
+                                          delta=-0.200%  tolerance=±0.5%  ->  PASS
+months matching to the shekel 14/24 · order-count match 24/24 · coverage 201/201
+manual sanity 3/3  (#GT11297, #GT10095 and one more re-pulled live, identical line by line)
 
-last 12 full months 08/25-07/26   ₪5,806,284   +54.5% vs the 12 before
-last full month 07/2026           ₪724,387     +45.4% vs 07/2025
-partial 08/2026 as of 30/08       ₪767,284
-active customers, 12 months       585
-bulk operation                    33,602 objects, 18.1 MB, ~8 minutes wall clock
+chains 48 · branches with revenue 297 · chain revenue ₪2,429,305 in the visible window
+chain_conflicts.json []  ·  customers carrying a chain 298
+
+last 12 full months 09/25-08/26   ₪5,806,284   +55.7% vs the 12 before
+last full month 08/2026           ₪852,762
+partial 09/2026 as of 02/09       ₪63,560
+active customers, 12 months       590
+bulk operation                    32,653 objects, 17.6 MB, ~9 minutes wall clock
 ```
+
+The window rolls forward every month, so these move. What must not move is the shape:
+`PASS` inside ±0.5%, order match `N/N`, coverage `N/N`, conflicts empty.
 
 ### 2.3 What is NOT built
 
@@ -147,6 +178,11 @@ bulk operation                    33,602 objects, 18.1 MB, ~8 minutes wall clock
 ### 2.5 Re-verification block — run at boot, before trusting anything above
 
 ```bash
+# 0. FIRST — pull. The run builds from main; a stale checkout is how the report
+#    got destroyed on 2026-09-02 (landmine 11).
+git -C "$HOME/gt-factory-os" pull --ff-only
+git -C "$HOME/gt-factory-os-production-brain" pull --ff-only
+
 # 1. the scripts exist and carry the 2026-08-30 fixes (all four checks must hit)
 cd "$HOME/gt-factory-os/scripts/sales-report"
 grep -c "MCP tool returns every cell as a string" build_facts.py      # expect 1
@@ -157,13 +193,19 @@ ls -l bulk_query.graphql                                              # the pull
 # 2. the price map is where build_facts.py expects it
 ls -l "$HOME/gt-factory-os-production-brain/docs/pricing/2026-08-05_shopify_products_exvat.tsv"
 
-# 3. the window this run will use (END = current month, Israel time)
+# 3. the two sheets and the chain map are present in THIS checkout
+grep -c 'data-s="daily"' report_template.html                         # expect 1
+grep -c 'data-s="chain"' report_template.html                         # expect 1
+python3 -c "import json;print(len(json.load(open('$HOME/gt-factory-os-production-brain/docs/sales/chain_map.json'))['chains']))"   # expect >=48
+
+# 4. the window this run will use (END = current month, Israel time)
 TZ=Asia/Jerusalem date +%Y-%m
 ```
 
-Any of the greps returning `0`, or a missing `bulk_query.graphql`, means you are on a
-checkout that predates the fixes: landmines 1–3 are live and will crash or silently
-mislead you. These landed on `main` on 2026-08-30, so their absence means the checkout
+Any of the greps returning `0`, a missing `bulk_query.graphql`, or a chain count under
+48 means you are on a checkout that predates the fixes: landmines 1–3 and 11 are live and
+will crash, silently mislead you, or publish a page that is missing half the report.
+These landed on `main` on 2026-08-30 and 2026-09-02, so their absence means the checkout
 is wrong, not that the work was never done. Halt and tell Tom, rather than patching
 around it in a scheduled run.
 
@@ -244,14 +286,29 @@ an unmapped SKU cleared ₪20,000 in the latest month (`SKILL.md` step 5, non-bl
 
 ## 6. Tom's part — the complete list, nothing else is his
 
-**A. Create the Routine.** Connectors, cron and the ready-to-paste prompt are in the
-appendix. Two minutes. **This is the only open item.**
+**A. Delete every existing Routine that publishes this artifact, then create one new
+Routine** from the appendix. **This is the only open item.**
+
+Exactly one Routine published this artifact, and it is the one that did the damage:
+`trig_01P4z1EydHKhJNsvxf1jsAoK` (`עדכון דוח מכירות שבועי ARTIFACT ושליחה למייל`, cron
+`0 5 * * 1-5` = Mon–Fri 08:00 IL). It fired at 05:11Z on 2026-09-02, built from a `main`
+that predated the chains and daily work, and republished that smaller page over the good
+one. Its cadence was wrong too — Tom settled on Sunday to Thursday 09:00 on 2026-08-31.
+Tom paused it on 2026-09-02.
+
+Two other sales Routines were enabled that day and **neither touches this artifact** —
+checked, not assumed:
+
+| Routine | What it actually does |
+|---|---|
+| `trig_01Dxbb78EiCxDixYBitw434Y` (`דוח מכירות יומי · 17:00 · לתום ולדין`) | a different report from a different source — Green Invoice net sales via `gt-factory-os/tools/sales-forecast/`, emailed to Tom and Dean. Its own standing instruction: `docs/plans/2026-09-02-daily-sales-brief-routine-masterprompt.md` |
+| `trig_01AsZDSP6AknPt1FfQPXePQZ` (`אקסל מכירות חודשי לדרופבוקס`) | monthly Excel to Dropbox |
 
 Closed on 2026-08-30, recorded here so nobody reopens them:
 
-- **Cadence:** Sunday 08:00 Israel time, Tom's decision. `SKILL.md` was Wednesday and has
-  been corrected; the meeting stays Wednesday and now opens on a report that has been
-  ready since the start of the week.
+- **Cadence:** Sunday-Thursday 09:00 Israel time, Tom's decision on 2026-08-31 (it was
+  Wednesday, then Sunday-only for a day). `SKILL.md` carries it. The meeting stays
+  Wednesday and now opens on a report that was true that morning, not five days earlier.
 - **The 0.3-litre mapping:** approved. `GT-HIB-LOW-0.3L`, `GT-LUI-LOW-0.3L`,
   `GT-CHA-LOW-0.3L`, `GT-SEN-LOW-0.3L` are in the price map as type `Tea 0.3 l` at
   ₪13.50 ex-VAT, read live from Shopify that morning. They now classify to families
@@ -292,12 +349,28 @@ Closed on 2026-08-30, recorded here so nobody reopens them:
    week. Recognising the order numbers is not evidence.
 8. **`build_facts.py` hardcodes an absolute path** to the price TSV under
    `/home/user/gt-factory-os-production-brain/...`. If the clone lands elsewhere the run
-   dies on a missing file — check §2.5 item 2 before blaming the data.
-9. **Israel leaves DST on 2026-10-25.** A UTC cron of `0 5 * * 0` fires at 08:00 while
-   IDT (UTC+3) holds and at **07:00** from 2026-11-01. Either accept the hour or move
-   the cron to `0 6 * * 0` that week.
+   dies on a missing file — check §2.5 item 2 before blaming the data. (The chain map no
+   longer has this problem: it resolves relative to the repo, and `GT_CHAIN_MAP` overrides.)
+9. **Israel leaves DST on 2026-10-25.** A UTC cron of `0 6 * * 0-4` fires at 09:00 while
+   IDT (UTC+3) holds and at **08:00** from 2026-10-25. Either accept the hour or move
+   the cron to `0 7 * * 0-4` that week.
 10. **`build_excel.py` will fail** with `ModuleNotFoundError: No module named 'openpyxl'`.
     It is not part of the weekly path. Do not install packages inside a scheduled run.
+11. **A stale checkout does not fail a gate — it publishes a smaller report over the good
+    one.** This is what happened on **2026-09-02**: a firing built from a `main` that
+    predated the chains and daily work, every numeric gate passed on that smaller page,
+    and the republish to the fixed URL erased two weeks of work in one call. The gates
+    check *numbers*; nothing in them notices that a whole sheet is gone. Two defences,
+    both mandatory: `git pull` before anything (§2.5 item 0), and the regression guard in
+    `SKILL.md` step 5.5, which counts the sheets and the chain assignments in the page you
+    are about to publish. **A republish is the only irreversible act in this run** — the
+    previous version does not come back on its own.
+12. **More than one Routine pointed at this artifact would be a race, not redundancy.**
+    Each firing republishes the same URL, so the last one to finish wins and an older or
+    thinner build silently overwrites a newer one. Exactly **one** Routine may publish
+    here. On 2026-09-02 exactly one did — `trig_01P4z1EydHKhJNsvxf1jsAoK`, the stale one —
+    and the damage came from its checkout, not from contention. Keep it that way: before
+    creating any Routine that touches this artifact, check that no other one already does.
 
 ## 8. Halt conditions
 
@@ -346,29 +419,63 @@ Nothing else. The `Artifact` tool is built in — it is not a connector and must
 requested as one. No Supabase, no LionWheel, no Green Invoice: this report never touches
 them.
 
-**Schedule:** Sunday 08:00 Israel time → cron `0 5 * * 0` in UTC while IDT holds. See
-landmine 9 for the 2026-10-25 DST change.
+**Schedule:** Sunday-Thursday 09:00 Israel time → cron `0 6 * * 0-4` in UTC while IDT
+holds. See landmine 9 for the 2026-10-25 DST change.
 
 **Session mode:** a fresh session per firing. Do not bind it to an existing session —
-each week must start from a clean context, and the numbers must be pulled, not
+each morning must start from a clean context, and the numbers must be pulled, not
 remembered.
+
+**Repositories the session needs attached:** `gt-factory-os`,
+`gt-factory-os-production-brain`, `Sales-Machine`.
+
+**Exactly one Routine may publish this artifact.** Delete the others first (§6A).
 
 **Routine prompt — paste this as the Routine's message:**
 
 ```
-Run the GT weekly sales-report refresh.
+Run the GT sales-report refresh for this morning.
 
-Read and execute, in this order:
+STEP ZERO, before anything else — pull both repos:
+  git -C ~/gt-factory-os pull --ff-only
+  git -C ~/gt-factory-os-production-brain pull --ff-only
+This run builds the page from main. On 2026-09-02 a firing built from a stale
+checkout, produced a report missing the chains and daily sheets, passed every
+numeric gate on that smaller page, and republished it over the good one. The
+republish is the only irreversible act in this run.
+
+Then read and execute, in this order:
 1. gt-factory-os-production-brain/docs/plans/2026-08-30-weekly-sales-report-routine-masterprompt.md
-   — the standing instruction for this Routine. Follow it, including its halt conditions.
+   — the standing instruction for this Routine. Follow it, including its halt
+   conditions and the boot checks in its section 2.5.
 2. gt-factory-os-production-brain/.claude/skills/weekly-sales-report/SKILL.md
-   — the procedure itself, steps 1-8.
+   — the procedure itself, steps 0-8.
 
-If either file is missing, stop and email tom@gteveryday.com saying the report did not
-run this morning and why. Do not improvise the pipeline from memory.
+The report has five sheets: יומי · לקוחות · מוצרים · רשתות · מגמה. Chain membership
+comes from gt-factory-os-production-brain/docs/sales/chain_map.json (48 chains) and
+from nothing else. Do not edit that file, the taxonomy, the SKU map, the thresholds,
+the recipient, or the artifact URL inside a scheduled run — those are Tom's, on a
+weekday.
+
+BEFORE PUBLISHING, run the regression guard in SKILL.md step 5.5 on the report.html
+you just built:
+  grep -c 'data-s="daily"' report.html      -> 1
+  grep -c 'data-s="chain"' report.html      -> 1
+  python3 -c "import json;print(len(json.load(open('out/chain_conflicts.json'))))"  -> 0
+  python3 -c "import json;d=json.load(open('out/dim_customers.json'));print(sum(1 for c in d if c['chain']))"  -> 250 or more
+Any of these short means you built a regressed report. Do not publish it. The gates
+check numbers; they do not notice that a whole sheet is missing.
+
+Today's email shape follows SKILL.md step 7: Sunday sends the weekly block, Monday to
+Thursday the short daily pulse. Check today's weekday before writing it.
+
+If a required file is missing, or a boot check fails, stop and email
+tom@gteveryday.com saying the report did not run this morning and why. Do not
+improvise the pipeline from memory.
 
 The artifact URL is fixed:
 https://claude.ai/code/artifact/ad0dd380-d95e-4a21-94e3-af9ee386fc88
 Publish to that URL or not at all. A failed correctness gate means no publish and a
 short Hebrew failure email instead — never a published number you cannot defend.
+עדיף פחות — אסור לשקר.
 ```

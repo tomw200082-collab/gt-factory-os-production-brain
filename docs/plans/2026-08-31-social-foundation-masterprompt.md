@@ -1,6 +1,6 @@
 # MASTERPROMPT — GT social presence: from scattered accounts to one publishable base
 
-**STATUS: LIVE — not yet executed**
+**STATUS: SHIPPED — 2026-08-31**
 
 > **Usage (Tom):** paste this whole file as the first message of a fresh Claude Code
 > session with `gt-factory-os-production-brain` and `Sales-Machine` attached, and the
@@ -368,3 +368,127 @@ Inherited from `gt-factory-os-production-brain/CLAUDE.md` §Stop conditions. Add
 6. The single next action.
 
 Then stamp this file `STATUS: SHIPPED — <date>` with evidence pointers, and commit.
+
+---
+
+## Execution record — 2026-08-31
+
+Executed in one session. Evidence pointers, all in `Sales-Machine` unless stated:
+
+| What | Where |
+|---|---|
+| Ownership audit + identity sweep + third-party inventory | `evidence/2026-08-31-social-property-audit.md` |
+| 90-day content calendar (26 posts) | `doctrine/playbooks/social-calendar-2026-Q4.md` |
+| LinkedIn company page + personal profile, filled | `doctrine/playbooks/linkedin-launch-kit.md` |
+| YouTube branding + three recycled Shorts | `doctrine/playbooks/youtube-refresh-kit.md` |
+| Open unknowns opened (U-014 … U-021) | `CURRENT_STATE.md` |
+| Cards indexed | `knowledge/registry.yaml` |
+| Credentials sheet — 24 asset rows + risk block | Tom's Drive, `GT Everyday — נכסי מותג` → `GT — כרטיס גישה`. **Deliberately not in any repo.** |
+| Identity card v2 — four contradictions resolved | same folder, `GT Everyday — כרטיס זהות (מקור אמת אחד) — v2` |
+| Tracker updated, same URL | `https://claude.ai/code/artifact/09e806f6-978b-46d3-8374-eb36379710fa` — 10/72 done, 19 tasks carry new dated notes |
+
+### Definition of done — no partial credit
+
+| # | Verdict | Evidence |
+|---|---|---|
+| D1 | ⚠ partial | The sheet exists with all 24 properties. 11 rows verified against the live property today; the rest carry `לא אומת` **with a reason**, exactly as §W1 allows. But `בעלים` is genuinely unknown on the Meta and Instagram rows, so the strict reading of D1 fails until §6.B and §6.E return. |
+| D2 | ❌ | 42 → 29 occurrences of `072-3939395`. The 29 are one theme field the Shopify MCP refuses to write on a live theme. Recorded with the exact click path. |
+| D3 | ❌ | Blocked, not attempted. Both handles serve a login wall to this environment; headless Chromium is blocked too. §6.B. |
+| D4 | ❌ | Page not created — LinkedIn has no API for it. Every word and image it needs is written and waiting. |
+| D5 | ✅ | 26 rows, each with date · platform · format · asset path · final Hebrew caption · owner · goal. All four assets in the first 14 days verified file-by-file against Dropbox, with byte sizes. |
+| D6 | ❌ | The event is alive and correctly configured — and has zero attendees. A reminder is not an owner. §6.F. |
+| D7 | ✅ | Published to the same URL. Two tasks closed with dated evidence, 19 more annotated. |
+
+Two of seven pass. Every failure is a credential Claude does not hold, except D2, which is
+a live-theme write the tooling blocks. None of them is an unfinished decision.
+
+### What was found that no plan listed
+
+`judge.me` running alongside Yotpo · Google Tag Manager with an unknown container owner ·
+an unidentified `cloudfront.net/webtracking/rmShopifyUtils.min.js` · the legal name and
+ח.פ recoverable from GT's own `/pages/אודות` · and two wrong asset paths in
+`docs/warehouses/marketing-assets.md`.
+
+Landmine 5 was right. Assume more still exist.
+
+---
+
+## Second pass — same day, same session
+
+The first pass closed with "assume more still exist." It took under two hours to prove.
+
+### A twelfth property, publishing for three years
+
+The masterprompt counts eleven public properties. There are twelve.
+
+**`@gteveryday` on TikTok is GT's** — public, created 2023-11-04, bio reading
+`🍃GreenTea Essences Company🍃 / עוד לא ניסיתם את זה / gteveryday.com`,
+**13 videos published**, 23 followers, 383 lifetime likes, `nickname` still the
+factory default. It appears in no plan, on no row of the credentials sheet, and
+nobody at GT knows who can log in.
+
+**The first pass recorded that handle as free, and that was my error.** The check
+trusted an HTTP status code. TikTok answers `200` for a handle that does not
+exist, and serves a page whose i18n dictionary carries `Couldn't find this
+account` on *every* profile, present or absent. Neither signal discriminates;
+only the embedded profile JSON does. X was re-checked by calibrating against a
+handle known to be live before the 404 was trusted — X is genuinely free.
+
+Per §7, nothing on the account was touched: not renamed, not cleaned up, no video
+deleted. `U-027`.
+
+### The largest finding of the day is not a social account
+
+Klaviyo, read read-only: **`Win-Back Opportunities (Shopify)` holds 2,537
+profiles** — bought at least once, zero orders in 180 days, holds email consent.
+Against the consented base of 2,969 measured the same day, that is **85%**. The
+segment has been computed and active since 2026-07-18.
+
+**Zero campaigns have ever been sent from the account. Zero flows. Zero sending
+domains.** Nine segments and two lists all carry creation timestamps inside one
+39-second window — nothing in that account was ever made by a person.
+
+`Churn Risks` reads 0, and reading that as "no churn risk" inverts the truth: its
+filter requires `Received Email >= 2` in 90 days, which no email having been sent
+makes unsatisfiable. A structural zero. `U-029`.
+
+The silent churn this workspace exists to address is not unmeasured. It is
+measured, correct, and idle — in a tool installed six weeks ago.
+
+Sequencing is the operative part: an unauthenticated sending domain plus 2,537
+dormant addresses is the shape of a spam-trap hit that takes transactional mail
+down with it. Domain first, warm on the engaged segments, win-back last. Nothing
+in that path is authorised here — a send stays behind
+`SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` and Tom's written approval.
+
+### Evidence added
+
+| What | Where (`Sales-Machine`) |
+|---|---|
+| Handle sweep — TikTok / X / LinkedIn, incl. how the first check produced a false negative | `evidence/2026-08-31-social-handle-sweep.md` |
+| Klaviyo account state — the 2,537, the structural zero, six account-identity errors | `evidence/2026-08-31-klaviyo-account-state.md` |
+| Lead-response SOP (`f5`) — ownership, SLA, the template signature | `doctrine/playbooks/lead-response-sop.md` |
+| TikTok recovery kit | `doctrine/playbooks/tiktok-recovery-kit.md` |
+| WhatsApp setup kit (`wa4`–`wa9`) | `doctrine/playbooks/whatsapp-setup-kit.md` |
+| Instagram kit — written, held until `U-015` | `doctrine/playbooks/instagram-ready-kit.md` |
+| Open unknowns now `U-014` … `U-030` | `CURRENT_STATE.md` |
+| 72-row action board — status, owner, minutes, deep link, blocker | Tom's Drive, `GT — לוח פעולות רשתות`. **Deliberately not in any repo.** |
+| Tracker, same URL | 12/72 done, **50 tasks carry dated notes** |
+
+### Verdict — unchanged, and that is the point
+
+Still two of seven. D5 ✅, D7 ✅, D1 ⚠ partial, D2/D3/D4/D6 ❌.
+
+The second pass moved no condition. It moved the **denominator**: one more
+property to own than the plan counted, and a customer-recovery asset of 2,537
+people that no condition in D1–D7 was written to look for.
+
+A definition of done cannot score what it did not know to ask about. That is not
+an argument for softening the tally — it is the argument for landmine 5.
+
+### What is deliberately still open
+
+`U-015` Instagram ownership · `U-020` the second phone number, five minutes that
+unblock six items · `U-021` one approved number per claim · `U-027` TikTok access ·
+`U-029` the 2,537 · `U-030` Klaviyo's account country. Every one needs a login or
+a decision that is Tom's, not an unfinished piece of work.
