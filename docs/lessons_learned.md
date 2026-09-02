@@ -154,3 +154,20 @@ order by pp.plan_date, pp.created_at;
 **Why it was surprising:** both files look like exactly what they are named. An `install` subcommand reads as additive, and a JSON file sitting beside `settings.json` under `.claude/` reads as sibling config. The install even reports success and leaves a functionally correct file — only the diff is destroyed, which matters exactly in a repo where the diff is the review.
 
 **Corrective:** for a governed settings file, run the tool, read the diff, and if it rewrote more than it needed, **revert and apply the change by hand** — then assert the result mechanically (parse before and after, compare every pre-existing top-level key) instead of eyeballing it. For MCP: project-scoped servers belong in `.mcp.json` at the repo root; before trusting any dot-directory config, grep the CLI binary for the filename. A config file that has never been read is worse than an absent one, because it invites edits that appear to work.
+
+---
+
+### 2026-09-02: A 200 that means "no such account", and two claims I made without opening the thing
+
+**What happened:** three separate errors in one session, all the same shape — an answer accepted from something adjacent to the evidence instead of the evidence.
+
+1. **TikTok.** Checking whether the GT brand handle was taken, the probe read the HTTP status of `tiktok.com/@handle` and reported the name free. TikTok serves **`200` for handles that do not exist**, and the string `Couldn't find this account` ships inside the i18n dictionary embedded in *every* profile page — including live ones — so grepping for it matches everywhere and proves nothing. Parsing the embedded profile JSON settled it in one request: `@gteveryday` is live, ours, id `7297668950497952769`, created 2023-11-04. The brand was never free; a status code had been treated as an answer.
+2. **A two-part question, a one-word reply.** A message asked Tom two things; he answered `2. כן. יש לוגו ריבועי`. That `כן` was the answer to part 2. It was read as closing part 1 as well, and "Tom confirmed the empty channel is his" was written into `CURRENT_STATE.md` — a sole-authority file — on that reading. His next screenshot falsified it. This is exactly the failure truth rule 3 exists to prevent: an unknown was not guessed at in the open, it was quietly closed.
+3. **A file's dimensions, asserted twice, never measured.** One authority file said no square logo existed (which blocked four networks) and the setup kit said `800×800`. The PNG's IHDR header says **971×960**. Two confident claims about one file, wrong in opposite directions, from a file nobody had opened.
+
+**Why it was surprising:** all three felt verified. A 200 looks like a check. A `כן` looks like consent. A dimension written in two documents looks corroborated — but both had copied the same guess, and agreement between two documents is not evidence, it is one source counted twice.
+
+**Corrective:**
+- For any external "is this name/handle taken" check, assert on **parsed content that identifies the entity** (an id, a creation date), never on a status code, and never on a string that could be boilerplate. Prove the negative case works by running the same probe against a handle known not to exist.
+- Answer *n* questions in a message, expect *n* answers. A reply with fewer parts than the question closes only the parts it names; the rest stay `UNRESOLVED`. When one word could attach to either part, it attaches to neither.
+- **Open the file.** `head -c 33 x.png | xxd` gives the real width and height in one command. Any property of an artifact that is cheap to read is never inferred, quoted from a sibling document, or carried forward from an earlier draft.
