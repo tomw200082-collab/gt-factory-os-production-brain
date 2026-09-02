@@ -289,17 +289,20 @@ an unmapped SKU cleared ₪20,000 in the latest month (`SKILL.md` step 5, non-bl
 **A. Delete every existing Routine that publishes this artifact, then create one new
 Routine** from the appendix. **This is the only open item.**
 
-As of 2026-09-02 three were enabled and all three published the same URL — a race, not
-redundancy (landmine 12). The one that did the damage was
+Exactly one Routine published this artifact, and it is the one that did the damage:
 `trig_01P4z1EydHKhJNsvxf1jsAoK` (`עדכון דוח מכירות שבועי ARTIFACT ושליחה למייל`, cron
-`0 5 * * 1-5` = Mon–Fri 08:00 IL): it fired at 05:11Z on 2026-09-02, built from a `main`
+`0 5 * * 1-5` = Mon–Fri 08:00 IL). It fired at 05:11Z on 2026-09-02, built from a `main`
 that predated the chains and daily work, and republished that smaller page over the good
-one. `trig_01Dxbb78EiCxDixYBitw434Y` (`דוח מכירות יומי · 17:00 · לתום ולדין`, `0 14 * * 0-4`)
-was the second publisher. Both carry the wrong cadence as well — Tom settled on Sunday to
-Thursday 09:00 on 2026-08-31.
+one. Its cadence was wrong too — Tom settled on Sunday to Thursday 09:00 on 2026-08-31.
+Tom paused it on 2026-09-02.
 
-`trig_01AsZDSP6AknPt1FfQPXePQZ` (`אקסל מכירות חודשי לדרופבוקס`, monthly) does **not**
-publish this artifact and is not part of this cleanup.
+Two other sales Routines were enabled that day and **neither touches this artifact** —
+checked, not assumed:
+
+| Routine | What it actually does |
+|---|---|
+| `trig_01Dxbb78EiCxDixYBitw434Y` (`דוח מכירות יומי · 17:00 · לתום ולדין`) | a different report from a different source — Green Invoice net sales via `gt-factory-os/tools/sales-forecast/`, emailed to Tom and Dean. Its own standing instruction: `docs/plans/2026-09-02-daily-sales-brief-routine-masterprompt.md` |
+| `trig_01AsZDSP6AknPt1FfQPXePQZ` (`אקסל מכירות חודשי לדרופבוקס`) | monthly Excel to Dropbox |
 
 Closed on 2026-08-30, recorded here so nobody reopens them:
 
@@ -362,11 +365,12 @@ Closed on 2026-08-30, recorded here so nobody reopens them:
     `SKILL.md` step 5.5, which counts the sheets and the chain assignments in the page you
     are about to publish. **A republish is the only irreversible act in this run** — the
     previous version does not come back on its own.
-12. **More than one Routine pointed at this artifact is a race, not redundancy.** Each
-    firing republishes the same URL, so the last one to finish wins and an older or
+12. **More than one Routine pointed at this artifact would be a race, not redundancy.**
+    Each firing republishes the same URL, so the last one to finish wins and an older or
     thinner build silently overwrites a newer one. Exactly **one** Routine may publish
-    here. On 2026-09-02 there were three enabled; that is how a stale one got to win.
-    Tom retired the others (§6).
+    here. On 2026-09-02 exactly one did — `trig_01P4z1EydHKhJNsvxf1jsAoK`, the stale one —
+    and the damage came from its checkout, not from contention. Keep it that way: before
+    creating any Routine that touches this artifact, check that no other one already does.
 
 ## 8. Halt conditions
 
