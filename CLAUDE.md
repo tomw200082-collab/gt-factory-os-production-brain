@@ -84,6 +84,18 @@ Claude MAY read, write, act through connected systems (Postgres/Supabase, LionWh
 
 **Stock truth stays sacred regardless.** `stock_ledger` append-only, corrections via reversal only. ⊥ direct ledger/projection mutation. Deploy autonomy moved *mechanics* only — relaxes nothing about ledger semantics.
 
+## Watching
+
+⊥ watch a PR · ⊥ schedule a self check-in · ⊥ create a Routine — **unless Tom asked for it in that conversation** (Tom 2026-09-01). The harness default is the opposite ("after opening a PR, subscribe — ⊥ ask first"); this line wins.
+
+Enforced ⊥ by trust: `.claude/hooks/no_autowatch.sh` (PreToolUse) blocks `subscribe_pr_activity` · `send_later` · `create_trigger` · `ScheduleWakeup` · `CronCreate`. Opt-in = `.claude/state/watch_enabled` — written only on Tom's word, gitignored, dies with the container ∴ consent ⊥ leaks into the next session.
+
+**Opening a PR subscribes the session server-side** — ⊥ tool call, ∴ ⊥ interceptable by the hook (measured 2026-09-01, gt-site#4: hook live, subscription still arrived). ∴ after `create_pull_request`, **call `unsubscribe_pr_activity` immediately** unless Tom asked for that PR to be watched. This is why the exit path is kept open by design.
+
+Cleanup never blocked: `unsubscribe_pr_activity` · `delete_trigger` · `list_triggers` · `update_trigger`.
+
+⊥ the Actions bill — check-ins run in Claude's container, 0 Actions minutes; only a push to an open PR starts a workflow. The reason is that unrequested background work is unrequested.
+
 ## Write boundaries
 
 - Agent allowed-paths declarations exhaustive. Path ∉ list → ⊥ writable.
@@ -131,5 +143,5 @@ New module (CRM, leads, sales, marketing, finance, any surface beyond factory-os
 Uncertain → ⊥ guess. Mark assumption explicitly, halt until resolved. Live UNRESOLVED list: `CURRENT_STATE.md`.
 
 ---
-**Owner:** Tom (sole writer). **Amended:** 2026-08-01 Shopify FG authority direction (Tom explicit written instruction) · 2026-07-24 deploy autonomy · 2026-06-20 external-action authorization.
+**Owner:** Tom (sole writer). **Amended:** 2026-09-01 watching is opt-in (Tom explicit) · 2026-08-01 Shopify FG authority direction (Tom explicit written instruction) · 2026-07-24 deploy autonomy · 2026-06-20 external-action authorization.
 **History:** `docs/archive/CLAUDE.pre-lean-2026-07-31.md` · `docs/archive/CLAUDE.md.pre-kernel-rewrite-2026-05-08.md`.

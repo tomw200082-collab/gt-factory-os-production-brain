@@ -69,3 +69,6 @@ credentials/
 *.key
 .aws/
 .ssh/
+
+# Watching opt-in — Tom-granted, per-session, never committed (.claude/hooks/no_autowatch.sh)
+.claude/state/watch_enabled
