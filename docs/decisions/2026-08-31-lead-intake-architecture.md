@@ -455,6 +455,21 @@ lead **email addresses**. That cost is accepted knowingly if the trigger fires.
 
 ### A3 — answered: `054-758-8132` is the lead number
 
+> **Provisioned 2026-09-02.** Tom completed the Meta-side setup. The lead line's
+> `phone_number_id` is **`217553368116155`** — distinct from the order line's
+> `185509261301816`, which is the only distinction the webhook gives us, since both
+> numbers deliver to the same endpoint (`/webhooks/wa-order-bot`) on the same WABA.
+> Grade `user_confirmed`: Tom read it out of WhatsApp Manager. It cannot be
+> `system_verified` until a message actually arrives on it — `wa_event_log` held
+> **0 events** carrying this id when it was recorded, against 25,021 on the order line.
+> That zero is the acceptance test: the first non-zero count proves the whole chain.
+>
+> Still required before capture runs, none of it in this repo:
+> `WA_LEAD_PHONE_NUMBER_ID` · `SALES_LEAD_INGEST_URL` · `LEAD_INGEST_TOKEN` ·
+> `SALES_LEAD_CAPTURE_ENABLED` on Railway, then `gt-factory-os#253` merged and deployed.
+> Until then the branch is inert by construction — an empty configured id matches no
+> message, so nothing is routed anywhere.
+
 **Tom, 2026-08-31, in writing.** Recorded as `Sales-Machine/doctrine/decisions.md` **D-014**.
 This also answers the masterprompt's §6.F, which asked what that number is for.
 
