@@ -27,7 +27,7 @@
                       "hooks": [
                       {
                       "type": "command",
-                      "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/no_autowatch.sh"
+                      "command": "bash .claude/hooks/no_autowatch.sh"
                       }
                       ]
                       },
