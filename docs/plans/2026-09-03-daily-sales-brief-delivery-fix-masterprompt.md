@@ -1,4 +1,4 @@
-# MASTERPROMPT — the daily sales brief arrives Sun–Thu between 17:00 and 17:30, or Tom's phone tells him why before 17:40
+# MASTERPROMPT — the daily sales brief arrives Sun–Thu between 17:00 and 17:30, and is never silently wrong
 
 **STATUS: LIVE — not yet executed**
 <!-- The executing session's last act is to change this to SHIPPED / SUPERSEDED by <path> /
@@ -20,7 +20,7 @@ ABANDONED — why, with evidence pointers. -->
 > `gt-factory-os/tools/sales-forecast/README.md` — the pipeline's own documentation, which
 > **wins on anything about data semantics**.
 >
-> **Shelf life:** §2 is presumed wrong if pasted after **2026-09-17**. Run §2.6 first.
+> **Shelf life:** §2 is presumed wrong if pasted after **2026-09-17**. Run §2.7 first.
 > If reality no longer matches §2 — a different sender is live, the workflow has changed, the
 > brief is already arriving reliably — **halt and surface to Tom**; do not adapt silently.
 > This document exists because three silent adaptations produced three misses.
@@ -63,13 +63,15 @@ Tom is told before 17:40.
 | D1 | The brief is built and sent **server-side**; no model session ever handles the report bytes | any code path that puts `dashboard/GT_Sales_Forecast.html` bytes into a tool-call argument or a Make field |
 | D2 | The mail carries the **exact generated** subject, HTML body and attachment | sent subject ≠ `email_subject.txt`; body re-rendered rather than `file://…email_body.html`; no `GT_Sales_Forecast.html` attachment |
 | D3 | Both recipients, every send | a `to:` line missing `tom@gteveryday.com` or `arbel.dean@gmail.com` |
-| D4 | Exactly one brief per business day | Gmail `in:sent subject:"GT · מכירות" newer_than:1d` returns 0 or 2 for one date |
-| D5 | Delivery is **verified**, not assumed | a run reported as "sent" with no Gmail Sent hit for that date's subject |
-| D6 | A miss reaches Tom by 17:40 Israel | the brief is absent from Sent at 17:40 and no alert was sent |
-| D7 | The schedule survives 2026-10-25 DST with **no human edit** | the send lands at 16:00 Israel, or `build_forecast.py` aborts on its cutoff guard, on 2026-10-25 |
+| D4 | Exactly one brief per business day | the dated query `in:sent subject:"GT · מכירות DD/MM/YYYY"` for today returns 0, or returns 2 |
+| D5 | Delivery is **verified**, not assumed | a run reported as "sent" with no Gmail Sent hit for **today's dated** subject |
+| D6 | A miss reaches Tom by 17:40 Israel | the dated subject is absent from Sent at 17:40 and no alert was sent |
+| D7 | The schedule carries **no UTC offset anywhere**, so DST cannot move it | the Make org timezone is not `Asia/Jerusalem`, or the dispatcher's schedule contains a cron/UTC offset, or any other UTC-scheduled sender still exists. (Observable today. The 2026-10-26 confirmation is a §9 follow-up, not a blocker.) |
 | D8 | Both repos left clean | `git status --porcelain` non-empty in either repo |
 | D9 | The retired standing instruction cannot be followed by mistake | `docs/plans/2026-09-02-daily-sales-brief-routine-masterprompt.md` still reads `STATUS: LIVE` while describing the Gmail-connector send |
 | D10 | The old Claude Routine no longer sends | two briefs arrive on one day, or the retired Routine is still enabled after cutover |
+| D11 | The morning backstop exists | `grep` of `.claude/skills/chief-of-staff-daily/SKILL.md` day-open finds no yesterday-brief-in-Sent check |
+| D12 | A day with no invoices **fails loudly instead of re-sending yesterday** | `DATA_THRU != TODAY` with `SALES_REPORT_DATE` unset produces a sent email rather than a failed job (§2.4) |
 
 Anything not on this list is out of scope unless Tom asks.
 
@@ -110,10 +112,12 @@ Anything not on this list is out of scope unless Tom asks.
 ```
 organization  6913249 "My Organization" · zone eu1.make.com · isPaused false
 timezone      Asia/Jerusalem          ← the whole DST problem disappears here
-plan          Teams · 480,000 operations/month  (this job needs ~44/month)
+plan          Teams · 480,000 operations/month  (both scenarios together: <100/month)
 team          1240098 "My Team"       ← create scenarios here
 proven        `http` MakeRequest module used in 4 existing scenarios
-              `google-email` ActionSendEmail used in "GT Leads — Instant"
+connections   Facebook ×4 · Shopify · Google ×5 · Google Restricted · Gmail ("new leads",
+              id 6308857, valid to 2027-02-20)
+MISSING       **no GitHub connection of any kind** — W1 cannot fire until §6A is done
 ```
 
 Make schedules in the **account's timezone**, so "17:00" means 17:00 in Israel in July and in
@@ -140,6 +144,11 @@ delivery  Actions run #136 · dispatched 05:44:54Z · completed 05:46:23Z (89 s)
           Gmail Sent 05:46:19Z · both recipients · message size 120,675 B
 ```
 
+**Run #136 was a deliberate replay, not a normal 17:00 run — do not cite it as one.** It ran at
+08:44 Israel on 2026-09-03 on branch commit `3d02aac`, which set `SALES_REPORT_DATE: '2026-09-02'`
+in the workflow's build step; commit `22e1327` reverted that line immediately after. It proves the
+*transport* (server-side attachment, both recipients, exact HTML) and nothing about the schedule.
+
 The 120,675 B sent size against a 12,027 B body is the attachment's fingerprint: a body-only
 mail is ~15 KB. Two held-out credit lines is the expected count.
 
@@ -156,27 +165,59 @@ composing the `create_draft` call **exceeded the session's single-response outpu
 problem, not a prompt problem. Any design that asks a session — or a Make field — to hold the
 report bytes is already broken. Treat this as a law.
 
-### 2.5 Adjacent things that are not yours
+### 2.5 The stale-day trap — how this system can be *wrong* rather than merely missing
+
+Found 2026-09-03 by red-teaming this document; confirmed by reading the code. **Nothing in the
+live pipeline prevents it today.**
+
+```python
+build_forecast.py:49   DATA_THRU=max(d for d in ((l.get("date") or "")[:10] for l in L) if d<=TODAY)
+build_forecast.py:50   INTRADAY = DATA_THRU==TODAY
+build_forecast.py:58   if cutoff_epoch(DATA_THRU) > NOW.timestamp(): raise SystemExit(...)
+build_email_body.py:21 day=D["data_thru"]; ddmy="/".join(reversed(day.split("-")))
+build_email_body.py:29 TILL=f" עד {AT}" if INTRA else ""
+build_email_body.py:166 head=f"GT · מכירות {ddmy}{TILL}"
+```
+
+`DATA_THRU` is the newest date that has **any** invoice, not necessarily today. If Green Invoice
+returns nothing dated today at 17:00 — an outage, an auth failure, a holiday-shortened day, or
+simply no sales yet — `DATA_THRU` falls back to a previous day, whose 17:00 is long past, so the
+cutoff guard is **silent**, the job exits 0, and **yesterday's brief is sent again** to both
+recipients. Its subject carries yesterday's date and, because `INTRADAY` is false, loses the
+` עד 17:00` marker.
+
+Two consequences that shape the design:
+1. **The auditor must be keyed to today's date**, or it finds the stale brief, matches, and
+   certifies the failure as healthy. An undated `subject:"GT · מכירות"` search is worse than no
+   auditor, because it manufactures confidence.
+2. **Better to refuse than to detect.** D12 asks for a guard beside `build_forecast.py:58`:
+   abort when `DATA_THRU != TODAY` and `SALES_REPORT_DATE` is unset. That converts a silent
+   wrong-numbers send into a failed job, which the auditor then reports honestly.
+
+### 2.6 Adjacent things that are not yours
 
 - **`schedule:` is gone from the workflow on purpose** — GitHub cron fires 1–2.5 h late and
   cannot hold a 17:00–17:30 window (`README.md:30`). Do not re-add it.
 - **The Actions-cost objection is dead.** ~22 runs/month × 2 billed minutes ≈ **44
   minutes/month, ~2% of the 2,000 allowance** (`README.md:39`). What exhausted the quota on
   2026-08-30 was issue **#217**'s design, which slept a runner until the target minute and burned
-  ~3,164 minutes/month, ~158% of the allowance (both figures from `README.md` *How it runs*, the #217
-  row), taking unrelated workflows down with it. **Never resurrect a
+  ~3,164 minutes/month (`README.md` *How it runs*, the #217 row), ~158% of the allowance
+  (`README.md:39`), taking unrelated workflows down with it. **Never resurrect a
   sleeping runner.**
 - **The sales-report artifact is a different report** (Shopify-sourced, whole days, its own
   Routine). It will not agree with this brief and both are right. Do not touch it.
 
-### 2.6 Re-verification block — run at boot, before trusting anything above
+### 2.7 Re-verification block — run at boot, before trusting anything above
 
 ```bash
-cd ~/gt-factory-os/tools/sales-forecast
+# Do NOT use ~ : HOME is /root here while the repos are checked out elsewhere. Anchor on the repo.
+R="$(git -C gt-factory-os rev-parse --show-toplevel 2>/dev/null || git rev-parse --show-toplevel)"
+cd "$R/tools/sales-forecast" || exit 1
 ls run_daily.sh build_forecast.py build_email_body.py
 grep -c "CUTOFF_HOUR=17" build_forecast.py                 # expect 1
 TZ=Asia/Jerusalem date +'%Y-%m-%d %H:%M %a'                # anchors every "today" below
-grep -n "html_body:\|attachments:\|^          to:" ../../.github/workflows/daily-sales-forecast.yml
+# line 89 is the report recipients; line 108 is the failure alarm and is Tom-only BY DESIGN
+grep -n "html_body:\|attachments:\|to: tom@" "$R/.github/workflows/daily-sales-forecast.yml"
 ```
 
 ```
@@ -226,18 +267,35 @@ Four, in order. W1+W2 are the fix, W3 is what keeps it fixed, W4 stops the next 
 following the retired design.
 
 ### W1 — Make becomes the clock and the dispatcher
-Create a Make scenario in team `1240098`, named `GT · דוח מכירות יומי — dispatch`:
-1. **Schedule:** daily **17:00**, days **Sunday–Thursday**, account timezone Asia/Jerusalem.
-2. **HTTP module** → `POST https://api.github.com/repos/tomw200082-collab/gt-factory-os/actions/workflows/daily-sales-forecast.yml/dispatches`
-   with `{"ref":"main"}`, `Accept: application/vnd.github+json`, and the GitHub credential from
-   §6A. A `204` is success **at the API level only** — see landmine 7.3.
-3. **Idempotency:** before dispatching, do not send twice. The cheapest correct guard is the
-   workflow's own `concurrency` group plus the auditor in W3; if you add a Gmail pre-check
-   inside this scenario, it must not become a second failure mode. Prefer simple.
-4. **Error handling:** attach a Make error handler that emails Tom if the HTTP call does not
-   return 204. Do not let the scenario fail silently into the DLQ.
+Create a Make scenario in team `1240098`, named `GT · דוח מכירות יומי — dispatch`.
 
-**Acceptance:** D1, D2, D3, D7.
+0. **Create it INACTIVE** (`scenarios_create`; do **not** call `scenarios_activate`). Activation
+   is the cutover and belongs at the end of W2, after D10 is closed. An active new clock beside a
+   live old Routine is two briefs to Tom and Dean — see §8.
+1. **Schedule:** daily **17:00**, days **Sunday–Thursday**, account timezone Asia/Jerusalem.
+   No cron string, no UTC offset — that is what D7 checks.
+2. **HTTP module.** Confirm the repo slug first with `mcp__github__get_file_contents` on
+   `.github/workflows/daily-sales-forecast.yml` (a wrong slug 404s indistinguishably from a bad
+   token). Then:
+   - `POST https://api.github.com/repos/tomw200082-collab/gt-factory-os/actions/workflows/daily-sales-forecast.yml/dispatches`
+   - Body type **Raw / JSON** — Make's HTTP module defaults to form-urlencoded and that returns
+     400 you will then debug blind. Body: `{"ref":"main"}`
+   - Headers: `Authorization: Bearer <token from §6A>` · `Accept: application/vnd.github+json` ·
+     `Content-Type: application/json` · `X-GitHub-Api-Version: 2022-11-28`
+   - Expected `204 No Content`. A `204` is success **at the API level only** — landmine 7.3.
+3. **No dedupe logic here.** The workflow's `concurrency` group (`daily-sales-forecast`,
+   `cancel-in-progress: false`) **serialises** runs, it does not drop them — two dispatches are
+   two emails, just not at once. Duplicate detection is W3's job: the auditor alerts on `≥2` as
+   well as on `0`. Do not invent a second guard here.
+4. **Error handling:** attach a Make error handler that alerts Tom if the call does not return
+   204, so a failure lands somewhere other than the DLQ.
+
+**Acceptance:** a Make firing at 17:00 Israel produced Actions run *N*, and the Gmail Sent
+message for **today's dated subject** exists, and its size is of the order of the 120,675 B
+observed for run #136 (§2.3) rather than the ~12 KB of a body-only mail — that size gap is the
+attachment's fingerprint. (D2 and D3 are regression guards on
+a file W1 does not touch — check them once before merge, not here; D3 is deliberately false
+while `to:` is narrowed for testing.)
 
 ### W2 — Turn off the old sender, and prove only one brief goes out
 The Claude Routine `דוח מכירות יומי · 17:00 · לתום ולדין` must stop sending, or Tom and Dean get
@@ -245,46 +303,77 @@ two briefs a day and D4 fails. **Whether a session can disable a claude.ai Routi
 check `CronList`/`CronDelete` first; if they do not cover it, this is Tom's, per §6B, and your
 report must say D10 is open until he confirms.
 
-Cut over on a day you can watch: Make dispatches, the brief arrives once, and the Routine is
-already off. **Do not run both for a day "to be safe" — that is a guaranteed duplicate.**
+Cut over on a day you can watch, in this order: **(1)** confirm the Routine is off, **(2)** then
+`scenarios_activate` the W1 dispatcher, **(3)** watch that exactly one brief arrives.
+**Never run both for a day "to be safe" — that is a guaranteed duplicate.**
 
 **Acceptance:** D4, D10.
 
 ### W3 — An auditor that lives outside the thing it audits
 A second Make scenario, `GT · דוח מכירות יומי — auditor`, scheduled **17:40 Sunday–Thursday**,
 Asia/Jerusalem, holding only a Google connection:
-1. Search Gmail for today's brief — `in:sent subject:"GT · מכירות" newer_than:1d`, or the
-   equivalent Gmail-module search.
-2. **If found:** stop. Silence is the correct output of a healthy evening.
-3. **If not found:** send Tom an alert naming the date and stating plainly that no brief went
-   out. Email at minimum; WhatsApp if the account already has that connection.
+1. Search Gmail Sent for **today's dated** subject — build the query from the run date, e.g.
+   `in:sent subject:"GT · מכירות {{formatDate(now; "DD/MM/YYYY"; "Asia/Jerusalem")}}"`.
+   **Never search the undated `subject:"GT · מכירות"`** — §2.5 shows a stale-day send carries
+   yesterday's date, so an undated query matches it and certifies the failure as healthy.
+2. **Exactly 1 hit:** stop. Silence is the correct output of a healthy evening.
+3. **0 hits:** alert Tom, naming the date, saying plainly that no brief went out.
+4. **≥2 hits:** alert Tom — that is the duplicate detector D4 relies on after this session ends.
 
 It must not share a failure mode with W1: separate scenario, minimum surface, no GitHub, no repo.
 
-**The backstop, because Make can be down too:** add one line to the existing morning ritual
-(`gt-factory-os-production-brain/.claude/skills/chief-of-staff-daily/`, day-open 07:30) that
-checks whether yesterday's Sun–Thu brief is in Sent and flags it if not. It rides a proven daily
-routine, adds no new component, and catches a total Make outage by the next morning.
+**Proving the alert fires — one prescribed method, so two executors do the same thing:** clone
+the auditor as `GT · דוח מכירות יומי — auditor (drill)`, fix its date to a known-empty Friday,
+`Run once`, confirm the alert arrives, then **delete the clone**. **Never edit the live auditor's
+query to test it** — a forgotten edit leaves a permanently silent auditor, which is precisely the
+defect in §2.5. The clone's deletion is part of D8's evidence.
 
-**Acceptance:** D5, D6.
+**The backstop, because Make can be down too:** add a yesterday-brief-in-Sent check to the day-open
+path of `gt-factory-os-production-brain/.claude/skills/chief-of-staff-daily/SKILL.md` (07:30). It
+rides a proven daily ritual, adds no new component, and catches a total Make outage by the next
+morning. Note it changes Tom's morning email, so keep it to one line and flag it in your report.
+
+**Acceptance:** D5, D6, D11.
 
 ### W4 — Retire the instruction that describes the broken design
 - Stamp `docs/plans/2026-09-02-daily-sales-brief-routine-masterprompt.md` **`SUPERSEDED by
   docs/plans/2026-09-03-daily-sales-brief-delivery-fix-masterprompt.md`** with a one-line reason.
   Leave the rest as history.
 - Rewrite `tools/sales-forecast/README.md` *How it runs* to describe Make → Actions → auditor,
-  and fix the stale `SALES_REPORT_DATE` sentence (landmine 7.4).
+  and fix the stale `SALES_REPORT_DATE` sentence (landmine 7.4). The Routine is described as the
+  live sender in several places, not just that section — enumerate them rather than trusting a
+  line list that rots:
+  `grep -n "Claude Routine\|Routine\|Gmail connector\|2026-09-02-daily-sales-brief" README.md`
+- **Fix the workflow's own header.** `daily-sales-forecast.yml:17-31` still says
+  *"SINCE 2026-08-31 THIS WORKFLOW IS DORMANT […] Nothing dispatches this workflow any more"* and
+  line 28 points the next reader at the very document you are stamping SUPERSEDED. Left alone, D9
+  passes while every pointer that caused this confusion survives.
 - Do **not** create a new authority doc (brain `CLAUDE.md` §Forbidden assumptions).
 
-**Acceptance:** D9.
+**Acceptance:** D9 — whose falsifier is now broader: any `grep` for
+`2026-09-02-daily-sales-brief-routine-masterprompt`, or for `Claude Routine` as the live sender,
+in `daily-sales-forecast.yml` or `README.md`, that does not sit inside an explicitly historical
+block.
+
+**Merging:** W4's documentation changes go to `main` under brain `CLAUDE.md` §Authorization once
+checks are green — a draft PR leaves D9 false on `main`. This work requires **no** change to
+`daily-sales-forecast.yml` beyond the header comment; if you make one, it must be merged **before**
+the dispatcher is activated, because W1 dispatches `{"ref":"main"}`.
 
 ### Testing without spamming Dean
-Do **not** rehearse against the live recipients. Test on your branch with the workflow's `to:`
-narrowed to `tom@gteveryday.com` alone, dispatching with `ref=<your branch>`; the run uses that
-ref's workflow. Prove the whole chain there — Make fires, the run completes, the mail arrives,
-and the auditor alerts when you point it at a date with no brief. **Restore `to:` to both
-recipients before anything merges** and confirm with `grep -n "^          to:"` that `main`
-carries both. One real 17:00 send is the final proof, not a rehearsal.
+Do **not** rehearse against the live recipients.
+
+**Narrow only the `Email the report` step's `to:` (`daily-sales-forecast.yml:89`).** The second
+`to:` at line **108** belongs to `Alarm on failure` and is Tom-only by design — leave it. Dispatch
+with `ref=<your branch>`; the run uses that ref's workflow.
+
+**Before any test dispatch, read landmine 7.5.** A pre-17:00 dispatch is *not* reliably a no-op:
+if today has no invoice yet it will rebuild and send **yesterday's** brief for real, to whatever
+`to:` currently holds. Narrow `to:` first, always.
+
+Restore with a single check that has exactly one expected hit:
+`grep -n 'to: tom@gteveryday.com,arbel.dean@gmail.com' .github/workflows/daily-sales-forecast.yml`.
+One real 17:00 send is the final proof, not a rehearsal.
 
 ## 5. Scope
 
@@ -320,6 +409,18 @@ open and a duplicate is possible. ~2 minutes.
 allowance, but 2026-08-30 proved an unrelated workflow can eat the quota and kill the brief
 silently. He owns the billing page; you cannot read it.
 
+**E. Authorize — or confirm — a Make Google connection on `tom@gteveryday.com` with Gmail
+read/search scope.** The auditor must *search Tom's Sent folder*. The only proven Gmail usage in
+this account is a **send** action (`google-email` in `GT Leads — Instant`), which establishes
+neither read scope nor that the connection is authenticated as `tom@gteveryday.com` rather than
+another Google account. An auditor pointed at the wrong mailbox finds nothing and alarms every
+night until Tom mutes it — which is worse than no auditor. Confirm the mailbox identity and the
+scope before shipping it; if a browser OAuth consent is needed, only Tom can click it. ~3 minutes.
+
+**F. Confirm the alert channel.** §1 promises Tom is *told* by 17:40. Email is the floor; if he
+wants it to reach his phone, a WhatsApp/push connection must exist in Make. Ask which he wants —
+do not assume email is enough for the man who found out from investors.
+
 **D. Decide the fallback when Actions is unavailable.** If the quota is gone, the brief cannot be
 sent with its attachment by any path in this design. Two options, his call: **(i)** the auditor
 alerts him and he dispatches manually when minutes return, or **(ii)** `build_email_body.py`
@@ -342,18 +443,26 @@ but truthful brief can go out. **Default to (i); build nothing for (ii) until he
    stale.** The guard now tests the labelled instant (`build_forecast.py:58`): a **past** date
    passes because its 17:00 is behind us, and `SALES_REPORT_DATE=<today>` at 09:00 is correctly
    **refused**. Do not use it to force a report before 17:00; fix the sentence (W4).
-5. **Dispatching before 17:00 Israel produces a false alarm, not a brief.** The build aborts on
-   the cutoff guard, the job fails, and the alarm step mails Tom that the report failed — noise
-   that trains him to ignore the alarm. Make's Asia/Jerusalem scheduling is what prevents this;
-   do not "help" by adding a UTC cron beside it.
+5. **A pre-17:00 dispatch is NOT reliably harmless — it can send a real, stale brief.** The
+   cutoff guard tests `DATA_THRU`, not today (§2.5). It aborts only if today **already has an
+   invoice**. If today has none, the run rebuilds **yesterday's** brief and mails it for real to
+   whatever `to:` holds. So: never dispatch before narrowing `to:` (line 89), and never dispatch
+   on a live Sun–Thu before 17:00. Make's Asia/Jerusalem scheduling is what keeps the production
+   path clear of this; do not "help" by adding a UTC cron beside it.
 6. **Dispatching a workflow on a branch runs that branch's YAML.** That is how you test safely —
    and how you ship a narrowed `to:` if you forget to restore it.
 7. **A Make scenario fails as silently as anything else.** Two scenarios in this very team carry
    9 and 32 errors with items in the DLQ (§2.2). Give W1 an error handler and never treat "the
    scenario exists" as "the scenario ran".
-8. **`git pull --ff-only` fails in this environment** with "no tracking information" on the
-   session's designated branch. Use `git fetch origin main` and branch from `origin/main`.
-9. **The 17:00 report is frozen and never revised**; month/quarter/year rebuild each run and
+8. **Do not assume your session branch is based on current `main`, or that it has an upstream.**
+   On 2026-09-02 `git pull --ff-only` failed in `gt-factory-os` with "no tracking information"
+   until an upstream was set. Always `git fetch origin main` and branch from `origin/main`
+   explicitly rather than pulling.
+9. **The most dangerous failure is a brief that looks fine and carries yesterday's numbers.**
+   See §2.5. Symptom: a brief whose subject shows a past date and lacks ` עד 17:00`. Cause:
+   `DATA_THRU` falling back when today has no invoices, with the cutoff guard silent. Resolution:
+   date-keyed auditor (W3) and, properly, the D12 guard in `build_forecast.py`.
+10. **The 17:00 report is frozen and never revised**; month/quarter/year rebuild each run and
    self-heal. A re-run of a past day reproduces that day's headline exactly — which is why run
    #136 could deliver the 02/09 figure unchanged on 03/09.
 
@@ -370,6 +479,11 @@ Inherited set cited in §0. Additions specific to this work:
   duplicate brief is a real cost.
 - **A secret would be written into chat, this document, a commit or a PR** → **STOP**. Name it
   and where it lives; never its value.
+- **The Make dispatcher would be active while the old Routine is still enabled** → **STOP**.
+  Activation is the cutover (W2), not a step in W1.
+- **You are about to dispatch before 17:00 Israel with `to:` not narrowed** → **STOP** (landmine 7.5).
+- **You cannot prove the auditor reads Tom's mailbox** → `HOLD_FOR_TOM` (§6E). Do not ship a green
+  auditor you cannot prove is looking at the right Sent folder.
 - **Never end a run silently.** Either the brief went out and you can point at the Sent message,
   or Tom hears why it did not.
 
@@ -380,10 +494,15 @@ Concise English.
 1. What a stranger can now watch working, end to end — name the Make scenario, the run id and
    the Sent message.
 2. Each done-condition D1–D10 ✅/❌ with its evidence pointer. No partial credit.
-3. The numbers from §2.6: how many Sun–Thu days in the last week carried a brief.
+3. The §2.7 baseline **captured at boot, before any dispatch of yours**: how many Sun–Thu days
+   in the preceding week carried a brief. Quote that captured number, not a re-measurement — by
+   closing time your own test sends are in the same folder.
 4. The artifacts: the PR, the changed files, the Make scenario ids.
 5. What is still Tom's (§6), and what is genuinely unfinished.
 6. The single next action.
+7. **Follow-ups with dates**, so they are not lost: confirm on **2026-10-26** that the first
+   post-DST send landed at 17:00 Israel (D7's long-horizon half), and confirm §6D's fallback
+   decision is recorded.
 
 Then one short Hebrew line to Tom. If anything is not ready, say so first and plainly.
 Tokens per `gt-factory-os-production-brain/VERDICT_GLOSSARY.md`.
