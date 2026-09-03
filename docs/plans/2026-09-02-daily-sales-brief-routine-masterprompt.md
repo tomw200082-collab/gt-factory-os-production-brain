@@ -33,11 +33,22 @@ recipients with the attachment).
 **Stop at the first step that says stop. Do not improvise past it.**
 
 1. **Check the hour.** `TZ=Asia/Jerusalem date +'%Y-%m-%d %H:%M %a'`.
-   - Before **17:00** Israel → **stop silently.** Do not dispatch. `build_forecast.py` refuses to
-     label an hour that has not happened, and a dispatch would fail the job and mail Tom a false
-     alarm. (This is also the daylight-saving guard: the Routine's cron is UTC, so from
-     2026-10-25 one firing lands at 16:00. Stopping is the correct response to that firing.)
    - Not Sunday–Thursday → stop silently.
+   - Before **17:00** Israel → **do not dispatch.** `build_forecast.py` refuses to label an hour
+     that has not happened, so a dispatch would fail the job and mail Tom a false alarm.
+     **But do not just stop, either — say why**, because this is the daylight-saving trap:
+
+     > The Routine's cron is **`0 14 * * 0-4` UTC**, which is 17:00 Israel only while IDT holds.
+     > **From 2026-10-25 Israel leaves DST and that same cron fires at 16:00.** If this firing
+     > merely stopped, the brief would silently stop going out *every day* from that date, with
+     > nobody told — the exact failure this whole instruction exists to end.
+
+     So: if this is a scheduled Sun–Thu firing and the Israel hour is before 17:00, **push-notify
+     Tom in Hebrew**: the schedule has drifted and the Routine's cron must move to
+     `0 15 * * 0-4` UTC. Then stop. Do not dispatch, do not send, do not work around it by
+     setting `SALES_REPORT_DATE`.
+
+     (A manual or ad-hoc run before 17:00 is not a drift — just stop, no notification.)
 
 2. **Check it has not already gone out.** Gmail, with **today's date in the subject**:
    `in:sent subject:"GT · מכירות DD/MM/YYYY"` (today, Israel).
