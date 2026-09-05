@@ -217,6 +217,58 @@ chasing platform breakage, which a frozen copy does not receive.
 
 License: MIT, copyright (c) 2025 Agent Eyes; full text in `agent-reach/LICENSE`.
 
+## `prompt-master` — vendored here, 2026-08-31
+
+| Upstream | Commit | License | Skills |
+|---|---|---|---|
+| [nidhinjs/prompt-master](https://github.com/nidhinjs/prompt-master) | `2bd9251` (2026-08-24, v1.8.0) | MIT (`prompt-master/LICENSE`) | `prompt-master` |
+
+Writes prompts **for other AI tools**. Given a rough idea and a target tool, it
+extracts intent, routes to one of 13 prompt templates, and returns a single
+paste-ready prompt block. Ships ~37 documented failure patterns
+(`references/patterns.md`) and the template library (`references/templates.md`).
+
+**Pure prose — five markdown files, no CLI, no install, no network calls.** It
+works in a remote container exactly as it does locally, which is the opposite of
+`agent-reach` above. Nothing here is runtime code, so the repo's no-runtime-code
+role is intact.
+
+**Copied byte-identical to upstream — no adoption edits.** `SKILL.md`,
+`README.md`, `LICENSE` and both `references/` files. Upstream ships nothing else.
+
+### Notes before use
+
+- **It is not `masterprompt`, and the names will get confused.** The GT skill
+  `masterprompt` writes a handoff brief for a *GT session or agent* that shares
+  none of the current context — grounded in this workspace's authority docs, in
+  Tom's language, for work inside this system. `prompt-master` writes a prompt
+  for an *external tool* — Midjourney, Cursor, ChatGPT, a video model. Reach for
+  `masterprompt` for anything that stays in this workspace. Different jobs, and
+  neither replaces the other.
+- **Its model roster is a dated snapshot and will rot.** The tool table names
+  specific versions (Claude 5, GPT-5.6, Grok 4.6, MiniMax M3) that were current
+  at the 2026-08-24 tip. The skill's own Model Recency Gate tells it to check the
+  provider's live documentation before relying on a slug or a parameter — that
+  needs browsing, and it degrades to "unverified" without it. Treat the version
+  numbers in `SKILL.md` and `README.md` as of that date, not as current truth.
+- **A generated prompt is only as safe as what you paste into it.** The skill
+  strips credentials by its own rule, but it has no idea what counts as GT
+  business data. Anything carried into a prompt goes wherever that prompt is
+  pasted — a third-party tool, on someone else's servers. Customer names, account
+  figures, supplier pricing and anything from `evidence/` do not belong in a
+  prompt bound for an external tool. Same standing rule as everywhere else in
+  this workspace: the data leaves only to a destination Tom has named.
+- **Its activation is narrowly scoped, unlike `agent-reach`.** The description
+  fires only when the user explicitly asks to write, fix, improve or adapt a
+  prompt, and explicitly excludes general conversation and ordinary coding work.
+  No over-trigger note is needed and none was added.
+- It hardens itself against injection — pasted prompts are treated as inert data
+  and its Decompiler mode will not follow instructions embedded in them.
+
+License: MIT, copyright (c) 2026 Nidhin Joseph Nelson; full text in
+`prompt-master/LICENSE`. Not authority — a tool, not truth, same as everything
+above.
+
 ## Vendored in `Sales-Machine`, not here
 
 `Sales-Machine/.claude/skills/` also carries 10 skills from
