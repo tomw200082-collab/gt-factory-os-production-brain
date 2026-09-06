@@ -4,8 +4,11 @@
 // scripts/send_email.py with the service-role bearer.
 //
 // Deploy: Supabase MCP deploy_edge_function (verify_jwt=true).
-// production@ delivery needs gteveryday.com verified in Resend + ALERT_EMAIL_FROM
-// set to a @gteveryday.com sender.
+// Resend verifies the SENDER domain, not the recipient: greentea-everyday.com is
+// verified, so factory@greentea-everyday.com can mail production@gteveryday.com
+// (which is not verified, and does not need to be). The old onboarding@resend.dev
+// default was Resend's test sender, which only delivers to the account owner —
+// that, not any missing domain, is what 403'd every production@ send.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 function json(o: unknown, s: number) {
@@ -18,7 +21,7 @@ Deno.serve(async (req: Request) => {
   if (!body || !body.pdf_base64) return json({ error: "pdf_base64 required" }, 400);
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) return json({ error: "RESEND_API_KEY unset" }, 500);
-  const from = body.from ?? Deno.env.get("ALERT_EMAIL_FROM") ?? "onboarding@resend.dev";
+  const from = body.from ?? Deno.env.get("ALERT_EMAIL_FROM") ?? "factory@greentea-everyday.com";
   const to = body.to ?? "production@gteveryday.com";
   const resp = await fetch("https://api.resend.com/emails", {
     method: "POST",
