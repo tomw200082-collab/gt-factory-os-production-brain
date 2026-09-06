@@ -242,11 +242,11 @@ def lw_login_cookies():
 # A4 page. We keep LionWheel's own header/columns/branding — only the layout is
 # tightened, nothing is invented.
 WORKORDER_FIT_CSS = """
-@page { size: A4 portrait; margin: 5mm; }
+@page { size: A4 landscape; margin: 5mm; }
 * { box-sizing: border-box; }
-table { font-size: 9.5px !important; width: 100% !important; border-collapse: collapse !important; }
-td, th { white-space: nowrap !important; padding: 2px 4px !important;
-         line-height: 1.2 !important; overflow: hidden !important;
+table { font-size: 15px !important; width: 100% !important; border-collapse: collapse !important; }
+td, th { white-space: nowrap !important; padding: 3px 5px !important;
+         line-height: 1.25 !important; overflow: hidden !important;
          vertical-align: middle !important; }
 img { max-height: 48px !important; }
 """
@@ -297,7 +297,11 @@ def render_pages(jobs):
         if os.path.exists(chromium_path):
             launch_kwargs["executable_path"] = chromium_path
         b = p.chromium.launch(**launch_kwargs)
-        ctx = b.new_context(ignore_https_errors=True)
+        # Wide viewport so the work order lays out ALL its columns (LionWheel
+        # serves 16, out to "להוציא באישור") before we scale it to the sheet.
+        # At the default 1280 the tail columns fell outside the printable width
+        # and were clipped away instead of scaled down.
+        ctx = b.new_context(ignore_https_errors=True, viewport={"width": 1600, "height": 900})
         ctx.add_cookies(cookies)
         for url, out, fit_one in jobs:
             pg = ctx.new_page()
@@ -322,10 +326,42 @@ def _render_one(pg, url, out, fit_one):
         # (no dead whitespace at the bottom).
         try:
             pg.add_style_tag(content=WORKORDER_FIT_CSS)
+            # Drop columns that are empty for EVERY stop on this route (LionWheel
+            # always emits גובינא / לא שולם / הערות יעד etc., usually blank). Each
+            # one it removes is width the remaining columns get back, which is
+            # what lets the type stay readable. A column with any content on any
+            # row is kept.
+            pg.evaluate(
+                "(() => { const t=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetWidth-a.offsetWidth)[0]; if(!t) return 0;"
+                " const rows=[...t.rows]; if(rows.length<2) return 0;"
+                " const n=Math.max(...rows.map(r=>r.cells.length)); let dropped=0;"
+                " for(let c=n-1;c>=0;c--){"
+                "   const body=rows.slice(1).map(r=>r.cells[c]).filter(Boolean);"
+                "   if(!body.length) continue;"
+                "   if(body.every(td=>!td.innerText.trim())){"
+                "     rows.forEach(r=>{ if(r.cells[c]) r.cells[c].remove(); }); dropped++; }"
+                " } return dropped; })()"
+            )
             pg.wait_for_timeout(400)
-            usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
-            w = pg.evaluate("document.body.scrollWidth") or 800
-            scale = min(1.0, usable_w / max(w, 1))
+            # Landscape (Tom, 2026-09-07): portrait forced the whole table through
+            # 754px, so readable type either shrank away or clipped the יעד and
+            # חבילות columns off the edge. The extra 368px of width carries the
+            # full row at full size.
+            opts["landscape"] = True
+            usable_w, usable_h = 1122.0, 718.0  # A4 landscape @96dpi minus 5mm margins
+            # Scale off the TABLE's own width, not the viewport's: the body is
+            # as wide as the viewport whatever the table needs, so measuring the
+            # body silently under-scaled and clipped the right-hand columns.
+            w = pg.evaluate(
+                "(() => { const ts=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetWidth-a.offsetWidth);"
+                " return Math.max(ts[0]?ts[0].offsetWidth:0, 800); })()"
+            ) or 800
+            # 3% safety margin: print layout comes out a hair wider than the
+            # screen measurement, and without it the last column lands half off
+            # the sheet.
+            scale = min(1.0, (usable_w * 0.97) / max(w, 1))
             m = pg.evaluate(
                 "(() => { const ts=[...document.querySelectorAll('table')]"
                 ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
@@ -344,11 +380,17 @@ def _render_one(pg, url, out, fit_one):
             pg.wait_for_timeout(300)
             h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
             scale = min(scale, usable_h / max(h, 1))
-            scale = max(0.4, round(scale, 3))
+            # Readability floor (Tom, 2026-09-07): the driver could not read the
+            # work order at the old 9.5px base scaled down to fit. Never shrink
+            # past 0.8 — a long day spills onto a second page instead.
+            # No aggressive floor: clipping a column (חבילות / הערות) is worse
+            # than a slightly smaller row. Landscape + the 15px base keeps the
+            # fitted result readable anyway.
+            scale = max(0.45, round(scale, 3))
         except Exception:
-            scale = 0.62
+            scale = 0.8
         opts["scale"] = scale
-        opts["page_ranges"] = "1"
+        opts["page_ranges"] = "1-2"
     pg.pdf(path=out, **opts)
 
 
