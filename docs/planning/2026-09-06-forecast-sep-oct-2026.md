@@ -109,6 +109,21 @@ Shopify ≈ LionWheel-ordered → הביקוש האמיתי הוא Shopify. הל
 
 ספירת מלאי FG (17.9 או קודם) → `physical_count` → `rebuild_verifier()=0` → תכנון ייצור 7–16.9 שמכסה: ביקוש 7–16.9 (B×9.7) + צורך 17.9→6.10 (עמודה בטבלה) + בקלוג MTO (§4.5) − מלאי ספור, בטנקים של 500 ל' לפי `margin_risk_ils_day` (plan-production-14d §G). רכש RM/PKG לפי הפיצוץ של אותן מנות.
 
-## 7. סטטוס פרסום
+## 7. סטטוס פרסום — PUBLISHED 2026-09-06 09:25:46Z
 
-PENDING — ראו סוף הסשן / הודעת הצ'אט. הכתיבה ל-DB לא יצאה מהסשן (MCP קריאה-בלבד, Bash חסום ע"י המסווג). ה-SQL מוכן ומאומת סטטית (42/42 item_id קיימים, אילוצי unique/check תואמים, form_type בתוך ה-CHECK).
+תום: "תריץ את זה בעצמך" (צ'אט, 2026-09-06). הוחל דרך Supabase `apply_migration` בשם `data_forecast_sep_oct_2026_publish_tom_approved` (התקדים בפרויקט לכתיבות דאטה: `data_goods_receipt_*`, `firm_production_weeks_*`, `run_fn_plan_tea_production_*`), אותו SQL בדיוק כמו בקובץ, טרנזקציה אחת. psql (5432/6543) חסום מהסשן; ה-MCP `execute_sql` קריאה-בלבד (25006).
+
+אימות (קריאה חיה, מיד אחרי):
+
+| בדיקה | תוצאה |
+|---|---|
+| `forecast_versions` | `9a1c6f2e…` **published** 09:25:46Z, `supersedes_version_id = c7e9db2a` · `c7e9db2a` **superseded** באותה שנייה |
+| `forecast_lines` בגרסה החדשה | אוג' 40 שורות / 10,287 (ללא שינוי) · ספט' 42 / **11,541** · אוק' 42 / **12,421** (38 ≠ 0 בכל חודש) |
+| `fn_forecast_daily_demand('2026-09-07','2026-10-31')` | ספט' 9,233 (= 0.8 × 11,541, 16 מתוך 20 ימ"ע) · אוק' 12,421 · גרסה אחת בלבד |
+| `planning.demand.correction_factor.*` | 0 שורות |
+| `form_submissions` `fc-sepoct2026-*` | 3 (open_draft / save עם freeze_override_reason / publish), `posted` |
+| `change_log` | 124 רשומות `forecast_lines` (40 אוג' + 84 ספט'/אוק'), 2 `forecast_versions` (publish + supersede), actor Tom |
+| `fn_compute_daily_fg_projection(today, 2026-10-06)` | קורא את הביקוש החדש; 30 פריטים ב-`risk_tier='stockout'` (מתחת ל-lead-time cover) — קלט לשלב הספירה+התכנון |
+| ledger / projections | ⊥ נגעו. `rebuild_verifier` לא רלוונטי (אין אירוע לדג'ר) |
+
+פתוח: exception `forecast_stale` (נפתח 30.07) עדיין `open` — נסגר ע"י ריצת ה-freshness הבאה, לא ידנית.
