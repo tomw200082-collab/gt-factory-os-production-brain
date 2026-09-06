@@ -107,22 +107,32 @@ def fetch_route(driver, date, all_statuses=False):
     all_statuses=True also keeps UNASSIGNED stops — use when the whole day is to
     be treated as confirmed even though LionWheel has not finished assigning."""
     stops, driver_id = [], None
+    # LionWheel serves the driver name on the VISIT (`visits[].driver_str`), and
+    # `pickup_at` as DD/MM/YYYY — the task-level driver_str / ISO date this used
+    # to read are not in the payload, so both are matched leniently here.
+    y, m, d = date.split("-")
+    date_dmy = f"{d}/{m}/{y}"
     for tid in (lw_list_open() if all_statuses else lw_list_assigned()):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        v = (t.get("visits") or [{}])[0]
+        names = [n for n in (t.get("driver_str"), v.get("driver_str")) if n]
+        if not any(driver == n or driver in n for n in names):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        pickup = (t.get("pickup_at") or "") or (v.get("visit_at") or "")
+        if not (pickup.startswith(date) or pickup.startswith(date_dmy)):
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
-        v = (t.get("visits") or [{}])[0]
-        driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        driver_id = driver_id or t.get("driver_id") or v.get("driver_id")
+        eta = (v.get("eta_at") or "")[11:16] or (v.get("early_eta_at") or "")[11:16]
         stops.append({
             "tid": str(t["id"]),
+            # daily_order is absent from the current payload; the planned ETA is
+            # LionWheel's own driving order, so it stands in as the sort key.
             "do": v.get("daily_order"),
+            "eta_sort": (v.get("early_eta_at") or v.get("eta_at") or ""),
             "eta": eta,
             "recipient": v.get("recipient_name"),
             "city": v.get("city"),
@@ -132,7 +142,12 @@ def fetch_route(driver, date, all_statuses=False):
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    if all(s["do"] is None for s in stops):
+        stops.sort(key=lambda s: (s["eta_sort"] == "", s["eta_sort"]))
+        for i, s_ in enumerate(stops, 1):
+            s_["do"] = i
+    else:
+        stops.sort(key=lambda s: (s["do"] is None, s["do"]))
     return driver_id, stops
 
 
@@ -227,11 +242,11 @@ def lw_login_cookies():
 # A4 page. We keep LionWheel's own header/columns/branding — only the layout is
 # tightened, nothing is invented.
 WORKORDER_FIT_CSS = """
-@page { size: A4 portrait; margin: 5mm; }
+@page { size: A4 landscape; margin: 5mm; }
 * { box-sizing: border-box; }
-table { font-size: 9.5px !important; width: 100% !important; border-collapse: collapse !important; }
-td, th { white-space: nowrap !important; padding: 2px 4px !important;
-         line-height: 1.2 !important; overflow: hidden !important;
+table { font-size: 15px !important; width: 100% !important; border-collapse: collapse !important; }
+td, th { white-space: nowrap !important; padding: 3px 5px !important;
+         line-height: 1.25 !important; overflow: hidden !important;
          vertical-align: middle !important; }
 img { max-height: 48px !important; }
 """
@@ -282,7 +297,11 @@ def render_pages(jobs):
         if os.path.exists(chromium_path):
             launch_kwargs["executable_path"] = chromium_path
         b = p.chromium.launch(**launch_kwargs)
-        ctx = b.new_context(ignore_https_errors=True)
+        # Wide viewport so the work order lays out ALL its columns (LionWheel
+        # serves 16, out to "להוציא באישור") before we scale it to the sheet.
+        # At the default 1280 the tail columns fell outside the printable width
+        # and were clipped away instead of scaled down.
+        ctx = b.new_context(ignore_https_errors=True, viewport={"width": 1600, "height": 900})
         ctx.add_cookies(cookies)
         for url, out, fit_one in jobs:
             pg = ctx.new_page()
@@ -307,10 +326,42 @@ def _render_one(pg, url, out, fit_one):
         # (no dead whitespace at the bottom).
         try:
             pg.add_style_tag(content=WORKORDER_FIT_CSS)
+            # Drop columns that are empty for EVERY stop on this route (LionWheel
+            # always emits גובינא / לא שולם / הערות יעד etc., usually blank). Each
+            # one it removes is width the remaining columns get back, which is
+            # what lets the type stay readable. A column with any content on any
+            # row is kept.
+            pg.evaluate(
+                "(() => { const t=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetWidth-a.offsetWidth)[0]; if(!t) return 0;"
+                " const rows=[...t.rows]; if(rows.length<2) return 0;"
+                " const n=Math.max(...rows.map(r=>r.cells.length)); let dropped=0;"
+                " for(let c=n-1;c>=0;c--){"
+                "   const body=rows.slice(1).map(r=>r.cells[c]).filter(Boolean);"
+                "   if(!body.length) continue;"
+                "   if(body.every(td=>!td.innerText.trim())){"
+                "     rows.forEach(r=>{ if(r.cells[c]) r.cells[c].remove(); }); dropped++; }"
+                " } return dropped; })()"
+            )
             pg.wait_for_timeout(400)
-            usable_w, usable_h = 754.0, 1080.0  # A4 @96dpi minus 5mm margins
-            w = pg.evaluate("document.body.scrollWidth") or 800
-            scale = min(1.0, usable_w / max(w, 1))
+            # Landscape (Tom, 2026-09-07): portrait forced the whole table through
+            # 754px, so readable type either shrank away or clipped the יעד and
+            # חבילות columns off the edge. The extra 368px of width carries the
+            # full row at full size.
+            opts["landscape"] = True
+            usable_w, usable_h = 1122.0, 718.0  # A4 landscape @96dpi minus 5mm margins
+            # Scale off the TABLE's own width, not the viewport's: the body is
+            # as wide as the viewport whatever the table needs, so measuring the
+            # body silently under-scaled and clipped the right-hand columns.
+            w = pg.evaluate(
+                "(() => { const ts=[...document.querySelectorAll('table')]"
+                ".sort((a,b)=>b.offsetWidth-a.offsetWidth);"
+                " return Math.max(ts[0]?ts[0].offsetWidth:0, 800); })()"
+            ) or 800
+            # 3% safety margin: print layout comes out a hair wider than the
+            # screen measurement, and without it the last column lands half off
+            # the sheet.
+            scale = min(1.0, (usable_w * 0.97) / max(w, 1))
             m = pg.evaluate(
                 "(() => { const ts=[...document.querySelectorAll('table')]"
                 ".sort((a,b)=>b.offsetHeight-a.offsetHeight); const t=ts[0];"
@@ -329,11 +380,17 @@ def _render_one(pg, url, out, fit_one):
             pg.wait_for_timeout(300)
             h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
             scale = min(scale, usable_h / max(h, 1))
-            scale = max(0.4, round(scale, 3))
+            # Readability floor (Tom, 2026-09-07): the driver could not read the
+            # work order at the old 9.5px base scaled down to fit. Never shrink
+            # past 0.8 — a long day spills onto a second page instead.
+            # No aggressive floor: clipping a column (חבילות / הערות) is worse
+            # than a slightly smaller row. Landscape + the 15px base keeps the
+            # fitted result readable anyway.
+            scale = max(0.45, round(scale, 3))
         except Exception:
-            scale = 0.62
+            scale = 0.8
         opts["scale"] = scale
-        opts["page_ranges"] = "1"
+        opts["page_ranges"] = "1-2"
     pg.pdf(path=out, **opts)
 
 
@@ -611,7 +668,8 @@ def _is_exempt(stop, missing_exempt):
 
 def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
           missing_products=None, all_statuses=False, workorder=True,
-          missing_exempt=None, show_packages=True, shortfall_only=True):
+          missing_exempt=None, show_packages=True, shortfall_only=True,
+          missing_by_stop=None):
     os.makedirs(OUT, exist_ok=True)
     import annotate
 
@@ -637,7 +695,13 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             elif "החלפ" in text:
                 special = "החלפה"
         short = False
-        if missing_products:
+        per_stop = (missing_by_stop or {}).get(s["tid"])
+        if per_stop:
+            # Per-stop shortage list: only the named lines OF THIS STOP are short.
+            low = [m.lower() for m in per_stop]
+            short = any(any(m in (it.get("name") or "").lower() for m in low)
+                        for it in (t.get("order_items") or []))
+        elif missing_products:
             # Shortage-list mode: picking is still running, so picked_quantity is
             # not yet truth. The known-missing products are.
             low = [m.lower() for m in missing_products]
@@ -673,7 +737,13 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 mark_lines = True
                 mn = missing_products
                 so = shortfall_only
-                if missing_products:
+                per_stop = (missing_by_stop or {}).get(s["tid"])
+                if per_stop:
+                    # A stop absent from the map has no shortage: it stays clean.
+                    mn, so, mark_lines = per_stop, False, False
+                elif missing_by_stop is not None:
+                    mn, so, mark_lines = None, False, False
+                elif missing_products:
                     so = False          # alternative modes, never both
                     # Shortage-list mode owns the marks outright: never fall back
                     # to picked_quantity, or an exempted stop would come out with
@@ -818,6 +888,11 @@ def main():
                     help="';'-separated product names known to be missing/partial. "
                          "Marks X on those lines only and ignores picked_quantity "
                          "(use while picking is still in progress).")
+    ap.add_argument("--missing-map", default=None,
+                    help="path to a JSON file {lw_task_id: [product name, ...]} — "
+                         "per-stop shortage lists, so an item that runs out only "
+                         "at the last stops is marked X there and nowhere else. "
+                         "Wins over --missing; a stop absent from the map is clean.")
     ap.add_argument("--missing-exempt", default=None,
                     help="';'-separated customer-name substrings exempt from "
                          "--missing (they DO have the product on their invoice).")
@@ -837,8 +912,13 @@ def main():
     a = ap.parse_args()
     date = a.date or (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
     missing = [m.strip() for m in a.missing.split(";") if m.strip()] if a.missing else None
+    missing_map = None
+    if a.missing_map:
+        with open(a.missing_map, encoding="utf-8") as f:
+            missing_map = {str(k): v for k, v in json.load(f).items()}
     build(a.driver, date, a.from_stop, a.copies, a.marks_only_short,
           missing_products=missing,
+          missing_by_stop=missing_map,
           missing_exempt=[e.strip() for e in a.missing_exempt.split(";") if e.strip()]
                          if a.missing_exempt else None,
           all_statuses=a.all_statuses, show_packages=not a.no_packages,

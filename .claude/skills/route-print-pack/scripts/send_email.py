@@ -9,19 +9,20 @@ Resend). The function attaches the PDF and sends via Resend.
 Usage: send_email.py route_pack_out/summary.json
 Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (to invoke the relay).
 
-NOTE: delivery to production@gteveryday.com requires the gteveryday.com domain to
-be verified at resend.com/domains, after which ALERT_EMAIL_FROM (an edge secret)
-must be a @gteveryday.com sender. Until then Resend (test mode) only delivers to
-the account owner; the relay returns the Resend error and the caller should hand
-the PDF to Tom in chat instead.
+NOTE: Resend verifies the SENDER domain, never the recipient. The relay sends from
+the verified greentea-everyday.com, so production@gteveryday.com receives normally
+and gteveryday.com needs no DNS records. If a send ever 403s with "you can only
+send testing emails to your own email address", the relay has fallen back to
+Resend's test sender — check ALERT_EMAIL_FROM and the relay's default, not DNS.
 """
 import os, sys, json, base64, urllib.request
 
-# Target recipient. Interim = tom@gteveryday.com (the Resend account owner, the
-# only address deliverable in test mode). Flip to production@gteveryday.com once
-# gteveryday.com is verified at resend.com/domains (and ALERT_EMAIL_FROM is set to
-# a @gteveryday.com sender). Override anytime with ROUTE_PACK_EMAIL_TO.
-TO = os.environ.get("ROUTE_PACK_EMAIL_TO", "tom@gteveryday.com")
+# Target recipient. production@gteveryday.com since 2026-09-06: Resend verifies
+# the SENDER domain only, and the relay now sends from the verified
+# greentea-everyday.com, so the recipient domain needs nothing. (The old
+# tom@-only interim existed because the relay defaulted to Resend's test sender,
+# which delivers to the account owner alone.) Override with ROUTE_PACK_EMAIL_TO.
+TO = os.environ.get("ROUTE_PACK_EMAIL_TO", "production@gteveryday.com")
 
 
 def main(summary_path):
