@@ -1,6 +1,6 @@
 # WhatsApp Customer Notices — Design Spec ("מה אני מקבל?")
 
-> **Date:** 2026-09-09 · **Status:** DRAFT — pending Tom written approval via PR review
+> **Date:** 2026-09-09 · **Status:** APPROVED — Tom, in writing ("אשר"), 2026-09-09. Copy in §3 is locked as `_v1` unless Tom edits it in the PR.
 > **Origin:** `/brainstorming` session 2026-09-08/09 with Tom; research memo
 > `2026-09-09-whatsapp-customer-notices-research.md` (same PR).
 > **Builds on:** the catalog-cart bot live since 2026-09-08 (gt-factory-os#272): carts → Shopify draft, fixed receipt, no LLM, no prices.
@@ -30,7 +30,7 @@ A customer who orders from the WhatsApp catalog hears from GT automatically at t
 | 1 | Systematic ordering via the WhatsApp catalog with **fixed automatic messages, no AI agent** talking to customers | 2026-09-08 |
 | 2 | Catalog carries **no prices**; each customer billed their last-paid price | 2026-09-08 |
 | 3 | Stations: 3 merged into 4 (delivery day told once), 6 dropped; v1 includes 0 (announcement), 7 (delivered + invoice by email), 8 (payment reminders), 9 (reorder nudge) | 2026-09-08 |
-| 4 | "Approved" = LionWheel status **ASSIGNED** (normally the day before delivery) | 2026-09-08 |
+| 4 | "Approved" = LionWheel status **ASSIGNED** (normally the day before delivery) — *mechanics amended 2026-09-09 after live measurement (§2, third fact): the observable signal is `pick_status` on `/tasks/show`; the promise ("confirmed after picking, day before") is unchanged* | 2026-09-08 |
 | 5 | **Stock truth is not stable → orders are confirmed only after picking.** Full pick → automatic message. Partial pick → message only after human approval. The customer's question is "what am I getting?" | 2026-09-09 |
 | 6 | Partial-pick approval queue lives in the **portal, on the existing `/credit-tracking` screen, with an email reminder**. For now the reminder goes **only to `tom@gteveryday.com`** | 2026-09-09 |
 
@@ -63,6 +63,12 @@ This is exactly the split Tom asked for, and it means the partial-approval scree
 
 Second fact: **LionWheel reaches us by polling, not webhooks.** `lionwheel_poll` runs every 15 min (pg_cron, migration 0030/0031). A 15-minute lag is fine for a day-before message and for "delivered". v1 therefore adds **zero LionWheel configuration**; the LionWheel webhook (org settings → API tab, `github.com/lionwheel/api`) is a later latency improvement, not a dependency.
 
+Third fact (measured live 2026-09-09, after Tom's approval; mechanics amended, promises unchanged):
+- **`orders_mirror.pickup_at` is null on all 377 tasks completed in the last 30 days.** The `/tasks/index` poll does not carry the delivery date; only `/tasks/show` does (the dispatch skill reads it back from there). So the delivery day, like `pick_status`, comes from `/tasks/show`, never from the mirror.
+- **`ASSIGNED` is set within minutes of order creation** (default driver), not the day before delivery; 34 tasks sit in `ASSIGNED` right now, the oldest since May. So `ASSIGNED` is not the "picked, going out tomorrow" signal decision 4 assumed. The signal is **`pick_status` observed on `/tasks/show`**: `PICKED` ⇒ confirm; `PARTIALLY_PICKED` ⇒ human queue; anything else ⇒ keep observing. The tick observes only non-terminal tasks created in the last 4 days.
+- Of those 377 deliveries, 45 completed the day the order was created, 204 the next day, 128 two or more days later. The delivery day must therefore be read, never assumed: `pickup_at` null on a `PICKED` task ⇒ the notice waits in the human queue with a delivery-day field.
+- Live status spelling is `CANCELED` (one L). The code enum in `schemas.ts` says `CANCELLED`; the terminal set in this design lists both.
+
 ---
 
 ## §3 — Stations, end to end
@@ -87,7 +93,7 @@ Reply to the cart, inside the 24-hour customer window (free-form text, no templa
 
 ### Station 2א — יוצא אליכם (full pick, automatic)
 
-**Trigger:** poll sees `orders_mirror.lw_status = 'ASSIGNED'` for a task whose `wp_order_id` maps to a WhatsApp-notified customer (§5), and `/tasks/show` returns `pick_status = 'PICKED'`, and `pickup_at` is not null.
+**Trigger:** the tick's `/tasks/show` observation of an open task (non-terminal, created ≤4 days ago, `wp_order_id` maps to a WhatsApp-notified customer, §5) returns `pick_status = 'PICKED'` **and** a non-null `pickup_at`. `PICKED` with `pickup_at` null ⇒ the same content goes to the human queue (2ב) with the delivery day left for the human to set.
 
 **Template `gt_order_confirmed_full` (Utility, he):**
 ```
@@ -101,7 +107,7 @@ Reply to the cart, inside the 24-hour customer window (free-form text, no templa
 
 ### Station 2ב — יוצא אליכם (short pick, human-approved)
 
-**Trigger:** `ASSIGNED` and `pick_status ≠ 'PICKED'` (or `/show` fails twice) → create a notice in state `pending_approval` with one line per ordered line, `qty_delivering` prefilled = `qty_ordered`. No message yet.
+**Trigger:** observation returns `pick_status = 'PARTIALLY_PICKED'`, or `PICKED` with `pickup_at` null → create a notice in state `pending_approval` with one line per ordered line, `qty_delivering` prefilled = `qty_ordered`, `delivery_date` prefilled from `pickup_at` when present. No message yet. Any other `pick_status` (`NEW`, absent) is not queued: the task is not ready and the tick keeps observing; the 16:30 email lists such tasks older than one day as information only.
 
 **Screen:** `/credit-tracking` → new tab **"אישורי ליקוט חלקי"** (Hebrew RTL like the rest of that screen; portal tranche). One card per pending notice:
 - header: customer, Shopify order #, delivery day, LionWheel task link
@@ -243,9 +249,9 @@ Plus `order_intake.customer_notice_events` (append-only: state transitions with 
 
 ## §5 — Triggers and jobs
 
-One new job in the existing Node API, `customer_notices_tick`, invoked by pg_cron every 5 minutes via `factory_os_jobs` (same wiring as `lionwheel_poll`). Each tick, in order:
+One new job in the existing Node API, `customer_notices_tick`, invoked by pg_cron every 15 minutes, offset from `lionwheel_poll_railway` (same wiring: `net.http_post` to the Railway route with the vault token). Each tick, in order:
 
-1. **Detect** — mirror rows in `ASSIGNED` without a `confirmed:*` notice → fetch `/tasks/show/<id>` (`pick_status`) → create `confirmed_full` (state `approved`, `send_not_before` per quiet hours) or `confirmed_partial` (state `pending_approval`). Mirror rows newly `COMPLETED` with a `confirmed:*` notice → create `delivered`. `credit_tasks` newly `CREDITED` with `gi_document_id` → create `credit_issued`.
+1. **Observe** — for every mirror task that is non-terminal, created in the last 4 days, and has no `confirmed:*` notice: fetch `/tasks/show/<id>`, append one row to `order_intake.lw_pick_observations` (`pick_status`, `pickup_at`, `status`, `photo_url`, observed_at — the A1 evidence), then decide: `PICKED` + `pickup_at` ⇒ `confirmed_full` (state `approved`, `send_not_before` per quiet hours); `PARTIALLY_PICKED`, or `PICKED` without `pickup_at` ⇒ `confirmed_partial` (state `pending_approval`); else nothing. Mirror rows newly terminal-success (`COMPLETED` / `ROUNDTRIP_DELIVERED`) with a `confirmed:*` notice → create `delivered`. `credit_tasks` newly `CREDITED` with `gi_document_id` → create `credit_issued`.
 2. **Send** — every `approved` notice with `send_not_before <= now()` → WhatsApp template send (`whatsapp/send.ts` gains `sendTemplate(to, name, lang, components)`) → `sent` + `wa_message_id`, or `failed` + code. Retry 3× with backoff on 5xx/429; `131049` and `131026` (not a WhatsApp user) → `failed`, no retry, staff alert.
 3. **Expire** — `pending_approval` older than the delivery's `pickup_at` + 12h → `expired` (a "what's coming" message after delivery is noise). Listed in the next reminder email as missed.
 4. **Reminder emails** at 16:30 and 07:30 (§3, 2ב); gated on Israel local time like `missing_picks_daily_email`.
@@ -262,7 +268,7 @@ Env `WHATSAPP_NOTICES_ENABLED` (default `false`) is the hard off-switch in front
 ## §6 — Rules
 
 - **Quiet hours:** proactive sends only 07:00–21:00 Asia/Jerusalem; earlier/later ⇒ `send_not_before` = next 07:00. Never on Saturday or Israeli holidays for stations 8 and 9 (`private_core` already carries the working calendar for planning; reuse it — verify the table name in the plan, do not assume).
-- **One promise per order:** exactly one `confirmed:*` and one `delivered:*` notice per mirror row (unique dedupe key). A pickup_at change **after** a confirmed send, or a `CANCELLED` status after one, creates a staff item (§8), never an automatic correction message in v1.
+- **One promise per order:** exactly one `confirmed:*` and one `delivered:*` notice per mirror row (unique dedupe key). A pickup_at change **after** a confirmed send, or a `CANCELED` / `CANCELLED` / `FAILED` status after one, creates a staff item (§8), never an automatic correction message in v1.
 - **Never a price** in stations 1–3ב. Amounts only in station 8.
 - **Language:** Hebrew only.
 - **Idempotent ticks:** every step keyed on dedupe_key or on `state` transitions; a tick can be re-run at any time.
@@ -300,7 +306,7 @@ Env `WHATSAPP_NOTICES_ENABLED` (default `false`) is the hard off-switch in front
 
 | # | Assumption | How verified | Owner |
 |---|---|---|---|
-| A1 | `pick_status = 'PICKED'` is already set when the task is `ASSIGNED` the day before (picking precedes or accompanies driver assignment) | Shadow week: log (`lw_status`, `pick_status`, `pickup_at`, poll time) per task; count how many reach PICKED before 17:00 day-before | tick, shadow mode |
+| A1 | `pick_status` reaches `PICKED` / `PARTIALLY_PICKED` on `/tasks/show` before delivery, and `pickup_at` is filled there by the time it does | Shadow week: `order_intake.lw_pick_observations` per task per tick; count how many reach PICKED before 17:00 the day before `lw_completed_at`, and the `pickup_at` fill rate at that moment | tick, shadow mode |
 | A2 | `lw_photo_url` is fetchable by Meta for an image header (public or signed URL) | one manual template send with a real URL to Tom's phone | integration lane |
 | A3 | Green Invoice emails the invoice to the client on issue (so station 3 may say "נשלחת למייל") | Tom confirms or GI settings inspected | Tom |
 | A4 | Dualhook lets us **create and submit templates** for WABA `159609277238189` (Meta WhatsApp Manager access) — otherwise Tom/Cowork submits the six texts above by hand | try in WhatsApp Manager | Tom/Cowork |
