@@ -101,6 +101,26 @@ def lw_list_open():
     return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
 
 
+def _task_driver_name(t):
+    """LionWheel returns driver_str on the VISIT, not on the task (measured
+    2026-09-15). Task-level driver_str is None, so reading only it drops every
+    stop and the driver gets no pack."""
+    if t.get("driver_str"):
+        return t["driver_str"]
+    for v in (t.get("visits") or []):
+        if v.get("driver_str"):
+            return v["driver_str"]
+    return None
+
+
+def _iso_date(s):
+    """pickup_at comes back as DD/MM/YYYY (measured 2026-09-15), so an ISO
+    prefix test never matches. Normalize both sides before comparing."""
+    s = (s or "").strip()
+    m = re.match(r"^(\d{2})/(\d{2})/(\d{4})", s)
+    return f"{m.group(3)}-{m.group(2)}-{m.group(1)}" if m else s[:10]
+
+
 def fetch_route(driver, date, all_statuses=False):
     """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
 
@@ -111,15 +131,20 @@ def fetch_route(driver, date, all_statuses=False):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        name = _task_driver_name(t)
+        # "מיידן" must match the record's "מיידן גבאי"
+        if not name or not (name == driver or name.startswith(driver) or driver in name):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        if _iso_date(t.get("pickup_at")) != date:
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
         driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        # eta_at is plain "HH:MM" (measured 2026-09-15), not an ISO datetime —
+        # a fixed [11:16] slice returns "" and the driver loses every time.
+        _m = re.search(r"(\d{2}:\d{2})", v.get("eta_at") or "")
+        eta = _m.group(1) if _m else ""
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
@@ -132,7 +157,10 @@ def fetch_route(driver, date, all_statuses=False):
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    # Driving order = daily_order when LionWheel has sequenced the route; before
+    # that it is null on every stop, and eta_at is the route's own planned order.
+    stops.sort(key=lambda s: (s["do"] if s["do"] is not None else 10 ** 6,
+                              s["eta"] or "99:99"))
     return driver_id, stops
 
 
@@ -203,7 +231,13 @@ def gi_fetch_invoice(stop, out_path, max_pages=30):
 # --------------------------------------------------------------------------- #
 # LionWheel web (Playwright) — waybills + work-order, rendered to PDF
 # --------------------------------------------------------------------------- #
+class NoWebSession(RuntimeError):
+    """LionWheel web credentials absent — work order falls back, waybills can't render."""
+
+
 def lw_login_cookies():
+    if not (os.environ.get("LIONWHEEL_WEB_USER") and os.environ.get("LIONWHEEL_WEB_PASSWORD")):
+        raise NoWebSession("LIONWHEEL_WEB_USER / LIONWHEEL_WEB_PASSWORD not set")
     jar = http.cookiejar.CookieJar()
     op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
     op.addheaders = [("User-Agent", UA)]
@@ -477,7 +511,9 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
     SPINE = 556                     # x of the timeline spine
     DISC_R = 10
     TIME_XR = 524                   # right edge of the mono time
-    NAME_XR = 506                   # right edge of customer / action line
+    NAME_XR = 486                   # right edge of customer / action line
+    # ~28pt of mono time ends at TIME_XR, so its left edge is ~496: the name must
+    # stop short of that or every row prints the time on top of the customer.
     NAME_XMIN = 150                 # left limit for the name (truncate before)
     ITEM_XR = 116                   # right edge of items count
     PKG_XR = 56                     # right edge of packages count
@@ -706,7 +742,17 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
     jobs += [(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", f"{OUT}/wb_{s['tid']}.pdf", False)
              for s in waybill_stops]
     if jobs:
-        render_pages(jobs)
+        try:
+            render_pages(jobs)
+        except NoWebSession as e:
+            # No web session: page 1 falls back to build_workorder() below. A stop
+            # with no invoice would lose its waybill, so say so loudly.
+            print(f"WARN: {e} — work order falls back to generated page 1", file=sys.stderr)
+            if waybill_stops:
+                raise SystemExit(
+                    f"{len(waybill_stops)} stop(s) have no Green Invoice and need a "
+                    f"LionWheel waybill, which requires LIONWHEEL_WEB_USER/PASSWORD: "
+                    + ", ".join(s["tid"] for s in waybill_stops))
 
     # 3. fallback: if the real LionWheel work order didn't render, generate one so
     #    the pack always has a page 1.
