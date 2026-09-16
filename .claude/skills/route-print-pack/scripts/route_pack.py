@@ -101,7 +101,27 @@ def lw_list_open():
     return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
 
 
-def fetch_route(driver, date, all_statuses=False):
+def _task_driver_name(t):
+    """LionWheel returns driver_str on the VISIT, not on the task (measured
+    2026-09-15). Task-level driver_str is None, so reading only it drops every
+    stop and the driver gets no pack."""
+    if t.get("driver_str"):
+        return t["driver_str"]
+    for v in (t.get("visits") or []):
+        if v.get("driver_str"):
+            return v["driver_str"]
+    return None
+
+
+def _iso_date(s):
+    """pickup_at comes back as DD/MM/YYYY (measured 2026-09-15), so an ISO
+    prefix test never matches. Normalize both sides before comparing."""
+    s = (s or "").strip()
+    m = re.match(r"^(\d{2})/(\d{2})/(\d{4})", s)
+    return f"{m.group(3)}-{m.group(2)}-{m.group(1)}" if m else s[:10]
+
+
+def fetch_route(driver, date, all_statuses=True):
     """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
 
     all_statuses=True also keeps UNASSIGNED stops — use when the whole day is to
@@ -111,15 +131,20 @@ def fetch_route(driver, date, all_statuses=False):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        name = _task_driver_name(t)
+        # "מיידן" must match the record's "מיידן גבאי"
+        if not name or not (name == driver or name.startswith(driver) or driver in name):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        if _iso_date(t.get("pickup_at")) != date:
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
         driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        # eta_at is plain "HH:MM" (measured 2026-09-15), not an ISO datetime —
+        # a fixed [11:16] slice returns "" and the driver loses every time.
+        _m = re.search(r"(\d{2}:\d{2})", v.get("eta_at") or "")
+        eta = _m.group(1) if _m else ""
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
@@ -127,12 +152,19 @@ def fetch_route(driver, date, all_statuses=False):
             "recipient": v.get("recipient_name"),
             "city": v.get("city"),
             "wp": t.get("wp_order_id"),
+            # Before picking, packages_quantity is a placeholder 1 — a count
+            # nobody made. Everything that prints a package number gates on this.
+            "picked": any(i.get("picked_quantity") is not None
+                          for i in (t.get("order_items") or [])),
             "packages": t.get("packages_quantity"),
             "items": len(t.get("order_items") or []),
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    # Driving order = daily_order when LionWheel has sequenced the route; before
+    # that it is null on every stop, and eta_at is the route's own planned order.
+    stops.sort(key=lambda s: (s["do"] if s["do"] is not None else 10 ** 6,
+                              s["eta"] or "99:99"))
     return driver_id, stops
 
 
@@ -203,7 +235,13 @@ def gi_fetch_invoice(stop, out_path, max_pages=30):
 # --------------------------------------------------------------------------- #
 # LionWheel web (Playwright) — waybills + work-order, rendered to PDF
 # --------------------------------------------------------------------------- #
+class NoWebSession(RuntimeError):
+    """LionWheel web credentials absent — work order falls back, waybills can't render."""
+
+
 def lw_login_cookies():
+    if not (os.environ.get("LIONWHEEL_WEB_USER") and os.environ.get("LIONWHEEL_WEB_PASSWORD")):
+        raise NoWebSession("LIONWHEEL_WEB_USER / LIONWHEEL_WEB_PASSWORD not set")
     jar = http.cookiejar.CookieJar()
     op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
     op.addheaders = [("User-Agent", UA)]
@@ -423,7 +461,7 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
     PALE  = (0.910, 0.945, 0.922)   # #E8F1EC disc wash on green band
 
     dmy = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%d/%m/%Y")
-    pkgs = sum(int(s["packages"] or 0) for s in stops)
+    pkgs = sum(int(s["packages"] or 0) for s in stops if s.get("picked"))
     etas = sorted(s["eta"] for s in stops if s.get("eta"))
     window = f"{etas[0]}–{etas[-1]}" if etas else ""
 
@@ -477,7 +515,9 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
     SPINE = 556                     # x of the timeline spine
     DISC_R = 10
     TIME_XR = 524                   # right edge of the mono time
-    NAME_XR = 506                   # right edge of customer / action line
+    NAME_XR = 486                   # right edge of customer / action line
+    # ~28pt of mono time ends at TIME_XR, so its left edge is ~496: the name must
+    # stop short of that or every row prints the time on top of the customer.
     NAME_XMIN = 150                 # left limit for the name (truncate before)
     ITEM_XR = 116                   # right edge of items count
     PKG_XR = 56                     # right edge of packages count
@@ -551,8 +591,10 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
         # data columns (mono numerals)
         if s.get("items") is not None:
             rt(ITEM_XR, cy + 3, s["items"], 9.5, "dm", MUTE)
-        if s.get("packages") is not None:
+        if s.get("packages") is not None and s.get("picked"):
             rt(PKG_XR, cy + 3, s["packages"], 9.5, "dm", INK)
+        elif not s.get("picked"):
+            rt(PKG_XR, cy + 3, "—", 9.5, "dm", MUTE)
         # hairline between rows
         if i < len(stops) - 1:
             pg.draw_line(fitz.Point(20, cy + rowh / 2),
@@ -610,7 +652,7 @@ def _is_exempt(stop, missing_exempt):
 
 
 def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
-          missing_products=None, all_statuses=False, workorder=True,
+          missing_products=None, all_statuses=True, workorder=True,
           missing_exempt=None, show_packages=True, shortfall_only=True):
     os.makedirs(OUT, exist_ok=True)
     import annotate
@@ -686,7 +728,8 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 if so:
                     mark_lines = False
                 annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
-                                  missing_names=mn, show_packages=show_packages,
+                                  missing_names=mn,
+                                  show_packages=show_packages and s["picked"],
                                   shortfall_only=so)
                 invoice_part[s["tid"]] = ann
                 continue
@@ -706,7 +749,24 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
     jobs += [(f"{LW_BASE}/tasks/{s['tid']}/print_waybill", f"{OUT}/wb_{s['tid']}.pdf", False)
              for s in waybill_stops]
     if jobs:
-        render_pages(jobs)
+        try:
+            render_pages(jobs)
+        except NoWebSession as e:
+            # No web session: page 1 falls back to build_workorder() below. A stop
+            # with no invoice would lose its waybill, so say so loudly.
+            print(f"WARN: {e} — work order falls back to generated page 1", file=sys.stderr)
+            # A delivery without its paperwork is not a pack. A stop with no order
+            # lines (cheque pickup, exchange) has nothing to enumerate — page 1
+            # already carries it with its איסוף flag, so warn and keep going.
+            blocked = [s for s in waybill_stops if s["task"].get("order_items")]
+            if blocked:
+                raise SystemExit(
+                    f"{len(blocked)} stop(s) have order lines but no Green Invoice and "
+                    f"need a LionWheel waybill, which requires LIONWHEEL_WEB_USER/PASSWORD: "
+                    + ", ".join(s["tid"] for s in blocked))
+            for s in waybill_stops:
+                print(f"WARN: stop {s['tid']} ({s['recipient']}) — no invoice, no waybill; "
+                      f"page 1 only", file=sys.stderr)
 
     # 3. fallback: if the real LionWheel work order didn't render, generate one so
     #    the pack always has a page 1.
@@ -827,8 +887,10 @@ def main():
                          "shortfall-only — X on the short lines, nothing elsewhere.")
     ap.add_argument("--no-packages", action="store_true",
                     help="omit the package-count badge (order id + marks only)")
-    ap.add_argument("--all-statuses", action="store_true",
-                    help="include UNASSIGNED stops — treat the whole day as confirmed")
+    # Every order on the driver's line goes in the pack, picked or not (Tom
+    # 2026-09-16) — an unpicked stop is a real stop whose invoice he still needs.
+    ap.add_argument("--assigned-only", action="store_true",
+                    help="drop UNASSIGNED stops (default: the whole line)")
     ap.add_argument("--no-workorder", action="store_true",
                     help="omit the LionWheel work-order page; invoices only")
     ap.add_argument("--marks-only-short", action="store_true",
@@ -841,7 +903,7 @@ def main():
           missing_products=missing,
           missing_exempt=[e.strip() for e in a.missing_exempt.split(";") if e.strip()]
                          if a.missing_exempt else None,
-          all_statuses=a.all_statuses, show_packages=not a.no_packages,
+          all_statuses=not a.assigned_only, show_packages=not a.no_packages,
           shortfall_only=not a.mark_all_lines,
           workorder=not a.no_workorder)
 
