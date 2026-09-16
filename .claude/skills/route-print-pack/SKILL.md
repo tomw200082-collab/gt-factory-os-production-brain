@@ -21,7 +21,15 @@ the **driver name** and the **day**; everything else is default and automatic.
 ## Output (one merged, print-ready PDF)
 1. **Page 1** — the LionWheel work order (`daily_route_plan`) for that driver/date,
    fitted to a single A4 portrait page.
-2. **Then, every stop in driving order** (`visits.daily_order`):
+2. **Then, every stop in driving order** (`visits.daily_order`, falling back to
+   `eta_at` while LionWheel leaves `daily_order` null):
+   - **Every order on the driver's line, no exception — picked or not** (Tom,
+     2026-09-16). An unpicked stop is a real stop whose invoice the driver needs;
+     `--assigned-only` drops them, and nothing else does.
+   - **Unpicked stop → order id only, no package badge.** Before picking,
+     `packages_quantity` is a placeholder `1` — a count nobody made. The work
+     order prints `—` in חב׳ for those rows and leaves them out of its total.
+     Picked stops are annotated as usual.
    - stop **with** a Green Invoice → the **real GI invoice**, annotated, **×2 copies**.
    - **Invoices are the rule — a waybill is a genuine last resort.** Every stop
      that has *any* Green Invoice document gets that invoice, even when the order

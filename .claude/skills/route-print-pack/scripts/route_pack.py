@@ -121,7 +121,7 @@ def _iso_date(s):
     return f"{m.group(3)}-{m.group(2)}-{m.group(1)}" if m else s[:10]
 
 
-def fetch_route(driver, date, all_statuses=False):
+def fetch_route(driver, date, all_statuses=True):
     """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
 
     all_statuses=True also keeps UNASSIGNED stops — use when the whole day is to
@@ -152,6 +152,10 @@ def fetch_route(driver, date, all_statuses=False):
             "recipient": v.get("recipient_name"),
             "city": v.get("city"),
             "wp": t.get("wp_order_id"),
+            # Before picking, packages_quantity is a placeholder 1 — a count
+            # nobody made. Everything that prints a package number gates on this.
+            "picked": any(i.get("picked_quantity") is not None
+                          for i in (t.get("order_items") or [])),
             "packages": t.get("packages_quantity"),
             "items": len(t.get("order_items") or []),
             "gi": gi_link(t),
@@ -457,7 +461,7 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
     PALE  = (0.910, 0.945, 0.922)   # #E8F1EC disc wash on green band
 
     dmy = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%d/%m/%Y")
-    pkgs = sum(int(s["packages"] or 0) for s in stops)
+    pkgs = sum(int(s["packages"] or 0) for s in stops if s.get("picked"))
     etas = sorted(s["eta"] for s in stops if s.get("eta"))
     window = f"{etas[0]}–{etas[-1]}" if etas else ""
 
@@ -587,8 +591,10 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
         # data columns (mono numerals)
         if s.get("items") is not None:
             rt(ITEM_XR, cy + 3, s["items"], 9.5, "dm", MUTE)
-        if s.get("packages") is not None:
+        if s.get("packages") is not None and s.get("picked"):
             rt(PKG_XR, cy + 3, s["packages"], 9.5, "dm", INK)
+        elif not s.get("picked"):
+            rt(PKG_XR, cy + 3, "—", 9.5, "dm", MUTE)
         # hairline between rows
         if i < len(stops) - 1:
             pg.draw_line(fitz.Point(20, cy + rowh / 2),
@@ -646,7 +652,7 @@ def _is_exempt(stop, missing_exempt):
 
 
 def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
-          missing_products=None, all_statuses=False, workorder=True,
+          missing_products=None, all_statuses=True, workorder=True,
           missing_exempt=None, show_packages=True, shortfall_only=True):
     os.makedirs(OUT, exist_ok=True)
     import annotate
@@ -722,7 +728,8 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
                 if so:
                     mark_lines = False
                 annotate.annotate(s["task"], src, ann, mark_lines=mark_lines,
-                                  missing_names=mn, show_packages=show_packages,
+                                  missing_names=mn,
+                                  show_packages=show_packages and s["picked"],
                                   shortfall_only=so)
                 invoice_part[s["tid"]] = ann
                 continue
@@ -873,8 +880,10 @@ def main():
                          "shortfall-only — X on the short lines, nothing elsewhere.")
     ap.add_argument("--no-packages", action="store_true",
                     help="omit the package-count badge (order id + marks only)")
-    ap.add_argument("--all-statuses", action="store_true",
-                    help="include UNASSIGNED stops — treat the whole day as confirmed")
+    # Every order on the driver's line goes in the pack, picked or not (Tom
+    # 2026-09-16) — an unpicked stop is a real stop whose invoice he still needs.
+    ap.add_argument("--assigned-only", action="store_true",
+                    help="drop UNASSIGNED stops (default: the whole line)")
     ap.add_argument("--no-workorder", action="store_true",
                     help="omit the LionWheel work-order page; invoices only")
     ap.add_argument("--marks-only-short", action="store_true",
@@ -887,7 +896,7 @@ def main():
           missing_products=missing,
           missing_exempt=[e.strip() for e in a.missing_exempt.split(";") if e.strip()]
                          if a.missing_exempt else None,
-          all_statuses=a.all_statuses, show_packages=not a.no_packages,
+          all_statuses=not a.assigned_only, show_packages=not a.no_packages,
           shortfall_only=not a.mark_all_lines,
           workorder=not a.no_workorder)
 
