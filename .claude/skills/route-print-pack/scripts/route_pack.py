@@ -755,11 +755,18 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
             # No web session: page 1 falls back to build_workorder() below. A stop
             # with no invoice would lose its waybill, so say so loudly.
             print(f"WARN: {e} — work order falls back to generated page 1", file=sys.stderr)
-            if waybill_stops:
+            # A delivery without its paperwork is not a pack. A stop with no order
+            # lines (cheque pickup, exchange) has nothing to enumerate — page 1
+            # already carries it with its איסוף flag, so warn and keep going.
+            blocked = [s for s in waybill_stops if s["task"].get("order_items")]
+            if blocked:
                 raise SystemExit(
-                    f"{len(waybill_stops)} stop(s) have no Green Invoice and need a "
-                    f"LionWheel waybill, which requires LIONWHEEL_WEB_USER/PASSWORD: "
-                    + ", ".join(s["tid"] for s in waybill_stops))
+                    f"{len(blocked)} stop(s) have order lines but no Green Invoice and "
+                    f"need a LionWheel waybill, which requires LIONWHEEL_WEB_USER/PASSWORD: "
+                    + ", ".join(s["tid"] for s in blocked))
+            for s in waybill_stops:
+                print(f"WARN: stop {s['tid']} ({s['recipient']}) — no invoice, no waybill; "
+                      f"page 1 only", file=sys.stderr)
 
     # 3. fallback: if the real LionWheel work order didn't render, generate one so
     #    the pack always has a page 1.
