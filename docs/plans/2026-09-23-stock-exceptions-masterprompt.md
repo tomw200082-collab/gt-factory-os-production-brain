@@ -13,7 +13,7 @@ The executing session's last act is to change this line to `SHIPPED <date> — <
 ## 0. How to work
 
 - **Who you are here:** one autonomous Claude Code session, owner of the whole change across three repos. You may write code, migrations, tests, open PRs, merge on green, dispatch the production deploy, and submit inventory-movement *proposals* through the API. You may not approve inventory movements: approval is the human step that posts to `stock_ledger`, and it stays human.
-- **Read first:** `CLAUDE.md` (all), `gt-factory-os/CLAUDE.md`, `.claude/skills/route-print-pack/SKILL.md` §4, `gt-factory-os/db/migrations/0259_inventory_movements.sql`, `gt-factory-os/api/src/inventory-movements/{schemas,handler,route}.ts`, `gt-factory-os/api/test/inventory_movements.test.ts`, `gt-factory-os/api/src/integrations/lionwheel/reconciliation.ts` (Phase 2, where `credit_tasks` are created), `.claude/skills/daily-ops-guardian/SKILL.md`.
+- **Read first:** `CLAUDE.md` (all), `gt-factory-os/CLAUDE.md`, `.claude/skills/route-print-pack/SKILL.md` "How to run" step 4, `gt-factory-os/db/migrations/0259_inventory_movements.sql`, `gt-factory-os/api/src/inventory-movements/{schemas,handler,route}.ts`, `gt-factory-os/api/test/inventory_movements.test.ts`, `gt-factory-os/api/src/integrations/lionwheel/reconciliation.ts` (Phase 2, where `credit_tasks` are created), `.claude/skills/daily-ops-guardian/SKILL.md` (§C, §V), `REGISTRY.md` (skills list), `gt-factory-os/api/src/auth/session.ts`, `gt-factory-os/api/src/credit_tracking/handler.ts`, `gt-factory-os/db/migrations/0241_credit_tasks.sql`, `gt-factory-os/db/migrations/0023*` (mirror column semantics).
 - **Authority:** where this document and an authority doc disagree, the authority doc wins and this document is wrong — say so in the report.
 - **Halt conditions, evidence standard (the 6 layers), git discipline, deploy gates, handoff format:** inherited from `CLAUDE.md` §Stop conditions, §Evidence, §Authorization, §Handoff. Deltas for this work are in §8.
 - **Watching:** `CLAUDE.md` §Watching forbids PR subscriptions and self check-ins. Verify CI by reading check runs directly in-turn (GitHub MCP `pull_request_read` / `get_check_run`), and wait with bounded in-turn polling. After every `create_pull_request`, call `unsubscribe_pr_activity` immediately.
@@ -30,28 +30,32 @@ The executing session's last act is to change this line to `SHIPPED <date> — <
 
 | # | Condition | The observation that would prove it false |
 |---|---|---|
-| D1 | Submit contract accepts `proposed_lines[]`, `rationale`, `open_questions[]`, `evidence[]`, `credit_task_ids[]`; the detail query returns them | `POST /api/v1/mutations/inventory-movements` with proposed lines against production returns ≠202, or `GET /api/v1/queries/inventory-movements/:id` omits them |
-| D2 | Proposed lines are validated at submit (item exists and is active, unit exists, `item_type` matches) | a vitest case submitting an unknown `item_id` in `proposed_lines` gets 202 |
-| D3 | Approving a supplement proposal marks its linked `credit_tasks` `SUPPLIED` in the same transaction | vitest: after approve, a linked `credit_tasks.status` is still `PENDING` |
-| D4 | `inventory_movement_lines` cannot hold duplicates for one approval | vitest: replaying an approve yields more `inventory_movement_lines` rows than ledger rows |
-| D5 | The daily sweep covers all drivers and only `COMPLETED` tasks; cheque pickups and canceled tasks produce nothing | sweep dry-run over 2026-06-15..2026-09-22 proposes anything for a task whose recipient matches `צ.?ק` or whose `lw_status='CANCELED'` |
+| D1 | Submit contract accepts `proposed_lines[]`, `rationale`, `open_questions[]`, `evidence[]`, `credit_task_ids[]`; the detail query returns them | vitest round-trip fails; and in production the live sweep proposal of D9 read back through `GET /api/v1/queries/inventory-movements/:id` omits them. No separate production probe. |
+| D2 | Proposed lines are validated at submit (item exists and is active, unit exists, `item_type` matches) — without the count-freeze check or advisory lock | vitest: unknown `item_id` in `proposed_lines` gets 202, or a valid proposal gets `COUNT_FREEZE_ACTIVE` during an active freeze |
+| D3 | Approving a supplement moves linked `credit_tasks` to `SUPPLIED` only when status is `PENDING`/`DEFERRED`, same `item_id`, approved qty ≥ `qty_missing`; emits `emitChangeLog` like `credit_tracking/handler.ts` | vitest: a full match stays `PENDING`; or a partial supplement moves to `SUPPLIED`; or a `CREDITED` task changes; or no change-log row is emitted |
+| D4 | The real cause of the `GI-20269` duplicates (8 lines vs 4 ledger rows) is found, reproduced in a test that fails on current code, and fixed; migration adds `unique (stock_ledger_movement_id)` after de-duplicating exact copies | the new test passes on unfixed `handler.ts`; or `select stock_ledger_movement_id, count(*) from private_core.inventory_movement_lines group by 1 having count(*)>1` returns rows after deploy |
+| D5 | The daily sweep covers all drivers and only `COMPLETED` tasks; cheques and canceled tasks produce nothing; no stock task is misclassified as cheque | backtest dry-run (`lw_completed_at` 2026-06-15..2026-09-22) proposes for a cheque or `CANCELED` task; or its printed cheque list contains a stock task |
 | D6 | On the §2.2 backtest set, the sweep classifies every no-line task and derives lines for every supplement that names a Green Invoice document number | dry-run output: any of the 32 supplement-class tasks with a 5-digit doc number in its title has zero proposed lines and no open question |
-| D7 | `route_pack.py` no longer submits proposals; it only flags stops on the print | `grep -n "inventory-movements\|form_submissions" .claude/skills/route-print-pack/scripts/*.py` finds a submit path |
-| D8 | Portal approval page pre-fills the proposed lines, shows rationale, evidence and open questions | Playwright screenshot of `/inbox/approvals/inventory-movement/<id>` for a live sweep proposal shows empty line rows |
-| D9 | One live sweep ran in production and created ≥1 filled proposal from real data | `select count(*) from private_core.form_submissions where form_type='inventory_movement' and raw_payload ? 'proposed_lines' and submitted_at > <deploy time>` returns 0 |
-| D10 | The 4 stale pending proposals (oldest 2026-06-23) are each either enriched with proposed lines or rejected with a stated reason | §2.5 query 1 still shows a pending row from before 2026-09-01 with no `proposed_lines` |
-| D11 | All PRs merged, CI green on each merge commit, production deploy workflow succeeded with `rebuild_verifier() = 0`, portal deployed | any PR from this work open, any required check red on `main`, or the deploy run not `success` |
-| D12 | Skills and docs updated: `route-print-pack/SKILL.md` §4 rewritten, new sweep skill documented, `daily-ops-guardian` calls it | the SKILL.md still says proposals are submitted by route-print-pack |
+| D7 | Route-print-pack no longer produces or submits proposals; it only flags stops on the print | `route_pack.py` still writes `inventory_proposals.json`, or `grep -nE 'inventory_proposals|mutations/inventory-movements|form_submissions|inventory_movement_pending' .claude/skills/route-print-pack/SKILL.md` returns anything |
+| D8 | Portal approval page pre-fills the proposed lines, shows rationale, evidence and open questions | the portal component test against a fixture detail payload with 2 proposed lines renders empty rows; plus, if a Playwright-usable portal login exists (§6.B), a screenshot of the live D9 proposal shows empty rows |
+| D9 | One live sweep ran in production and created ≥1 filled proposal from real data | `select count(*) from private_core.form_submissions where form_type='inventory_movement' and raw_payload ? 'proposed_lines' and submitted_by = <sweep user id> and submitted_at > <deploy time>` returns 0. If the live window truly has no candidate, D9 is ❌ `BLOCKED — no candidate` and the next guardian run closes it — never widen the window before 2026-09-22 to manufacture one. |
+| D10 | The 4 stale pending proposals (oldest 2026-06-23) are each rejected with one of the two W5 reasons and listed in the report | §2.5 query 1 still shows a pending row from before 2026-09-01 with no `proposed_lines` |
+| D11 | All PRs merged, CI green on each merge commit, production deploy workflow succeeded with `rebuild_verifier() = 0`, portal deployed | any PR from this work open; any required check red on a merge commit; the deploy run not `success`; `curl https://gt-factory-os-api-production.up.railway.app/health` not OK; the Vercel deployment for the portal merge SHA not `READY` |
+| D12 | Skills and docs updated: route-print-pack `SKILL.md` "How to run" step 4 rewritten, new sweep skill documented, `daily-ops-guardian` C1/V2 amended with the §1.1 quote and calls the sweep, `REGISTRY.md` skills list + count updated | route-print-pack `SKILL.md` still describes submitting proposals, or `REGISTRY.md` lacks `stock-exceptions-sweep` |
 | D13 | This file's STATUS line stamped `SHIPPED` with PR links | the first bold line still reads `LIVE` |
 
 Anything not on this list is out of scope unless Tom asks.
 
 ### 1.1 Settled — do not reopen
 
+- **Tom's written approval for this work (2026-09-23, verbatim):** `תכתוב לי מאסטרפרומפט שאדביק בסשן חדש והוא יבצע הכל מקצה לקצה כולל SIMPLIFY וVERIFICATION BEFORE COMPLITION בסוף כך שאני לא אצטרך לוודא אותו. שימזג והכל ויוודא שירוק. עבודה מקצה לקצה ללא השארת קצוות פתוחים בכלל.` It was given in reply to the diagnosis that the proposals must move to a daily sweep that submits filled proposals. Treat it as the written approval to (a) extend `daily-ops-guardian` §C C1 / §V V2 with one new allowed write — submitting *pending* inventory-movement proposals through the API (never approving, never ledger) — and (b) create the skill `stock-exceptions-sweep`. Paste this quote into both skill headers and `REGISTRY.md`.
+
 - **Humans approve, the ledger posts only on approval.** Proposals never write `stock_ledger`. (`CLAUDE.md` §Source of truth, stock truth sacred; `0259` design.)
 - **Detection moves out of the print skill** into a daily sweep over completed tasks (diagnosis 2026-09-23, Tom asked for the fix end to end).
 - **Evidence priority for filling lines:** Green Invoice document named in the task title → open `credit_tasks` of the same customer → open purchase order of the supplier → free-text note mapped through `docs/warehouses/catalog-truth.md` and aliases → otherwise an open question. Never a guessed quantity.
 - **Supplier / 3PL pickups are goods receipts, not inventory movements.** The sweep does not create inventory-movement proposals for them; it reports any such completed pickup with no goods-receipt submission for that supplier within ±2 days in the guardian email.
+- **Cheque pattern:** `(^|[\s\-])צ['׳]?ק(ים)?($|[\s\-])` — never `צ.?ק`, which also matches `יצחק`.
+- **Date windows use `lw_completed_at`** (backtests: `coalesce(lw_completed_at, captured_at)`). `captured_at` is the last poll time and moves every poll.
 - **Customer→customer transfers** (e.g. `איסוף סחורה מהם ואספקה ל...`) are net zero for our stock: no proposal, one line in the guardian email.
 - **No historical backfill posting.** Physical counts since June (47 FG `COUNT_ADJUST` rows, observed) may already have absorbed old drift; approving old movements would double-correct. History is reported, not proposed. Only the 4 already-pending items are handled (D10).
 - **The sweep runs inside the existing 06:30 `daily-ops-guardian` run.** Do not create a new Routine or trigger (`CLAUDE.md` §Watching).
@@ -69,7 +73,7 @@ Anything not on this list is out of scope unless Tom asks.
 ### 2.2 The numbers (observed 2026-09-23)
 - `inventory_movement` submissions ever: 8. Posted 2 (both hand-entered, not from the skill), rejected 2 (`כבר סופק`, `לא נכון` — the latter a false positive on `קבלת סחורה בין 7:00-12:00`, delivery hours), pending 4 (from 2026-06-23, 2026-08-11, 2026-08-18, 2026-08-19), none with lines.
 - `orders_mirror` tasks captured since 2026-06-15 with zero `orders_mirror_lines`: 127. Classified by recipient name:
-  - cheque pickup (`צ.?ק`) 32 · supplement / delivery note / free goods (`השלמת|תעודת משלוח|ללא חיוב`) 32 (4 canceled) · exchange (`החלפ`) 6 (1 canceled) · subcontractor matcha (`עמיתה`) 7 · supplier / 3PL pickup 15 · customer pickup / return / transfer 19 · unclear 16 (1 canceled).
+  - cheque pickup (loose `צ.?ק` match on 2026-09-23; re-baseline with the §1.1 pattern) 32 · supplement / delivery note / free goods (`השלמת|תעודת משלוח|ללא חיוב`) 32 (4 canceled) · exchange (`החלפ`) 6 (1 canceled) · subcontractor matcha (`עמיתה`) 7 · supplier / 3PL pickup 15 · customer pickup / return / transfer 19 · unclear 16 (1 canceled).
 - Of the 38 supplement / delivery-note / exchange / free-goods tasks, **0 have a `stock_ledger` row** by task id or document number. Finished goods left the building and never came off stock.
 - `credit_tasks`: 220 `PENDING`, 2 `SUPPLIED`. Supplements never close them.
 - `inventory_movement_lines` for submission of source_ref `GI-20269`: 8 rows vs 4 `stock_ledger` rows — duplicated audit lines, ledger correct.
@@ -94,10 +98,10 @@ select fs.submitted_at::date, fs.status, im.kind, im.source_ref, fs.raw_payload 
 from private_core.form_submissions fs join private_core.inventory_movements im using(submission_id)
 where fs.form_type='inventory_movement' order by 1;
 
--- 2. no-line tasks by class since 2026-06-15 (expect 127 total)
+-- 2. no-line tasks by class since 2026-06-15 (127 total on 2026-09-23 under the old captured_at filter; re-baseline)
 with t as (select lw_status, lw_destination_recipient_name n from private_core.orders_mirror o
- where captured_at>='2026-06-15' and not exists (select 1 from private_core.orders_mirror_lines l where l.mirror_id=o.mirror_id))
-select case when n ~ 'צ.?ק' then 'cheque' when n ~ '(השלמת|תעודת משלוח|ללא חיוב)' then 'supplement'
+ where coalesce(lw_completed_at, captured_at)>='2026-06-15' and not exists (select 1 from private_core.orders_mirror_lines l where l.mirror_id=o.mirror_id))
+select case when n ~ '(^|[[:space:]-])צ[''׳]?ק(ים)?($|[[:space:]-])' then 'cheque' when n ~ '(השלמת|תעודת משלוח|ללא חיוב)' then 'supplement'
  when n ~ 'החלפ' then 'exchange' when n ~ '(עמיתה|מדבקות מאצה)' then 'subcontract'
  when n ~ '(צבר|תבלינ|כימיקל|מדבקות|תוויות|גומיות|פרי הבוסתן|בקבוקים|יקבים|רומיכל)' then 'supplier'
  when n ~ 'איסוף' then 'customer_pickup' else 'unclear' end cls, count(*), count(*) filter (where lw_status='CANCELED') canceled
@@ -121,27 +125,30 @@ Order: W1 → W2 → W3 → W4 → W5 → W6. W4 can start once W1's contract is
 
 ### W1 — Backend contract (`gt-factory-os`, lane `backend-db`)
 - Extend `InventoryMovementSubmitSchema` with optional `proposed_lines[]` (same shape as `InventoryMovementLineSchema` plus `source` ∈ `gi_document | credit_task | purchase_order | note_parse | manual`, `evidence_ref`, `confidence` ∈ `high | medium | low`), `rationale` (Hebrew text: what happened, what goes out, what comes in, why), `open_questions[]`, `evidence[]` (`{type, ref, url?}`), `credit_task_ids[]`.
-- Validate proposed lines at submit with the existing `validateLine` checks; reject 409 with `offending_field` on failure. Enforce the canonical `reason_code` list for proposed lines.
+- Validate proposed lines at submit: split `validateLine` so submit runs only the item-active, item-type and uom checks — **no advisory lock and no `COUNT_FREEZE_ACTIVE` check at submit** (both stay on approve), or proposals would fail on count days. Reject 409 with `offending_field`.
+- Enforce the canonical `reason_code` list for proposed lines. Mapping, no new codes: supplement → `goods_out`; free_goods → `goods_out`; exchange → `exchange_in` + `exchange_out`; return → `return_in`; tasting → `tasting`; subcontract → `goods_out` (PKG/RM to subcontractor) and `goods_pickup` (FG collected).
+- Add a non-interactive auth path for the sweep: production accepts only a Supabase user JWT (`api/src/auth/session.ts`; `X-Test-Session` works only with `ENABLE_DEV_SHIM_AUTH`). Add a service-token check (header, compared constant-time to env secret `INVENTORY_SWEEP_TOKEN`) that maps to a dedicated `app_users` row `inventory-sweep` with role `operator`, allowed **only** on `POST /api/v1/mutations/inventory-movements`. Never `admin`. Tom sets the secret (§6.A).
 - Store them in `raw_payload` (no new table needed); return them from the detail query.
-- Add kinds `supplement`, `free_goods`, `subcontract` via a new migration re-creating the CHECK (pattern: `0259` §1). Next free number: check `db/migrations/` at boot (last observed `0349`).
-- Approve: when `credit_task_ids` is present, set those `credit_tasks` to `SUPPLIED` with `closed_by`, `closed_at` in the same transaction. Make `inventory_movement_lines` writes idempotent per ledger row (key off the same `IM:<submission>:<idx>` index; add a unique constraint in the migration).
+- Add kinds `supplement`, `free_goods`, `subcontract` via a new migration. The `inventory_movements.kind` CHECK was created inline with an auto-generated name: find it by definition in `pg_constraint` (as `0241` does), never `drop constraint if exists <guessed name>`. Next free number: check `db/migrations/` at boot (last observed `0349`).
+- Approve: for each `credit_task_ids` entry, move to `SUPPLIED` (with `closed_by`, `closed_at`, and `emitChangeLog` exactly as `credit_tracking/handler.ts` does) only if its status is `PENDING` or `DEFERRED`, its `item_id` equals an approved line's `item_id`, and that line's quantity ≥ `qty_missing`. Otherwise leave it and list it in the approve response. `credit_tasks.status` is the bookkeeper's (`0241`) — never overwrite `CREDITED`.
+- Duplicates (D4): first find how `GI-20269` got 8 lines — `select stock_ledger_movement_id, count(*) from private_core.inventory_movement_lines where submission_id=(select submission_id from private_core.inventory_movements where source_ref='GI-20269') group by 1;` plus `git log -p api/src/inventory-movements/handler.ts`. Write a test reproducing that cause, then fix. The migration de-duplicates only rows that are exact copies (same submission, direction, item, qty, unit, reason, ledger id), `raise notice` their `line_id`s, then adds `unique (stock_ledger_movement_id)`. This is the audit table, not the ledger. Not exact copies → STOP (§8).
 - Tests first (vitest, `api/test/inventory_movements.test.ts`): D1–D4 cases plus the exception path (invalid proposed item → 409).
 **Acceptance:** D1, D2, D3, D4.
 
 ### W2 — Daily sweep skill (brain repo, new skill `.claude/skills/stock-exceptions-sweep/`)
-- Input: tasks with `lw_status='COMPLETED'`, completed since the last sweep watermark (store it in the skill's own state file, append-only, per `CLAUDE.md` §Write boundaries), all drivers, from `orders_mirror`; read each task live via LionWheel `tasks/show`.
+- Input: `orders_mirror` rows with `lw_status='COMPLETED' and lw_completed_at >= now() - interval '3 days'`, all drivers. No state file — each run is a fresh container; the idempotency key below makes the overlap harmless. Read each task live via LionWheel `tasks/show`.
 - Candidates: tasks with zero order lines, plus tasks of any kind whose title or notes carry an exchange / return / tasting / free-goods signal.
-- Classify: cheque → skip; customer→customer transfer → email line only; supplier / 3PL → goods-receipt check (§1.1) → email line only; supplement / free goods / exchange / return / tasting / subcontract / unclear → proposal.
-- Fill lines by the §1.1 evidence priority. Green Invoice: token via `POST /account/token`, `POST /documents/search` by number, `GET /documents/{id}` for items (contract in `route-print-pack/SKILL.md` §Data contracts). Map barcodes and names to `item_id` via the DB item / alias tables and `docs/warehouses/catalog-truth.md`.
+- Classify (cheque pattern from §1.1; the dry-run prints every task it classified as cheque): cheque → skip; customer→customer transfer → email line only; supplier / 3PL → goods-receipt check (§1.1) → email line only; supplement / free goods / exchange / return / tasting / subcontract / unclear → proposal.
+- Fill lines by the §1.1 evidence priority. Green Invoice fields are **not yet verified** (`CLAUDE.md` Forbidden assumptions): before writing the mapper, fetch one known invoice (`63810`) and one delivery note (`20286`), record the real search filter for number and document type and the real item fields in route-print-pack `SKILL.md` Data contracts, and map using only fields seen in those responses. The rendered invoices show a barcode column; confirm which API field carries it. Map to `item_id` via the DB item / alias tables and `docs/warehouses/catalog-truth.md`.
 - Exchange: two lines (in returned, out replacement) unless the replacement already appears in picked order lines. Return: in-line plus the open question `האם הסחורה חוזרת למלאי או לפחת?`. Subcontract: lines per the note (PKG out on delivery to subcontractor, FG in on collection) plus an open question confirming the rule.
-- Submit via the API from W1 with a deterministic `idempotency_key` = `sweep:<lw_task_id>`, so re-runs never duplicate.
+- Submit via `POST https://gt-factory-os-api-production.up.railway.app/api/v1/mutations/inventory-movements` with the W1 service token and a deterministic `idempotency_key` = `sweep:<lw_task_id>`. Writing rows directly into `form_submissions`, `inventory_movements` or `exceptions` (e.g. via Supabase MCP) is forbidden — it bypasses every W1 check.
 - Output: counts per class + list of email lines, consumed by `daily-ops-guardian`.
-- `--dry-run --from --to` mode that prints proposals without submitting; used for D5/D6.
+- `--dry-run --from --to` mode (window on `coalesce(lw_completed_at, captured_at)`) that prints proposals without submitting; used for D5/D6. Re-baseline the §2.2 counts with this filter at boot; differences from §2.2 are expected, not a failed boot check.
 **Acceptance:** D5, D6.
 
 ### W3 — Route-print-pack cleanup (brain repo)
-- Remove the submit path from `route_pack.py` and `SKILL.md` §4; keep `detect_inventory_moves` only as a print flag, fixed to read the title and all note fields, including stops that have an invoice.
-- Rewrite `SKILL.md` §4 to point at the sweep.
+- Stop writing `inventory_proposals.json` in `route_pack.py`; delete the submit instructions and the Supabase-MCP "last-resort fallback" from `SKILL.md` "How to run" step 4; keep `detect_inventory_moves` only as a print flag, fixed to read the title and all note fields, including stops that have an invoice.
+- Rewrite that step to point at the sweep.
 **Acceptance:** D7, part of D12.
 
 ### W4 — Portal (`gt-factory-os-portal`, lane `portal`)
@@ -150,14 +157,14 @@ Order: W1 → W2 → W3 → W4 → W5 → W6. W4 can start once W1's contract is
 **Acceptance:** D8.
 
 ### W5 — Wire into the guardian and handle stale items
-- Add a sweep stage to `.claude/skills/daily-ops-guardian/SKILL.md` (email section: new proposals, supplier pickups without receipt, transfers).
-- D10: for each of the 4 stale pending items, run the W2 logic on its task; submit enrichment by rejecting the empty original with reason `הוחלף בהצעה ממולאת <new id>` and letting the sweep create the filled one — or, if every involved item had a `COUNT_ADJUST` after the task's event date, reject with reason `נספג בספירת מלאי <date>`.
+- Amend `daily-ops-guardian` C1/V2 with the §1.1 quote and add a sweep stage (email section: new proposals, supplier pickups without receipt, transfers).
+- D10: for each of the 4 stale pending items, exactly one of: (a) every involved item has a `COUNT_ADJUST` after the task date → reject with reason `נספג בספירת מלאי <date>`; (b) otherwise → reject with reason `ישן מחלון התיקון — דווח במייל` and list it in the report. Never resubmit history (§1.1; submit also enforces `dataentry_correction_window_days`, `handler.ts:113`). Reject through the API as Tom's portal session is not available to you: use the sweep token only if W1 allows reject for it; otherwise reject is a §6 item.
 **Acceptance:** D10, D12.
 
 ### W6 — Ship
 - PR per repo, draft → ready when local checks pass. `npm run typecheck` and the vitest suite locally before every push. Merge on green (`CLAUDE.md` §Authorization).
 - Migration + API deploy: dispatch `deploy-production.yml` with `confirm=APPLY` after posting the one-line announcement the authorization section requires. Confirm the run's `rebuild_verifier() = 0` step passed. Portal deploys on merge via Vercel; confirm the deployment is live.
-- Run the sweep once live (D9), open the created proposal in the portal with Playwright (D8), do **not** approve it.
+- Run the sweep once live (D9); verify D1 by reading that proposal back; D8 per its row; do **not** approve it.
 - Run `simplify`, then `verification-before-completion`, then stamp this file (D13) in the brain PR before merging it.
 **Acceptance:** D9, D11, D13.
 
@@ -169,7 +176,10 @@ Order: W1 → W2 → W3 → W4 → W5 → W6. W4 can start once W1's contract is
 ## 6. Tom's part — the complete list, nothing else is his
 
 **A. Portal repo access — only if `add_repo` for `tomw200082-collab/gt-factory-os-portal` is denied.** On 2026-09-23 `list_repos` did not return that repo for this account. If denied, relay the tool's exact reason and the remedy it names; continue W1–W3 and W5 meanwhile. Nothing else in this list blocks until then.
-**B. A Hebrew UI string with no approved register entry** — only if W4 needs one. Ask once, batched, with the exact proposed strings.
+**A2. Set the sweep secret.** Tom generates a random value and sets `INVENTORY_SWEEP_TOKEN` in Railway (API service) and in this Claude environment's secrets. Nobody pastes it in chat. You verify it through the side effect: a sweep submit returns 202. Ask once W1 is merged; ~5 minutes.
+**A3. Reject rights for D10** — only if W1 does not grant reject to the sweep user (keep it submit-only by default): Tom rejects the 4 stale items in the portal with the reasons you give him.
+**B. A portal login usable by Playwright** — only if none exists; otherwise D8 rests on the component test.
+**C. A Hebrew UI string with no approved register entry** — only if W4 needs one. Ask once, batched, with the exact proposed strings.
 
 Everything else — including merge, deploy, and the stale-item rejections — is yours.
 
@@ -180,10 +190,12 @@ Everything else — including merge, deploy, and the stale-item rejections — i
 3. **`קבלת סחורה בין 7:00-12:00`** is delivery hours, not a goods receipt → never classify on `קבל`.
 4. **A 5-digit number in the title can be an invoice (`6xxxx`) or a delivery note (`2xxxx`)**, and substring-matching ledger notes produces false hits (`20286` matched an unrelated `420286864`) → match Green Invoice documents by exact number and type.
 5. **LionWheel formats changed 2026-09-23:** `driver_str` empty on the task (it is on `visits[0]`), `pickup_at` is `DD/MM/YYYY`, `eta_at` is bare `HH:MM`, `daily_order` is gone. Already fixed in `route_pack.py` (PR #206) — reuse those helpers, do not re-derive.
-6. **`orders_mirror.pickup_at` is null on every row** → use `captured_at` / `lw_completed_at` for date windows.
+6. **`orders_mirror.pickup_at` is null on every row, and `captured_at` is the last poll time** → windows on `lw_completed_at` only (backtests: `coalesce(lw_completed_at, captured_at)`).
 7. **The system `cryptography` package in the container panics (`_cffi_backend`)** when `pypdf` imports it → `python3 -m pip install --ignore-installed cffi cryptography`.
 8. **Approving old movements double-corrects** stock already fixed by a physical count → never propose history (§1.1).
-9. **Self-approval**: the handler allows it only for `admin` / `planner`. Submitting as Tom's user is fine because Tom approves as admin; do not change that rule.
+9. **Self-approval**: the handler allows it only for `admin` / `planner`. The sweep submits as the `operator` service user, so Tom (admin) approves normally; do not change that rule.
+11. **`2. "Validate with validateLine"` pulls in the count-freeze lock** → split it (W1).
+12. **Guardian §C C1 is Tom-locked** — amend it only with the §1.1 quote, nothing wider.
 10. **Opening a PR subscribes the session server-side** even with the hook live → `unsubscribe_pr_activity` right after every `create_pull_request`.
 
 ## 8. Halt conditions
