@@ -151,10 +151,14 @@ def fetch_route(driver, date, all_statuses=False):
             continue
         v = (t.get("visits") or [{}])[0]
         driver_id = driver_id or t.get("driver_id")
-        eta = (v.get("eta_at") or "")[11:16]
+        # eta_at was ISO; LionWheel now sends bare "HH:MM" and no daily_order
+        # (seen 2026-09-23). ETA order == the work order's row order, so use it.
+        eta_raw = v.get("eta_at") or ""
+        eta = eta_raw if re.fullmatch(r"\d{2}:\d{2}", eta_raw) else eta_raw[11:16]
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
+            "eta_sort": eta or "99:99",
             "eta": eta,
             "recipient": v.get("recipient_name"),
             "city": v.get("city"),
@@ -164,7 +168,10 @@ def fetch_route(driver, date, all_statuses=False):
             "gi": gi_link(t),
             "task": t,
         })
-    stops.sort(key=lambda s: (s["do"] is None, s["do"]))
+    stops.sort(key=lambda s: (s["do"] is None, s["do"] or 0, s["eta_sort"]))
+    if all(s["do"] is None for s in stops):
+        for i, s in enumerate(stops, 1):
+            s["do"] = i
     return driver_id, stops
 
 
@@ -361,11 +368,22 @@ def _render_one(pg, url, out, fit_one):
             pg.wait_for_timeout(300)
             h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
             scale = min(scale, usable_h / max(h, 1))
-            scale = max(0.4, round(scale, 3))
+            scale = max(0.1, round(scale, 3))
         except Exception:
             scale = 0.62
-        opts["scale"] = scale
-        opts["page_ranges"] = "1"
+        # Screen-measured fit can still spill in print layout, and page_ranges
+        # would silently drop the overflow rows (seen 2026-09-23: 36 stops, rows
+        # 35-36 lost). Render every page; shrink until it really is one page.
+        import pymupdf
+        while True:
+            opts["scale"] = scale
+            pg.pdf(path=out, **opts)
+            with pymupdf.open(out) as d:
+                if d.page_count <= 1 or scale <= 0.1:
+                    break
+            scale = round(max(0.1, scale * 0.93), 3)
+        print(f"work order: scale {scale}", file=sys.stderr)
+        return
     pg.pdf(path=out, **opts)
 
 
