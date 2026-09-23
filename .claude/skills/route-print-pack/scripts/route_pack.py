@@ -101,6 +101,36 @@ def lw_list_open():
     return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
 
 
+def _driver_ids(driver):
+    """LionWheel driver ids whose name matches `driver` (first/last/nick, any order)."""
+    if not hasattr(_driver_ids, "cache"):
+        url = f"{LW_BASE}/api/v1/drivers.json?key={urllib.parse.quote(LW_KEY)}"
+        d = _get_json(url)
+        _driver_ids.cache = d.get("drivers", d) if isinstance(d, dict) else d
+    want = driver.strip()
+    ids = set()
+    for x in _driver_ids.cache:
+        full = " ".join(filter(None, [(x.get("first_name") or "").strip(),
+                                      (x.get("last_name") or "").strip()]))
+        if want in (full, (x.get("first_name") or "").strip(),
+                    (x.get("nick_name") or "").strip()):
+            ids.add(x["id"])
+    return ids
+
+
+def _driver_match(t, driver):
+    if t.get("driver_str") and t.get("driver_str") == driver:
+        return True
+    return t.get("driver_id") in _driver_ids(driver)
+
+
+def _date_match(pickup_at, date):
+    """pickup_at may be YYYY-MM-DD… or DD/MM/YYYY…; date is YYYY-MM-DD."""
+    p = (pickup_at or "").strip()
+    y, m, d = date.split("-")
+    return p.startswith(date) or p.startswith(f"{d}/{m}/{y}")
+
+
 def fetch_route(driver, date, all_statuses=False):
     """Return (driver_id, [stop,...]) sorted by daily_order for driver+date.
 
@@ -111,9 +141,11 @@ def fetch_route(driver, date, all_statuses=False):
         t = lw_task(tid)
         if not t:
             continue
-        if t.get("driver_str") != driver:
+        # LionWheel now leaves driver_str empty and sends pickup_at as DD/MM/YYYY
+        # (seen 2026-09-23) — match on driver_id, accept both date formats.
+        if not _driver_match(t, driver):
             continue
-        if not (t.get("pickup_at") or "").startswith(date):
+        if not _date_match(t.get("pickup_at"), date):
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
