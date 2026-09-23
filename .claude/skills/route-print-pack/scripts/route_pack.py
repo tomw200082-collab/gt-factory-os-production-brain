@@ -393,19 +393,28 @@ def _render_one(pg, url, out, fit_one):
 # printed tonight can still be canceled tomorrow, so the inbox proposal is made
 # after delivery by the stock-exceptions-sweep skill (COMPLETED tasks only).
 # --------------------------------------------------------------------------- #
-# title before notes, first match wins; cheque pickups are not stock moves
-MOVE_HINTS = [("החלפ", "החלפה"), ("איסוף", "איסוף"), ("לאסוף", "איסוף"), ("החזר", "החזרה"),
-              ("טעימ", "טעימה"), ("דגימ", "דגימה"), ("השלמ", "השלמה"), ("ללא חיוב", "ללא חיוב"),
-              ("תעודת משלוח", "תעודת משלוח")]
+# One vocabulary, shared with the stock-exceptions-sweep skill (it imports
+# these), so the printed flag and the next morning's proposal agree.
+# Cheque pickups are not stock moves — and never `צ.?ק`, which matches יצחק.
 CHEQUE = re.compile(r"(^|[\s\-])צ['׳]?ק(ים)?($|[\s\-])")
+EXCHANGE = re.compile(r"החלפ|להחליף")
+PICKUP = re.compile(r"איסוף|לאסוף")
+RETURN = re.compile(r"החזר|להחזיר")
+TASTING = re.compile(r"טעימ|דגימ")
+SUPPLEMENT = re.compile(r"השלמ")
+DELIVERY_NOTE = re.compile(r"תעודת\s*\S*שלוח")   # also the "תעודת תשלוח" typo seen live
+FREE_GOODS = re.compile(r"ללא חיוב")
+# print label per signal; title before notes, first match wins
+MOVE_HINTS = [(EXCHANGE, "החלפה"), (PICKUP, "איסוף"), (RETURN, "החזרה"), (TASTING, "טעימה"),
+              (SUPPLEMENT, "השלמה"), (FREE_GOODS, "ללא חיוב"), (DELIVERY_NOTE, "תעודת משלוח")]
 
 
-def stop_notes(s):
-    """Every note field of the stop, links removed."""
-    t = s["task"]
+def task_notes(t, sep=" "):
+    """Every note field of a LionWheel task, links removed, empty ones dropped."""
     visits = t.get("visits") or []
-    notes = [t.get("notes"), t.get("driver_note"), t.get("org_note")] + [v.get("notes") for v in visits]
-    return " ".join(re.sub(r"https?://\S+", "", n) for n in notes if isinstance(n, str))
+    raw = [t.get("notes"), t.get("driver_note"), t.get("org_note")] + [v.get("notes") for v in visits]
+    notes = (re.sub(r"https?://\S+", "", n).strip() for n in raw if isinstance(n, str))
+    return sep.join(n for n in notes if n)
 
 
 def detect_inventory_moves(stops):
@@ -416,8 +425,8 @@ def detect_inventory_moves(stops):
         if CHEQUE.search(s.get("recipient") or ""):
             continue
         # the signal usually sits in the title (e.g. '… - השלמת סחורה 63810')
-        for text in (s.get("recipient") or "", stop_notes(s)):
-            label = next((lab for hint, lab in MOVE_HINTS if hint in text), None)
+        for text in (s.get("recipient") or "", task_notes(s["task"])):
+            label = next((lab for rx, lab in MOVE_HINTS if rx.search(text)), None)
             if label:
                 out[s["tid"]] = label
                 break

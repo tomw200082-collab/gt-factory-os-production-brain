@@ -3,7 +3,6 @@ backtest (real task titles/notes). No network, no database.
 
     python3 -m unittest test_sweep.py -v
 """
-import re
 import unittest
 
 import sweep
@@ -17,10 +16,9 @@ def stub_master():
         "FG-NM-1L": "NONOMIMI SANGRIA 1L", "FG-NM-3850ML": "NONOMIMI SANGRIA 3.85L",
         "FG-MAT-500G": "MATCHA 0.5KG", "FG-MAT-18G": "MATCHA 18G",
     }
-    m.items = {i: {"item_id": i, "item_name": n, "status": "ACTIVE", "uom": "BOTTLE", "case_pack": 6,
-                   "barcode": None} for i, n in names.items()}
-    m.names = [{"item_id": i, "words": set(re.findall(r"[a-z]{3,}", n.lower())) - {"elita"},
-                "size": sweep.size_of(n)} for i, n in names.items()]
+    m.items = {i: {"item_id": i, "item_name": n, "uom": "BOTTLE", "case_pack": 6, "barcode": None}
+               for i, n in names.items()}
+    m.names = sweep.name_index(m.items)
     m.suppliers = [{"supplier_id": "SUP-012", "name": "ריסטרטו"}, {"supplier_id": "SUP-017", "name": "צבר אריזות"}]
     return m
 

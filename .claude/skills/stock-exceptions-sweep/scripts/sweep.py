@@ -28,6 +28,7 @@ document number off a GI link when the task names none.
 """
 import argparse
 import datetime
+import functools
 import json
 import os
 import re
@@ -55,36 +56,40 @@ OUT = os.path.join(HERE, "sweep_out")
 # CARTON_BAG_FACTOR, Tom 2026-05-17). Credit tasks and invoices count cartons.
 SOLD_TO_STOCK = {"FG-MAT-18G": 22}
 
+
+def to_stock(item_id, qty):
+    return qty * SOLD_TO_STOCK.get(item_id, 1)
+
 # --------------------------------------------------------------------------- #
 # classification patterns (titles are Hebrew data — matched, never translated)
 # --------------------------------------------------------------------------- #
-# §1.1: never `צ.?ק` — that also matches יצחק.
-CHEQUE = re.compile(r"(^|[\s\-])צ['׳]?ק(ים)?($|[\s\-])")
+# The move signals themselves (cheque, exchange, pickup, return, tasting,
+# supplement, delivery note, free goods) are route_pack's, shared with the print
+# flag: rp.CHEQUE, rp.EXCHANGE, … The sweep adds only what it alone needs.
 SUBCONTRACT = re.compile(r"עמיתה|מדבקות מאצה")
-PICKUP = re.compile(r"איסוף|לאסוף")
 # pick up here, hand over to someone else — never "…ומסירה למפעל" (that is ours)
 HANDOVER = re.compile(r"(ומסירה|ומסירת|ואספקה|ולספק|ולמסור)\s+ל(?!מפעל)")
-FREE_GOODS = re.compile(r"ללא חיוב")
-SUPPLEMENT = re.compile(r"השלמ|תעודת\s*\S*שלוח")
-EXCHANGE = re.compile(r"החלפ|להחליף")
-RETURN = re.compile(r"החזר|להחזיר")
-TASTING = re.compile(r"טעימ|דגימ")
 # §2.5 supplier words + what the backtest showed (container, bottles, packaging)
 SUPPLIER_WORDS = re.compile(r"צבר|תבלינ|כימיקל|מדבקות|תוויות|גומיות|פרי הבוסתן|בקבוקים|יקבים|רומיכל|מהמכולה|אריזות")
-URL = re.compile(r"https?://\S+")
 # 5-digit GI numbers: delivery notes 2xxxx, invoices 6xxxx. Not inside #GT…
 # order ids, phone numbers or longer digit runs (landmine 4: exact match only).
 DOC_NUMBER = re.compile(r"(?<![\d#A-Za-z])([26]\d{4})(?!\d)")
 GI_DELIVERY_NOTE, GI_TAX_INVOICE = 200, 305
 GI_TYPE_HE = {GI_DELIVERY_NOTE: "תעודת משלוח", GI_TAX_INVOICE: "חשבונית"}
 
-KIND = {"supplement": "supplement", "free_goods": "free_goods", "exchange": "exchange",
-        "return": "return", "tasting": "tasting", "subcontract": "subcontract",
-        "delivery": "other", "unclear": "other"}
+KIND = {"delivery": "other", "unclear": "other"}   # every other class is its own kind
 LABEL = {"supplement": "השלמת סחורה", "free_goods": "סחורה ללא חיוב", "exchange": "החלפת סחורה",
          "return": "החזרת סחורה", "tasting": "טעימה", "subcontract": "קבלנות משנה (עמיתה)",
          "delivery": "אספקה ללא שורות הזמנה", "unclear": "תזוזת מלאי לא מזוהה"}
 RETURN_QUESTION = "האם הסחורה חוזרת למלאי או לפחת?"
+# class → (direction, reason_code, question when the text names nothing)
+NOTE_CLASSES = {
+    "return": ("in", "return_in", "מה נאסף מהלקוח ובאיזו כמות?"),
+    "tasting": ("out", "tasting", "אילו פריטים יצאו לטעימה ובאיזו כמות?"),
+    "exchange": ("in", "exchange_in", "מה הוחזר ומה סופק במקומו, ובאיזו כמות?"),
+}
+SUBCONTRACT_QUESTION = ("קבלנות משנה (עמיתה): מה נאסף (מוצר מוגמר נכנס) ומה נמסר (אריזה/חומר גלם יוצא), "
+                        "ובאיזו כמות? לאשר שזה הכלל: אריזה יוצאת במסירה, מוצר מוגמר נכנס באיסוף.")
 
 # note_parse: product words → item family (FG-<FAM>-<size>[-NS]). Names from
 # docs/warehouses/catalog-truth.md; the herbal words follow its SKU codes
@@ -146,13 +151,10 @@ class Master:
 
     def __init__(self):
         self.items = {r["item_id"]: r for r in q(
-            "select item_id, item_name, status, coalesce(sales_uom, 'UNIT') as uom, case_pack, barcode "
-            "from private_core.items")}
-        self.by_barcode = {bare_code(r["barcode"]): r for r in self.items.values()
-                           if r["barcode"] and r["status"] == "ACTIVE"}
-        self.names = [{"item_id": i, "words": set(re.findall(r"[a-z]{3,}", r["item_name"].lower())) - {"elita"},
-                       "size": size_of(r["item_name"])}
-                      for i, r in self.items.items() if r["status"] == "ACTIVE" and r["item_name"]]
+            "select item_id, item_name, coalesce(sales_uom, 'UNIT') as uom, case_pack, barcode "
+            "from private_core.items where status = 'ACTIVE'")}
+        self.by_barcode = {bare_code(r["barcode"]): r for r in self.items.values() if r["barcode"]}
+        self.names = name_index(self.items)
         self.gi_alias = {bare_code(r["external_sku"]): r for r in q(
             "select external_sku, item_id, mapping_status, internal_units_per_shopify_unit::float8 as units "
             "from private_core.integration_sku_map "
@@ -169,11 +171,10 @@ class Master:
              order by ct.created_at""")
 
     def active(self, item_id):
-        it = self.items.get(item_id)
-        return it if it and it["status"] == "ACTIVE" else None
+        return self.items.get(item_id)
 
     def resolve(self, text):
-        """Product words + size in free text → one active item id, or None.
+        """Product words + size in free text → one active item row, or None.
         Family words first (FG-<FAM>-<size>[-NS]), then English item names
         (e.g. "Nonomimi Sangria 1000ml" → NONOMIMI SANGRIA 1L). Two sizes or no
         single match → None: ambiguity is a question, not a line."""
@@ -183,13 +184,13 @@ class Master:
         size = next(iter(sizes), None)
         fams = {f for f, rx in FAMILY_WORDS if re.search(rx, text, re.I)}
         if len(fams) == 1 and size in ("1000ML", "500ML"):
-            item_id = f"FG-{fams.pop()}-{'1L' if size == '1000ML' else '500ML'}" + ("-NS" if NO_SUGAR.search(text) else "")
-            return item_id if self.active(item_id) else None
+            return self.items.get(f"FG-{fams.pop()}-{'1L' if size == '1000ML' else '500ML'}"
+                                  + ("-NS" if NO_SUGAR.search(text) else ""))
         if fams:
             return None
         words = set(re.findall(r"[a-z]{3,}", text.lower()))
         hits = [n["item_id"] for n in self.names if n["words"] and n["words"] <= words and n["size"] == size]
-        return hits[0] if len(hits) == 1 else None
+        return self.items[hits[0]] if len(hits) == 1 else None
 
     def fg_line(self, item_id, qty, direction, reason, source, ref, confidence):
         it = self.items[item_id]
@@ -227,6 +228,18 @@ class Master:
 def tokens(s):
     s = re.sub(r"בע[\"״']?מ", " ", s or "")
     return [w for w in re.sub(r"[^\w\s]", " ", s).split() if len(w) >= 2 and not w.isdigit()]
+
+
+def name_index(items):
+    """English item-name words + size per item, for free-text matching."""
+    return [{"item_id": i, "words": set(re.findall(r"[a-z]{3,}", r["item_name"].lower())) - {"elita"},
+             "size": size_of(r["item_name"])} for i, r in items.items() if r["item_name"]]
+
+
+def order_ref(doc):
+    """The '#GT…' order id a Green Invoice document names in its remarks."""
+    m = re.search(r"#GT\d+", doc.get("remarks") or "")
+    return m.group(0) if m else None
 
 
 def bare_code(code):
@@ -267,13 +280,10 @@ def same_customer(a, b):
 
 def task_text(row, t):
     """(title, notes): the title is the visit's recipient name — that is where
-    the signal lives (landmine 1); notes = every note field, URLs stripped."""
-    visits = (t or {}).get("visits") or []
+    the signal lives (landmine 1); notes = every note field, links removed."""
+    visits = t.get("visits") or []
     title = (visits[0].get("recipient_name") if visits else None) or row["title"] or ""
-    raw = [(t or {}).get("notes"), (t or {}).get("driver_note"), (t or {}).get("org_note")]
-    raw += [v.get("notes") for v in visits]
-    notes = [URL.sub("", n).strip() for n in raw if isinstance(n, str)]
-    return title.strip(), " | ".join(n for n in notes if n)
+    return title.strip(), rp.task_notes(t, " | ")
 
 
 def doc_refs(text):
@@ -297,33 +307,34 @@ def doc_refs(text):
 def classify(row, title, notes, master):
     if row["lw_status"] != "COMPLETED":
         return "not_completed"
-    if CHEQUE.search(title):
+    if rp.CHEQUE.search(title):
         return "cheque"
     text = f"{title} | {notes}"
     if row["n_lines"] > 0:
         # The pick bridge already posted what the order carried; only a movement
         # the order does not carry is ours.
-        for cls, rx in (("exchange", EXCHANGE), ("return", RETURN), ("tasting", TASTING), ("free_goods", FREE_GOODS)):
+        for cls, rx in (("exchange", rp.EXCHANGE), ("return", rp.RETURN), ("tasting", rp.TASTING),
+                        ("free_goods", rp.FREE_GOODS)):
             if rx.search(text):
                 return cls
         return "order"
     if SUBCONTRACT.search(title):
         return "subcontract"
-    if PICKUP.search(text) and HANDOVER.search(text):
+    if rp.PICKUP.search(text) and HANDOVER.search(text):
         return "transfer"
-    if PICKUP.search(title) and (SUPPLIER_WORDS.search(title) or master.supplier_for(title)):
+    if rp.PICKUP.search(title) and (SUPPLIER_WORDS.search(title) or master.supplier_for(title)):
         return "supplier"   # a goods receipt, not an inventory movement (§1.1)
-    if FREE_GOODS.search(text):
+    if rp.FREE_GOODS.search(text):
         return "free_goods"
-    if SUPPLEMENT.search(title):
+    if rp.SUPPLEMENT.search(title) or rp.DELIVERY_NOTE.search(title):
         return "supplement"
-    if EXCHANGE.search(text):
+    if rp.EXCHANGE.search(text):
         return "exchange"
-    if RETURN.search(text):
+    if rp.RETURN.search(text):
         return "return"
-    if TASTING.search(text):
+    if rp.TASTING.search(text):
         return "tasting"
-    if PICKUP.search(title):
+    if rp.PICKUP.search(title):
         return "return"     # collected from a customer
     if doc_refs(title):
         return "delivery"
@@ -335,27 +346,24 @@ def classify(row, title, notes, master):
 # Data contracts): search {number, type:[code]}, items[].income[].catalogNum
 # = items.barcode, .quantity, .description; client.name; remarks "#GT…".
 # --------------------------------------------------------------------------- #
-_GI = {}
+@functools.cache
+def gi_search(num, typ):
+    """The one document with this number and type, or None."""
+    hdr = {"Authorization": f"Bearer {rp.gi_token()}"}
+    res = rp._post_json(rp.GI_BASE.rstrip("/") + "/documents/search",
+                        {"number": num, "type": [typ], "page": 1, "pageSize": 5}, hdr)
+    items = res.get("items") or []
+    return items[0] if len(items) == 1 else None
 
 
 def gi_doc(num, types):
-    for typ in types:
-        key = (num, typ)
-        if key not in _GI:
-            hdr = {"Authorization": f"Bearer {rp.gi_token()}"}
-            res = rp._post_json(rp.GI_BASE.rstrip("/") + "/documents/search",
-                                {"number": num, "type": [typ], "page": 1, "pageSize": 5}, hdr)
-            items = res.get("items") or []
-            _GI[key] = items[0] if len(items) == 1 else None
-        if _GI[key]:
-            return _GI[key]
-    return None
+    return next((doc for doc in (gi_search(num, typ) for typ in types) if doc), None)
 
 
 def doc_from_link(t):
     """The task names no number but carries a GI link: read the number off the
     PDF, then confirm it through the API (the API, not the PDF, gives lines)."""
-    link = rp.gi_link(t or {})
+    link = rp.gi_link(t)
     if not link:
         return None, None
     try:
@@ -378,10 +386,10 @@ def gi_evidence(doc):
             "url": ((doc.get("url") or {}).get("origin") or None)}
 
 
-def gi_lines(doc, master, p, direction="out", reason="goods_out"):
-    """Every stock line of the document → a proposed line; a line we cannot map
-    becomes an open question, never a guess. Catalog number first (barcode or
-    the approved green_invoice alias), then the line description."""
+def gi_lines(doc, master, p):
+    """Every stock line of the document → a proposed OUT line; a line we cannot
+    map becomes an open question, never a guess. Catalog number first (barcode
+    or the approved green_invoice alias), then the line description."""
     lines, ref = [], f"GI:{doc.get('type')}:{doc.get('number')}"
     for it in doc.get("income") or []:
         code, desc = bare_code(it.get("catalogNum")), str(it.get("description") or "")
@@ -389,20 +397,19 @@ def gi_lines(doc, master, p, direction="out", reason="goods_out"):
         alias = master.gi_alias.get(code) if code else None
         if (alias and alias["mapping_status"] == "excluded_non_stock") or NON_STOCK_DESC.search(desc):
             continue
-        item, factor, confidence = master.by_barcode.get(code) if code else None, 1, "high"
-        if item:
-            factor = SOLD_TO_STOCK.get(item["item_id"], 1)
-        elif alias and master.active(alias["item_id"]):
-            item, factor = master.items[alias["item_id"]], alias["units"] or 1
-        elif master.resolve(desc):
-            item = master.items[master.resolve(desc)]
-            factor, confidence = SOLD_TO_STOCK.get(item["item_id"], 1), "medium"
+        confidence = "high"
+        if item := (master.by_barcode.get(code) if code else None):
+            qty = to_stock(item["item_id"], qty)
+        elif alias and (item := master.active(alias["item_id"])):
+            qty *= alias["units"] or 1
+        elif item := master.resolve(desc):
+            qty, confidence = to_stock(item["item_id"], qty), "medium"
         if not item or qty <= 0:
             p["open_questions"].append(
                 f"שורה ב{GI_TYPE_HE.get(doc.get('type'), '')} {doc.get('number')} לא מופתה לפריט: "
-                f"{desc} ×{qty:g} (קוד {it.get('catalogNum') or 'חסר'})")
+                f"{desc} ×{float(it.get('quantity') or 0):g} (קוד {it.get('catalogNum') or 'חסר'})")
             continue
-        lines.append(master.fg_line(item["item_id"], qty * factor, direction, reason, "gi_document", ref, confidence))
+        lines.append(master.fg_line(item["item_id"], qty, "out", "goods_out", "gi_document", ref, confidence))
     return lines
 
 
@@ -413,32 +420,36 @@ def note_lines(text, master, direction, reason):
     lines, unparsed = [], []
     for seg in re.split(r"[,;\n|+]|\.(?=\s|$)|\s+ו(?=\d|לאסוף|לספק|להחזיר|לקחת)", text):
         seg = seg.strip()
-        if not seg:
-            continue
-        item_id = None if "מכל סוג" in seg else master.resolve(seg)
-        if not item_id and not re.search(r"\d", seg):
+        item = None if "מכל סוג" in seg else master.resolve(seg)
+        if not item and not re.search(r"\d", seg):
             continue
         rest = SIZE.sub(" ", seg)
-        cases, units, bare = CASES.search(rest), UNITS.search(rest), BARE.findall(rest)
-        item = master.active(item_id) if item_id else None
+        cases, units, bare, one = CASES.search(rest), UNITS.search(rest), BARE.findall(rest), SINGULAR.search(rest)
         qty, confidence = None, "medium"
-        if item and cases and not units and item["case_pack"]:
-            qty = int(cases.group(1) or cases.group(2)) * float(item["case_pack"])
-        elif item and units:
-            qty = int(units.group(1) or units.group(2))
-        elif item and not cases and len(bare) == 1:
-            qty = int(bare[0])
-        elif item and not bare and SINGULAR.search(rest):
-            # "בקבוק דיטוקס 0.5 ליטר" — one, said in words
-            one = SINGULAR.search(rest).group(1)
-            qty = float(item["case_pack"]) if one == "ארגז" and item["case_pack"] else 1
-            confidence = "low"
-        if not item or not qty:
-            if item or cases or units or any(rx and re.search(rx, seg, re.I) for _, rx in FAMILY_WORDS):
+        if item:
+            if cases and not units and item["case_pack"]:
+                qty = int(cases.group(1) or cases.group(2)) * float(item["case_pack"])
+            elif units:
+                qty = int(units.group(1) or units.group(2))
+            elif not cases and len(bare) == 1:
+                qty = int(bare[0])
+            elif not bare and one:   # "בקבוק דיטוקס 0.5 ליטר" — one, said in words
+                qty = float(item["case_pack"]) if one.group(1) == "ארגז" and item["case_pack"] else 1
+                confidence = "low"
+        if not qty:
+            if item or cases or units or any(re.search(rx, seg, re.I) for _, rx in FAMILY_WORDS):
                 unparsed.append(seg)
             continue
-        lines.append(master.fg_line(item_id, qty, direction, reason, "note_parse", seg[:200], confidence))
+        lines.append(master.fg_line(item["item_id"], qty, direction, reason, "note_parse", seg[:200], confidence))
     return lines, unparsed
+
+
+def add_note_lines(p, text, master, direction, reason):
+    """note_lines into the proposal: lines as lines, the rest as questions."""
+    lines, unparsed = note_lines(text, master, direction, reason)
+    p["proposed_lines"] += lines
+    p["open_questions"] += [f"לא זוהו פריט וכמות מתוך: \"{seg}\"" for seg in unparsed]
+    return lines
 
 
 # --------------------------------------------------------------------------- #
@@ -446,9 +457,9 @@ def note_lines(text, master, direction, reason):
 # --------------------------------------------------------------------------- #
 def new_proposal(row, t, title, notes, cls):
     ev = [{"type": "lionwheel_task", "ref": str(row["lw_task_id"])}]
-    if (t or {}).get("pod_link"):
+    if t.get("pod_link"):
         ev[0]["url"] = t["pod_link"]
-    return {"class": cls, "lw_task_id": row["lw_task_id"], "kind": KIND[cls], "event_at": row["at"],
+    return {"class": cls, "lw_task_id": row["lw_task_id"], "kind": KIND.get(cls, cls), "event_at": row["at"],
             "summary": f"{LABEL[cls]} — {customer_part(title) or title}"[:500],
             "recipient": title[:500], "note": notes[:4000] or None, "proposed_lines": [],
             "open_questions": [], "evidence": ev, "credit_task_ids": [], "rationale": ""}
@@ -457,15 +468,15 @@ def new_proposal(row, t, title, notes, cls):
 def supplement_from_invoice(doc, p, master):
     """An invoice named on a supplement is the ORIGINAL order's invoice: the
     goods now going out are that order's open shortage, not the invoice."""
-    m = re.search(r"#GT\d+", doc.get("remarks") or "")
-    tasks = [c for c in master.open_credits if m and c["wp_order_id"] == m.group(0)]
+    order = order_ref(doc)
+    tasks = [c for c in master.open_credits if order and c["wp_order_id"] == order]
     if not tasks:
         closed = q("select item_id, qty_missing::float8 as qty, status from private_core.credit_tasks "
-                   "where wp_order_id = $1", m.group(0)) if m else []
+                   "where wp_order_id = $1", order) if order else []
         was = "; ".join(f"{c['item_id']} ×{c['qty']:g} {c['status']}" for c in closed)
         p["open_questions"].append(
             f"חשבונית {doc.get('number')}"
-            + (f" (הזמנה {m.group(0)})" if m else "")
+            + (f" (הזמנה {order})" if order else "")
             + ": אין חוסר ליקוט פתוח"
             + (f" (החוסרים כבר סגורים: {was})" if was else "")
             + " — אילו פריטים ובאיזו כמות סופקו בהשלמה?")
@@ -477,7 +488,7 @@ def supplement_from_invoice(doc, p, master):
                                        "הפריט אינו פעיל — מה סופק במקומו?")
             continue
         p["credit_task_ids"].append(c["credit_task_id"])
-        lines.append(master.fg_line(c["item_id"], c["qty_missing"] * SOLD_TO_STOCK.get(c["item_id"], 1), "out",
+        lines.append(master.fg_line(c["item_id"], to_stock(c["item_id"], c["qty_missing"]), "out",
                                     "goods_out", "credit_task", c["credit_task_id"], "high"))
     return lines
 
@@ -494,52 +505,45 @@ def link_customer_credits(p, title, master):
 
 
 def derive(row, t, title, notes, cls, master):
-    p = new_proposal(row, t, title, notes, cls)
     text = f"{title} | {notes}"
-    docs, doc_errors = [], []
-    refs = doc_refs(title + " | " + notes) if row["n_lines"] == 0 else []
-    for num, types in refs:
-        doc = gi_doc(num, types)
-        if not doc:
-            doc_errors.append(f"מסמך {num} לא נמצא ב-Green Invoice")
-        elif not set(tokens(customer_part(title))) & set(tokens((doc.get("client") or {}).get("name"))):
-            doc_errors.append(f"מסמך {num} שייך ל-{(doc.get('client') or {}).get('name')}, לא ל-{customer_part(title)}")
-        else:
-            docs.append(doc)
-    if not docs and cls in ("supplement", "free_goods", "unclear") and row["n_lines"] == 0:
-        doc, err = doc_from_link(t)
-        if doc:
-            docs.append(doc)
-            cls = p["class"] = "delivery" if cls == "unclear" else cls
-            p["kind"] = KIND[cls]
-            p["summary"] = f"{LABEL[cls]} — {customer_part(title) or title}"[:500]
-        elif err:
-            doc_errors.append(err)
-    for doc in docs:
-        p["evidence"].append(gi_evidence(doc))
-    p["open_questions"] += doc_errors
+    docs, questions = [], []
+    if row["n_lines"] == 0:   # with order lines, a named invoice is the picked order's own
+        for num, types in doc_refs(text):
+            doc = gi_doc(num, types)
+            client = ((doc or {}).get("client") or {}).get("name")
+            if not doc:
+                questions.append(f"מסמך {num} לא נמצא ב-Green Invoice")
+            elif not set(tokens(customer_part(title))) & set(tokens(client)):
+                questions.append(f"מסמך {num} שייך ל-{client}, לא ל-{customer_part(title)}")
+            else:
+                docs.append(doc)
+        if not docs and cls in ("supplement", "free_goods", "unclear"):
+            doc, err = doc_from_link(t)
+            if doc:
+                docs.append(doc)
+                cls = "delivery" if cls == "unclear" else cls
+            elif err:
+                questions.append(err)
+    p = new_proposal(row, t, title, notes, cls)
+    p["evidence"] += [gi_evidence(doc) for doc in docs]
+    p["open_questions"] += questions
 
     if cls in ("supplement", "free_goods", "delivery", "unclear"):
         for doc in docs:
+            order = order_ref(doc)
             if doc.get("type") == GI_TAX_INVOICE and cls == "supplement":
                 p["proposed_lines"] += supplement_from_invoice(doc, p, master)
-                continue
-            m = re.search(r"#GT\d+", doc.get("remarks") or "")
-            picked = master.order_picked(m.group(0)) if (m and doc.get("type") == GI_TAX_INVOICE) else []
-            if picked:
+            elif doc.get("type") == GI_TAX_INVOICE and order and (picked := master.order_picked(order)):
                 p["open_questions"].append(
-                    f"החשבונית {doc.get('number')} היא של הזמנה {m.group(0)} שכבר לוקטה במשימה "
+                    f"החשבונית {doc.get('number')} היא של הזמנה {order} שכבר לוקטה במשימה "
                     f"{picked[0]['lw_task_id']} — מה יצא במשימה הזו מעבר לליקוט?")
-                continue
-            p["proposed_lines"] += gi_lines(doc, master, p)
+            else:
+                p["proposed_lines"] += gi_lines(doc, master, p)
         if not docs:
-            lines, unparsed = note_lines(text, master, "out", "goods_out")
-            p["proposed_lines"] += lines
-            for seg in unparsed:
-                p["open_questions"].append(f"לא זוהו פריט וכמות מתוך: \"{seg}\"")
-        if cls == "supplement" and not any(d.get("type") == GI_TAX_INVOICE for d in docs):
-            link_customer_credits(p, title, master)
+            add_note_lines(p, text, master, "out", "goods_out")
         if cls == "supplement":
+            if not any(doc.get("type") == GI_TAX_INVOICE for doc in docs):
+                link_customer_credits(p, title, master)
             if not p["proposed_lines"] and not docs:
                 cands = [c for c in master.open_credits if same_customer(c["customer"], title)]
                 listing = ", ".join(f"{c['item_id']} ×{c['qty_missing']:g} ({c['wp_order_id']})" for c in cands[:12])
@@ -551,36 +555,22 @@ def derive(row, t, title, notes, cls, master):
                                        "(פריט שכבר מופיע בשורות ההזמנה ירד בליקוט — לדחות.)")
         if not p["proposed_lines"] and not p["open_questions"]:
             p["open_questions"].append("מה יצא מהמלאי במשימה הזו ובאיזו כמות?")
-    elif cls in ("return", "tasting", "exchange"):
-        direction, reason = {"return": ("in", "return_in"), "tasting": ("out", "tasting"),
-                             "exchange": ("in", "exchange_in")}[cls]
-        lines, unparsed = note_lines(text, master, direction, reason)
-        p["proposed_lines"] += lines
+    elif cls in NOTE_CLASSES:
+        direction, reason, ask = NOTE_CLASSES[cls]
+        lines = add_note_lines(p, text, master, direction, reason)
         if cls == "exchange" and row["n_lines"] == 0:
             # the replacement left too and no order line carried it
             p["proposed_lines"] += [dict(line, direction="out", reason_code="exchange_out") for line in lines]
-        for seg in unparsed:
-            p["open_questions"].append(f"לא זוהו פריט וכמות מתוך: \"{seg}\"")
         if not lines:
-            p["open_questions"].append({
-                "return": "מה נאסף מהלקוח ובאיזו כמות?",
-                "tasting": "אילו פריטים יצאו לטעימה ובאיזו כמות?",
-                "exchange": "מה הוחזר ומה סופק במקומו, ובאיזו כמות?",
-            }[cls])
-        if cls in ("return", "exchange"):
+            p["open_questions"].append(ask)
+        if cls != "tasting":
             p["open_questions"].append(RETURN_QUESTION)
     elif cls == "subcontract":
         # masterprompt W2: PKG out when delivering to the subcontractor, FG in
         # when collecting — the rule itself is confirmed by the approver.
-        direction, reason = ("out", "goods_out") if re.search(r"מסירת", title) and not PICKUP.search(title) \
-            else ("in", "goods_pickup")
-        lines, unparsed = note_lines(text, master, direction, reason)
-        p["proposed_lines"] += lines
-        for seg in unparsed:
-            p["open_questions"].append(f"לא זוהו פריט וכמות מתוך: \"{seg}\"")
-        p["open_questions"].append(
-            "קבלנות משנה (עמיתה): מה נאסף (מוצר מוגמר נכנס) ומה נמסר (אריזה/חומר גלם יוצא), ובאיזו כמות? "
-            "לאשר שזה הכלל: אריזה יוצאת במסירה, מוצר מוגמר נכנס באיסוף.")
+        delivering = "מסירת" in title and not rp.PICKUP.search(title)
+        add_note_lines(p, text, master, *(("out", "goods_out") if delivering else ("in", "goods_pickup")))
+        p["open_questions"].append(SUBCONTRACT_QUESTION)
 
     p["rationale"] = rationale(row, title, cls, p)
     return p
@@ -632,7 +622,7 @@ def bot_token():
         return json.loads(r.read())["access_token"]
 
 
-SUBMIT_FIELDS = ("kind", "event_at", "summary", "recipient", "note", "proposed_lines", "rationale",
+SUBMIT_FIELDS = ("kind", "summary", "recipient", "note", "proposed_lines", "rationale",
                  "open_questions", "evidence", "credit_task_ids")
 
 
@@ -678,10 +668,10 @@ def run(args):
               "tasks": len(rows), "counts": {}, "proposals": [], "email_lines": [], "cheques": [],
               "errors": [], "submitted": []}
     for row in rows:
-        t = cache.get(str(row["lw_task_id"]))
-        if t and t.get("_error"):
+        t = cache.get(str(row["lw_task_id"])) or {}
+        if t.get("_error"):
             report["errors"].append({"lw_task_id": row["lw_task_id"], "error": t["_error"]})
-            t = None
+            t = {}
         title, notes = task_text(row, t)
         cls = classify(row, title, notes, master)
         report["counts"][cls] = report["counts"].get(cls, 0) + 1
