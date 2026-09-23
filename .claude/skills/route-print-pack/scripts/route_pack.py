@@ -15,10 +15,11 @@ Everything else is default and automatic:
              --mark-all-lines restores it); package count under "מקור";
              last-3 order-id digits top-right
   output   : one merged print-ready PDF
-  side car : non-standard inventory movements (returns / exchanges / tastings /
-             goods received) written to route_pack_out/inventory_proposals.json
-             -> SKILL.md posts these to the Factory OS `exceptions` inbox; stock
-                moves ONLY after approval. The skill never touches stock_ledger.
+  flags    : stops whose title or notes imply a stock move outside picking
+             (exchange / pickup / return / tasting / supplement / free goods)
+             are marked on the work order and in the digest — a flag only. The
+             inbox proposal is born after delivery, by the stock-exceptions-sweep
+             skill over COMPLETED tasks. This script never touches stock_ledger.
   email    : the SKILL.md emails the final PDF + short summary to
              production@gteveryday.com (Resend).
 
@@ -388,55 +389,38 @@ def _render_one(pg, url, out, fit_one):
 
 
 # --------------------------------------------------------------------------- #
-# non-standard inventory movements -> proposals for the Factory OS inbox
+# non-standard inventory movements -> a flag on the print, nothing more. A stop
+# printed tonight can still be canceled tomorrow, so the inbox proposal is made
+# after delivery by the stock-exceptions-sweep skill (COMPLETED tasks only).
 # --------------------------------------------------------------------------- #
-MOVE_HINTS = ["החלפ", "החזר", "טעימ", "איסוף סחורה", "קבל", "מתנה", "דגימ"]
-
-# note-text hint → (kind, Hebrew action label for the concise approval summary)
-KIND_HINTS = [
-    ("החלפ", "exchange", "החלפת סחורה"),
-    ("איסוף", "pickup", "איסוף סחורה"),
-    ("החזר", "return", "החזרת סחורה"),
-    ("טעימ", "tasting", "טעימה"),
-    ("דגימ", "tasting", "דגימה"),
-    ("קבל", "goods_receipt", "קבלת סחורה"),
-    ("מתנה", "other", "מתנה"),
-]
+# title before notes, first match wins; cheque pickups are not stock moves
+MOVE_HINTS = [("החלפ", "החלפה"), ("איסוף", "איסוף"), ("לאסוף", "איסוף"), ("החזר", "החזרה"),
+              ("טעימ", "טעימה"), ("דגימ", "דגימה"), ("השלמ", "השלמה"), ("ללא חיוב", "ללא חיוב"),
+              ("תעודת משלוח", "תעודת משלוח")]
+CHEQUE = re.compile(r"(^|[\s\-])צ['׳]?ק(ים)?($|[\s\-])")
 
 
-def classify_move(text):
-    for hint, kind, label in KIND_HINTS:
-        if hint in text:
-            return kind, label
-    return "other", "תזוזת מלאי"
+def stop_notes(s):
+    """Every note field of the stop, links removed."""
+    t = s["task"]
+    visits = t.get("visits") or []
+    notes = [t.get("notes"), t.get("driver_note"), t.get("org_note")] + [v.get("notes") for v in visits]
+    return " ".join(re.sub(r"https?://\S+", "", n) for n in notes if isinstance(n, str))
 
 
 def detect_inventory_moves(stops):
-    """Conservative: flag stops whose note implies a non-pick stock move.
-    We do NOT guess quantities — the proposal carries the verbatim note + a
-    concise summary for human approval in the inbox (as an APPROVAL, not an
-    exception) before any stock_ledger entry is posted."""
-    out = []
+    """{tid: label} for stops that move stock outside picking — invoice stops
+    included. Print flag only; quantities are never guessed here."""
+    out = {}
     for s in stops:
-        t = s["task"]
-        note = (t.get("notes") or "").strip()
-        recip = s.get("recipient") or ""
-        text = f"{recip} {note}"
-        if any(h in text for h in MOVE_HINTS) and not s.get("gi"):
-            kind, label = classify_move(text)
-            recip_short = recip.split("(")[0].strip() or recip
-            summary = f"{label} — {recip_short}" if recip_short else label
-            out.append({
-                "lw_task_id": s["tid"],
-                "daily_order": s["do"],
-                "recipient": recip,
-                "note": note,
-                "kind": kind,
-                "summary": summary,
-                "form_type": "inventory_movement",
-                "status": "open",
-                "needs": "item_id + qty + direction(+/-) confirmed by the approver in the inbox",
-            })
+        if CHEQUE.search(s.get("recipient") or ""):
+            continue
+        # the signal usually sits in the title (e.g. '… - השלמת סחורה 63810')
+        for text in (s.get("recipient") or "", stop_notes(s)):
+            label = next((lab for hint, lab in MOVE_HINTS if hint in text), None)
+            if label:
+                out[s["tid"]] = label
+                break
     return out
 
 
@@ -673,19 +657,14 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         # stop, and testing it as a boolean silently drops that whole invoice.
         stops = [s for s in stops if s["do"] is not None and s["do"] >= from_stop]
 
-    # per-stop flags for the work-order timeline: special handling (pickup /
-    # exchange, derived from the same note hints used for the inbox proposals)
-    # and picking shortfalls (any ordered > picked). Structure carries truth.
+    # per-stop flags for the work-order timeline: special handling (a stock move
+    # outside picking — detect_inventory_moves) and picking shortfalls (any
+    # ordered > picked). Structure carries truth.
+    moves = detect_inventory_moves(stops)
     flags = {}
     for s in stops:
         t = s["task"]
-        text = f"{s.get('recipient') or ''} {(t.get('notes') or '')}"
-        special = None
-        if not s.get("gi"):
-            if "איסוף" in text:
-                special = "איסוף"
-            elif "החלפ" in text:
-                special = "החלפה"
+        special = moves.get(s["tid"])
         short = False
         if missing_products:
             # Shortage-list mode: picking is still running, so picked_quantity is
@@ -778,10 +757,6 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
     final = f"{OUT}/route_{driver}_{date}.pdf".replace(" ", "_")
     assemble(wo, ordered_parts, final)
 
-    proposals = detect_inventory_moves(stops)
-    json.dump(proposals, open(f"{OUT}/inventory_proposals.json", "w"),
-              ensure_ascii=False, indent=2)
-
     # discrepancy summary (for the email body / cover-of-record)
     disc = []
     for s in stops:
@@ -801,22 +776,22 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         "waybills": sum(1 for p, _ in ordered_parts if "wb_" in p),
         "copies": copies,
         "discrepancies": disc,
-        "inventory_proposals": len(proposals),
+        "flagged_moves": len(moves),
         "file": final,
     }
     json.dump(summary, open(f"{OUT}/summary.json", "w"), ensure_ascii=False, indent=2)
 
     # markdown digest of the run — the graphify auto-step (SKILL.md step 7) reads
     # THIS (graphify can't ingest raw JSON). One queryable record per dispatch:
-    # stops, customers, picking shortfalls, inventory-movement proposals.
-    write_digest(driver, date, stops, disc, proposals, summary,
+    # stops, customers, picking shortfalls, flagged stock moves.
+    write_digest(driver, date, stops, disc, moves, summary,
                  f"{OUT}/summary.md")
 
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return summary
 
 
-def write_digest(driver, date, stops, disc, proposals, summary, path):
+def write_digest(driver, date, stops, disc, moves, summary, path):
     L = []
     L.append(f"# Route pack — {driver} — {date}")
     L.append("")
@@ -829,8 +804,8 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
         recip = (s.get("recipient") or "").strip()
         city = (s.get("city") or "").strip()
         tags = []
-        if any(p["lw_task_id"] == s["tid"] for p in proposals):
-            tags.append("special-handling")
+        if s["tid"] in moves:
+            tags.append(f"special-handling ({moves[s['tid']]})")
         if any(d["stop"] == s["do"] for d in disc):
             tags.append("picking-shortfall")
         tag = f" — {', '.join(tags)}" if tags else ""
@@ -846,11 +821,11 @@ def write_digest(driver, date, stops, disc, proposals, summary, path):
     else:
         L.append("- None.")
     L.append("")
-    L.append("## Inventory-movement proposals (await inbox approval)")
-    if proposals:
-        for p in proposals:
-            L.append(f"- {p['recipient']} (task {p['lw_task_id']}): "
-                     f"{p.get('note') or 'goods pickup'}")
+    L.append("## Stock moves outside picking (flagged; proposed after delivery by stock-exceptions-sweep)")
+    flagged = [s for s in stops if s["tid"] in moves]
+    if flagged:
+        for s in flagged:
+            L.append(f"- {s.get('recipient')} (task {s['tid']}): {moves[s['tid']]}")
     else:
         L.append("- None.")
     L.append("")

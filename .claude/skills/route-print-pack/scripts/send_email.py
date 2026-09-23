@@ -42,9 +42,9 @@ def main(summary_path):
             lines.append(f"  עצירה {d['stop']} · {d['recipient']} · {d['item']} · לוקט {d['picked']}/{d['ordered']}")
     else:
         lines.append("אין הפרשי ליקוט.")
-    if s.get("inventory_proposals"):
+    if s.get("flagged_moves"):
         lines.append("")
-        lines.append(f"תזוזות מלאי לא-רגילות שממתינות לאישור ב-inbox: {s['inventory_proposals']}")
+        lines.append(f"עצירות עם תנועת מלאי מחוץ לליקוט (מסומנות; ההצעה לאישור נוצרת אחרי המסירה): {s['flagged_moves']}")
 
     payload = {
         "pdf_base64": base64.b64encode(open(pdf, "rb").read()).decode(),

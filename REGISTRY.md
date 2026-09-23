@@ -46,15 +46,17 @@ Legacy ↔ new are additive pairs — one active per dispatch, default new. Wave
 **Stacking:** `/gate-close` → evidence consumed by `/production-go-no-go` · `/release-check` (pre-gate) → `/production-go-no-go` (policy decision) · `/portal-pr-review` (per-PR) → `/ux-release-gate` (per-release) · `/screen-scorecard` aggregates `/ux-flow-audit` + `/button-logic-review` + `/design-system-check` + `/empty-error-state-audit`.
 **Verdict-token collision:** `HOLD` means dependency-blocked in `/production-go-no-go` but P0-finding-present in `/ux-release-gate` — same token, different cause. Read context, ⊥ assume.
 
-## Skills (7)
+## Skills (8)
 
-`daily-ops-guardian` · `daily-delivery-dispatch` · `route-print-pack` · `procurement-planning` · `plan-production-14d` · `goods-receipt-from-invoice` · `close-session`
+`daily-ops-guardian` · `daily-delivery-dispatch` · `route-print-pack` · `procurement-planning` · `plan-production-14d` · `goods-receipt-from-invoice` · `close-session` · `stock-exceptions-sweep`
+
+`stock-exceptions-sweep` — Tom written approval 2026-09-23, verbatim: `תכתוב לי מאסטרפרומפט שאדביק בסשן חדש והוא יבצע הכל מקצה לקצה כולל SIMPLIFY וVERIFICATION BEFORE COMPLITION בסוף כך שאני לא אצטרך לוודא אותו. שימזג והכל ויוודא שירוק. עבודה מקצה לקצה ללא השארת קצוות פתוחים בכלל.` Scope: the skill + daily-ops-guardian's one extra write (pending inventory-movement proposals via the API; never approve, never ledger).
 
 Skill creation threshold: `docs/phase8/decisions/STEP4-SKILLS-DECISION.md`. ⊥ create skills below it.
 
 ## Drift check
 
-`ls .claude/agents/*.md | wc -l` = 19 · `find .claude/commands -name '*.md' | wc -l` = 15 · `ls -d .claude/skills/*/ | wc -l` = 7.
+`ls .claude/agents/*.md | wc -l` = 19 · `find .claude/commands -name '*.md' | wc -l` = 15 · `ls -d .claude/skills/*/ | wc -l` = 8.
 Counts diverge → `/source-truth-audit` flags it.
 
 ---

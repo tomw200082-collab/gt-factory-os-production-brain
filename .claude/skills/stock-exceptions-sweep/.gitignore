@@ -1,0 +1,5 @@
+# run output — real customer / route data, never commit
+sweep_out/
+scripts/sweep_out/
+__pycache__/
+*.pyc
