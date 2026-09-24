@@ -5,7 +5,8 @@ description: >-
   trigger, or when Tom says "בדיקת בוקר", "בדיקה יומית", "daily check", "/daily-ops-guardian", or asks
   whether stock/plan/procurement are OK after a new large order. One read-mostly loop: integrity gate →
   FG sell-coverage vs committed+forecast → RM/PKG coverage vs firmed plan → committed-first plan
-  recheck → draft re-plans + purchase-session drafts (never firm/place) → forecast findings log →
+  recheck → draft re-plans + purchase-session drafts (never firm/place) → stock-exceptions sweep
+  (pending inventory-movement proposals, never approved here) → forecast findings log →
   HTML email report (Hebrew, branded, action buttons), sent for real via a Make.com webhook →
   Gmail send (no draft tap needed), + short chat/push backup. Weekly (Wednesday, the meeting day) findings
   feed plan-production-14d retro; monthly
@@ -38,6 +39,7 @@ Created per Tom written request 2026-07-03 (grill session; satisfies STEP4-SKILL
 ## §C — constraints (grill 2026-07-03)
 
 - C1: **draft-writes only.** May write: `production_plan` drafts, purchase-session drafts, forecast proposals, findings log. ⊥ firm, ⊥ `fn_place_purchase_order`, ⊥ ledger/projection writes, ⊥ external systems (LionWheel/Shopify/GI) — read-only mirrors.
+  + one allowed write (Tom written approval 2026-09-23, verbatim: `תכתוב לי מאסטרפרומפט שאדביק בסשן חדש והוא יבצע הכל מקצה לקצה כולל SIMPLIFY וVERIFICATION BEFORE COMPLITION בסוף כך שאני לא אצטרך לוודא אותו. שימזג והכל ויוודא שירוק. עבודה מקצה לקצה ללא השארת קצוות פתוחים בכלל.`): **submitting pending inventory-movement proposals through the API** (`stock-exceptions-sweep`, as the operator bot). ⊥ approving, ⊥ ledger.
 - C2: auto-run 06:30 IL daily (scheduled trigger, fresh session) + manual fire anytime.
 - C3: output = **HTML email** to Tom (Hebrew, `references/email_template.html`, branded, deep-link buttons to the exact portal surface) + short chat/push as backup notice; drafts wait in portal at their native surfaces. (Tom-amended 2026-07-04.)
 - C4: re-plan rule = committed-first, the locked plan-production-14d objective (`margin_risk_ils_day`, committed always wins, no math). ⊥ new thresholds.
@@ -46,7 +48,7 @@ Created per Tom written request 2026-07-03 (grill session; satisfies STEP4-SKILL
 ## Daily flow — 6 stages, in order
 
 ```
-0 gate → 0.5 yesterday plan-vs-actual → 1 FG coverage → 2 RM/PKG coverage → 3 committed-first recheck → 4 findings log → 5 report
+0 gate → 0.5 yesterday plan-vs-actual → 1 FG coverage → 2 RM/PKG coverage → 3 committed-first recheck → 3.5 stock-exceptions sweep → 4 findings log → 5 report
 ```
 
 ! Never skip 0. Stages 0.5-2 read-only; drafts written only in 3.
@@ -89,6 +91,23 @@ select private_core.rebuild_verifier();  -- ! = 0, else report 🔴 + HALT draft
 ### Stage 3 — committed-first recheck + drafts
 
 ∃ committed order due within horizon not covered by firm plan → build re-plan proposal per C4 (which tank/day swaps, what forecast-based batch yields). Write as `production_plan` **drafts** (prefix `GUARD:` on draft note; ⊥ touch Tom's `TEAEDD:%` drafts). Component gap from Stage 2 urgent (blocks firmed production ≤ lead time) → prepare purchase-session **draft**; quantity logic = hand off to procurement-planning skill rules; placement stays with Tom → Doreen.
+
+### Stage 3.5 — stock-exceptions sweep (Tom 2026-09-23, C1 write)
+
+Run the `stock-exceptions-sweep` skill live: `python3 .claude/skills/stock-exceptions-sweep/scripts/sweep.py`.
+- **What it does:** takes LionWheel tasks COMPLETED in the last 3 days, all drivers. Every stock move the pick bridge never saw (supplement, free goods, exchange, return, tasting, subcontract, delivery without order lines) becomes a **pending** inventory-movement proposal, filled with lines, evidence and open questions and submitted as the operator bot.
+- **Stage 0 does not gate it:** a proposal posts nothing. Only Tom's approval posts.
+- **Email:** render from `sweep_out/sweep_report.json` as `exception_row`s, never from memory (V4):
+  - 🟡 one row per proposal with a `submission_id`:
+    - `EXC_ITEM_ID` = the LionWheel task id
+    - `EXC_TITLE` = the summary
+    - `EXC_DETAIL` = "N שורות מוצעות · M שאלות פתוחות"
+    - link `https://gt-factory-os-portal.vercel.app/inbox/approvals/inventory-movement/<submission_id>`, CTA `לאישור`
+  - 🟡 one row per supplier pickup with no goods receipt within ±2 days. The report's `email_lines` carry the text; the link is the goods-receipt page.
+  - One 🟢 row listing the transfers (pick up here, hand over there — nothing for our stock).
+  - Replays of already-decided proposals (`409 NOT_PENDING`) are not rows.
+- **Loud failure:** the script errors, or any `submitted` row is neither 202 nor `409 NOT_PENDING` → 🔴 row "הסוויפ נכשל" with the shortest decisive error line. ⊥ silent skip (V9 spirit).
+- **Never:** approve or reject a proposal, write `form_submissions`/`inventory_movements`/`exceptions` rows directly (Supabase MCP included), or widen the window to reach history.
 
 ### Stage 4 — findings log
 
@@ -163,7 +182,7 @@ First guardian run of month → separate proposal (chat + doc in `docs/planning/
 ## §V — invariants
 
 - V1: ∀ run → Stage 0 gate before any draft. 🔴 stock truth → no drafts.
-- V2: ⊥ firm / place / ledger write / external-system write. Drafts only (C1).
+- V2: ⊥ firm / place / ledger write / external-system write. Drafts only (C1) — plus the one C1 write: pending inventory-movement proposals via the API, never an approval (Tom 2026-09-23, quote in C1).
 - V3: committed > forecast ∀ conflict (C4). ⊥ invented thresholds.
 - V4: ∀ number in report ← live SQL this run (evidence standard). ⊥ stale/remembered numbers.
 - V5: ⊥ overwrite Tom's plan edits (`TEAEDD:%` drafts untouchable).

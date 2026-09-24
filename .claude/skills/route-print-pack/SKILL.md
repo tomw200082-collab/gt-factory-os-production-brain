@@ -9,8 +9,9 @@ description: >-
   default_route_driver), date = the next working day ("מחר" on Thursday means
   Sunday). Produces one print-ready PDF (LionWheel work order page 1,
   then every stop in driving order: real Green Invoice ×2 with picking marks, or
-  official LionWheel waybill ×2), proposes any non-standard inventory movements to
-  the Factory OS inbox for approval, and emails the file to production@gteveryday.com.
+  official LionWheel waybill ×2), flags stops that move stock outside picking
+  (the inbox proposal for those is made after delivery by stock-exceptions-sweep),
+  and emails the file to production@gteveryday.com.
 ---
 
 # Route Print Pack
@@ -84,38 +85,18 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    ```bash
    python3 route_pack.py --driver "מקסים" --date 2026-06-22
    ```
-   Writes `route_pack_out/route_<driver>_<date>.pdf`, `summary.json`, and
-   `inventory_proposals.json`. Sanity-check by rendering a page to PNG with PyMuPDF.
-4. **Inventory inbox — submit as an APPROVAL (not a plain exception).** For each
-   item in `inventory_proposals.json` (returns, exchanges, tastings, goods received
-   — anything that moves stock outside normal picking), create a **pending
-   inventory-movement approval** so it renders in the inbox with **Approve / Reject**
-   (like physical count), not Acknowledge / Resolve. Preferred path: POST to the
-   backend `POST /api/v1/mutations/inventory-movements`
-   (`{idempotency_key, event_at, kind, source_ref:<lw_task_id>, recipient, note,
-   summary}`). **Prefer this endpoint** — it owns the contract (idempotency, category,
-   exception wiring). Only as a **last-resort fallback** (no backend session
-   reachable), write the same rows directly via the Supabase MCP, mirroring the
-   submit handler (`api/src/inventory-movements/handler.ts`) — and keep them in sync
-   with it, or the portal's `inventory_movement_pending` filter won't pick them up:
-   1. `form_submissions` (`form_type='inventory_movement'`, `status='pending'`,
-      `submitted_by=<Tom's app_users.user_id>`, unique `idempotency_key`,
-      `raw_payload`=the proposal incl. `summary`).
-   2. `inventory_movements` (`submission_id`, `kind`, `source_ref`, `recipient`, `note`).
-   3. `exceptions` (`category='inventory_movement_pending'`, `status='open'`,
-      `source='form.inventory_movement'`, `title`=the concise `summary`,
-      `related_entity_type='form_submission'`, `related_entity_id=<submission_id>`,
-      `recommended_action`). The portal maps this category to
-      `approval:inventory_movement` → `/inbox/approvals/inventory-movement/<id>`.
-   Surface the concise summaries to Tom.
-   - **Depends on migration `0259_inventory_movements.sql`** being applied (adds the
-     `inventory_movement` form_type + `INVENTORY_MOVEMENT` ledger type + the two
-     tables). Until applied, fall back to the prior plain-exception insert.
-   - **Stock truth is sacred (CLAUDE.md).** This skill only **proposes**. The stock
-     move (add/subtract, RM/FG) posts to `stock_ledger` **only when the approver
-     enters the confirmed line(s) and approves** in the inbox, through the
-     inventory-movement approve mutation (the sanctioned append path) — never written
-     directly here, and never guessed.
+   Writes `route_pack_out/route_<driver>_<date>.pdf`, `summary.json` and `summary.md`.
+   Sanity-check by rendering a page to PNG with PyMuPDF.
+4. **Stock moves outside picking: flag only, no submission.** `detect_inventory_moves()`
+   marks stops whose title or any note field (invoice stops included) says exchange, pickup,
+   return, tasting, supplement, free goods (`ללא חיוב`) or delivery note. Cheque pickups are
+   not flagged. The flag lands on the work-order fallback and in `summary.md`, and
+   `summary.json` carries `flagged_moves`. **This skill creates nothing in the inbox.** A
+   route is printed before delivery, and a stop can still be canceled or changed. The
+   filled proposal (lines, evidence, open questions) is made after delivery, from COMPLETED
+   tasks of every driver, by the **`stock-exceptions-sweep`** skill inside the 06:30
+   `daily-ops-guardian` run. Never write inbox, form or ledger rows from here, through the
+   API or the Supabase MCP.
 5. **Email.** The PDF is compressed on assembly (~3 MB). Send it + a short summary
    to **production@gteveryday.com** via the Supabase Edge Function relay
    `email_route_pack` (the sandbox cannot reach Resend directly — Cloudflare 1010 —
@@ -133,7 +114,7 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
 6. **Deliver** the PDF to Tom in chat as well.
 7. **Knowledge-graph capture (auto — Tom, 2026-06-21).** Every time this skill runs,
    `route_pack.py` also writes a markdown digest `route_pack_out/summary.md` (stops,
-   customers, picking shortfalls, inventory-movement proposals). Feed **that digest**
+   customers, picking shortfalls, flagged stock moves). Feed **that digest**
    to `/graphify` so each dispatch becomes queryable history.
    - graphify reads `.md`, **not** raw JSON, so the digest is the input (never the
      PDF or the repo) — fast and additive.
@@ -154,7 +135,8 @@ terminal LionWheel status.)
 ## Boundaries
 - Read-only on LionWheel, Green Invoice, and the Supabase mirror.
 - Only the named driver's route; never other stops or drivers.
-- Never write to `stock_ledger`. Inventory moves go to the inbox → human approval.
+- Never write to `stock_ledger`, and never create inbox items: flagged moves are proposed
+  after delivery by `stock-exceptions-sweep`, and a human approves.
 - The LionWheel web password lives only as an env secret; if it ever appears in
   chat, tell Tom to rotate it.
 
@@ -170,6 +152,16 @@ terminal LionWheel status.)
   סידור עבודה (use this for page 1; the `/drivers/{id}/daily_route_plan` SPA renders
   app chrome + only the on-screen rows, do not print it directly);
   waybill `GET /tasks/{id}/print_waybill`.
+- Green Invoice (verified live 2026-09-23, delivery note 20286 + invoice 63810):
+  `POST /documents/search {"number": "<n>", "type": [<code>], "page": 1, "pageSize": 5}`
+  returns exactly that document (`number` as string or int). Codes seen: `200` = תעודת
+  משלוח, `305` = חשבונית מס. The same number under the other type returns 0. Each search item
+  already carries `income[]`: `catalogNum` (the barcode = `items.barcode`, sometimes without
+  its leading 0), `description`, `quantity`, `price`, `itemId` (empty); plus `client.name`,
+  `client.id`, `documentDate`, `remarks` (`"מספר הזמנה באתר: #GT13977"` on invoices,
+  `"תעודת משלוח עבור חשבונית מס 63913"` on delivery notes), and `url.origin` (PDF).
+  The task's GI link (`documents/download?d=…`) carries a different token than `url.origin`;
+  match by number, never by link.
 - Green Invoice: token `POST /account/token {id,secret}`; fallback document match
   `POST /documents/search` (paginate newest-first through the **full** history —
   ~12k+ docs — until the `#GT…` order id in `remarks` matches; do NOT stop at the
