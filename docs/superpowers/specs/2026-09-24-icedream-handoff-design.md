@@ -164,7 +164,7 @@ Applied in order; the first that applies wins.
 | Code | Rule | Expected volume |
 |---|---|---|
 | E1 | Customer paid different prices across flavors of one tea family in the last 12 months | 30 (24 + 6) |
-| E2 | Last price is ≥10% below the previous price for the same SKU within 12 months (possible one-off) | computed at build |
+| E2 | Last price is ≥10% below the previous price for the same price key — the SKU, or for tea the size family — within 12 months (possible one-off) | computed at build |
 | E3 | Customer price above list price | 13 pairs |
 | E4 | Branches with the same ח.פ pay different prices for the same SKU or family | computed at build |
 | E5 | Book price ≠ the line price on the customer's latest Green Invoice tax invoice (gate G1) | computed at build |
