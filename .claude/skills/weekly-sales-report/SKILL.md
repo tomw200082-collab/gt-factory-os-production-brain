@@ -74,7 +74,7 @@ description: >
    אז, לפני צעד 6, מייל אחד אל `tom@gteveryday.com` (Gmail `send_message`):
    - קישור: `mcp__Claude_Code_Remote__get_session` **בלי** `session_id` → `ccr.id`
      (`session_…`) → `https://claude.ai/code/<ccr.id>`. הכלי חסר → `https://claude.ai/code`.
-   - נושא: `לאשר את דוח המכירות · לחיצה אחת`
+   - נושא: `לאשר את דוח המכירות · <DD/MM> · לחיצה אחת` (התאריך של הבוקר הזה)
    - `htmlBody` (להחליף רק את LINK):
      `<div dir="rtl" style="font-family:Arial,sans-serif;font-size:16px"><p>דוח המכירות מוכן וממתין לאישור שלך.</p><p><a href="LINK" style="display:inline-block;background:#2F5D3F;color:#ffffff;padding:16px 32px;border-radius:10px;text-decoration:none;font-weight:bold;font-size:18px">לאשר פרסום</a></p><p style="color:#666666;font-size:13px">הכפתור פותח את הריצה — שם לאשר.</p></div>`
    - `body`: `לאשר פרסום: LINK`
@@ -82,6 +82,8 @@ description: >
    נושא אחר ממייל צעד 7 — ⊥ נספר ב-D6.
 6. **פרסום:** Artifact publish של `report.html` עם `url` הקבוע. הדף כבר מציג
    ״עודכן <תאריך+שעה>״ בשורת הטאבים.
+   הפרסום נדחה כי לדף יש גרסה חדשה מזו שנקראה בצעד 5.9 (ריצה מאוחרת יותר, שאושרה
+   קודם, כבר פרסמה) → **⊥ לפרסם שוב, ⊥ `force`, ⊥ מייל צעד 7.** לעצור. דוח ישן ⊥ דורס חדש.
 7. **מייל לתום** (Gmail MCP, `send_message`), עברית, קצר וללא קישוט.
    נושא בשני המצבים: `דוח המכירות מעודכן · הנתונים עד <DD/MM HH:MM>`
    פתיח בשני המצבים: (א) הקישור. (ב) ״הדוח עודכן אוטומטית; הנתונים נכונים בדיוק עד
