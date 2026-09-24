@@ -127,5 +127,17 @@ class Customers(unittest.TestCase):
         self.assertTrue(sweep.same_customer("אליטה אופק - השלמת סחורה - מרגריטות", "אליטה אופק בע\"מ"))
 
 
+class Rationale(unittest.TestCase):
+    """The first live proposal (2026-09-24, task 28069095) read "…שגשר הליקוט רואה סוג: …"."""
+    def text(self, n_lines):
+        r = {"lw_task_id": 28069095, "at": "2026-09-22 12:47:00+00", "n_lines": n_lines}
+        p = {"proposed_lines": [], "credit_task_ids": []}
+        return sweep.rationale(r, "עמיתה- איסוף מאצ'ה", "subcontract", p)
+
+    def test_every_sentence_ends_before_the_next_begins(self):
+        self.assertIn("שגשר הליקוט רואה. סוג: קבלנות משנה (עמיתה).", self.text(0))
+        self.assertIn("שכבר לוקטו. סוג:", self.text(2))
+
+
 if __name__ == "__main__":
     unittest.main()

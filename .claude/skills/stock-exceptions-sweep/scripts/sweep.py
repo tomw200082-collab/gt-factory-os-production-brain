@@ -582,9 +582,9 @@ def rationale(row, title, cls, p):
     ins = [f"{l['quantity']:g} {l['item_id']}" for l in p["proposed_lines"] if l["direction"] == "in"]
     src = sorted({l["source"] for l in p["proposed_lines"]})
     parts = [
-        f"משימת LionWheel {row['lw_task_id']} ({title}) הושלמה ב-{when} ללא שורות הזמנה שגשר הליקוט רואה"
+        f"משימת LionWheel {row['lw_task_id']} ({title}) הושלמה ב-{when} ללא שורות הזמנה שגשר הליקוט רואה."
         if row["n_lines"] == 0 else
-        f"משימת LionWheel {row['lw_task_id']} ({title}) הושלמה ב-{when}; מעבר לשורות ההזמנה שכבר לוקטו",
+        f"משימת LionWheel {row['lw_task_id']} ({title}) הושלמה ב-{when}; מעבר לשורות ההזמנה שכבר לוקטו.",
         f"סוג: {LABEL[cls]}.",
         f"יוצא מהמלאי: {', '.join(outs)}." if outs else "יוצא מהמלאי: לא נגזר.",
         f"נכנס למלאי: {', '.join(ins)}." if ins else "נכנס למלאי: לא נגזר.",
