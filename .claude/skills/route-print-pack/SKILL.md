@@ -94,8 +94,8 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    `summary.json` carries `flagged_moves`. **This skill creates nothing in the inbox.** A
    route is printed before delivery, and a stop can still be canceled or changed. The
    filled proposal (lines, evidence, open questions) is made after delivery, from COMPLETED
-   tasks of every driver, by the **`stock-exceptions-sweep`** skill inside the 06:30
-   `daily-ops-guardian` run. Never write inbox, form or ledger rows from here, through the
+   tasks of every driver, by the API's daily stock-exceptions sweep (06:30, pg_cron; see
+   the **`stock-exceptions-sweep`** skill). Never write inbox, form or ledger rows from here, through the
    API or the Supabase MCP.
 5. **Email.** The PDF is compressed on assembly (~3 MB). Send it + a short summary
    to **production@gteveryday.com** via the Supabase Edge Function relay

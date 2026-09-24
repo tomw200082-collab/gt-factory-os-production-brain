@@ -50,7 +50,7 @@ Legacy ↔ new are additive pairs — one active per dispatch, default new. Wave
 
 `daily-ops-guardian` · `daily-delivery-dispatch` · `route-print-pack` · `procurement-planning` · `plan-production-14d` · `goods-receipt-from-invoice` · `close-session` · `stock-exceptions-sweep`
 
-`stock-exceptions-sweep` — Tom written approval 2026-09-23, verbatim: `תכתוב לי מאסטרפרומפט שאדביק בסשן חדש והוא יבצע הכל מקצה לקצה כולל SIMPLIFY וVERIFICATION BEFORE COMPLITION בסוף כך שאני לא אצטרך לוודא אותו. שימזג והכל ויוודא שירוק. עבודה מקצה לקצה ללא השארת קצוות פתוחים בכלל.` Scope: the skill + daily-ops-guardian's one extra write (pending inventory-movement proposals via the API; never approve, never ledger).
+`stock-exceptions-sweep` — Tom written approval 2026-09-23, verbatim: `תכתוב לי מאסטרפרומפט שאדביק בסשן חדש והוא יבצע הכל מקצה לקצה כולל SIMPLIFY וVERIFICATION BEFORE COMPLITION בסוף כך שאני לא אצטרך לוודא אותו. שימזג והכל ויוודא שירוק. עבודה מקצה לקצה ללא השארת קצוות פתוחים בכלל.` Scope: pending inventory-movement proposals, never an approval, never the ledger. Since Tom 2026-09-24 (`אני לא רוצה להפעיל מחדש את הROUTINE הזה.`) the sweep runs in the API on pg_cron (gt-factory-os #278, migration 0351); the skill documents it, and daily-ops-guardian only reports its last run.
 
 Skill creation threshold: `docs/phase8/decisions/STEP4-SKILLS-DECISION.md`. ⊥ create skills below it.
 
