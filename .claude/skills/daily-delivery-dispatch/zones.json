@@ -1,6 +1,12 @@
 {
   "_comment": "Source of truth for delivery-zone membership. From Tom's LionWheel zones map 2026-06-21 (purple=Center, green=North, red=South) + boundary calls Tom delegated. Match on normalized destination_city (lowercase+trim). Unknown city => HALT and ask Tom, then append here. Keys are zone names; values are city strings (Hebrew + English variants).",
   "Center": [
+    "כפר סבא", "kefar sava",
+    "ראשון לציון", "rishon letsiyon",
+    "מודיעין-מכבים-רעות", "modiin makabim-reut",
+    "יפו", "רמת אביב",
+    "כפר שמריהו", "kfar shmaryahu",
+    "טירה", "tira",
     "תל אביב", "תל אביב-יפו", "תל אביב יפו", "tel aviv", "tel aviv-yafo", "tel aviv-jaffa", "tel aviv-jaffa", "tel-aviv",
     "חולון", "holon",
     "בת ים", "bat yam",
@@ -8,7 +14,7 @@
     "גבעתיים", "givatayim",
     "בני ברק", "bnei brak",
     "גבעת שמואל", "givat shmuel",
-    "הרצליה", "herzliya", "herzliyya",
+    "הרצליה", "herzliya", "herzliyya", "hertsliya",
     "רמת השרון", "ramat hasharon",
     "הוד השרון", "hod hasharon",
     "רעננה", "raanana", "ra'anana",
