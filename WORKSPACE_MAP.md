@@ -62,7 +62,7 @@ git fetch --all --prune && git status --short && git log --oneline --decorate -5
 git branch -vv && git worktree list && git remote -v
 ```
 
-**Note:** `gt-factory-os/portal/` is a D1–D4 reference scaffold only — not the production portal.  
+**Note:** `gt-factory-os/portal/` (the D1–D4 reference scaffold) was retired 2026-09-24 (gt-factory-os #277, Tom approved); the production portal is `gt-factory-os-portal/`.  
 **Note:** `PRODUCTION/portal/` is archived — do not use.
 
 ### UX canon (PRODUCTION) and portal locked register (portal)
