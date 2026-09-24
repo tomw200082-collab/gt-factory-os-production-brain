@@ -78,7 +78,7 @@ Return and exchange always carry `האם הסחורה חוזרת למלאי או
 
 ## Backtest — 2026-06-15..2026-09-22 (run 2026-09-23)
 
-1,459 tasks in the window. 112 were not completed and produced nothing. 1,212 were orders covered by the pick bridge. 27 cheques were skipped, all genuine (listed in the run). There were 20 supplier pickups (11 with no goods receipt within ±2 days) and 7 transfers, which became 18 email lines. That left **81 proposals**: supplement 27, free_goods 18, return 9, subcontract 9, delivery 8, exchange 6, unclear 4.
+1,459 tasks in the window. 112 were not completed and produced nothing. 1,212 were orders covered by the pick bridge. 27 cheques were skipped, all genuine (listed in the run). There were 20 supplier pickups (11 with no goods receipt within ±2 days) and 7 transfers, which became 18 email lines. That left **81 proposals**: supplement 27, free_goods 18, return 9, subcontract 9, unclear 8, exchange 6, delivery 4.
 33 proposals carry lines (71 lines, 14 credit-task links). The rest carry open questions. Every supplement that names a document number (12) got lines, except two that got an explicit question: 63161 names an inactive item, and 63914's order has no open shortage.
 Cross-check: GI-20269 (hand-posted 2026-06-30 with Tom's approval) comes out as exactly the four lines Tom approved: 180 DETOX 1L, 60 NAMASTEA 1L, 36 REVIVE 1L, 1100 bags MATCHA 18G.
 
