@@ -18,8 +18,8 @@ Everything else is default and automatic:
   flags    : stops whose title or notes imply a stock move outside picking
              (exchange / pickup / return / tasting / supplement / free goods)
              are marked on the work order and in the digest — a flag only. The
-             inbox proposal is born after delivery, by the stock-exceptions-sweep
-             skill over COMPLETED tasks. This script never touches stock_ledger.
+             inbox proposal is born after delivery, by the API's daily
+             stock-exceptions sweep over COMPLETED tasks. This script never touches stock_ledger.
   email    : the SKILL.md emails the final PDF + short summary to
              production@gteveryday.com (Resend).
 
@@ -391,10 +391,11 @@ def _render_one(pg, url, out, fit_one):
 # --------------------------------------------------------------------------- #
 # non-standard inventory movements -> a flag on the print, nothing more. A stop
 # printed tonight can still be canceled tomorrow, so the inbox proposal is made
-# after delivery by the stock-exceptions-sweep skill (COMPLETED tasks only).
+# after delivery by the API's stock-exceptions sweep (COMPLETED tasks only).
 # --------------------------------------------------------------------------- #
-# One vocabulary, shared with the stock-exceptions-sweep skill (it imports
-# these), so the printed flag and the next morning's proposal agree.
+# The same words classify the proposal in the API (gt-factory-os
+# api/src/inventory-movements/sweep/text.ts): change both together, so the
+# printed flag and the next morning's proposal agree.
 # Cheque pickups are not stock moves — and never `צ.?ק`, which matches יצחק.
 CHEQUE = re.compile(r"(^|[\s\-])צ['׳]?ק(ים)?($|[\s\-])")
 EXCHANGE = re.compile(r"החלפ|להחליף")
