@@ -2,37 +2,28 @@
 
 **Status: PROPOSED — awaiting Tom's written approval (D1). Not approved; nothing in this file is in force.**
 
-> **What this is.** The decisions log for `docs/decisions/modules/customer-portal-declaration.md`.
-> Template §17 asks for it: "Decisions are tracked in
-> `PRODUCTION/docs/decisions/modules/<module>-decisions.md`". Opened 2026-09-24.
+> **What this is.** The decisions log for `docs/decisions/modules/customer-portal-declaration.md`
+> (`MODULE_TEMPLATE.md` §17). Opened 2026-09-24.
 >
-> **Sources** (both private, in `gt-factory-os`):
-> - the masterprompt, revision r2 (main `3a8a968`, PR #287), §1.1, §1.2 and §6:
->   `gt-factory-os/docs/superpowers/plans/2026-09-24-customer-portal-overnight-masterprompt.md`;
-> - the design spec (main), §4.1–§4.4:
->   `gt-factory-os/docs/superpowers/specs/2026-09-24-customer-portal-design.md`.
->
-> **How Tom answers.** For each row in Part A, Tom approves it, says what to change, or rejects it,
-> in his own words and with the date. His words are recorded privately in spec §4.5 (masterprompt
-> header). This file then records the outcome row by row. A row he does not address is not built.
+> **Sources and how D1 is given:** declaration header. This file records Tom's answer row by row.
 >
 > **This file is public.** It holds no customer name, phone number, price paid, Shopify customer id
 > or host name, and gives counts only.
 
 ## A. Proposals awaiting D1 (masterprompt r2 §1.2)
 
-| Item | Proposal | Template §17 category | Status | Tom's answer (his words, date) |
-|---|---|---|---|---|
-| §1.2-1 | **The module.** The name is `customer-portal`. Its private schema `customer_portal` holds the five W2 tables (`access`, `session`, `link`, `registration`, `order_submission`), and it touches no core table. Outside its schema, the only row it writes is its own flag row in `private_core.feature_flags`. **Owner lanes:** `backend-db` (API, migration), `portal` (staff screen, tranche 179) and `integration` (the Shopify order write and the WhatsApp replies). The existing executor agents do the work under the module's scope, so no new agent files are needed. **Writes outside the schema:** (a) Shopify `draftOrderCreate` and `draftOrderComplete(paymentPending:true)`, tagged `portal`, through the backend's existing app token. (b) WhatsApp text replies through the existing order-line sender, sent only in answer to a customer's own login message, plus one order confirmation inside the 24-hour window. These are transactional, not outreach, and `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` does not govern them. (c) Nothing is written to `order_intake.wa_customer_map`. The portal keeps its own phone → customer table, backfilled from the map (§1.2-4), which grows only through staff approvals. **Nothing else is written:** not the engine, Green Invoice, LionWheel, stock or planning. | cross-module data sharing; agents | `PROPOSED 2026-09-24 — awaiting Tom` | — |
-| §1.2-2 | **Exceptions to authority documents, for this module only.** (1) Customer pricing by the family rule, as the explicit confirmation `LOCKED_DECISIONS.md:326` asks for. (2) Customers log in by WhatsApp link, not Supabase magic link (`LOCKED_DECISIONS.md:98`, `EXECUTION_POLICY.md:138`). Staff auth is untouched; customers are a separate realm. (3) "System does not own customer orders" (`LOCKED_DECISIONS.md:129`) still holds: the portal keeps a submission log only, and Shopify owns the order. (4) The order engine is used through a wrapper and never edited. | authentication and authorization model | `PROPOSED 2026-09-24 — awaiting Tom` | — |
-| §1.2-3 | **Who counts as approved at launch.** Spec §4.3 item 3 speaks of "the existing 195 manually mapped phones". They are not manual: 194 were auto-resolved by the bot because the phone is on exactly one Shopify customer record, and only 1 row is manual. **Proposal:** those same 195 rows (194 + 1) may log in, because in each case the phone sits on that customer's own record. The 15 rows auto-resolved across several accounts, and every phone added to the map after the migration, go through registration and staff approval. **Alternative:** if Tom wants a person to approve every row, the backfill is empty, and the staff screen then needs a bulk "approve" for the single-match rows. That would be a new item for his approval. | authentication and authorization model | `PROPOSED 2026-09-24 — awaiting Tom` | — |
-| §1.2-4 | **The access rule, as the migration backfills it:** every map row with a `shopify_customer_id` whose note does not start with `auto-resolved from Shopify;`. | authorization | `PROPOSED 2026-09-24 — awaiting Tom` | — |
-| §1.2-5 | **Launch control replaces the ≥24h soak** of `MODULE_TEMPLATE.md` §11 for this module. There is one flag, `private_core.feature_flags.customer_portal_live`, with `enabled` and `value.allowlist` (a comma-separated list of Shopify customer ids, or `*`). It is the only switch, and turning it off is the rollback. While it is off, or for a customer not on the allowlist, the portal behaves as if it did not exist: login messages fall through to the bot unchanged, and the portal APIs answer `PORTAL_CLOSED`. Before launch it may be enabled for the internal test mapping only. Pilots and `*` happen only on Tom's word. The safety evidence that replaces the soak is D3, D4 and D8, plus Tom's own first order. | launch (frozen-flag ceremony) | `PROPOSED 2026-09-24 — awaiting Tom` | — |
-| §1.2-6 | **Staff approval screen:** `/admin/portal-registrations` in `gt-factory-os-portal`, in English, for the `admin` role only. Whoever holds admin approves; today that is Tom. It also offers **"Create login link"**: a one-time link for a customer with access, which a person sends by hand. It lets pilots start even before WhatsApp sending is fixed. | authorization | `PROPOSED 2026-09-24 — awaiting Tom` | — |
-| §1.2-7 | **Test access.** One-time login links may be made for the internal test mapping only: one per verification pass, so at most two. Only their hash is stored, through `apply_migration` entries named `data_portal_e2e_link_<date>_<n>`. Each link is used for D8, and its session is then revoked. This is never done for any other account. | authorization and verification | `PROPOSED 2026-09-24 — awaiting Tom` | — |
-| §1.2-8 | **Out of the catalog.** Besides 0.3 L, four `D-010(א)` items are active in Shopify but not sold: `GT-SHI-CER-30`, `GT-SHI-CER-50`, `GTCFR-GTCOC-FRO` and `AP-JUG-NEA`. They are never shown, even to a customer who bought them before. | catalog | `PROPOSED 2026-09-24 — awaiting Tom` | — |
-| §1.2-9 | **Customer-facing text:** every Hebrew string in masterprompt Appendix A, exactly as written (declaration Appendix A); every Hebrew string in the design reference `index.html` except its demo line, which is removed; and the site-entry label `כניסת לקוחות`. Any other customer-facing string is not approved. Until Tom approves one, the nearest Appendix A string is used. | Hebrew register entries | `PROPOSED 2026-09-24 — awaiting Tom` | — |
-| §1.2-10 | **The site entry** goes into an unpublished theme copy. Publishing it is Tom's act. | customer-visible change | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| Item | Proposal | Status | Tom's answer (his words, date) |
+|---|---|---|---|
+| §1.2-1 | **The module.** The name is `customer-portal`. Its private schema `customer_portal` holds the five W2 tables (`access`, `session`, `link`, `registration`, `order_submission`), and it touches no core table. Outside its schema, the only row it writes is its own flag row in `private_core.feature_flags`. **Owner lanes:** `backend-db` (API, migration), `portal` (staff screen, tranche 179) and `integration` (the Shopify order write and the WhatsApp replies). The existing executor agents do the work under the module's scope, so no new agent files are needed. **Writes outside the schema:** (a) Shopify `draftOrderCreate` and `draftOrderComplete(paymentPending:true)`, tagged `portal`, through the backend's existing app token. (b) WhatsApp text replies through the existing order-line sender, sent only in answer to a customer's own login message, plus one order confirmation inside the 24-hour window. These are transactional, not outreach, and `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` does not govern them. (c) Nothing is written to `order_intake.wa_customer_map`. The portal keeps its own phone → customer table, backfilled from the map (§1.2-4), which grows only through staff approvals. **Nothing else is written:** not the engine, Green Invoice, LionWheel, stock or planning. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| §1.2-2 | **Exceptions to authority documents, for this module only.** (1) Customer pricing by the family rule, as the explicit confirmation `LOCKED_DECISIONS.md:326` asks for. (2) Customers log in by WhatsApp link, not Supabase magic link (`LOCKED_DECISIONS.md:98`, `EXECUTION_POLICY.md:138`). Staff auth is untouched; customers are a separate realm. (3) "System does not own customer orders" (`LOCKED_DECISIONS.md:129`) still holds: the portal keeps a submission log only, and Shopify owns the order. (4) The order engine is used through a wrapper and never edited. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| §1.2-3 | **Who counts as approved at launch.** Spec §4.3 item 3 speaks of "the existing 195 manually mapped phones". They are not manual: 194 were auto-resolved by the bot because the phone is on exactly one Shopify customer record, and only 1 row is manual. **Proposal:** those same 195 rows (194 + 1) may log in, because in each case the phone sits on that customer's own record. The 15 rows auto-resolved across several accounts, and every phone added to the map after the migration, go through registration and staff approval. **Alternative:** if Tom wants a person to approve every row, the backfill is empty, and the staff screen then needs a bulk "approve" for the single-match rows. That would be a new item for his approval. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| §1.2-4 | **The access rule, as the migration backfills it:** every map row with a `shopify_customer_id` whose note does not start with `auto-resolved from Shopify;`. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| §1.2-5 | **Launch control replaces the ≥24h soak** of `MODULE_TEMPLATE.md` §11 for this module. There is one flag, `private_core.feature_flags.customer_portal_live`, with `enabled` and `value.allowlist` (a comma-separated list of Shopify customer ids, or `*`). It is the only switch, and turning it off is the rollback. While it is off, or for a customer not on the allowlist, the portal behaves as if it did not exist: login messages fall through to the bot unchanged, and the portal APIs answer `PORTAL_CLOSED`. Before launch it may be enabled for the internal test mapping only. Pilots and `*` happen only on Tom's word. The safety evidence that replaces the soak is D3, D4 and D8, plus Tom's own first order. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| §1.2-6 | **Staff approval screen:** `/admin/portal-registrations` in `gt-factory-os-portal`, in English, for the `admin` role only. Whoever holds admin approves; today that is Tom. It also offers **"Create login link"**: a one-time link for a customer with access, which a person sends by hand. It lets pilots start even before WhatsApp sending is fixed. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| §1.2-7 | **Test access.** One-time login links may be made for the internal test mapping only: one per verification pass, so at most two. Only their hash is stored, through `apply_migration` entries named `data_portal_e2e_link_<date>_<n>`. Each link is used for D8, and its session is then revoked. This is never done for any other account. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| §1.2-8 | **Out of the catalog.** Besides 0.3 L, four `D-010(א)` items are active in Shopify but not sold: `GT-SHI-CER-30`, `GT-SHI-CER-50`, `GTCFR-GTCOC-FRO` and `AP-JUG-NEA`. They are never shown, even to a customer who bought them before. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| §1.2-9 | **Customer-facing text:** every Hebrew string in masterprompt Appendix A, exactly as written (declaration Appendix A); every Hebrew string in the design reference `index.html` except its demo line, which is removed; and the site-entry label `כניסת לקוחות`. Any other customer-facing string is not approved. Until Tom approves one, the nearest Appendix A string is used. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
+| §1.2-10 | **The site entry** goes into an unpublished theme copy. Publishing it is Tom's act. | `PROPOSED 2026-09-24 — awaiting Tom` | — |
 
 ## B. Decided in Phase A, 2026-09-24 (masterprompt §1.1). Not reopened here.
 
@@ -60,32 +51,20 @@ in Tom's own words (quoted verbatim), by "no objection recorded", or as a fact s
 
 ## C. Tom's switches after D1 (masterprompt §6). Each is open and is Tom's act.
 
-No secret value appears here or in any file. The steps, host names and variable names are in the
-private masterprompt §6.
+No secret value appears here or in any file (declaration §8). The steps, host names and variable
+names are in the private masterprompt §6.
 
 | # | Switch | Status |
 |---|---|---|
 | M1 | Fix WhatsApp sending: a configuration change on the API service. It blocks login and every bot reply. Side effect: the bot's existing catalog pointer starts reaching customers. | open |
 | M2 | Domain: point the portal's subdomain at the API service, then set the portal's public-URL variable. | open |
 | M3 | Who goes live: `pilots: <names>` or `everyone`. The session writes the allowlist. | open |
-| M4 | The first real order, placed by Tom as the internal test account. It is money-facing, so it needs Tom's written go. | open |
+| M4 | The first real order, placed by Tom as the internal test account. It needs Tom's written go (declaration §11). | open |
 | M5 | Publish the theme copy that carries the site entry (after M2 and M4). | open |
 
 ## D. UNRESOLVED — for Tom
 
-Each item below is something the template asks for that the sources do not settle. The full text is
-in declaration §17.3.
-
-| # | Open question | Declaration section |
-|---|---|---|
-| U1 | Which of the three owner lanes is primary, meaning the one that decides ambiguous routing? | §3 |
-| U2 | Which lane owns W7 (the `portal-verify` workflow and script) and W8 (the `gt-site` generator and the unpublished theme copy)? | §12 |
-| U3 | The customer pages are full RTL, against `LOCKED_DECISIONS.md:107` ("No full RTL layout in v1"). Neither source names this as an exception. | §0.4 X9, §10.1 |
-| U4 | Where does the Hebrew register entry for the API-served customer pages live? Is approving the design reference's strings by reference enough (`LOCKED_DECISIONS.md:80`, `EXECUTION_POLICY.md:139`)? | §0.4 X10, §10.1 |
-| U5 | The UX handoff packet for the staff screen (`LOCKED_DECISIONS.md:81`) and for the customer pages: none is named. | §10 |
-| U6 | The RUNTIME_READY signal for the staff screen (portal Mode B): none is named. | §10 |
-| U7 | Does `/ux-release-gate` run on the module's routes, the API-served customer pages included? | §15 Gate 4 |
-| U8 | Communication plan on disable: who tells customers and staff when the portal is switched off? | §16 |
+U1–U8: declaration §17.3.
 
 ## Log
 

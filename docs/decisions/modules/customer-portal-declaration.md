@@ -35,17 +35,12 @@
 
 ## 0. Summary for Tom
 
-### 0.1 The module in one sentence
-
-A GT business customer with portal access opens the ordering portal, logs in by WhatsApp, sees their
-own prices, reorders, and sends an order that lands in Shopify as an ordinary order (masterprompt §1).
-
-### 0.2 What D1 asks Tom to decide: masterprompt r2 §1.2, items 1–10
+### 0.1 What D1 asks Tom to decide: masterprompt r2 §1.2, items 1–10
 
 | Item | Proposal | Where in this file |
 |---|---|---|
 | §1.2-1 | **The module.** The name is `customer-portal`. Its private schema `customer_portal` holds five tables, and the module touches no core table. Outside that schema it writes one row only: its own flag row. Three lanes (`backend-db`, `portal`, `integration`) do the work with the existing executor agents, so no new agent files are needed. Three writes happen outside the schema: (a) the Shopify order; (b) transactional WhatsApp replies; (c) nothing is written to the bot's map. | §1, §3, §5, §8, §12 |
-| §1.2-2 | **Exceptions to authority documents, for this module only:** customer pricing by the family rule; customers log in by a WhatsApp link; the portal keeps a log while Shopify owns the order; the order engine is used through a wrapper and never edited. | §0.4 |
+| §1.2-2 | **Exceptions to authority documents, for this module only:** customer pricing by the family rule; customers log in by a WhatsApp link; the portal keeps a log while Shopify owns the order; the order engine is used through a wrapper and never edited. | §0.3 |
 | §1.2-3 | **Who may log in at launch:** 195 map rows. These are the 194 rows whose phone is on exactly one Shopify customer record, plus the 1 manual row. The 15 multi-match rows, and every phone added later, go through registration and staff approval. | §4, §5 |
 | §1.2-4 | **The backfill rule** that puts §1.2-3 into the database. | §5 |
 | §1.2-5 | **Launch control.** A single flag, `customer_portal_live`, replaces the ≥24h soak. Turning it off is the rollback. | §11, §16 |
@@ -55,29 +50,12 @@ own prices, reorders, and sends an order that lands in Shopify as an ordinary or
 | §1.2-9 | **Customer-facing Hebrew:** Appendix A word for word; the design reference's strings, without its demo line; and the site-entry label. | §10, Appendix A |
 | §1.2-10 | **Site entry:** it goes into an unpublished theme copy. Publishing it is Tom's act. | §10.3, §17.2 |
 
-### 0.3 Already decided in Phase A (2026-09-24). Not reopened here.
+### 0.2 Already decided in Phase A (2026-09-24). Not reopened here.
 
-These decisions are listed item by item in `customer-portal-decisions.md` Part B, each with Tom's
-words and its spec citation:
-- v1 is the simplest possible.
-- Every portal order is a real Shopify order.
-- The minimum is ₪800 ex-VAT.
-- Prices are shown and not adjudicated.
-- There are three price families.
-- 0.3 L is out.
-- The catalog: the 40 SKUs in `catalog-truth.md`, plus the customer's own out-of-catalog items.
-- Login is by WhatsApp, with the link sent to the phone.
-- GT approves every new customer.
-- Billing is unchanged in v1.
-- There is no credit check.
-- The portal is hosted inside the existing API.
-- Confirmation is on screen, plus WhatsApp.
-- Promotions and personal links come later.
+S1–S16: `customer-portal-decisions.md` Part B, each with Tom's words and its spec citation. Two rest
+on "no objection", not his words: S11 (billing) and S15 (the "later" list).
 
-Two of these rest on "no objection" rather than on Tom's own words: billing unchanged, and the "later"
-list. Part B marks which.
-
-### 0.4 Exceptions to authority documents
+### 0.3 Exceptions to authority documents
 
 | # | Authority line | What the module does | Source | Status |
 |---|---|---|---|---|
@@ -92,7 +70,7 @@ list. Part B marks which.
 | X9 | `LOCKED_DECISIONS.md:107`: "No full RTL layout in v1" | The customer pages are Hebrew and RTL throughout (spec §6; the design reference) | Named neither in masterprompt §1.2-2 nor in spec §5; found while drafting | `UNRESOLVED — for Tom` (U3) |
 | X10 | `LOCKED_DECISIONS.md:80`: operator copy is "per-string Tom-pinned; no surface-wide approval is implied". `EXECUTION_POLICY.md:139`: Hebrew copy needs a Tom register entry | §1.2-9 approves the design reference's strings by reference, not one by one, and no register location is named for pages the API serves | found while drafting | `UNRESOLVED — for Tom` (U4) |
 
-### 0.5 The numbers (counts only, measured 2026-09-24)
+### 0.4 The numbers (counts only, measured 2026-09-24)
 
 - **`order_intake.wa_customer_map`** is the WhatsApp order bot's map from phone to Shopify customer.
   It has 210 rows, one phone each, and every row has a customer (masterprompt §2.2):
@@ -102,8 +80,6 @@ list. Part B marks which.
     the most orders.
   - 1 row was entered by hand. It appears to be GT's internal test mapping. This is not yet
     confirmed, and it must be confirmed privately before any use (r2 W0 step 6).
-- **Shopify, last 90 days:** 0 orders came through the online store. All of the latest 100 orders
-  reached Shopify as draft orders (spec §1).
 - **Replay** of the 1,115 non-cancelled orders since 2026-06-26, under the Phase-A rules (spec §2
   W0-4b, §4.2):
   - 742 (66.5%) would go straight in, with no one re-keying them.
@@ -121,23 +97,17 @@ list. Part B marks which.
 
 ## 2. Business purpose
 
-- **The problem.** GT's business customers do not order for themselves online today. In the last 90
-  days the online store produced 0 orders, and all of the latest 100 orders reached Shopify as draft
-  orders (spec §1). The portal lets a customer with portal access do four things:
-  - log in by WhatsApp;
-  - see their own prices, which are the prices they already pay, by the Phase-A family rule;
-  - reorder a past order;
-  - send an order that lands in Shopify as an ordinary order. Green Invoice, LionWheel and
-    route-print-pack then handle it exactly as today (masterprompt §1, §1.1).
-- **Primary users:**
-  - GT's business customers (external);
-  - GT staff with the `admin` role, who approve registrations and can create a login link by hand
-    (§1.2-6).
-- **Why now.** Three things are in place:
-  - Phase A settled the pricing, login and registration rules with Tom on 2026-09-24 (spec §4).
-  - The page design is finished. It is the v6 reference, which Tom reviewed over six rounds
-    (design reference README).
-  - Tom's bar for it, in his words: `לא מתפשרים על הuiux!` (spec §4.4).
+GT's business customers do not order for themselves online today: in the last 90 days the online
+store produced 0 orders, and all of the latest 100 orders reached Shopify as draft orders (spec §1).
+The portal lets a customer with portal access log in by WhatsApp, see their own prices (the prices
+they already pay, by the Phase-A family rule), reorder a past order, and send an order that lands in
+Shopify as an ordinary order, which Green Invoice, LionWheel and route-print-pack then handle exactly
+as today (masterprompt §1, §1.1). Its primary users are GT's business customers (external) and GT
+staff with the `admin` role, who approve registrations and can create a login link by hand (§1.2-6).
+It comes now because three things are in place: Phase A settled the pricing, login and registration
+rules with Tom on 2026-09-24 (spec §4); the page design is finished, as the v6 reference Tom reviewed
+over six rounds (design reference README); and Tom's bar for it, in his words, is
+`לא מתפשרים על הuiux!` (spec §4.4).
 
 ## 3. Owner lane
 
@@ -148,9 +118,6 @@ Proposed (§1.2-1): three owner lanes. The existing executors carry them under t
 
 **Primary owner lane** (the lane that decides ambiguous routing, template §3):
 `UNRESOLVED — for Tom` (U1). The sources name three lanes and no primary one.
-
-This declaration and the decisions log are docs-lane work (masterprompt W1). Governance stays with
-`factory-os-governor`.
 
 ## 4. Source of truth
 
@@ -164,15 +131,8 @@ This declaration and the decisions log are docs-lane work (masterprompt W1). Gov
 | Launch gate | `flag_key` | the `private_core.feature_flags` row `customer_portal_live` | The flag row is the only switch (§1.2-5). |
 | Staff identity | existing | existing staff auth (the `admin` role) | untouched (§1.2-2) |
 
-**Pricing rules.** These were decided in Phase A (spec §4.1–§4.2). They are transcribed here, not
-decided again:
-- **Families:** TEA_1L (11 SKUs), TEA_05 (11) and ODK_1L (3).
-  - Each family has one price per customer: the price the customer paid on their most recent line in
-    that family.
-  - When the newest order holds two prices in the same family, the first family line in that order
-    sets the price.
-  - A family the customer never bought shows its list price.
-- **Every other SKU:** the customer's exact last paid price for that SKU, otherwise the list price.
+**Pricing rules** (Phase A, not reopened): the family rule as `customer-portal-decisions.md` S6
+states it (spec §4.1–§4.2), plus:
 - **Amounts** (spec §2 W0-VAT; masterprompt §3.4):
   - The number stored in Shopify is ex-VAT. The page shows it labelled ex-VAT, then VAT = subtotal ×
     0.18, then total = subtotal × 1.18.
@@ -187,8 +147,7 @@ All five tables live in the private schema `customer_portal` (§1.2-1; masterpro
 - `revoke all on schema customer_portal from public`.
 - RLS is on for every table, with no policies, so only the table owner (the API's Postgres pool) can
   read them.
-- No table has a foreign key to any factory-os core table, and the bot's map is read only during the
-  backfill.
+- No table has a foreign key to any factory-os core table.
 
 | Table | Primary key | Holds | Mutable? | Audit |
 |---|---|---|---|---|
@@ -260,15 +219,7 @@ may_write:
       alert chat (staff-facing text). A failed send never fails the registration.
   - An UNPUBLISHED Shopify theme copy (the site entry), through the Shopify
       connector (§1.2-10)
-  - Code:
-      api/src/portal/**
-      one (0b) gate in api/src/order-intake/worker.ts, plus its buildLiveDeps wiring
-      one registration line in api/src/server.ts
-      root vitest.config.ts (include) and package.json ("test:portal")
-      db/migrations/NNNN_customer_portal.sql and db/tests/NNNN_customer_portal.test.sql
-      api/scripts/portal_verify.ts and .github/workflows/portal-verify.yml
-      the portal tranche 179 files
-      the gt-site generator (tools/patch_rtl_shell.py) and the theme files it rebuilds
+  - Code: the allowed paths in §12, per lane.
   - docs/decisions/modules/customer-portal-*.md (this declaration and the decisions log)
 may_not_write:
   - factory-os core tables (stock_ledger, balance_anchors, items, components, bom_*, ...)
@@ -283,8 +234,8 @@ may_not_write:
   - the MAIN Shopify theme; publishing any theme (Tom's act, M5)
   - DNS, Railway settings, tokens (Tom's switches, §17.2)
   - .env*, credentials, secrets
-  - brain authority docs; AI_BRAIN_ROUTER.md and REGISTRY.md
-      (only factory-os-governor updates these, after D1)
+  - brain authority docs, AI_BRAIN_ROUTER.md and REGISTRY.md included
+      (MODULE_TEMPLATE.md §8; CLAUDE.md §Write boundaries; this module's rows: §18)
 ```
 
 ## 9. Read boundaries
@@ -335,12 +286,8 @@ removed.
     D5).
 - **Checked at:** 390×844 and 1360×860 (D8). Spec §6 records the accessibility as built: text contrast
   of 4.5:1 or better, tap targets of at least 44 px, and all motion switched off under reduced motion.
-- **UX handoff packet:** `UNRESOLVED — for Tom` (U5).
-- **RUNTIME_READY signal:** `UNRESOLVED — for Tom` (U6).
-- **Hebrew copy:** the proposed strings are in Appendix A (§1.2-9). Where their register entry lives
-  is `UNRESOLVED — for Tom` (U4).
-- **Layout:** the pages are full RTL, which runs against `LOCKED_DECISIONS.md:107` ("No full RTL
-  layout in v1"): `UNRESOLVED — for Tom` (U3).
+- **UX handoff packet:** U5 · **RUNTIME_READY:** U6 · **Hebrew register:** U4 (strings in
+  Appendix A) · **full-RTL layout:** U3 (X9).
 
 ### 10.2 Staff screen: English, in the portal, `admin` only (§1.2-6)
 
@@ -385,10 +332,7 @@ writes to MAIN. Publishing is Tom's act, M5 (masterprompt r2 W8).
 | **Shopify theme** (site entry) | Unpublished copy only. Publishing is Tom's (M5). | masterprompt r2 W8 | n/a | Leave the copy unpublished, or re-publish the previous theme. |
 | **Green Invoice, LionWheel** | not called by this module | n/a | n/a | n/a |
 
-**Frozen flags.** The existing frozen flags concern inventory and the bot, and this module leaves all
-of them untouched (masterprompt §5): `LIONWHEEL_FG_OUT_BRIDGE_ENABLED`,
-`SHOPIFY_BLIND_AVAILABLE_WRITE_ENABLED`, `SHOPIFY_FG_SYNC_LIVE_ADAPTER_WIRED`,
-`SHOPIFY_FULFILLMENT_BRIDGE_LIVE_ADAPTER_WIRED` and `WHATSAPP_AUTO_COMMIT_ENABLED`.
+**Frozen flags:** untouched (masterprompt §5; §8 `may_not_write`; `EXECUTION_POLICY.md` §Frozen flags).
 
 **Money- and customer-facing writes.** `EXECUTION_POLICY.md:137` requires Tom's written approval plus
 a dry-run. The dry-run is D4: `draftOrderCalculate` runs and 0 orders are created. Tom's written go
@@ -403,11 +347,11 @@ covers this.
 
 | Lane | Agent | Allowed paths (masterprompt r2 W2–W5) |
 |---|---|---|
-| module-arch | none created; this declaration was drafted in the docs lane | `docs/decisions/modules/customer-portal-*` |
+| module-arch | none created; this declaration was drafted in the docs lane (masterprompt W1) | `docs/decisions/modules/customer-portal-*` |
 | backend-db | `backend-db-executor` | `db/migrations/NNNN_customer_portal.sql`, `db/tests/NNNN_customer_portal.test.sql`, `api/src/portal/**`, `api/src/server.ts` (one registration line), root `vitest.config.ts` (include) and `package.json` (`test:portal`) |
 | integration | `integration-boundary-executor` | Owns the Shopify order write and the WhatsApp replies (§1.2-1). That covers their code inside `api/src/portal/**`, plus the one `(0b)` gate in `api/src/order-intake/worker.ts`, with its `buildLiveDeps` wiring, because that gate triggers the replies. W3 is headed "backend-db + integration lanes" and does not split files between the two lanes. |
 | portal | `portal-production-executor` | The tranche 179 manifest: `docs/portal-os/tranches/179-portal-registrations.md`, `src/app/(admin)/admin/portal-registrations/**`, its route handlers through `src/lib/api-proxy.ts`, `docs/portal-os/registry.md`, and its tests |
-| not assigned in the sources | none named | W7: `api/scripts/portal_verify.ts` and `.github/workflows/portal-verify.yml`. W8: the `gt-site` generator and the unpublished theme copy. See U2. |
+| not assigned in the sources | none named | W7: `api/scripts/portal_verify.ts` and `.github/workflows/portal-verify.yml`. W8: the `gt-site` generator (`tools/patch_rtl_shell.py`), the theme files it rebuilds, and the unpublished theme copy. See U2. |
 
 ## 13. Commands needed
 
@@ -493,14 +437,10 @@ These come from masterprompt r2 W2, W3 (D9), W5 and W7. Each test must exist and
   gate above is a command the executing session runs and reports N/N. A CI workflow for API tests is
   out of scope (masterprompt §5).
 
-**Test access for D8** (§1.2-7, proposed):
-- At most two one-time login links, one per verification pass, for the internal test mapping only.
-- They are stored as hashes only, through `apply_migration` data entries named
-  `data_portal_e2e_link_<date>_<n>`.
-- Each session is revoked after use. No link is ever made for any other account.
-- The internal test mapping must first be confirmed privately, on the map row and on the Shopify
-  customer it points to. If it turns out to be a real customer, there is no test account: D8's
-  logged-in half is skipped and "name a test account" goes to Tom (r2 W0 step 6).
+**Test access for D8:** §1.2-7 (proposed). The internal test mapping must first be confirmed
+privately, on the map row and on the Shopify customer it points to. If it turns out to be a real
+customer, there is no test account: D8's logged-in half is skipped and "name a test account" goes to
+Tom (r2 W0 step 6).
 
 ## 15. Gates
 
@@ -542,12 +482,9 @@ Each item is tracked in `docs/decisions/modules/customer-portal-decisions.md`.
 
 ### 17.1 D1: the ten proposals
 
-These are masterprompt r2 §1.2 items 1–10 (§0.2 above), each marked
+These are masterprompt r2 §1.2 items 1–10 (§0.1 above), each marked
 `PROPOSED 2026-09-24 — awaiting Tom`. By the categories of template §17:
-- **Authentication and authorization model:**
-  - §1.2-2: customers log in by WhatsApp link, in a separate realm;
-  - §1.2-3 and §1.2-4: who may log in at launch;
-  - §1.2-6: who approves (the `admin` role).
+auth §1.2-2, -3, -4, -6 · cross-module §1.2-1 (X6) · Hebrew register §1.2-9 · launch §1.2-5, -7, -8, -10.
 - **External integration credentials:** none new. The module uses the backend's existing Shopify app
   token and the existing order-line sender (§1.2-1). Sending needs Tom's M1.
 - **Cost and vendor:**
@@ -555,21 +492,10 @@ These are masterprompt r2 §1.2 items 1–10 (§0.2 above), each marked
   - Hosting inside the existing API adds ₪0 (spec §4.2 item 6).
   - The login reply goes out inside the 24-hour window the customer's own message opens, so it
     needs no WhatsApp template and costs nothing per message (spec §2 W0-6, W0-6b).
-- **Cross-module data sharing:**
-  - The module reads the bot's map and event log, and writes neither.
-  - `sales_core.customer_price` is not a price source.
-  - `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` does not govern transactional replies (§1.2-1(b),
-    proposed).
-- **Hebrew register entries:** §1.2-9 and Appendix A.
-- **Launch:**
-  - §1.2-5: the flag replaces the soak;
-  - §1.2-7: test links;
-  - §1.2-8: exclusions;
-  - §1.2-10: the site entry.
 
 ### 17.2 Tom's switches after D1 (masterprompt §6)
 
-None of these needs a secret value in any file.
+None of these needs a secret value in any file (§8 `may_not_write`).
 - **M1: fix WhatsApp sending** (about 5 min). This blocks login and every bot reply.
   - It is a configuration change on the API service that only Tom can make. The steps are in
     masterprompt §6 M1 (private).
@@ -585,7 +511,7 @@ None of these needs a secret value in any file.
   answers on the new host.
 - **M3: who goes live.** Tom answers `pilots: <names>` or `everyone`, and the session writes the
   allowlist.
-- **M4: the first real order** (about 5 min). It is money-facing, so it needs Tom's written go.
+- **M4: the first real order** (about 5 min). It needs Tom's written go (§11).
   - Tom logs in as the internal test account, by WhatsApp after M1 or through a staff "Create login
     link" before it.
   - He sends one small real order, ideally something GT needs.
@@ -605,20 +531,12 @@ None of these needs a secret value in any file.
 Each item below is something the template asks for that the sources do not settle.
 1. **U1: the primary owner lane** (§3). Template §3 asks for one owner lane, the one that decides
    ambiguous routing. §1.2-1 names three (`backend-db`, `portal`, `integration`) and no primary.
-2. **U2: the lane for W7 and W8** (§12). §1.2-1 assigns three things: the API and migration, the
-   staff screen, and the Shopify order write plus the WhatsApp replies. It assigns nobody to the
-   `portal-verify` workflow and script (W7), or to the site entry, meaning the `gt-site` generator
-   and the unpublished theme copy (W8). Template §12 needs allowed paths for each.
-3. **U3: RTL** (§0.4 X9). `LOCKED_DECISIONS.md:107` says "No full RTL layout in v1", but the customer
-   pages are Hebrew and RTL throughout. Neither masterprompt §1.2-2 nor spec §5 names this as an
-   exception. Tom reviewed the RTL design over six rounds, but no written exception is recorded.
-4. **U4: the Hebrew register for customer copy** (§0.4 X10).
-   - `EXECUTION_POLICY.md:139` requires a Tom register entry for Hebrew copy.
-   - `LOCKED_DECISIONS.md:80` pins operator copy per string, with no surface-wide approval.
-   - The customer pages are served by the API, outside the portal and its register
-     (`portal_ux_standard.md`), and §1.2-9 approves the design reference's strings by reference.
-
-   Open: where the register entry for these pages lives, and whether approval by reference is enough.
+2. **U2: the lane for W7 and W8** (§12, last row). No lane owns W7 or W8; template §12 needs allowed
+   paths for each.
+3. **U3: RTL** (X9). Tom reviewed it over six rounds; no written exception is recorded.
+4. **U4: the Hebrew register for customer copy** (X10). The customer pages are API-served, outside
+   the portal register (`portal_ux_standard.md`). Open: where their entry lives, and whether approval
+   by reference is enough.
 5. **U5: the UX handoff packet** (§10). `LOCKED_DECISIONS.md:81` requires one before merge for every
    user-visible portal change, and template §10 asks for its path. The sources name none for the
    staff screen. For the customer pages, the only UX artifact is the design reference.
@@ -720,20 +638,14 @@ then, the nearest Appendix A string is used (masterprompt §1.2-9).
 visible here): the Telegram notification of a new registration,
 `בקשת גישה חדשה לפורטל: {business_name} · {branch_city}` (masterprompt r2 W3).
 
-## Appendix B — Out of scope for v1 (masterprompt §5)
+## Appendix B — Out of scope for v1, beyond §8 (masterprompt §5)
 
-- the order engine (`engine/`) and `shopify/commit.ts`;
 - the bot's behaviour beyond the `(0b)` gate, including its known receipt-send bug;
 - Green Invoice, LionWheel, Make, the distributor billing switch ("Ice Dream"), Resend, and WhatsApp
   templates;
 - `gt-factory-os` PR #283 and its migrations 0353/0354;
 - `gt-site` PR #16;
-- publishing any theme;
-- rotating any token;
-- DNS, and Railway settings;
 - WhatsApp sends to anyone, other than code paths that stay dormant until M1;
 - any real order, `draftOrderCreate` or `draftOrderComplete` in production before Tom's go (M4);
-- the frozen flags, and `WHATSAPP_AUTO_COMMIT_ENABLED`;
-- a CI workflow for API tests;
 - delivery dates, payment, promotions, and email;
 - anything in spec §7 that is not in masterprompt §4.
