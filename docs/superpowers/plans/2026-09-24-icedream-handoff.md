@@ -2870,6 +2870,7 @@ Expected: `book` = active count, `nulls` = 0.
 
 **Files:**
 - Create: `scripts/distributor-handoff/handoff/{package.py,render_excel.py}`
+- Modify: `scripts/distributor-handoff/handoff/copy_he.py` (`readme_rules`: one Hashavshevet line)
 - Test: `scripts/distributor-handoff/tests/{test_package.py,test_render_excel.py}`
 
 **Interfaces:**
@@ -2980,12 +2981,20 @@ class ExcelTest(unittest.TestCase):
     def test_readme_carries_the_switch_date(self):
         text = " ".join(str(c.value) for row in self.wb[T.SHEET_README].iter_rows() for c in row if c.value)
         self.assertIn("15.10.2026", text)
+        self.assertIn("חשבשבת", text)
 
     def test_customer_ids_and_csvs(self):
         self.assertEqual(render_excel.customer_ids(self.path), ["c1", "n1"])
         files = render_excel.write_csvs(self.data, self.dir)
-        self.assertEqual(sorted(p.name for p in files), ["customers.csv", "general.csv", "specials.csv"])
-        self.assertTrue(files[0].read_bytes().startswith(b"\xef\xbb\xbf"))
+        self.assertEqual(sorted(p.name for p in files),
+                         ["customers-windows1255.csv", "customers.csv", "general-windows1255.csv", "general.csv",
+                          "specials-windows1255.csv", "specials.csv"])
+        by = {p.name: p for p in files}
+        self.assertTrue(by["customers.csv"].read_bytes().startswith(b"\xef\xbb\xbf"))
+        self.assertTrue(by["customers-windows1255.csv"].read_bytes().decode("cp1255").startswith(T.CUSTOMER_HEADERS[0]))
+
+    def test_windows1255_keeps_hebrew_and_falls_back(self):
+        self.assertEqual(render_excel._to_cp1255("Café ☕ שלום ₪"), "Cafe  שלום ₪")
 ```
 
 - [ ] **Step 2: Run to verify they fail**
@@ -3107,6 +3116,7 @@ def build_package_data(book: list[CustomerRow], matrix: list[dict], list_rows: l
 from __future__ import annotations
 
 import csv
+import unicodedata
 from pathlib import Path
 
 from openpyxl import Workbook, load_workbook
@@ -3223,8 +3233,22 @@ def build_workbook(data: PackageData) -> Workbook:
     return wb
 
 
+def _to_cp1255(text: str) -> str:
+    """Hashavshevet reads Windows-1255: a character it cannot hold becomes its base letter (é → e), else is dropped."""
+    out = []
+    for ch in text:
+        for cand in (ch, unicodedata.normalize("NFKD", ch)[0]):
+            try:
+                cand.encode("cp1255")
+            except UnicodeEncodeError:
+                continue
+            out.append(cand)
+            break
+    return "".join(out)
+
+
 def write_csvs(data: PackageData, out_dir: Path) -> list[Path]:
-    """UTF-8 with BOM, so Excel opens the Hebrew correctly."""
+    """Each table twice: UTF-8 with BOM (Excel opens the Hebrew correctly) and Windows-1255 (Hashavshevet import)."""
     tables = {
         "customers.csv": (T.CUSTOMER_HEADERS, [[c[f] for f in CUSTOMER_FIELDS] for c in data.customers]),
         "specials.csv": (T.SPECIAL_HEADERS, _special_rows(data)),
@@ -3233,12 +3257,14 @@ def write_csvs(data: PackageData, out_dir: Path) -> list[Path]:
     }
     paths = []
     for name, (headers, rows) in tables.items():
-        path = out_dir / name
-        with path.open("w", encoding="utf-8-sig", newline="") as fh:
-            w = csv.writer(fh)
-            w.writerow(headers)
-            w.writerows(rows)
-        paths.append(path)
+        stem = name.removesuffix(".csv")
+        for fname, encoding, clean in ((name, "utf-8-sig", str), (f"{stem}-windows1255.csv", "cp1255", _to_cp1255)):
+            path = out_dir / fname
+            with path.open("w", encoding=encoding, newline="") as fh:
+                w = csv.writer(fh)
+                w.writerow([clean(h) for h in headers])
+                w.writerows([[clean(v) if isinstance(v, str) else v for v in row] for row in rows])
+            paths.append(path)
     return paths
 
 
@@ -3249,14 +3275,21 @@ def customer_ids(xlsx: Path) -> list[str]:
     return [row[col - 1] for row in ws.iter_rows(min_row=3, values_only=True) if row[col - 1]]
 ```
 
+In `handoff/copy_he.py`, `readme_rules`, insert this entry immediately before the `("שאלות", …)` entry (Ice Dream's accounting system is Hashavshevet — Tom, 2026-09-24):
+
+```python
+        ("קליטה לחשבשבת", "קובצי CSV של הלקוחות, המחירים המיוחדים והמחירון הכללי — בשני קידודים: UTF-8 ו־Windows-1255. "
+                          "לקוח שכבר קיים אצלכם — לפי ח.פ. מוצר — לפי ברקוד."),
+```
+
 - [ ] **Step 5: Run to verify they pass**
 
-Expected: `Ran 49 tests … OK`.
+Expected: `Ran 50 tests … OK`.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /home/user/gt-factory-os && git add scripts/distributor-handoff/handoff/package.py scripts/distributor-handoff/handoff/render_excel.py scripts/distributor-handoff/tests/test_package.py scripts/distributor-handoff/tests/test_render_excel.py
+cd /home/user/gt-factory-os && git add scripts/distributor-handoff/handoff/package.py scripts/distributor-handoff/handoff/render_excel.py scripts/distributor-handoff/handoff/copy_he.py scripts/distributor-handoff/tests/test_package.py scripts/distributor-handoff/tests/test_render_excel.py
 git commit -m "feat(distributor-handoff): package data and the Ice Dream workbook"
 ```
 
@@ -3640,7 +3673,7 @@ def fetch_images(urls: dict[str, str], cache: Path) -> dict[str, str]:
 
 - [ ] **Step 4: Run to verify it passes**
 
-Expected: `Ran 53 tests … OK` (the Chromium test runs here — Chromium is installed).
+Expected: `Ran 54 tests … OK` (the Chromium test runs here — Chromium is installed).
 
 - [ ] **Step 5: Visual QA of one customer page, the cover and a catalog page**
 
@@ -3870,7 +3903,7 @@ Add inside `main`, before `args = parser.parse_args(argv)`:
 
 - [ ] **Step 5: Run to verify it passes**
 
-Expected: `Ran 55 tests … OK`; `run.py --help` lists all nine subcommands.
+Expected: `Ran 56 tests … OK`; `run.py --help` lists all nine subcommands.
 
 - [ ] **Step 6: Commit and push**
 

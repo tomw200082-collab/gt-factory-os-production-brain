@@ -229,7 +229,10 @@ a version number and date on every page.
    invoicing box, their special prices, and the line "כל שאר המוצרים — לפי המחירון הכללי".
    Plus a product catalog with photos (11 tea flavors share similar bottles; a photo prevents picking
    errors).
-3. **CSV copies** of the three data tabs (UTF-8 with BOM), for importing once Ice Dream's system is known.
+3. **CSV copies** of the three data tabs, for import into **Hashavshevet** — Ice Dream's accounting system
+   (Tom, 2026-09-24). Each tab twice: UTF-8 with BOM (opens in Excel) and Windows-1255. An existing
+   Hashavshevet customer is matched by ח.פ, a product by barcode. The column order of their import
+   definition is matched at the pilot.
 
 ## 8. Checks (gates) — nothing leaves GT until all pass
 
@@ -293,7 +296,8 @@ customer-facing surface: it needs its own spec, Tom's approval and the portal/sa
 
 | Item | Resolved by | Before |
 |---|---|---|
-| Ice Dream's invoicing software | Tom | CSV column mapping (the Excel does not depend on it) |
+| ~~Ice Dream's invoicing software~~ — **Hashavshevet** (Tom, 2026-09-24) | resolved | — |
+| Column order of Ice Dream's Hashavshevet import definition | Dana, at the pilot | final CSV layout |
 | Meaning of Green Invoice payment-term `-1` | build, from invoice due dates | G4 |
 | Access to LionWheel delivery history (only open tasks inspected) | build, live inspection | customer-book seeding |
 | Switch date | Tom | the customer message |
