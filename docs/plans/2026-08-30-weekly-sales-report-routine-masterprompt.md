@@ -265,6 +265,9 @@ and a `note` carrying the run's gate numbers. No `favicon`.
 Hebrew, plain, no decoration, to `tom@gteveryday.com`. Subject and the four body
 elements are specified in `SKILL.md` step 7 — follow it exactly. Add one line only if
 an unmapped SKU cleared ₪20,000 in the latest month (`SKILL.md` step 5, non-blocking).
+While the page is shared, a second, separate email goes out *before* the publish: the
+one-button approval link of `SKILL.md` step 5.9 (Tom, 2026-09-24). Different subject, so
+D6 still counts only the report email.
 **Acceptance:** D6.
 
 ## 5. Scope
@@ -413,7 +416,7 @@ If anything is not ready, say so first and plainly. Tokens per
 | Connector | Why | Access used |
 |---|---|---|
 | Shopify | the bulk order pull and the ShopifyQL anchor | read only |
-| Gmail | the one email to `tom@gteveryday.com` | send |
+| Gmail | the report email to `tom@gteveryday.com`, plus the approval email of `SKILL.md` step 5.9 while the page is shared | send |
 
 Nothing else. The `Artifact` tool is built in — it is not a connector and must not be
 requested as one. No Supabase, no LionWheel, no Green Invoice: this report never touches

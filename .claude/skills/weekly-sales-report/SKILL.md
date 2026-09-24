@@ -68,6 +68,18 @@ description: >
    מספר נמוך או `0` = בנית דוח נסוג. **⊥ לפרסם.** לעצור, לחזור לצעד 0, ואם זה חוזר —
    מייל כשל (צעד 8) ולא פרסום. פרסום גורע הוא הנזק היחיד כאן שאי אפשר לבטל: הגרסה
    הקודמת ⊥ חוזרת מעצמה.
+5.9 **מייל אישור — מיד לפני הפרסום, רק כשהדף משותף** (תום 2026-09-24).
+   `Artifact action:"read"` על ה-URL הקבוע. הכותרת מכילה `shared with` → הפרסום בצעד 6
+   ייעצר עד שתום יאשר (routines.md: דף משותף = Claude שואל; ⊥ הגדרה שעוקפת את זה).
+   אז, לפני צעד 6, מייל אחד אל `tom@gteveryday.com` (Gmail `send_message`):
+   - קישור: `mcp__Claude_Code_Remote__get_session` **בלי** `session_id` → `ccr.id`
+     (`session_…`) → `https://claude.ai/code/<ccr.id>`. הכלי חסר → `https://claude.ai/code`.
+   - נושא: `לאשר את דוח המכירות · לחיצה אחת`
+   - `htmlBody` (להחליף רק את LINK):
+     `<div dir="rtl" style="font-family:Arial,sans-serif;font-size:16px"><p>דוח המכירות מוכן וממתין לאישור שלך.</p><p><a href="LINK" style="display:inline-block;background:#2F5D3F;color:#ffffff;padding:16px 32px;border-radius:10px;text-decoration:none;font-weight:bold;font-size:18px">לאשר פרסום</a></p><p style="color:#666666;font-size:13px">הכפתור פותח את הריצה — שם לאשר.</p></div>`
+   - `body`: `לאשר פרסום: LINK`
+   הכותרת ⊥ מכילה `shared with` (דף פרטי) → ⊥ מייל; הפרסום עובר בלי אישור.
+   נושא אחר ממייל צעד 7 — ⊥ נספר ב-D6.
 6. **פרסום:** Artifact publish של `report.html` עם `url` הקבוע. הדף כבר מציג
    ״עודכן <תאריך+שעה>״ בשורת הטאבים.
 7. **מייל לתום** (Gmail MCP, `send_message`), עברית, קצר וללא קישוט.
