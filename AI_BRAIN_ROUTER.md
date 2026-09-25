@@ -34,6 +34,7 @@ Legacy `executor-w1/w2/w4`, `governor`, `verifier` dispatchable until Wave 6. On
 1. **Stock-truth-impacting?** (`stock_ledger`, `balance_anchors`, projection table, BOM cluster) → `backend-db` + Tom-approval gate + `factory-os-governor` pre-check.
 2. **Frozen flag / code sentinel?** (`EXECUTION_POLICY.md` §Frozen flags) → `integration` + Tom written approval HARD + dry-run + ≥24h soak + RUNTIME_READY.
 3. **New module?** → `verdict: NEW_MODULE_REQUIRED`. Fill `MODULE_TEMPLATE.md`. ⊥ invoke another agent yet.
+   **Approved modules (⊥ "new"):** `sales` (Tom 2026-08-04, `docs/decisions/modules/sales-declaration.md`) · `customer-portal` (Tom 2026-09-25, spec §4.5; `docs/decisions/modules/customer-portal-declaration.md` — owner lanes `backend-db` · `portal` · `integration`; primary owner lane `UNRESOLVED (U1)`). Route by rules 1/2/4/5, per-module isolation from each declaration's allowed paths.
 4. **User-visible portal surface?** → `ux-audit` (parallel) → handoff packet → `portal-production-executor`. Backend-bound surface ! `RUNTIME_READY(form)`. Any P0 finding → escalate `factory-os-governor` before authoring proceeds, ⊥ just noted in the packet.
 5. **Backend contract, no portal change?** → `integration-boundary-executor` authors contract → `backend-db-executor` implements.
 6. **Authority-doc reconciliation / drift audit?** → `source-of-truth-auditor` (read-only) → patch proposals → `ops-docs-curator` under governor approval. `CLAUDE.md` ! Tom.
@@ -47,7 +48,7 @@ Every routing decision emits:
 
 ```yaml
 classification:   <§1 type>
-target_module:    factory-os | crm | leads | sales | marketing | finance | cross-system
+target_module:    factory-os | sales | customer-portal | crm | leads | marketing | finance | cross-system
 owner_lane:       backend-db | portal | integration | docs | ux-audit | governance | release-gate | source-of-truth
 recommended_agent: <REGISTRY.md>
 recommended_command: <REGISTRY.md, or "direct dispatch">
