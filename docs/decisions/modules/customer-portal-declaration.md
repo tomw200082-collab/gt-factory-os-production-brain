@@ -1,6 +1,6 @@
 # Module Declaration — `customer-portal`
 
-**Status: PROPOSED — awaiting Tom's written approval (D1). Not approved; nothing in this file is in force.**
+**Status: APPROVED (content: Tom, in writing, 2026-09-25, spec §4.5) — file confirmation pending**
 
 > **Drafted:** 2026-09-24. This is the first half of D1: `MODULE_TEMPLATE.md` filled in by
 > transcription only, for Tom to read and decide on.
@@ -23,8 +23,10 @@
 > recorded privately, in spec §4.5 (masterprompt header). This file approves nothing. Pasting the
 > masterprompt is not an approval either (masterprompt header).
 >
-> **Until D1,** the router answers `NEW_MODULE_REQUIRED` for this module. No code, schema, agent,
-> command or UX surface is built for it (`CLAUDE.md` §New modules; `MODULE_TEMPLATE.md` hard rule).
+> **Since D1** (2026-09-25, spec §4.5), the router routes this module by rules 1/2/4/5 of
+> `AI_BRAIN_ROUTER.md` §3, per-module isolation from §8's allowed paths. No code, schema, agent,
+> command or UX surface has been built for it yet (`CLAUDE.md` §New modules; `MODULE_TEMPLATE.md`
+> hard rule).
 >
 > **This file is public.** It holds no customer name, phone number, price paid, Shopify customer id
 > or host name, and gives counts only. The private spec holds the detail.
@@ -59,12 +61,12 @@ on "no objection", not his words: S11 (billing) and S15 (the "later" list).
 
 | # | Authority line | What the module does | Source | Status |
 |---|---|---|---|---|
-| X1 | `LOCKED_DECISIONS.md:326`: "Do not add customer pricing unless explicitly confirmed" | Prices each customer by the family rule (§4) | masterprompt §1.2-2. In Phase A, Tom approved the pricing rule itself (spec §4 row 2, §4.1). | exception proposed (§1.2-2) |
-| X2 | `LOCKED_DECISIONS.md:97-101`: "Supabase magic-link email auth" (`:98`); roles `operator` / `planner` / `admin` / `viewer` (`:101`). `EXECUTION_POLICY.md:138`: an auth flow change needs Tom's written approval | Customers log in with a one-time WhatsApp link, into a customer realm that is separate from staff. Staff auth is untouched. | §1.2-2; spec §5 item 6 | exception proposed (§1.2-2) |
-| X3 | `LOCKED_DECISIONS.md:129`: "System does not own customer orders" | The rule holds, so this is not an exception. The portal keeps a submission log, and Shopify owns the order. | §1.2-2 | confirmation proposed (§1.2-2) |
-| X4 | none cited in the source | The order engine (`api/src/order-intake/engine/`) is used through a wrapper and never edited. This is a scope rule (masterprompt §5). | §1.2-2 | proposed (§1.2-2) |
-| X5 | `MODULE_TEMPLATE.md:118`: a flag flip needs "Tom approval + dry-run + ≥24h soak + RUNTIME_READY". The same ceremony appears at `EXECUTION_POLICY.md:117` and `:134` | `customer_portal_live` replaces the ≥24h soak. The safety evidence in its place is D3, D4 and D8, plus Tom's own first order. | §1.2-5 | exception proposed (§1.2-5) |
-| X6 | `sales-declaration.md:284`: customer-facing sends sit behind `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` | WhatsApp replies to a customer's own action are transactional, not outreach, so that flag does not govern them | §1.2-1(b) | proposed (§1.2-1) |
+| X1 | `LOCKED_DECISIONS.md:326`: "Do not add customer pricing unless explicitly confirmed" | Prices each customer by the family rule (§4) | masterprompt §1.2-2. In Phase A, Tom approved the pricing rule itself (spec §4 row 2, §4.1). | exception approved 2026-09-25 (spec §4.5) |
+| X2 | `LOCKED_DECISIONS.md:97-101`: "Supabase magic-link email auth" (`:98`); roles `operator` / `planner` / `admin` / `viewer` (`:101`). `EXECUTION_POLICY.md:138`: an auth flow change needs Tom's written approval | Customers log in with a one-time WhatsApp link, into a customer realm that is separate from staff. Staff auth is untouched. | §1.2-2; spec §5 item 6 | exception approved 2026-09-25 (spec §4.5) |
+| X3 | `LOCKED_DECISIONS.md:129`: "System does not own customer orders" | The rule holds, so this is not an exception. The portal keeps a submission log, and Shopify owns the order. | §1.2-2 | confirmation approved 2026-09-25 (spec §4.5) |
+| X4 | none cited in the source | The order engine (`api/src/order-intake/engine/`) is used through a wrapper and never edited. This is a scope rule (masterprompt §5). | §1.2-2 | approved 2026-09-25 (spec §4.5) |
+| X5 | `MODULE_TEMPLATE.md:118`: a flag flip needs "Tom approval + dry-run + ≥24h soak + RUNTIME_READY". The same ceremony appears at `EXECUTION_POLICY.md:117` and `:134` | `customer_portal_live` replaces the ≥24h soak. The safety evidence in its place is D3, D4 and D8, plus Tom's own first order. | §1.2-5 | exception approved 2026-09-25 (spec §4.5) |
+| X6 | `sales-declaration.md:284`: customer-facing sends sit behind `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` | WhatsApp replies to a customer's own action are transactional, not outreach, so that flag does not govern them | §1.2-1(b) | approved 2026-09-25 (spec §4.5) |
 | X7 | `LOCKED_DECISIONS.md:131` and `:265`: Green Invoice is supplier-invoice evidence only | The portal does not introduce this. Every Shopify order already gets a Green Invoice customer invoice through an existing Shopify-side integration (spec §2 W0-3). The portal calls no Green Invoice API, and billing is unchanged in v1. | spec §5 item 7 | named; no change proposed |
 | X8 | `sales-declaration.md:286-287`: LionWheel and Green Invoice are read-only for the sales module | The portal writes neither. LionWheel picks the order up through its own Shopify integration (spec §2 W0-2). | spec §5 item 8 | named; no change proposed |
 | X9 | `LOCKED_DECISIONS.md:107`: "No full RTL layout in v1" | The customer pages are Hebrew and RTL throughout (spec §6; the design reference) | Named neither in masterprompt §1.2-2 nor in spec §5; found while drafting | `UNRESOLVED — for Tom` (U3) |
@@ -111,7 +113,7 @@ over six rounds (design reference README); and Tom's bar for it, in his words, i
 
 ## 3. Owner lane
 
-Proposed (§1.2-1): three owner lanes. The existing executors carry them under this module's scope:
+Approved 2026-09-25 (§1.2-1, spec §4.5): three owner lanes. The existing executors carry them under this module's scope:
 - `backend-db`: the API module and the migration;
 - `portal`: the staff screen (portal tranche 179);
 - `integration`: the Shopify order write and the WhatsApp replies.
@@ -157,7 +159,7 @@ All five tables live in the private schema `customer_portal` (§1.2-1; masterpro
 | `registration` | `id` uuid; at most one `pending` row per phone (partial unique index) | Business name, branch or city, contact name, a suggested customer (read from the map when the phone is already there), and the decision | Yes (`pending` → `approved` or `rejected`) | `decided_by`, `decided_at`, `created_at` |
 | `order_submission` | `id` uuid; `idem_key` unique | A log of each submit: the lines as the server priced them, the ex-VAT subtotal, the Shopify draft id, order id and order name, and any error | Yes (`submitting` → `created` or `failed`) | `created_at`, `updated_at`, `status`, `error` |
 
-**Backfill** (§1.2-4, proposed). It takes every row of `order_intake.wa_customer_map` that has a
+**Backfill** (§1.2-4, approved 2026-09-25 (spec §4.5)). It takes every row of `order_intake.wa_customer_map` that has a
 `shopify_customer_id` and whose note does not start with `auto-resolved from Shopify;`:
 `shopify_customer_id is not null and coalesce(notes,'') not ilike 'auto-resolved from Shopify;%'`.
 - On 2026-09-24 that selects 195 rows (194 single-match plus 1 manual) and leaves out the 15
@@ -326,7 +328,7 @@ writes to MAIN. Publishing is Tom's act, M5 (masterprompt r2 W8).
 
 | Provider / surface | Gate (default off) | Contract | Idempotency | Reversal |
 |---|---|---|---|---|
-| **Shopify order write.** `draftOrderCalculate`, then the guard, then `draftOrderCreate`, then `draftOrderComplete(paymentPending:true)` | `customer_portal_live`: `enabled`, plus `value.allowlist` (Shopify customer ids, comma-separated, or `*`). Proposed to replace the ≥24h soak (§1.2-5, X5). | masterprompt r2 W3, "Order submit" (private) | One `idem_key` (uuid) per cart, reused on every retry until a definite answer. It is unique in `order_submission` and becomes the Shopify tag `pk-<idem_key>`. On a timeout or 5xx, the tag is looked up before any retry, so there is never a blind second create. A `submitting` row older than 2 min is resolved by the same lookup. | No automated reversal. If the draft is created but not completed: the row becomes `failed`, the draft id is kept, a `complete_failed` alert goes out, and the answer is 202 (A9). A real order is undone by staff: cancel it in Shopify and in LionWheel, and issue a Green Invoice credit (masterprompt §6 M4). |
+| **Shopify order write.** `draftOrderCalculate`, then the guard, then `draftOrderCreate`, then `draftOrderComplete(paymentPending:true)` | `customer_portal_live`: `enabled`, plus `value.allowlist` (Shopify customer ids, comma-separated, or `*`). Approved 2026-09-25 (§1.2-5, X5, spec §4.5) to replace the ≥24h soak. | masterprompt r2 W3, "Order submit" (private) | One `idem_key` (uuid) per cart, reused on every retry until a definite answer. It is unique in `order_submission` and becomes the Shopify tag `pk-<idem_key>`. On a timeout or 5xx, the tag is looked up before any retry, so there is never a blind second create. A `submitting` row older than 2 min is resolved by the same lookup. | No automated reversal. If the draft is created but not completed: the row becomes `failed`, the draft id is kept, a `complete_failed` alert goes out, and the answer is 202 (A9). A real order is undone by staff: cancel it in Shopify and in LionWheel, and issue a Green Invoice credit (masterprompt §6 M4). |
 | **WhatsApp.** Login replies (A2, A3, A4) and one confirmation (A6) | `customer_portal_live`. With it off, the gate falls through and the bot is unchanged. Outbound stays dormant until M1. | masterprompt r2 W3, "WhatsApp gate" | At most 5 links per phone per hour. Login links are valid for 10 min, register links for 24 h, and each works once. One confirmation per created order, only inside the 24-hour window. | A sent message cannot be recalled. An unused link expires. A failed send never changes the order's 201. |
 | **Telegram** staff notification | none (staff-facing) | masterprompt r2 W3 | one per registration | n/a |
 | **Shopify theme** (site entry) | Unpublished copy only. Publishing is Tom's (M5). | masterprompt r2 W8 | n/a | Leave the copy unpublished, or re-publish the previous theme. |
@@ -340,7 +342,7 @@ comes at M3 (who goes live) and M4 (the first real order).
 
 ## 12. Agent ownership
 
-Proposed (§1.2-1): the existing executor agents do the work under this module's scope, and no new
+Approved 2026-09-25 (§1.2-1, spec §4.5): the existing executor agents do the work under this module's scope, and no new
 agent files are created for v1. This departs from `MODULE_TEMPLATE.md:125` and `:129`, which call for
 module-scoped agents and a `<module>-architect` for the declaration phase. Tom's decision on §1.2-1
 covers this.
@@ -437,7 +439,7 @@ These come from masterprompt r2 W2, W3 (D9), W5 and W7. Each test must exist and
   gate above is a command the executing session runs and reports N/N. A CI workflow for API tests is
   out of scope (masterprompt §5).
 
-**Test access for D8:** §1.2-7 (proposed). The internal test mapping must first be confirmed
+**Test access for D8:** §1.2-7 (approved 2026-09-25 (spec §4.5)). The internal test mapping must first be confirmed
 privately, on the map row and on the Shopify customer it points to. If it turns out to be a real
 customer, there is no test account: D8's logged-in half is skipped and "name a test account" goes to
 Tom (r2 W0 step 6).
@@ -483,7 +485,7 @@ Each item is tracked in `docs/decisions/modules/customer-portal-decisions.md`.
 ### 17.1 D1: the ten proposals
 
 These are masterprompt r2 §1.2 items 1–10 (§0.1 above), each marked
-`PROPOSED 2026-09-24 — awaiting Tom`. By the categories of template §17:
+`approved 2026-09-25 (spec §4.5)`. By the categories of template §17:
 auth §1.2-2, -3, -4, -6 · cross-module §1.2-1 (X6) · Hebrew register §1.2-9 · launch §1.2-5, -7, -8, -10.
 - **External integration credentials:** none new. The module uses the backend's existing Shopify app
   token and the existing order-line sender (§1.2-1). Sending needs Tom's M1.
@@ -553,7 +555,7 @@ Each item below is something the template asks for that the sources do not settl
 
 ## 18. Definition of done (module v1)
 
-- [ ] Gate 1: Tom's written D1 is recorded privately with its date (spec §4.5).
+- [x] Gate 1: Tom's written D1 is recorded privately with its date (spec §4.5).
       `factory-os-governor` then updates this file's status line to cite it.
 - [ ] Gates 2–6 are closed with evidence, and D1–D14 are each green with an evidence pointer.
 - [ ] Every §17 item is answered, U1–U8 included.
@@ -566,10 +568,10 @@ Each item below is something the template asks for that the sources do not settl
 
 ---
 
-## Appendix A — Customer-facing Hebrew, proposed for Tom's approval (§1.2-9)
+## Appendix A — Customer-facing Hebrew, approved 2026-09-25 as part of §1.2-9 (spec §4.5)
 
-This is copied word for word from masterprompt Appendix A, which is identical in r1 and r2. None of it
-is approved yet.
+This is copied word for word from masterprompt Appendix A, which is identical in r1 and r2. Approved
+2026-09-25 as written, as part of §1.2-9 (spec §4.5). Tom changed nothing.
 
 **A1 — ready text in the WhatsApp login link:**
 `כניסה לפורטל ההזמנות של GT`
