@@ -171,3 +171,14 @@ order by pp.plan_date, pp.created_at;
 - For any external "is this name/handle taken" check, assert on **parsed content that identifies the entity** (an id, a creation date), never on a status code, and never on a string that could be boilerplate. Prove the negative case works by running the same probe against a handle known not to exist.
 - Answer *n* questions in a message, expect *n* answers. A reply with fewer parts than the question closes only the parts it names; the rest stay `UNRESOLVED`. When one word could attach to either part, it attaches to neither.
 - **Open the file.** `head -c 33 x.png | xxd` gives the real width and height in one command. Any property of an artifact that is cheap to read is never inferred, quoted from a sibling document, or carried forward from an earlier draft.
+
+### 2026-09-24: A data migration picked its own audit trail when the repo already had one
+
+**What happened:** gt-factory-os migration 0352 deleted GI-20269's 4 unposted audit lines. The session checked `private_core.change_log`, saw that its `action` CHECK list has no delete action, and decided the rows would be recorded only as `raise notice` output plus a verbatim list in the file header. A later `/simplify` pass found that 0180 (§A.7) and 0181 (§B.3) already record migration data changes in `change_log` as one summary row: `entity_id '__migration_NNNN_summary__'`, action `UPDATE_STRUCTURAL`, `actor_snapshot '<system:migration_NNNN>'`, and the before-state in `old_values`. By then 0352 had run in prod, and a migration is not edited once applied, so the fix became a follow-up task.
+
+**Why it was surprising:** the constraint looked like proof that there was no fitting action. The repo's answer was a convention, not a schema feature, and a convention cannot be found by reading constraints.
+
+**Corrective:**
+- Before choosing how a data migration records what it changed, run `grep -rn "__migration_" db/migrations` and follow what it finds.
+- Run review passes (`/simplify`, `/code-review`) on a migration **before** it is applied to prod, not after. Once applied, every finding costs a new migration.
+- pgTAP in `db/tests` can be run against prod without direct DB access. Wrap every statement in one `DO` block that ends in `raise exception` carrying the TAP output. The Management API query endpoint returns the output in its error, and the transaction always rolls back.
