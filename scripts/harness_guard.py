@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Structural guard for the GT Factory OS harness.
 
-The .claude/ tree is this repo's product: 19 agents, 15 commands, 49 skills and
-4 hooks. Nothing in it is compiled or type-checked, so a malformed file does not
+The .claude/ tree is this repo's product: its agents, commands, skills and
+hooks. Nothing in it is compiled or type-checked, so a malformed file does not
 raise an error -- the agent or skill simply stops being registered, silently.
 This script is the mechanical backstop.
 

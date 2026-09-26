@@ -1,6 +1,6 @@
 # Signals — GT Factory OS harness
 
-Shared signal definitions used by subagents and by hooks. Authoritative source is `EXECUTION_POLICY.md` (which itself mirrors the `factory-os-autonomous-builder` skill). This file exists to keep signal semantics close to the code that enforces them.
+Shared signal definitions used by subagents and by hooks. Authoritative source is `EXECUTION_POLICY.md`. This file exists to keep signal semantics close to the code that enforces them.
 
 ## `FILE_READY(form)`
 - **Meaning:** files, paths, or implementation surfaces for the named form exist in a usable handoff shape.
@@ -12,12 +12,12 @@ Shared signal definitions used by subagents and by hooks. Authoritative source i
 - **Does authorize:** W2 canonical authoring for the named form only. A separate `RUNTIME_READY(other_form)` is required for each additional form. Exiting Mode B (after local portal E2E green) returns W2 to Mode A.
 - **Recorded where:** `.claude/state/runtime_ready.json`. The file starts as `{ "signals": [] }`. Authorized emitters append entries with fields: `form` (e.g., "GoodsReceipt"), `emitted_at` (ISO-8601 UTC), `evidence_path` (relative path to backend contract doc or test output proving closure), `emitted_by` (the emitting agent name). Example entry:
   ```json
-  { "form": "GoodsReceipt", "emitted_at": "2026-04-17T14:30:00Z", "evidence_path": "Projects/gt-factory-os/docs/goods_receipt_runtime_contract.md", "emitted_by": "executor-w1" }
+  { "form": "GoodsReceipt", "emitted_at": "2026-04-17T14:30:00Z", "evidence_path": "Projects/gt-factory-os/docs/goods_receipt_runtime_contract.md", "emitted_by": "backend-db-executor" }
   ```
-- **Who writes (authorized emitters):** `backend-db-executor` (Phase 8 preferred) and `executor-w1` (legacy, dispatchable until Wave 6). One at a time — never both in the same dispatch. Any other agent appending here is an ownership conflict, except as noted below.
+- **Who writes (authorized emitter):** `backend-db-executor`. Any other agent appending here is an ownership conflict, except as noted below. Entries with `emitted_by: executor-w1` come from the legacy executor retired on 2026-09-26 and stay valid.
 - **`factory-os-governor` policy (Phase 8 Run G, locked):** may coordinate, record, and route readiness decisions. Does **not** directly append to `runtime_ready.json` unless the evidence backing that emission was produced by a verifier or executor for that specific form AND the policy for that form explicitly allows governor-level emission. In practice, `factory-os-governor` coordinates; it does not emit.
 - **Historical exceptions (not future policy):** a small number of entries in `.claude/state/runtime_ready.json` carry `emitted_by` values of `executor-w2` (portal-evidence path) or `factory-os-governor` (coordination path), from Phase 1–7 work. These are accepted historical emissions; they do not authorize future direct emissions by those agents.
-- **Who reads:** `portal-production-executor` (or legacy `executor-w2`) before entering Mode B; `pre_tool_use.sh` before allowing portal canonical writes.
+- **Who reads:** `portal-production-executor` before entering Mode B; `pre_tool_use.sh` before allowing portal canonical writes.
 
 ## `TOOL_FAILURE_UNCLEARED`
 - **Meaning:** a W4 rolling-requirements artifact whose same tool failure has repeated after one retry. The artifact is parked.

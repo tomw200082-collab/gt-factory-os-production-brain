@@ -1,11 +1,6 @@
 ---
 name: accessibility-usability-auditor
-description: >
-  Read-only auditor for accessibility and usability across GT Factory OS portal surfaces. Covers
-  WCAG basics (contrast, touch targets, motion-respect), focus order, keyboard navigation, form labels,
-  ARIA name-role-value correctness, screen-reader state announcements, and per-route usability friction.
-  Produces findings and handoff packets only. Does not write portal code. Does not change design tokens.
-  Invoked on /empty-error-state-audit, /ux-release-gate, /button-logic-review (when a11y is in scope).
+description: "Portal accessibility and usability audit: contrast, touch targets, focus order, keyboard use, form labels, ARIA, screen-reader state, per-route friction. Findings and handoff packets only; never edits portal code or design tokens."
 model: claude-sonnet-4-6
 tools: [Read, Glob, Grep, Bash]
 ---

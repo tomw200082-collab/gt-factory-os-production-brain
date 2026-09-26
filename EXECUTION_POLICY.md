@@ -30,12 +30,12 @@ Boundary crossing without W5 approval = `ownership_conflict`.
 | `docs` | `ops-docs-curator` |
 | `governance` | `factory-os-governor` |
 | `release-gate` | `release-verifier` (pre-merge) · `verifier` (checks executor output) |
+| `source-of-truth` | `source-of-truth-auditor` |
+| `ux-audit` | 5 UX agents (read-only, parallel) |
 
 The legacy `executor-w1/w2/w4` and `governor` were retired on 2026-09-26 (workspace ledger, Layer 1).
-| `source-of-truth` | `source-of-truth-auditor` | — |
-| `ux-audit` | 5 UX agents (read-only, parallel) | — |
 
-≤4 simultaneous executor lanes: backend + portal + integration + docs. UX / governance / gates ⊥ count as a lane. One lane carried by legacy **or** new agent, never both. Default = new agent unless Tom says otherwise. Wave 6 archival per `docs/phase8/deprecation/ACTIVE_SURFACE_REDUCTION_PLAN.md`; each step ! Tom approval.
+≤4 simultaneous executor lanes: backend + portal + integration + docs. UX / governance / gates ⊥ count as a lane.
 
 UX agents are read-only, own no window, produce handoff packets `portal-production-executor` consumes.
 
@@ -139,7 +139,7 @@ Aligned to `CLAUDE.md` §Authorization — that file wins on conflict.
 | External write: irreversible, mass-scale, or money-/customer-facing | Tom written + dry-run |
 | Auth flow change (`middleware.ts`, `(auth)/**`) | Tom written |
 | Hebrew copy change | Tom register entry |
-| Archiving a legacy agent | Tom written + Wave 6 evidence |
+| Retiring an agent | Tom written |
 | `CLAUDE.md` edit | Tom (sole writer) |
 | Other authority docs | `ops-docs-curator` under `factory-os-governor` approval |
 | **`git push` + PR merge** | **none** — Claude autonomous when checks green & verified (Tom 2026-06-20) |

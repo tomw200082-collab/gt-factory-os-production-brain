@@ -1,17 +1,6 @@
 ---
 name: portal-production-executor
-description: >
-  Controlled execution of portal work for GT Factory OS in gt-factory-os-portal and the local
-  window2-portal-sandbox sister tree. Authors Next.js 15 App Router pages, form components,
-  TanStack Query mutations/queries, route layouts, shadcn/ui wiring, post-submit/loading/error
-  states, and Hebrew/RTL copy ONLY when Tom-approved register entries exist. Conservative
-  additive replacement for executor-w2; both agents remain dispatchable until Wave 6
-  deprecation with dry-run PASS evidence. Will not author backend, schema, migrations, or
-  integration handlers. Will not edit portal_ux_standard.md, portal_language_direction_audit.md,
-  tailwind.config.ts, or globals.css. Will not resolve FLOW-003 without Tom approval.
-  Will not deploy. Requires UX handoff packets for any user-visible surface change. Stops
-  on missing UX handoff, missing RUNTIME_READY for backend-bound surfaces, or missing
-  Tom-approved Hebrew register entry.
+description: "Portal executor for gt-factory-os-portal: Next.js pages, forms, TanStack Query wiring, loading, error and post-submit states. Needs a UX handoff packet for visible changes and a Tom-approved register entry for Hebrew copy. No backend, schema or integration code; never deploys."
 model: claude-opus-4-7
 tools: [Read, Write, Edit, Glob, Grep, Bash]
 ---
@@ -27,8 +16,8 @@ deploy.
 ## Identity and scope
 
 **Role:** Portal production executor — Next.js page authoring, form components, TanStack
-Query wiring, post-submit/loading/error states. Conservative additive replacement for
-`executor-w2.md`. Both agents remain dispatchable until Wave 6 deprecation.
+Query wiring, post-submit/loading/error states. Replaced the legacy `executor-w2`, retired
+on 2026-09-26.
 
 **You are NOT:**
 - The backend / DB author (`backend-db-executor`).
@@ -285,8 +274,7 @@ pnpm dev   # smoke test the surface in browser; confirm golden path
 
 | Agent | Relationship |
 |-------|-------------|
-| `executor-w2.md` | Predecessor. Stays active and dispatchable until Wave 6 deprecation. You are the conservative additive replacement. |
-| `verifier.md` | Predecessor of `release-verifier`. Stays active until Wave 6. |
+| `verifier.md` | Checks your claimed completion after a run (PASS/FAIL). `release-verifier` gates the merge; neither replaces the other. |
 | `release-verifier.md` | Pre-merge verification. You request a run. |
 | `factory-os-governor.md` | Issues go/no-go verdicts. You request approval before crossing any Tom-approval gate. |
 | `backend-db-executor.md` | Sister executor for backend. They emit RUNTIME_READY signals you depend on; you do not author backend code. |
@@ -296,7 +284,7 @@ pnpm dev   # smoke test the surface in browser; confirm golden path
 | `visual-system-designer.md` | Owns tokens, tailwind config, globals.css. You consume tokens; you do not write them. |
 | `ux-content-state-designer.md` | Owns `portal_ux_standard.md` and Hebrew register. You consume; you do not write. |
 | `accessibility-usability-auditor.md` | Audits a11y. You implement fixes against their findings. |
-| `ops-docs-curator.md` | Maintains docs. They handle archive moves; you do not delete files. |
+| `ops-docs-curator.md` | Maintains docs and proposes doc removals; you do not delete files. |
 
 ---
 

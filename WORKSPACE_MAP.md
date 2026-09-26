@@ -34,10 +34,6 @@
 | `PRODUCTION/.claude/agents/portal-production-executor.md` | portal executor (Run B) |
 | `PRODUCTION/.claude/agents/integration-boundary-executor.md` | integration executor (Run B) |
 | `PRODUCTION/.claude/agents/ops-docs-curator.md` | docs curator (Run B) |
-| `PRODUCTION/.claude/agents/executor-w1.md` | legacy DB executor (active until Wave 6) |
-| `PRODUCTION/.claude/agents/executor-w2.md` | legacy portal executor (active until Wave 6) |
-| `PRODUCTION/.claude/agents/executor-w4.md` | legacy integration executor (active until Wave 6) |
-| `PRODUCTION/.claude/agents/governor.md` | legacy governor (active until Wave 6) |
 | `PRODUCTION/.claude/agents/verifier.md` | post-executor verifier (kept indefinitely) |
 | `PRODUCTION/.claude/commands/` | 15 commands (Run A: 7 UX + 3 core; Run B: 5 execution) |
 

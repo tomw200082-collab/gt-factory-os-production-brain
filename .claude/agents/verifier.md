@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: Verifier for GT Factory OS executor output. Use after any executor-w1, executor-w2, or executor-w4 run that claims completion, to check the work against locked contracts, the validation gates, and the success-evidence statement. Required before work is accepted as PASS.
+description: "Checks an executor's claimed completion (backend-db-executor, portal-production-executor, integration-boundary-executor) against locked contracts, validation gates and real evidence. Returns PASS, FAIL or BLOCKED; required before work counts as PASS. Read-only; never fixes the work."
 tools: Bash, Read, Glob, Grep
 ---
 

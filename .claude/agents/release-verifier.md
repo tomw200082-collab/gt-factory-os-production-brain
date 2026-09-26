@@ -1,11 +1,6 @@
 ---
 name: release-verifier
-description: >
-  Pre-merge / pre-deploy verification for GT Factory OS. Invoked before any PR merge or production
-  deploy to check git status, changed-file scope, dirty worktree, PR risk, and validation checklist.
-  Produces an explicit "safe for human review" or "not safe" verdict. Read-only. Does not fix code.
-  Does not merge. Does not deploy. Complements (does not replace) verifier.md, which handles
-  post-executor PASS/FAIL verification.
+description: "Pre-merge and pre-deploy check for GT Factory OS: git state, changed-file scope, dirty worktree, PR risk, validation checklist. Returns 'safe for human review' or 'not safe'. Read-only; never fixes, merges or deploys. verifier checks executor output; this one gates the merge."
 model: claude-sonnet-4-6
 tools: [Read, Glob, Grep, Bash]
 ---

@@ -1,12 +1,6 @@
 ---
 name: interaction-design-specialist
-description: >
-  Read-only / plan-only UX agent. Owns interaction quality across GT Factory OS portal surfaces.
-  Covers buttons, forms, confirmations, undo/cancel/reversal paths, disabled states, loading states,
-  empty states, error prevention, keyboard/expert flows, and daily-use density. Classifies every
-  issue as decision-grade now / flow-completion next / polish later. Does not edit portal code.
-  Does not own accessibility (that is accessibility-usability-auditor). Invoked on /button-logic-review,
-  /empty-error-state-audit, /operator-task-simulation, /ux-release-gate.
+description: "Portal interaction audit: buttons, forms, confirmations, undo paths, disabled, loading and empty states, error prevention, keyboard flows, daily-use density. Ranks issues decision-grade now, flow-completion next or polish later. Plan-only; accessibility is accessibility-usability-auditor's."
 model: claude-sonnet-4-6
 tools: [Read, Glob, Grep, Bash]
 ---

@@ -2,7 +2,7 @@
 
 Read-only hygiene scan of the operational documentation ecosystem. Identifies flat-root
 regressions, duplicate source-of-truth, stale archive references, runbook freshness, and
-orphaned doc references. Coordinated by `ops-docs-curator`. Proposes archive moves only;
+orphaned doc references. Coordinated by `ops-docs-curator`. Proposes removals only;
 never deletes; never edits authority docs.
 
 ## Purpose
@@ -36,9 +36,9 @@ ambient cleanup. The check produces a single report Tom can review in 5 minutes 
 
 | Agent | Role |
 |-------|------|
-| `ops-docs-curator` | Drives the scan; produces report; proposes archive moves |
+| `ops-docs-curator` | Drives the scan; produces report; proposes removals |
 | `source-of-truth-auditor` | (Optional) deep-scans for D-classification of any drift detected |
-| `factory-os-governor` | (Optional) issues go/no-go on any archive-move proposal |
+| `factory-os-governor` | (Optional) issues go/no-go on any removal proposal |
 
 ## Required inputs
 
@@ -75,8 +75,9 @@ A hygiene report at `PRODUCTION/docs/phase8/hygiene/HC-<NNN>-<date>.md` containi
      `ops-docs-curator` follow-up run.
    - `CRITICAL_DRIFT` — authority doc references broken or contract drift detected;
      escalate to `factory-os-governor`.
-10. **Proposed archive moves** — list of (original_path, proposed_archive_path, reason).
-    Each proposal is **proposal only**; not executed.
+10. **Proposed removals** — list of (path, reason, reference-check result). Removal means
+    deletion in git (D5); nothing moves into `archive/`. Each proposal is **proposal only**;
+    not executed.
 
 ## Allowed scope (read-only)
 
@@ -89,8 +90,7 @@ A hygiene report at `PRODUCTION/docs/phase8/hygiene/HC-<NNN>-<date>.md` containi
 ## Forbidden scope
 
 - **No edits to any doc** other than the hygiene report and its INDEX.
-- **No archive moves** — propose only; the actual move is a separate Tom-approved step.
-- **No deletions, ever.**
+- **No deletions** — propose only; the deletion is a separate Tom-approved step.
 - **No edits to authority docs.**
 - **No edits to UX standards.**
 - **No code changes.**
@@ -107,7 +107,7 @@ The command must verify:
 1. The scan covered every in-scope file (no time-based truncation).
 2. Every duplicate-truth proposal names the canonical owner (the one that should keep the
    fact; the others should reference it instead).
-3. Every archive-move proposal includes a reference check showing zero live inbound references.
+3. Every removal proposal includes a reference check showing zero live inbound references.
 4. Every "stale runbook" proposal cites the missing "last verified" stamp.
 5. Every "stale contract" proposal cites the specific symbol or path that no longer exists.
 
@@ -115,7 +115,7 @@ The command must verify:
 
 The hygiene report alone authorizes nothing. Tom must explicitly authorize:
 
-- Any archive move proposed by the report.
+- Any removal proposed by the report.
 - Any patch to authority docs that the report identifies as needed (Tom is the only writer).
 - Any reorganization that moves a doc out of its current path.
 - Any new INDEX.md (if missing).
@@ -129,7 +129,7 @@ The hygiene report alone authorizes nothing. Tom must explicitly authorize:
 | Contract doc references symbol no longer in codebase | `SIGNIFICANT_DRIFT` — route to canonical author |
 | Same fact stated in three or more docs without cross-reference | `SIGNIFICANT_DRIFT` |
 | Flat-root regression detected (> 30 unstructured top-level docs) | `SIGNIFICANT_DRIFT` |
-| Doc with active inbound reference proposed for archive | `STOP` — never propose archiving an actively-referenced doc |
+| Doc with active inbound reference proposed for removal | `STOP` — never propose removing an actively-referenced doc |
 
 ## GitHub / mobile usability
 
@@ -152,8 +152,7 @@ The hygiene report alone authorizes nothing. Tom must explicitly authorize:
 
 ## Not usable for
 
-- Executing archive moves (proposal only).
-- Deleting any doc.
+- Deleting any doc (it proposes; the deletion is a separate Tom-approved step).
 - Editing authority docs.
 - Editing UX standards.
 - Editing runtime code.
