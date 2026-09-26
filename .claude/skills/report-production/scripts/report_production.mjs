@@ -335,8 +335,16 @@ async function resolveRuns(spec, planOf) {
       blockers.push(`no PACK/SINGLE run materialized for ${line.item_id} on plan ${planId} — check the plan's shape in the portal.`);
       continue;
     }
+    // A run takes one report. Skipping it here used to print REPORTED and exit
+    // 0, which is how a second batch of the day (landing on the first batch's
+    // run, because the bot account cannot close the plan) never reached the
+    // ledger. The script cannot tell that from a re-run, so it asks.
     if (run.status === 'REPORTED') {
-      notes.push(`${line.item_id}: run ${run.run_id} is already REPORTED — left alone.`);
+      blockers.push(
+        `${line.item_id}: run ${run.run_id} on plan ${planId} is already REPORTED. ` +
+          'If this line already posted, drop it. If it is another batch, it needs its own plan: ' +
+          'a planner closes this one (if still open) and adds a new plan in the portal.',
+      );
       continue;
     }
     if (run.status === 'CANCELLED') {
@@ -431,7 +439,10 @@ async function previewAll(targets) {
 async function reportAll(spec, targets, eventAt, posted) {
   for (const t of targets) {
     const res = await call('POST', `/api/v1/mutations/production-runs/${t.run.run_id}/report`, {
-      idempotency_key: `PRODREPORT:${spec.date}:${t.line.item_id}:${t.line.qty}`,
+      // The run id is in the key because the API replays a known key without
+      // checking which run it was posted to: two same-size batches on one day
+      // would otherwise collapse into one replayed report.
+      idempotency_key: `PRODREPORT:${spec.date}:${t.line.item_id}:${t.line.qty}:${t.run.run_id}`,
       event_at: eventAt,
       output_qty: t.line.qty,
       scrap_qty: t.line.scrap_qty,

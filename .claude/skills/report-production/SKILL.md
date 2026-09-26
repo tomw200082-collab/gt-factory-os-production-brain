@@ -156,6 +156,7 @@ knowing:
 | no run materialized | The plan's shape does not imply a run for that item | Check the plan in the portal |
 | shared component over-drawn | Two runs in the same batch each pass alone but together exceed on-hand | See below — split the batch across two runs, or confirm the negative |
 | run is CANCELLED | The run exists but was cancelled | Nothing to report against it; ask Tom what actually happened |
+| run already REPORTED | The line's run took a report earlier — either this line already posted, or it is another batch of the same product that day | Already posted: drop the line. Another batch: it needs its own plan row. The bot account cannot close a plan, so a planner closes the old one (if still open) and adds a new plan in the portal, then re-run |
 
 The shared-component one is worth understanding rather than pattern-matching, because
 it is the split-tank case and therefore the common one: both pack SKUs of a base batch
@@ -244,7 +245,11 @@ These caused real confusion before; knowing them saves a wrong "fix".
   deliberate.
 - **Re-running is safe**, but not because of the key alone: the report key carries the
   quantity, so a corrected quantity mints a new one. What actually prevents a double
-  post is that a run already `REPORTED` is skipped before any call is made.
+  post is that a run already `REPORTED` blocks the spec before any report is sent.
+  It blocks rather than skips because a second batch of the day lands on that same
+  run, and a skip once printed `REPORTED` for a batch that never reached the ledger.
+  The key also carries the run id: the API replays a known key without checking the
+  run, so two same-size batches on different runs would otherwise share one report.
 
 ## Never
 
