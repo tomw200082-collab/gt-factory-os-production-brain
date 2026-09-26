@@ -1,6 +1,6 @@
 ---
 name: shopify-theme
-description: Building, uploading and previewing Shopify themes for GT — theme duplication, themeFilesUpsert, asset hosting and delivery, preview URLs, Liquid size limits, and the RTL/Hebrew traps that only appear once a design is flipped. Use when the work touches a Shopify theme, a Liquid section or layout, theme assets, a theme preview link, or turning a designed page into a live storefront. Triggers — "theme", "Liquid", "section", "preview", "אתר תדמית", "להעלות לשופיפיי", "לערוך את ה-theme", "תצוגה מקדימה".
+description: "Building and publishing GT's Shopify themes: duplicate, upload files (themeFilesUpsert), preview links, Liquid limits, RTL/Hebrew traps. For any theme, Liquid section or storefront page work: \"אתר תדמית\", \"להעלות לשופיפיי\", \"לערוך את ה-theme\", \"תצוגה מקדימה\"."
 ---
 
 # Shopify themes — GT

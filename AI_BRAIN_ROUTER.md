@@ -26,7 +26,7 @@ Fits >1 type → take the highest in this order.
 
 `backend-db` → `backend-db-executor` · `portal` → `portal-production-executor` · `integration` → `integration-boundary-executor` — **per-module** (isolated via each module's `MODULE_TEMPLATE.md` allowed-paths). `docs` → `ops-docs-curator` — **system-wide**, ⊥ per-module. ≤4 simultaneous.
 Read-only, ⊥ count as lane, all **system-wide**: `ux-audit` (5 UX agents, parallel) · `governance` → `factory-os-governor` (always-on) · `release-gate` → `release-verifier` · `source-of-truth` → `source-of-truth-auditor` (on demand).
-Legacy `executor-w1/w2/w4`, `governor`, `verifier` dispatchable until Wave 6. One lane = legacy **or** new, never both. Default new.
+`verifier` checks executor output after a run. The legacy `executor-w1/w2/w4` and `governor` were retired on 2026-09-26.
 
 ## 3. Decision tree — first match wins
 

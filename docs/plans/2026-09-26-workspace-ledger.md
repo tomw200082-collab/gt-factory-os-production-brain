@@ -1,7 +1,7 @@
 # Workspace ledger — what stays, what goes
 
 **For:** `docs/plans/2026-09-26-workspace-restructure.md`, Layer 0.
-**Status:** DRAFT. Layer 1 below is itemized and waits for Tom's approval. Layers 2–5 are listed as rules and counts; each is itemized when its layer starts.
+**Status:** Tom approved Layer 1 as listed on 2026-09-26. Layers 2–5 are listed as rules and counts; each is itemized when its layer starts.
 
 **Evidence.** The inventory taken on 2026-09-26 covers every `SKILL.md`, agent and command in the five repos and in the claude.ai account. For each it records:
 - description size, file count and last commit;
@@ -61,6 +61,8 @@ Any deleted file comes back with `git checkout <sha> -- <path>`. The plan called
 ### Shorten — 29 descriptions, to 300 characters or less
 
 Every trigger phrase stays. What goes is process detail, which already lives in the body. The two sunset skills keep their text.
+
+In the event only 28 were shortened. `stock-exceptions-sweep` keeps its text because it sweeps LionWheel tasks, which makes it sunset-bound.
 
 `daily-ops-guardian` 1,270 · `shopify-draft-order-from-po` 1,042 · `close-session` 1,005 · `production-order` 990 · `weekly-opening` 961 · `ui-ux-pro-max` 914 · `chief-of-staff-daily` 906 · `report-production` 899 · `procurement-planning` 897 · `impeccable` 895 · `messi` 869 · `customer-setup-shopify-gi` 855 · `ponytail` 826 · `apple-design` 792 · `better-typography` 772 · `plan-production-14d` 757 · `stock-exceptions-sweep` 682 · `better-accessibility` 671 · `better-colors` 636 · `meeting-summary` 605 · `better-layout` 585 · `better-ui` 522 · `shopify-theme` 503 · `page-cro` 500 · `better-writing` 493 · `weekly-sales-report` 487 · `ponytail-review` 456 · `shopify-sync` 442 · `goods-receipt-from-invoice` 436
 

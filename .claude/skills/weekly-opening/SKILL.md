@@ -1,17 +1,6 @@
 ---
 name: weekly-opening
-description: >-
-  Tom's weekly-opening ritual (פתיחת שבוע) for GT Everyday — the horizontal chief-of-staff layer
-  above the factory guardian. Fires מוצ״ש chained from daily-ops-guardian mode sunday-prep
-  (Sat ~20:00 IL, same session, sharing ONE unified email), or when Tom says "פתיחת שבוע",
-  "בוא נפתח שבוע", "פתח לי את השבוע", "weekly opening", "האבנים של השבוע", or pastes a dashboard
-  summary starting "=== GT פתיחת שבוע — סיכום דשבורד ===". One loop: parallel fan-out gather
-  (Notion gantt, factory, sales ₪, calendar, PRs) → retro-scores last week's rocks → refresh the
-  live dashboard artifact (fixed URL) → unified email → sit-down → lock 3 rocks into
-  docs/ceo/weeks/<sunday>.md → book their calendar blocks → assign Claude's week tasks → guardian
-  shows the rocks every morning → next מוצ״ש opens with their retro. Notion is the master for
-  projects and tasks; docs/ceo/registry.md is a generated mirror. Never firms, places, merges, or
-  writes to ledger/plans/external systems.
+description: "Tom's weekly opening (פתיחת שבוע): scores last week's rocks, gathers Notion, factory, sales and calendar, locks three rocks for the week and books their calendar time. Runs after sunday-prep, or on \"פתיחת שבוע\", \"בוא נפתח שבוע\", \"weekly opening\". Never firms, places or merges."
 ---
 
 # weekly-opening — פתיחת שבוע

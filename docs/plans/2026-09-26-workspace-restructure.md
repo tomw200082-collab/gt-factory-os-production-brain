@@ -60,6 +60,14 @@ LionWheel appears in 365 backend files (40 of them runtime), 152 brain files, 67
 
 **Stock-truth warning.** Migration `0330_lionwheel_poll_railway_cron.sql` records that every `FG_OUT_PICK` row in the ledger (3,891 at the time) came through the Railway LionWheel poll. If LionWheel closes before the distributor supplies another source for that event, finished-goods stock stops going down, and the Shopify reconciler publishes stock that is no longer there.
 
+## Built to extend (Tom, 2026-09-26)
+
+Later, Tom will add new teams, for example a marketing team for paid and organic campaigns. That is not part of this plan, but the cleanup has to leave room for it:
+
+- **A new team plugs in the way sales does after Layer 2:** one folder in the brain for its doctrine and knowledge, plus its skills and agents under `.claude/`. A new domain goes through `MODULE_TEMPLATE.md` and Tom's approval (`CLAUDE.md`, New modules).
+- **Every skill and agent, kept or added, earns its place.** It needs one clear operational purpose for GT, one home, and a description of 300 characters or less that leads with that purpose. The listing budget is shared, so each addition costs every session.
+- **Social platforms (Tom, 2026-08-29, carried over from `agent-reach`).** Never point an automated reader at a GT-owned social login. Read public pages through a reader, and use the platform's sanctioned API (Meta Graph, LinkedIn) for authenticated data. A throwaway account is allowed only when that is unavoidable.
+
 ## Open
 
 - When the switch to the distributor happens (D7). Until it is known, LionWheel breakages get fixed only when they threaten stock truth or a customer.
@@ -68,8 +76,8 @@ LionWheel appears in 365 backend files (40 of them runtime), 152 brain files, 67
 
 | Layer | State | PR | Gate evidence |
 |---|---|---|---|
-| 0 | ledger drafted, waiting for Tom | | `docs/plans/2026-09-26-workspace-ledger.md` |
-| 1 | not started | | |
+| 0 | done: Tom approved the ledger | #226 | `docs/plans/2026-09-26-workspace-ledger.md` |
+| 1 | in progress | brain PR; then Sales-Machine, portal, gt-site, backend | |
 | 2 | not started | | |
 | 3 | not started | | |
 | 4 | not started | | |

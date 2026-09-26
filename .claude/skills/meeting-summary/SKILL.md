@@ -1,6 +1,6 @@
 ---
 name: meeting-summary
-description: Turn a meeting recording/transcript into a grounded, closed-loop summary — connected to Notion tasks & projects, verified against the live Factory OS + Shopify, archived in the brain, and emailed as a branded Hebrew report. Use WHENEVER Tom asks to summarize a meeting or sends meeting material — "סכם את הפגישה", "סיכום פגישה", "תסכם את הישיבה", "סיכום ישיבת רביעי", "meeting summary", "/meeting-summary", a pasted transcript, an audio/voice recording of a meeting, or a transcript file (from Drive/Dropbox/chat). Also trigger when Tom asks "מה סגרנו בפגישה" or wants last meeting's action items tracked.
+description: "Turns a meeting recording or transcript into a verified summary: decisions and tasks linked to Notion, facts checked against Factory OS and Shopify, archived in the brain, Hebrew email. Triggers: \"סכם את הפגישה\", \"סיכום פגישה\", \"סיכום ישיבת רביעי\", \"מה סגרנו בפגישה\", a transcript."
 ---
 
 # Meeting Summary — grounded & closed-loop

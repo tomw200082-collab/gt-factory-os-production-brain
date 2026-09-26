@@ -22,14 +22,16 @@ Boundary crossing without W5 approval = `ownership_conflict`.
 
 ## Lanes & agents
 
-| Lane | Production agent | Legacy (dispatchable until Wave 6) |
-|---|---|---|
-| `backend-db` | `backend-db-executor` | `executor-w1` |
-| `portal` | `portal-production-executor` | `executor-w2` |
-| `integration` | `integration-boundary-executor` | `executor-w4` |
-| `docs` | `ops-docs-curator` | — |
-| `governance` | `factory-os-governor` | `governor` |
-| `release-gate` | `release-verifier` | `verifier` (kept indefinitely) |
+| Lane | Agent |
+|---|---|
+| `backend-db` | `backend-db-executor` |
+| `portal` | `portal-production-executor` |
+| `integration` | `integration-boundary-executor` |
+| `docs` | `ops-docs-curator` |
+| `governance` | `factory-os-governor` |
+| `release-gate` | `release-verifier` (pre-merge) · `verifier` (checks executor output) |
+
+The legacy `executor-w1/w2/w4` and `governor` were retired on 2026-09-26 (workspace ledger, Layer 1).
 | `source-of-truth` | `source-of-truth-auditor` | — |
 | `ux-audit` | 5 UX agents (read-only, parallel) | — |
 
