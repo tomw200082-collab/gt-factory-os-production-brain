@@ -64,11 +64,26 @@ LionWheel appears in 365 backend files (40 of them runtime), 152 brain files, 67
 
 - When the switch to the distributor happens (D7). Until it is known, LionWheel breakages get fixed only when they threaten stock truth or a customer.
 
+## D8 outcome — monthly Excel dry run, 2026-09-26
+
+The dry run was not clean, so under D8 the Routine (`trig_01AsZDSP6AknPt1FfQPXePQZ`) should be paused. Agents cannot edit it because it was created through the API rather than by an agent, so Tom has to pause it himself. The proper fix belongs to Layer 5.
+
+What the dry run found (live Shopify, read-only; `main` scripts plus the new files from backend #239):
+
+1. **The closed-month gate can never pass.** `build_facts.py` marks `GT_RANGE_END` itself as partial (`PARTIAL = {RANGE_END}`, line 31). The Routine sets `GT_RANGE_END` to the closed month, so that month is always flagged partial and the "closed month must be complete" gate always fails. The run needs `GT_RANGE_END` set to the current month and `GT_EXCEL_END` set to the closed month.
+2. **The identity gate fails with the Admin-API anchor.** Using `fetch_shopifyql.py`, the full window 2024-09..2026-08 comes out at −3.663% against a ±0.5% limit, with 14 of 25 months exact. Root cause not yet known.
+3. **No Dropbox credential in the environment.** The Dropbox MCP cannot upload binary files, so the upload leg cannot work unattended.
+4. **The three PRs are stale.**
+   - Backend #239's `orders_bulk.graphql` has been superseded by `main`'s `bulk_query.graphql` (#247).
+   - Brain #162 edits `weekly-sales-report`, which `main` has changed since.
+   - Sales-Machine #12 and #239's README say ShopifyQL works only through the MCP, which `fetch_shopifyql.py` contradicts.
+5. **The Routine did not make the August file.** Its 2026-09-01 run lasted two minutes (06:05–06:07 UTC). `/Business/Sales/מכירות 08.26.xlsx` was written at 09:56 UTC by something else, and a second copy sits at `/Business/מכירות 08.26.xlsx`.
+
 ## Status
 
 | Layer | State | PR | Gate evidence |
 |---|---|---|---|
-| D8 | in progress | | |
+| D8 | dry run not clean; waiting for Tom to pause the Routine | | this file, "D8 outcome" |
 | 0 | not started | | |
 | 1 | not started | | |
 | 2 | not started | | |
