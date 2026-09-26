@@ -82,6 +82,7 @@ Remove the `claude-code-setup` plugin and its marketplace from the `settings.jso
 
 - **Skills.** The 22 custom skills leave the account (D6). What moves into the brain first: see "Account merges" below.
 - **Connectors.** Disconnect Booking.com, Expedia, Kiwi.com and Spotify, which have no GT use. Also disconnect Figma: no GT file mentions it, and if Tom designs in it, it stays. Together these add hundreds of tool names to every session. Keep the rest; Klaviyo appears in the runtime system map.
+  - **Order (2026-09-26, after Layer 1 merged).** Booking.com and Spotify go now: no Routine uses them. Expedia, Figma and Kiwi.com wait for Layer 5. Three enabled Routines still carry them in their connector lists: the daily sales brief, the morning sales-report artifact run and the monthly Excel. Nobody has verified how a Routine fires after one of its connectors is disconnected, and the daily brief goes to Tom and Dean. Layer 5 rebuilds those Routines with only the connectors they use, and then these three go.
 
 ### Account merges
 
