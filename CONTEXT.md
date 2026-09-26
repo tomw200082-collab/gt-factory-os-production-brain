@@ -18,6 +18,10 @@ _Avoid_: canonical runtime, Box 2
 A skill stored in the claude.ai account rather than in git.
 _Avoid_: synced skill
 
+**Sunset**:
+A part of the system that stays running unchanged, with no fixes and no deletion, until the Distributor takes over its job; then it is deleted.
+_Avoid_: frozen (reserved for feature flags held until Tom approves a flip)
+
 ### Operations
 
 **Distributor**:

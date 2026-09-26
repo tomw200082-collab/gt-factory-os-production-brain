@@ -1,6 +1,6 @@
 # Workspace restructure — layered plan
 
-**Status:** DRAFT. Tom approved the direction on 2026-09-26 (round 1, below). The layers wait for his confirmation; round 2 is open.
+**Status:** APPROVED. Tom approved rounds 1 and 2 on 2026-09-26. Each layer's item list still needs his approval before anything is removed.
 **Owner:** Tom. **Method:** `grill-with-docs` (grilling + domain-modeling). Glossary: `CONTEXT.md`.
 **Pace:** one layer at a time, across several days. Nothing is deleted before its layer's list is approved.
 
@@ -21,7 +21,11 @@ Measured 2026-09-26:
 | D1 | One brain. Sales-Machine folds into this repo as `sales/`, with its own nested `CLAUDE.md` that loads only when work happens there. The Sales-Machine repo is then archived read-only. | Layer 2 |
 | D2 | The brain may hold skill scripts. Nothing that deploys to production lives here. | Layer 2 |
 | D3 | `WORKSPACE_MAP.md` is rewritten as the single workspace map. The Workspace table in `CLAUDE.md` shrinks to a pointer. | Layer 2 |
-| D4 | GT skills live in git, in the brain. The claude.ai account keeps generic skills. Refined by Q6. | Layer 1 |
+| D4 | GT skills live in git, in the brain. The claude.ai account keeps generic skills. | Layer 1 |
+| D5 | Removal is a real deletion in git. The tag on each repo is the rollback; no `archive/` folders. This replaces the archive-only rule in `.claude/agents/ops-docs-curator.md`, which Layer 1 updates. | Every layer |
+| D6 | Tom uses none of the 22 custom account skills outside Claude Code. Anything unique in them merges into the brain, and all 22 leave the account. The 11 Anthropic skills (docx, pdf, pptx, xlsx, skill-creator and the rest) stay. | Layer 1 |
+| D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. When the switch happens is not known yet. | Distributor track |
+| D8 | Before the Routine fires on 2026-10-01: review brain #162, backend #239 and Sales-Machine #12, bring them up to date with `main`, dry-run without the upload, and merge. If the dry run is not clean, pause the Routine instead. | Before Layer 0 |
 
 D1–D3 change authority docs. `CLAUDE.md` is Tom's to write, so each edit lands as exact text for him to approve.
 
@@ -56,17 +60,15 @@ LionWheel appears in 365 backend files (40 of them runtime), 152 brain files, 67
 
 **Stock-truth warning.** Migration `0330_lionwheel_poll_railway_cron.sql` records that every `FG_OUT_PICK` row in the ledger (3,891 at the time) came through the Railway LionWheel poll. If LionWheel closes before the distributor supplies another source for that event, finished-goods stock stops going down, and the Shopify reconciler publishes stock that is no longer there.
 
-## Open questions — round 2
+## Open
 
-- **Q5** Delete in git, or move to `archive/` folders?
-- **Q6** Which account skills are used outside Claude Code (the claude.ai app, mobile, Cowork)?
-- **Q7** Confirm the sunset boundary, and roughly when the switch to the distributor happens.
-- **Q8** The monthly Excel Routine fires on 2026-10-01 and depends on three unmerged draft PRs (brain #162, backend #239, Sales-Machine #12). Merge them after a dry run, or pause the Routine?
+- When the switch to the distributor happens (D7). Until it is known, LionWheel breakages get fixed only when they threaten stock truth or a customer.
 
 ## Status
 
 | Layer | State | PR | Gate evidence |
 |---|---|---|---|
+| D8 | in progress | | |
 | 0 | not started | | |
 | 1 | not started | | |
 | 2 | not started | | |
