@@ -217,6 +217,56 @@ chasing platform breakage, which a frozen copy does not receive.
 
 License: MIT, copyright (c) 2025 Agent Eyes; full text in `agent-reach/LICENSE`.
 
+## `grill-with-docs` — vendored here, 2026-09-26
+
+| Upstream | Commit | License | Skills |
+|---|---|---|---|
+| [mattpocock/skills](https://github.com/mattpocock/skills) | `c55ee46` (2026-09-18, the upstream tip on 2026-09-26) | MIT (`LICENSE` in each directory) | `grill-with-docs`, `grilling`, `domain-modeling` |
+
+Taken at Tom's request. He linked upstream's docs page,
+`docs/engineering/grill-with-docs.md`. The skill interviews you about a plan in
+rounds until you agree on it, and writes the settled vocabulary and the hard
+decisions into the repo as it goes. Invoke it as `/grill-with-docs`. It is
+`disable-model-invocation: true`, so it never fires on its own.
+
+**Three skills, because one does nothing alone.** `grill-with-docs/SKILL.md` is
+one line: call the Skill tool for `grilling` and `domain-modeling`. `grilling`
+runs the interview; `domain-modeling` writes the files. Upstream's docs name
+partial loading as the most-reported failure: `grilling` loads, `domain-modeling`
+does not, and the interview leaves no files. If a session left no `CONTEXT.md`,
+ask it which skills it loaded. Both dependencies are ordinary model-invocable
+skills and also work on their own.
+
+`SKILL.md`, plus `domain-modeling`'s `ADR-FORMAT.md` and `CONTEXT-FORMAT.md`, are
+byte-identical to upstream. Each upstream directory's `agents/openai.yaml`
+configures OpenAI's Codex and was left behind, same rule as the other editors'
+files above.
+
+### Notes before use
+
+- **It writes into the repo it is pointed at:** a `CONTEXT.md` glossary at the
+  root, and ADRs as `docs/adr/NNNN-slug.md`, each created the first time
+  something qualifies. None of the five workspace repos has either today.
+- **What it writes is not authority.** Its ADRs are not locked decisions. Those
+  stay in `docs/decisions/LOCKED_DECISIONS.md` here and in
+  `Sales-Machine/doctrine/decisions.md`, and change only on Tom's word.
+  `CONTEXT.md` is a glossary, not a new authority doc.
+- **Run it live with Tom, not inside a pipeline.** It is an interview, so it
+  needs someone answering. Upstream also reports that when it runs as a step in
+  another orchestration layer, the file-writing half silently does not happen.
+- **It overlaps `brainstorming`.** Both interview before building.
+  `brainstorming` asks one question per message and ends in a design spec under
+  `docs/superpowers/specs/`. `grill-with-docs` asks a round of numbered
+  questions at a time, each with a recommended answer, and leaves a glossary and
+  ADRs, not a spec. Upstream's spec step, `to-spec`, was not taken.
+
+Updating: re-clone upstream and copy `skills/engineering/grill-with-docs/`,
+`skills/productivity/grilling/` and `skills/engineering/domain-modeling/` over
+the three directories, leaving `agents/` behind.
+
+License: MIT, copyright (c) 2026 Matt Pocock; full text in each directory's
+`LICENSE`.
+
 ## Vendored in `Sales-Machine`, not here
 
 `Sales-Machine/.claude/skills/` also carries 10 skills from
