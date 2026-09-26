@@ -24,7 +24,8 @@
 //         "fill_l_per_unit": 1,                                   // litres of base per unit
 //         "scrap_qty": 0, "qc_brix": null, "qc_ph": null, "notes": null,
 //         "confirm_negative": ["PKG-LABEL-X"],  // or true for every flagged component
-//         "explanation": null }       // reason a take is off-recipe by 2x or more
+//         "explanation": null,        // reason a take is off-recipe by 2x or more
+//         "batch": 2 }                // 2, 3… for a later batch of the same item that day
 //     ],
 //     "plan_note": "..."                     // optional; notes on any plan row created
 //   }
@@ -142,6 +143,8 @@ function loadSpec() {
     if (!line.uom) throw new Error(`line ${line.item_id}: uom is required and must equal items.sales_uom`);
     line.scrap_qty = Number(line.scrap_qty ?? 0);
     if (!(line.scrap_qty >= 0)) throw new Error(`line ${line.item_id}: scrap_qty must be >= 0`);
+    line.batch = Number(line.batch ?? 1);
+    if (!Number.isInteger(line.batch) || line.batch < 1) throw new Error(`line ${line.item_id}: batch must be a whole number >= 1`);
     if (line.base_bom_head_id) {
       line.fill_l_per_unit = Number(line.fill_l_per_unit);
       if (!(line.fill_l_per_unit > 0)) {
@@ -335,15 +338,12 @@ async function resolveRuns(spec, planOf) {
       blockers.push(`no PACK/SINGLE run materialized for ${line.item_id} on plan ${planId} — check the plan's shape in the portal.`);
       continue;
     }
-    // A run takes one report. Skipping it here used to print REPORTED and exit
-    // 0, which is how a second batch of the day (landing on the first batch's
-    // run, because the bot account cannot close the plan) never reached the
-    // ledger. The script cannot tell that from a re-run, so it asks.
+    // Block, don't skip: this may be a re-run or another batch landing on the
+    // same run, and only a person can tell which.
     if (run.status === 'REPORTED') {
       blockers.push(
-        `${line.item_id}: run ${run.run_id} on plan ${planId} is already REPORTED. ` +
-          'If this line already posted, drop it. If it is another batch, it needs its own plan: ' +
-          'a planner closes this one (if still open) and adds a new plan in the portal.',
+        `${line.item_id}: run ${run.run_id} on plan ${planId} is already REPORTED — ` +
+          'drop the line if it already posted; another batch needs its own plan and "batch": 2.',
       );
       continue;
     }
@@ -439,10 +439,7 @@ async function previewAll(targets) {
 async function reportAll(spec, targets, eventAt, posted) {
   for (const t of targets) {
     const res = await call('POST', `/api/v1/mutations/production-runs/${t.run.run_id}/report`, {
-      // The run id is in the key because the API replays a known key without
-      // checking which run it was posted to: two same-size batches on one day
-      // would otherwise collapse into one replayed report.
-      idempotency_key: `PRODREPORT:${spec.date}:${t.line.item_id}:${t.line.qty}:${t.run.run_id}`,
+      idempotency_key: `PRODREPORT:${spec.date}:${t.line.item_id}:${t.line.qty}${t.line.batch > 1 ? `:b${t.line.batch}` : ''}`,
       event_at: eventAt,
       output_qty: t.line.qty,
       scrap_qty: t.line.scrap_qty,
@@ -452,6 +449,15 @@ async function reportAll(spec, targets, eventAt, posted) {
       ...(t.line.qc_ph != null ? { qc_ph: t.line.qc_ph } : {}),
       notes: t.line.notes ?? `Production reported for ${spec.date}.`,
     });
+    // Every target was unreported when resolved, so a replay means an earlier
+    // report on another run holds this key: the API replays it without
+    // checking the run, and nothing was posted for this batch.
+    if (res.idempotent_replay) {
+      throw new Error(
+        `${t.line.item_id}: the API answered with an earlier report (submission ${res.submission_id}) — ` +
+          'nothing was posted for this line. Already posted? Drop it. Another batch of the same size? Set "batch": 2.',
+      );
+    }
     posted.push({ ...res, item_id: t.line.item_id, plan_id: t.plan_id });
   }
 }
@@ -574,7 +580,7 @@ function printPreview(targets) {
 
 function printPosted(posted) {
   for (const p of posted) {
-    console.log(`\n${p.item_id}: +${p.output_qty} ${p.output_uom}   ledger ${p.output_ledger_row_id}${p.idempotent_replay ? '  (replay)' : ''}`);
+    console.log(`\n${p.item_id}: +${p.output_qty} ${p.output_uom}   ledger ${p.output_ledger_row_id}`);
     console.log(`   submission ${p.submission_id}   plan ${p.linked_plan_id ?? p.plan_id}`);
     for (const c of p.consumed) {
       console.log(`   -${String(c.consumed_qty).padStart(14)} ${String(c.uom).padEnd(5)} ${c.component_id.padEnd(26)} [${c.basis}]`);
