@@ -182,3 +182,16 @@ order by pp.plan_date, pp.created_at;
 - Before choosing how a data migration records what it changed, run `grep -rn "__migration_" db/migrations` and follow what it finds.
 - Run review passes (`/simplify`, `/code-review`) on a migration **before** it is applied to prod, not after. Once applied, every finding costs a new migration.
 - pgTAP in `db/tests` can be run against prod without direct DB access. Wrap every statement in one `DO` block that ends in `raise exception` carrying the TAP output. The Management API query endpoint returns the output in its error, and the transaction always rolls back.
+
+### 2026-09-26: A shadow Chrome draws and iPhone boxes, and a squash-merged branch that can only move forward
+
+**What happened:** two surprises in one customer-portal session.
+
+1. **The box around every product.** Tom's iPhone showed a square, cut-off shadow around the product pictures on the customer portal. The brand site had the same pattern. It hit every cut-out product (tea bottles, purée pouches, powder bags). The cause was `filter: drop-shadow(...)` on the cut-out `<img>`, which iOS Safari clips to the picture's rectangle. The images' alpha was clean, and Chrome draws the shadow correctly. So the Playwright harness never showed it: its screenshots, facts and axe runs were all green. The fix was to drop the filter and paint a soft floor as the picture's own background: `background: radial-gradient(closest-side, rgba(32,36,31,.3), transparent) 50% 100%/72% 8% no-repeat`. There is no filter left for Safari to clip, and the floor fades and greys with the picture. A `::after` floor was tried first. It showed a shadow with no product while a lazy image was still loading.
+2. **The branch after a squash merge.** Portal tranches squash-merge, so the working branch's old tip is not an ancestor of `main`. The next change on the same branch cannot fast-forward onto the remote, and force-push is refused in this environment. The only clean continuation was `git merge -s ours origin/<branch>` on top of `origin/main`. It creates a merge commit with no content, because the old tip's tree already equals the squash. The tranche verifier then checks that the diff from `main` equals the manifest.
+
+**Why it was surprising:** the harness is trusted as the visual gate, but it runs one engine. A green Chromium run says nothing about a WebKit-only paint bug. And "restart the branch from main" reads as a reset, which on a pushed branch needs a force-push this environment does not allow.
+
+**Corrective:**
+- Never put `filter: drop-shadow` on a cut-out product image in the portal, the brand site or the staff app. Use the background floor above. When Tom reports a visual bug from an iPhone, suspect WebKit-only behaviour first, and say plainly that the harness cannot reproduce it.
+- After a squash merge, continue the same branch with `git checkout -B <branch> origin/main && git merge -s ours origin/<branch>`. Check `git diff origin/main HEAD` before and after: it must contain only the new change.
