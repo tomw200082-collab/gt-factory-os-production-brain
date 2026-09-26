@@ -77,7 +77,7 @@ Later, Tom will add new teams, for example a marketing team for paid and organic
 | Layer | State | PR | Gate evidence |
 |---|---|---|---|
 | 0 | done: Tom approved the ledger | #226 | `docs/plans/2026-09-26-workspace-ledger.md` |
-| 1 | in progress | brain PR; then Sales-Machine, portal, gt-site, backend | |
+| 1 | repo side done; account cleanup waiting for Tom | brain #227, #229 · Sales-Machine #33 · portal #236 · gt-site #24 · backend #311 | Model-visible repo skills went from 98 to 59, and their description characters from 45,447 to 14,982. The 15 brain agents' descriptions went from 8,262 to 4,136 characters, none over 300. No live file names a retired agent, and `ops-docs-curator` and `/docs-hygiene-check` now delete in git per D5. Listing now about 44.7K; about 27.9K once the 22 account skills leave. The fresh-session check for the "over budget" warning is still to do. |
 | 2 | not started | | |
 | 3 | not started | | |
 | 4 | not started | | |

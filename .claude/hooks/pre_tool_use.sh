@@ -92,7 +92,7 @@ esac
 # --- Rule 4: canonical portal writes need RUNTIME_READY ------------------
 # If the target path is under Projects/gt-factory-os/portal/ and the tool is
 # Write/Edit, require a non-empty runtime_ready.json. This is a coarse gate:
-# the executor-w2 agent prompt enforces the form-scoping; the hook only
+# the portal-production-executor prompt enforces the form-scoping; the hook only
 # ensures at least one RUNTIME_READY signal exists before any portal canonical
 # write is attempted.
 case "$TARGET_PATH" in
@@ -116,7 +116,7 @@ esac
 # instead.
 case "$TARGET_PATH" in
   */docs/integrations/*.sql|*/docs/integrations/*.ts|*/docs/integrations/*.js)
-    block "W4 is requirements-only. Schema/runtime code belongs to W1. Route to executor-w1."
+    block "W4 is requirements-only. Schema/runtime code belongs to W1. Route to backend-db-executor."
     ;;
 esac
 

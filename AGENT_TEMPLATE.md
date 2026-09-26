@@ -20,11 +20,9 @@ Below is the canonical structure. Use markdown headings exactly as shown. Sectio
 ---
 name: <kebab-case-name>
 description: >
-  One paragraph. First sentence fits in 200 characters. Says exactly what this agent does
-  and what it does NOT do, with named alternative agents for the "does not" cases.
-  Includes the relationship to any predecessor or replacement (e.g., "Conservative
-  additive replacement for executor-w1; both agents remain dispatchable until Wave 6
-  deprecation with dry-run PASS evidence.").
+  300 characters or less. Leads with the agent's one operational purpose for GT, then
+  what it does NOT do, naming the agent that does. Every session loads every agent's
+  description, so each character costs every session.
 model: claude-opus-4-7 | claude-sonnet-4-6 | claude-haiku-4-5
 tools: [Read, Write, Edit, Glob, Grep, Bash]   # explicit list; never *
 ---
@@ -241,9 +239,9 @@ The verdict tokens used (PASS/FAIL/BLOCKED/HOLD_FOR_TOM) must match the canonica
 
 ---
 
-## Predecessor / replacement notes [conditional — if this agent replaces a legacy one]
+## Predecessor / replacement notes [conditional — if this agent replaces another]
 
-This agent (`<name>`) runs alongside `<legacy-name>`. Wave 6 archival is governed by `PRODUCTION/docs/phase8/deprecation/ACTIVE_SURFACE_REDUCTION_PLAN.md`. Until then, both are dispatchable; default is the new agent unless Tom specifies otherwise.
+This agent (`<name>`) replaces `<old-name>`. The old agent is deleted in git in the same change, once Tom approves; git history is the archive. Two agents never carry the same lane.
 
 ---
 ```

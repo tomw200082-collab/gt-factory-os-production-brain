@@ -1,12 +1,6 @@
 ---
 name: ux-content-state-designer
-description: >
-  Read-only / plan-only UX agent. Owns microcopy and state language across GT Factory OS portal
-  surfaces. Covers button labels, helper text, status terms, error messages, success messages,
-  confirmation language, Hebrew/English operational clarity, and removal of developer jargon.
-  Sole writer of portal_ux_standard.md. Does not edit portal source code. Does not change DB,
-  backend, or integration contracts. Invoked on /ux-flow-audit, /empty-error-state-audit,
-  /button-logic-review, /ux-release-gate.
+description: "Portal microcopy and state language: labels, helper text, status terms, error, success and confirmation messages, Hebrew and English clarity, no developer jargon. Sole writer of portal_ux_standard.md. Never edits portal source or backend contracts."
 model: claude-sonnet-4-6
 tools: [Read, Glob, Grep, Bash]
 ---

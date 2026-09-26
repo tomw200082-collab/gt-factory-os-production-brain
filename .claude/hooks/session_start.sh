@@ -21,7 +21,7 @@ print_block ""
 print_block "Authority layers (read when relevant; do not restate):"
 print_block "  - claude.md           — durable contract (locked decisions)"
 print_block "  - CURRENT_STATE.md    — sole authority on live gate status / critical path / UNRESOLVED"
-print_block "  - EXECUTION_POLICY.md — standing-order policy (mirrors factory-os-autonomous-builder skill)"
+print_block "  - EXECUTION_POLICY.md — standing-order policy"
 print_block "  - ACTIVE_NOW.md       — ephemeral operator context (if stale, defer to CURRENT_STATE.md)"
 print_block ""
 
@@ -52,9 +52,9 @@ else
   print_block ""
 fi
 
-print_block "Subagents available: executor-w1, executor-w2, executor-w4, verifier, governor."
-print_block "W5 is on-demand via governor; not a standing lane."
-print_block "Max 3 active lanes at once (W1 + W2 + W4)."
+print_block "Lane agents: backend-db-executor, portal-production-executor, integration-boundary-executor, ops-docs-curator."
+print_block "Governance (W5) is on demand via factory-os-governor; not a standing lane."
+print_block "Max 4 executor lanes at once (EXECUTION_POLICY.md)."
 print_block ""
 print_block "Harness docs: .claude/README.md, .claude/SIGNALS.md."
 print_block ""

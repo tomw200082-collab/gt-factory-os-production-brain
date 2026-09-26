@@ -1,10 +1,6 @@
 ---
 name: source-of-truth-auditor
-description: >
-  Finds duplicate, conflicting, and stale truth across all GT Factory OS authority documents, memory
-  files, agent definitions, command files, docs, and archive. Identifies the single authoritative
-  owner for each fact. Classifies drift as stale / conflicting / orphaned / authoritative. Proposes
-  exact patches — does not apply them. Read-only. Does not edit authority docs automatically.
+description: "Finds duplicate, conflicting and stale truth across GT authority docs, agents, commands, skills, memory and docs. Names the one authoritative owner per fact and classifies drift as stale, conflicting, orphaned or authoritative. Proposes exact patches; never applies them."
 model: claude-sonnet-4-6
 tools: [Read, Glob, Grep, Bash]
 ---
