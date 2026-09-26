@@ -48,7 +48,7 @@ print view stacks the `יעד` column one Hebrew letter per line (~13 pages); we
 compact print CSS (`white-space:nowrap`, tight cells) and pick the largest scale
 that still fits, so all stops land on **one A4 portrait page** — layout tightened
 only, nothing invented. `build_workorder()` stays as a fallback if LionWheel does
-not return the page.
+not return the page, or if the route does not fit one page at a readable scale (0.4).
 
 ## Invoice annotation design (formal, rounded — Tom, 2026-06-21)
 Per product line, at the **right margin, precise to the line**, a formal rounded
@@ -88,10 +88,16 @@ status badge (two-tone: saturated glyph on a pale fill, thin same-hue ring):
    Writes `route_pack_out/route_<driver>_<date>.pdf`, `summary.json` and `summary.md`.
    Sanity-check by rendering a page to PNG with PyMuPDF.
 4. **Stock moves outside picking: flag only, no submission.** `detect_inventory_moves()`
-   marks stops whose title or any note field (invoice stops included) says exchange, pickup,
-   return, tasting, supplement, free goods (`ללא חיוב`) or delivery note. Cheque pickups are
-   not flagged. The flag lands on the work-order fallback and in `summary.md`, and
-   `summary.json` carries `flagged_moves`. **This skill creates nothing in the inbox.** A
+   flags each stop with the class the API's stock-exceptions sweep will give it once it
+   completes — `classify()` mirrors the sweep's rules in gt-factory-os
+   `api/src/inventory-movements/sweep/text.ts`, so change both together. On a stop with order
+   lines only exchange, return, tasting and free goods (`ללא חיוב`) count; supplement and
+   delivery-note words count in the title only; a stop without order lines is always flagged
+   (`unclear` when nothing matches); cheque pickups never are. Supplier pickups and transfers
+   get a notice from the sweep, not a proposal, so `summary.md` lists them apart and
+   `summary.json` counts them in `flagged_notices`, not `flagged_moves`. The one rule the
+   script cannot apply is the sweep's supplier match against the `suppliers` table. The flag
+   lands on the work-order fallback and in `summary.md`. **This skill creates nothing in the inbox.** A
    route is printed before delivery, and a stop can still be canceled or changed. The
    filled proposal (lines, evidence, open questions) is made after delivery, from COMPLETED
    tasks of every driver, by the API's daily stock-exceptions sweep (06:30, pg_cron; see

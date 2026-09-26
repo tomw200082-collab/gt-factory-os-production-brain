@@ -15,11 +15,12 @@ Everything else is default and automatic:
              --mark-all-lines restores it); package count under "מקור";
              last-3 order-id digits top-right
   output   : one merged print-ready PDF
-  flags    : stops whose title or notes imply a stock move outside picking
-             (exchange / pickup / return / tasting / supplement / free goods)
-             are marked on the work order and in the digest — a flag only. The
-             inbox proposal is born after delivery, by the API's daily
-             stock-exceptions sweep over COMPLETED tasks. This script never touches stock_ledger.
+  flags    : every stop the API's daily stock-exceptions sweep will act on once
+             it completes, classified by the sweep's own rules (classify()), is
+             marked on the work order and in the digest — a flag only. The sweep
+             makes the inbox proposal after delivery, over COMPLETED tasks; a
+             supplier pickup or a transfer gets a notice instead. This script
+             never touches stock_ledger.
   email    : the SKILL.md emails the final PDF + short summary to
              production@gteveryday.com (Resend).
 
@@ -102,27 +103,47 @@ def lw_list_open():
     return [t["id"] for t in tasks if t.get("status") in ("ASSIGNED", "UNASSIGNED")]
 
 
-def _driver_ids(driver):
-    """LionWheel driver ids whose name matches `driver` (first/last/nick, any order)."""
-    if not hasattr(_driver_ids, "cache"):
-        url = f"{LW_BASE}/api/v1/drivers.json?key={urllib.parse.quote(LW_KEY)}"
-        d = _get_json(url)
-        _driver_ids.cache = d.get("drivers", d) if isinstance(d, dict) else d
-    want = driver.strip()
+# Confirmed driver name -> LionWheel id, Hebrew and English, kept by the
+# daily-delivery-dispatch skill (append confirmed names there).
+DRIVERS_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "..", "..", "daily-delivery-dispatch", "drivers.json")
+
+
+def _name_key(name):
+    return " ".join((name or "").split()).casefold()
+
+
+def resolve_driver_id(driver):
+    """The one LionWheel driver id (a string) that `driver` names.
+
+    drivers.json first (alias -> id); then LionWheel's driver list, on an exact
+    full name — first + last in either order — or nick name. A bare first name
+    never matches there: two drivers can share one, and matching both merged
+    their routes into one pack. No match or several stops the run."""
+    want = _name_key(driver)
     ids = set()
-    for x in _driver_ids.cache:
-        full = " ".join(filter(None, [(x.get("first_name") or "").strip(),
-                                      (x.get("last_name") or "").strip()]))
-        if want in (full, (x.get("first_name") or "").strip(),
-                    (x.get("nick_name") or "").strip()):
-            ids.add(x["id"])
-    return ids
-
-
-def _driver_match(t, driver):
-    if t.get("driver_str") and t.get("driver_str") == driver:
-        return True
-    return t.get("driver_id") in _driver_ids(driver)
+    if os.path.exists(DRIVERS_JSON):
+        with open(DRIVERS_JSON, encoding="utf-8") as f:
+            doc = json.load(f)
+        ids = {str(i) for name, i in doc.get("drivers", {}).items() if _name_key(name) == want}
+        route = doc.get("default_route_driver") or {}
+        names = [route.get("name")] + route.get("name_variants", [])
+        if route.get("driver_id") and want in {_name_key(n) for n in names}:
+            ids.add(str(route["driver_id"]))
+    if not ids:
+        d = _get_json(f"{LW_BASE}/api/v1/drivers.json?key={urllib.parse.quote(LW_KEY)}")
+        for x in (d.get("drivers", d) if isinstance(d, dict) else d):
+            first, last = (x.get("first_name") or "").strip(), (x.get("last_name") or "").strip()
+            full = {_name_key(f"{first} {last}"), _name_key(f"{last} {first}"), _name_key(x.get("nick_name"))}
+            if want and want in full:
+                ids.add(str(x["id"]))
+    fix = "add the confirmed name and id to daily-delivery-dispatch/drivers.json"
+    if not ids:
+        raise SystemExit(f"driver {driver!r} matches no LionWheel driver — use the full name, or {fix}")
+    if len(ids) > 1:
+        raise SystemExit(f"driver {driver!r} matches {len(ids)} LionWheel drivers "
+                         f"({', '.join(sorted(ids))}) — {fix}")
+    return ids.pop()
 
 
 def _date_match(pickup_at, date):
@@ -137,25 +158,26 @@ def fetch_route(driver, date, all_statuses=False):
 
     all_statuses=True also keeps UNASSIGNED stops — use when the whole day is to
     be treated as confirmed even though LionWheel has not finished assigning."""
-    stops, driver_id = [], None
+    stops, driver_id = [], resolve_driver_id(driver)
     for tid in (lw_list_open() if all_statuses else lw_list_assigned()):
         t = lw_task(tid)
         if not t:
             continue
         # LionWheel now leaves driver_str empty and sends pickup_at as DD/MM/YYYY
         # (seen 2026-09-23) — match on driver_id, accept both date formats.
-        if not _driver_match(t, driver):
+        if str(t.get("driver_id")) != driver_id:
             continue
         if not _date_match(t.get("pickup_at"), date):
             continue
         if not all_statuses and t.get("status") != "ASSIGNED":
             continue
         v = (t.get("visits") or [{}])[0]
-        driver_id = driver_id or t.get("driver_id")
-        # eta_at was ISO; LionWheel now sends bare "HH:MM" and no daily_order
-        # (seen 2026-09-23). ETA order == the work order's row order, so use it.
+        # eta_at was ISO; LionWheel now sends bare "HH:MM", unpadded too ("9:05"),
+        # and no daily_order (seen 2026-09-23). ETA order == the work order's row
+        # order, so use it.
         eta_raw = v.get("eta_at") or ""
-        eta = eta_raw if re.fullmatch(r"\d{2}:\d{2}", eta_raw) else eta_raw[11:16]
+        hm = re.fullmatch(r"(\d{1,2}):(\d{2})", eta_raw)
+        eta = f"{int(hm.group(1)):02d}:{hm.group(2)}" if hm else eta_raw[11:16]
         stops.append({
             "tid": str(t["id"]),
             "do": v.get("daily_order"),
@@ -170,9 +192,14 @@ def fetch_route(driver, date, all_statuses=False):
             "task": t,
         })
     stops.sort(key=lambda s: (s["do"] is None, s["do"] or 0, s["eta_sort"]))
-    if all(s["do"] is None for s in stops):
-        for i, s in enumerate(stops, 1):
-            s["do"] = i
+    # Stops without a daily_order sort after the numbered ones, in ETA order, and
+    # are numbered on from the last number: every stop gets one, so none prints
+    # as "·" and --from-stop never drops one for lacking it.
+    last = max((s["do"] for s in stops if s["do"] is not None), default=0)
+    for s in stops:
+        if s["do"] is None:
+            last += 1
+            s["do"] = last
     return driver_id, stops
 
 
@@ -336,6 +363,11 @@ def render_pages(jobs):
         b.close()
 
 
+# Below this scale the work order's rows are unreadable on paper. A route that
+# does not fit one page at it gets build_workorder()'s page instead.
+WORKORDER_MIN_SCALE = 0.4
+
+
 def _render_one(pg, url, out, fit_one):
     pg.goto(url, wait_until="networkidle", timeout=60000)
     opts = dict(format="A4", print_background=True,
@@ -369,20 +401,30 @@ def _render_one(pg, url, out, fit_one):
             pg.wait_for_timeout(300)
             h = pg.evaluate("document.body.scrollHeight") or (target_table + non_table)
             scale = min(scale, usable_h / max(h, 1))
-            scale = max(0.1, round(scale, 3))
+            scale = max(WORKORDER_MIN_SCALE, round(scale, 3))
         except Exception:
             scale = 0.62
         # Screen-measured fit can still spill in print layout, and page_ranges
         # would silently drop the overflow rows (seen 2026-09-23: 36 stops, rows
-        # 35-36 lost). Render every page; shrink until it really is one page.
+        # 35-36 lost). Render every page; while it spills, rescale by how far it
+        # runs — full pages plus the last one down to its lowest text (none: a
+        # sliver of stretched table) — a step or two where 7% a render took dozens.
         import pymupdf
-        while True:
+        for _ in range(4):
             opts["scale"] = scale
             pg.pdf(path=out, **opts)
             with pymupdf.open(out) as d:
-                if d.page_count <= 1 or scale <= 0.1:
-                    break
-            scale = round(max(0.1, scale * 0.93), 3)
+                pages, last = d.page_count, d[-1]
+                used = pages - 1 + max((b[3] for b in last.get_text("blocks")),
+                                       default=0) / last.rect.height
+            if pages == 1 or scale <= WORKORDER_MIN_SCALE:
+                break
+            scale = max(WORKORDER_MIN_SCALE, round(scale / used * 0.98, 3))
+        if pages > 1:
+            # No readable scale fits one page: leave no file, so build() falls
+            # back to build_workorder(), which always fits.
+            os.remove(out)
+            raise RuntimeError(f"work order still {pages} pages at scale {opts['scale']}")
         print(f"work order: scale {scale}", file=sys.stderr)
         return
     pg.pdf(path=out, **opts)
@@ -393,9 +435,9 @@ def _render_one(pg, url, out, fit_one):
 # printed tonight can still be canceled tomorrow, so the inbox proposal is made
 # after delivery by the API's stock-exceptions sweep (COMPLETED tasks only).
 # --------------------------------------------------------------------------- #
-# The same words classify the proposal in the API (gt-factory-os
-# api/src/inventory-movements/sweep/text.ts): change both together, so the
-# printed flag and the next morning's proposal agree.
+# classify() below is the API's classify() (gt-factory-os
+# api/src/inventory-movements/sweep/text.ts), rule for rule and word for word:
+# change both together, so the printed flag and the next morning's proposal agree.
 # Cheque pickups are not stock moves — and never `צ.?ק`, which matches יצחק.
 CHEQUE = re.compile(r"(^|[\s\-])צ['׳]?ק(ים)?($|[\s\-])")
 EXCHANGE = re.compile(r"החלפ|להחליף")
@@ -405,9 +447,24 @@ TASTING = re.compile(r"טעימ|דגימ")
 SUPPLEMENT = re.compile(r"השלמ")
 DELIVERY_NOTE = re.compile(r"תעודת\s*\S*שלוח")   # also the "תעודת תשלוח" typo seen live
 FREE_GOODS = re.compile(r"ללא חיוב")
-# print label per signal; title before notes, first match wins
-MOVE_HINTS = [(EXCHANGE, "החלפה"), (PICKUP, "איסוף"), (RETURN, "החזרה"), (TASTING, "טעימה"),
-              (SUPPLEMENT, "השלמה"), (FREE_GOODS, "ללא חיוב"), (DELIVERY_NOTE, "תעודת משלוח")]
+SUBCONTRACT = re.compile(r"עמיתה|מדבקות מאצה")
+# pick up here, hand over to someone else — never "…ומסירה למפעל" (that is ours)
+HANDOVER = re.compile(r"(ומסירה|ומסירת|ואספקה|ולספק|ולמסור)\s+ל(?!מפעל)")
+SUPPLIER_WORDS = re.compile(r"צבר|תבלינ|כימיקל|מדבקות|תוויות|גומיות|פרי הבוסתן|בקבוקים|יקבים|רומיכל|מהמכולה|אריזות")
+# 5-digit GI numbers: delivery notes 2xxxx, invoices 6xxxx (JavaScript's \d is ASCII)
+DOC_NUMBER = re.compile(r"(?<![\d#A-Za-z])([26]\d{4})(?!\d)", re.ASCII)
+
+# What the sweep makes of each class once the stop completes: a proposal under
+# the label derive.ts gives it — or, for a supplier pickup (a goods receipt) and
+# a transfer (never our stock), a notice and no proposal.
+MOVE_LABEL = {
+    "supplement": "השלמת סחורה", "free_goods": "סחורה ללא חיוב",
+    "exchange": "החלפת סחורה", "return": "החזרת סחורה", "tasting": "טעימה",
+    "subcontract": "קבלנות משנה (עמיתה)", "delivery": "אספקה ללא שורות הזמנה",
+    "unclear": "תזוזת מלאי לא מזוהה",
+    "supplier": "איסוף מספק", "transfer": "איסוף ומסירה",
+}
+NOTICE_ONLY = {"supplier", "transfer"}
 
 
 def task_notes(t, sep=" "):
@@ -418,27 +475,64 @@ def task_notes(t, sep=" "):
     return sep.join(n for n in notes if n)
 
 
+def classify(title, notes, n_lines):
+    """The sweep's class for a stop, read as if it had COMPLETED (the sweep reads
+    only completed tasks; this runs before delivery). One input is out of reach:
+    the sweep also calls a pickup a supplier's when the title names an active
+    supplier from the suppliers table, which this script cannot read."""
+    if CHEQUE.search(title):
+        return "cheque"
+    text = f"{title} | {notes}"
+    if n_lines > 0:
+        # the pick bridge posts what the order carries; only these are not in it
+        for cls, rx in (("exchange", EXCHANGE), ("return", RETURN),
+                        ("tasting", TASTING), ("free_goods", FREE_GOODS)):
+            if rx.search(text):
+                return cls
+        return "order"
+    if SUBCONTRACT.search(title):
+        return "subcontract"
+    if PICKUP.search(text) and HANDOVER.search(text):
+        return "transfer"
+    if PICKUP.search(title) and SUPPLIER_WORDS.search(title):
+        return "supplier"
+    if FREE_GOODS.search(text):
+        return "free_goods"
+    if SUPPLEMENT.search(title) or DELIVERY_NOTE.search(title):
+        return "supplement"
+    for cls, rx in (("exchange", EXCHANGE), ("return", RETURN), ("tasting", TASTING)):
+        if rx.search(text):
+            return cls
+    if PICKUP.search(title):
+        return "return"   # collected from a customer
+    if DOC_NUMBER.search(title):
+        return "delivery"
+    return "unclear"
+
+
 def detect_inventory_moves(stops):
-    """{tid: label} for stops that move stock outside picking — invoice stops
-    included. Print flag only; quantities are never guessed here."""
+    """{tid: class} for every stop the sweep will act on once it completes —
+    all but cheques and plain orders. Print flag only; quantities are never
+    guessed here."""
     out = {}
     for s in stops:
-        if CHEQUE.search(s.get("recipient") or ""):
-            continue
-        # the signal usually sits in the title (e.g. '… - השלמת סחורה 63810')
-        for text in (s.get("recipient") or "", task_notes(s["task"])):
-            label = next((lab for rx, lab in MOVE_HINTS if rx.search(text)), None)
-            if label:
-                out[s["tid"]] = label
-                break
+        t = s["task"]
+        # the sweep counts mirrored order lines, and the poller never mirrors
+        # an order item without a SKU
+        n_lines = sum(1 for it in (t.get("order_items") or [])
+                      if isinstance(it.get("sku"), str) and it["sku"].strip())
+        title = (s.get("recipient") or t.get("destination_recipient_name") or "").strip()
+        cls = classify(title, task_notes(t, " | "), n_lines)
+        if cls not in ("cheque", "order"):
+            out[s["tid"]] = cls
     return out
 
 
 # --------------------------------------------------------------------------- #
 # work order (page 1) — the driving day as a single-page A4 timeline.
 # Signature: a green spine of numbered stop-discs in driving order, time in mono
-# beside each. Structure carries truth: pickup/exchange stops show a terracotta
-# disc + the action word in place of the city; picking-shortfall stops carry an
+# beside each. Structure carries truth: stock-move stops show a terracotta
+# disc + the move in place of the city; picking-shortfall stops carry an
 # amber dot. The driver reads the day top-to-bottom and sees attention-stops at a
 # glance. (The LionWheel SPA route view can't be forced to one clean page and its
 # print_summary is aggregate-only, so we reproduce the route ourselves.)
@@ -546,8 +640,6 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
     pg.draw_line(fitz.Point(SPINE, first_c), fitz.Point(SPINE, last_c),
                  color=HAIR, width=2)
 
-    ACTION = {"איסוף": "איסוף סחורה", "החלפה": "החלפת סחורה"}
-
     def fit(text, font, fs, max_w):
         disp = str(text)
         while disp and _f(font).text_length(get_display(disp), fs) > max_w:
@@ -557,7 +649,7 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
     for i, s in enumerate(stops):
         cy = y0 + rowh * i + rowh / 2
         fl = flags.get(s["tid"], {})
-        special = fl.get("special")            # "איסוף" / "החלפה" / None
+        special = fl.get("special")            # a MOVE_LABEL class / None
         short = fl.get("short")
         # left attention bar
         if special:
@@ -578,12 +670,12 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
         if two_line:
             rt(NAME_XR, cy - 1, name, 9.8, "db", INK)
             if special:
-                rt(NAME_XR, cy + 10, ACTION.get(special, special), 8.5, "db", TERRA)
+                rt(NAME_XR, cy + 10, MOVE_LABEL[special], 8.5, "db", TERRA)
             else:
                 rt(NAME_XR, cy + 10, fit(s.get("city") or "", "dr", 8.5, max_w),
                    8.5, "dr", MUTE)
         else:
-            sec = ACTION.get(special, special) if special else (s.get("city") or "")
+            sec = MOVE_LABEL[special] if special else (s.get("city") or "")
             rt(NAME_XR, cy + 3, fit(f"{name}  ·  {sec}", "db", 9.2, max_w),
                9.2, "db", INK)
         # shortfall dot, just right of the spine-side of the name row
@@ -609,7 +701,7 @@ def build_workorder(driver, date, stops, out_pdf, flags=None):
         sh.finish(fill=color, color=color)
         sh.commit()
     fx = 575
-    for color, lab in ((GREEN, "מסירה"), (TERRA, "איסוף / החלפה"), (AMBER, "חוסר ליקוט")):
+    for color, lab in ((GREEN, "מסירה"), (TERRA, "תנועה מחוץ לליקוט"), (AMBER, "חוסר ליקוט")):
         dot(fx, color)
         rt(fx - 8, 831, lab, 8, "dr", MUTE)
         fx -= HR.text_length(get_display(lab), 8) + 26
@@ -663,9 +755,12 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
     if not stops:
         raise SystemExit(f"No stops for driver={driver!r} date={date}")
     if from_stop is not None:
-        # `s["do"] is not None`, NOT truthiness — daily_order 0 is a real first
-        # stop, and testing it as a boolean silently drops that whole invoice.
-        stops = [s for s in stops if s["do"] is not None and s["do"] >= from_stop]
+        # Every stop is numbered by now (fetch_route). Compare, never test
+        # truthiness — daily_order 0 is a real first stop.
+        skipped = [s["do"] for s in stops if s["do"] < from_stop]
+        stops = [s for s in stops if s["do"] >= from_stop]
+        if skipped:
+            print(f"--from-stop {from_stop}: leaving out stops {skipped}", file=sys.stderr)
 
     # per-stop flags for the work-order timeline: special handling (a stock move
     # outside picking — detect_inventory_moves) and picking shortfalls (any
@@ -786,7 +881,9 @@ def build(driver, date, from_stop=None, copies=2, marks_only_short=False,
         "waybills": sum(1 for p, _ in ordered_parts if "wb_" in p),
         "copies": copies,
         "discrepancies": disc,
-        "flagged_moves": len(moves),
+        # the email reads flagged_moves as "proposed after delivery": notices apart
+        "flagged_moves": sum(1 for c in moves.values() if c not in NOTICE_ONLY),
+        "flagged_notices": sum(1 for c in moves.values() if c in NOTICE_ONLY),
         "file": final,
     }
     json.dump(summary, open(f"{OUT}/summary.json", "w"), ensure_ascii=False, indent=2)
@@ -815,7 +912,7 @@ def write_digest(driver, date, stops, disc, moves, summary, path):
         city = (s.get("city") or "").strip()
         tags = []
         if s["tid"] in moves:
-            tags.append(f"special-handling ({moves[s['tid']]})")
+            tags.append(f"special-handling ({MOVE_LABEL[moves[s['tid']]]})")
         if any(d["stop"] == s["do"] for d in disc):
             tags.append("picking-shortfall")
         tag = f" — {', '.join(tags)}" if tags else ""
@@ -831,14 +928,18 @@ def write_digest(driver, date, stops, disc, moves, summary, path):
     else:
         L.append("- None.")
     L.append("")
-    L.append("## Stock moves outside picking (flagged; proposed after delivery by stock-exceptions-sweep)")
-    flagged = [s for s in stops if s["tid"] in moves]
-    if flagged:
-        for s in flagged:
-            L.append(f"- {s.get('recipient')} (task {s['tid']}): {moves[s['tid']]}")
-    else:
-        L.append("- None.")
-    L.append("")
+    proposed = [s for s in stops if s["tid"] in moves and moves[s["tid"]] not in NOTICE_ONLY]
+    noticed = [s for s in stops if moves.get(s["tid"]) in NOTICE_ONLY]
+    for heading, listed in (
+            ("Stock moves outside picking (flagged; proposed after delivery by stock-exceptions-sweep, "
+             "unless it finds a pickup's supplier in its suppliers table — then it is a notice)", proposed),
+            ("Pickups the sweep only notices, no proposal (a supplier pickup is a goods receipt; "
+             "a transfer never touches our stock)", noticed)):
+        L.append(f"## {heading}")
+        L.extend(f"- {s.get('recipient')} (task {s['tid']}): {MOVE_LABEL[moves[s['tid']]]}" for s in listed)
+        if not listed:
+            L.append("- None.")
+        L.append("")
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(L))
 
