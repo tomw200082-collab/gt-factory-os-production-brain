@@ -148,16 +148,5 @@
                                     "Bash(gh issue *)"
                                 ]
                     },
-    "$schema":  "https://json.schemastore.org/claude-code-settings.json",
-    "extraKnownMarketplaces":  {
-                                   "claude-plugins-official":  {
-                                                                   "source":  {
-                                                                                  "source":  "github",
-                                                                                  "repo":  "anthropics/claude-plugins-official"
-                                                                              }
-                                                               }
-                               },
-    "enabledPlugins":  {
-                           "claude-code-setup@claude-plugins-official":  true
-                       }
+    "$schema":  "https://json.schemastore.org/claude-code-settings.json"
 }

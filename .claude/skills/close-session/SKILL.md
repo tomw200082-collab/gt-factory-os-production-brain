@@ -1,19 +1,6 @@
 ---
 name: close-session
-description: >
-  Optimally close out a Claude Code work session — leave nothing dangling and nothing
-  risky done silently. Detects every open loop the session created (unmerged PRs,
-  live self-scheduled triggers/probes, active PR webhook subscriptions, open tasks,
-  uncommitted work, uncaptured knowledge), auto-runs the safe reversible cleanup,
-  PAUSES for approval on anything risky or irreversible, preserves durable knowledge
-  into the production brain by type, and delivers a forward-looking closure report.
-  Use this skill WHENEVER the user signals they want to end, wrap up, or optimally
-  close a working session — "סגור סשן", "נסגור את הסשן", "סגירת סשן", "בוא נסיים",
-  "לסגור פינות לפני שאני הולך", "close session", "wrap up", "let's close out",
-  "end of session", "tie off loose ends" — even if they don't name the skill.
-  Do NOT trigger for closing a single PR or issue (that is a GitHub action), for a
-  release / deployment go-no-go gate (that is gate-close), or for a start-of-day /
-  morning brief (that is the opposite).
+description: "Closes a work session with nothing dangling: finds open PRs, triggers, subscriptions, uncommitted work and uncaptured knowledge; cleans up what is safe, asks before risky steps, saves knowledge to the brain. Triggers: \"סגור סשן\", \"סגירת סשן\", \"בוא נסיים\", \"close session\", \"wrap up\". Not for one PR."
 ---
 
 # Close Session — optimal work-session closure

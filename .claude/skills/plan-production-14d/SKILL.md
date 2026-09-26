@@ -1,13 +1,6 @@
 ---
 name: plan-production-14d
-description: >-
-  Tom's Wednesday production-planning ritual for GT Factory OS. Trigger every Wednesday (the meeting day; was Thursday until 2026-07-30) or when Tom says
-  "בוא נתכנן ייצור", "תכנון שבועיים", "plan production", "/plan-production-14d", "ריטרו ייצור", or asks
-  to review last week's production vs plan and lock the next two weeks. One batched flow: retrospective →
-  tune incoming (firmed) week → plan week+2 → write drafts to production_plan → Tom fine-tunes in portal →
-  firm → purchase-session drafts → quantity interview → chat approval moves POs to Doreen's placement
-  queue. Objective: every tank goes where it saves the most contribution margin (₪), committed orders
-  first. Reuses live engines only; hands the buying interview to the procurement-planning skill.
+description: "Wednesday production planning: retro, tune the firmed week, plan week+2, drafts to production_plan, Tom fine-tunes and firms, then purchase drafts. Each tank goes where it earns the most margin, committed orders first. Triggers: \"בוא נתכנן ייצור\", \"תכנון שבועיים\", \"plan production\"."
 ---
 
 # plan-production-14d — Wednesday 14-day production cockpit

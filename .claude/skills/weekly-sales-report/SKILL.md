@@ -1,12 +1,6 @@
 ---
 name: weekly-sales-report
-description: >
-  Daily refresh of the GT sales-report artifact + a short Hebrew email to Tom with the
-  link and the exact data-freshness time. Fires from the scheduled routine
-  "דוח מכירות" every Sunday-Thursday 09:00 IL, or when Tom says "רענן את דוח המכירות",
-  "תעדכן את הדוח לפגישה", "/weekly-sales-report". Sunday carries the full weekly block
-  for the Wednesday meeting; Monday-Thursday is the short daily pulse. Read-only against
-  Shopify; republishes the SAME artifact URL; never emails anyone but Tom.
+description: "Refreshes the GT sales-report artifact (same fixed URL) and emails Tom the link with the data time. Runs from the \"דוח מכירות\" Routine Sun–Thu, or on \"רענן את דוח המכירות\", \"תעדכן את הדוח לפגישה\". Sunday carries the full weekly block. Shopify read-only."
 ---
 
 # weekly-sales-report — רענון יומי + מייל

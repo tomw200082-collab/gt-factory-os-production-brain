@@ -1,16 +1,6 @@
 ---
 name: chief-of-staff-daily
-description: >-
-  Tom's daily chief-of-staff ritual for GT Everyday — two modes, Sunday through Thursday.
-  "day-open" (07:30 IL) rides the 06:30 daily-ops-guardian run, verifies last night's Claude output
-  in fresh context, and sends one Level-1 email: today's rock, today's calendar blocks, at most
-  three exceptions, and the waiting-on that matured today. "day-close" (17:00 IL) runs the day's
-  retro (planned vs actual + "what do we stop?"), sweeps matured tasks and newly-stuck projects,
-  proposes tomorrow's shape and hands the queue to Messi's 20:00 evening run, which builds and
-  writes the calendar autonomously and dispatches the work (Tom 2026-08-06).
-  Fires from its own triggers, or when Tom says "פתיחת יום", "בוקר טוב", "סגירת יום",
-  "day-open", "day-close", "מה היום", "מה עשינו היום". Notion is the master for tasks and projects.
-  Never merges, deploys, sends to employees, or writes to ledger/plans/external systems.
+description: "Tom's daily chief-of-staff ritual, Sun–Thu: day-open (07:30) sends today's rock, calendar and top exceptions; day-close (17:00) runs the retro and hands tomorrow to Messi. Triggers: \"פתיחת יום\", \"בוקר טוב\", \"סגירת יום\", \"מה היום\", \"מה עשינו היום\". Notion holds the tasks."
 ---
 
 # chief-of-staff-daily — פתיחת יום · סגירת יום

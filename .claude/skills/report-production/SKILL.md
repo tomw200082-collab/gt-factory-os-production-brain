@@ -1,6 +1,6 @@
 ---
 name: report-production
-description: Report finished production into GT Factory OS end to end — put the batch on the production plan for the day it was made, materialize its runs, consume the raw materials and packaging, book the finished goods, and verify the ledger afterwards. Use this WHENEVER Tom says a batch was produced or asks to record one — "תדווח ייצור", "דיווח ייצור", "ייצרנו X בקבוקים", "תכניס את הייצור של אתמול", "report production", "we made 400 bottles of Detox", "log yesterday's batch" — or any message that pairs one or more finished products with quantities in a "this was made" sense (past tense, or with a date). Also use for retroactive reporting of a batch made days ago, for repack items (matcha bags, tins, kits), and when a tank was split across several SKUs. Do NOT use for planning what to produce next (that is plan-production-14d) or for printing a batch sheet for the floor (that is production-order).
+description: "Records finished production in Factory OS end to end: plan line, runs, material consumption, finished goods, ledger check. For any batch made, even days ago, repacks and split tanks included: \"תדווח ייצור\", \"ייצרנו X בקבוקים\", \"report production\". Not for planning or batch sheets."
 ---
 
 # Report Production

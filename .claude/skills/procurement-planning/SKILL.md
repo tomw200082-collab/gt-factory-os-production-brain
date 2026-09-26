@@ -1,15 +1,6 @@
 ---
 name: procurement-planning
-description: >-
-  Run a world-class, interview-driven raw-material and packaging procurement planning session for GT
-  Factory OS. Use this whenever Tom wants to decide what to buy and how much — e.g. "let's plan
-  procurement", "run the weekly purchase session", "מה לקנות השבוע", "תכנן רכש", "כמה להזמין מ-<ספק>",
-  "review the purchase recommendations", "what raw materials / packaging do we need", "set buffers for
-  <component>", "should I reorder <X>", or any decision about order quantities, reorder timing, safety
-  buffers, supplier orders, or consolidating POs. Trigger proactively whenever the conversation turns to
-  buying RM/PKG, MRP/DDMRP planning, the purchase engine, or inventory replenishment. This skill
-  orchestrates the live engine (planning run → purchase session) AND applies senior-buyer judgment +
-  targeted questioning to land on the exact right quantity — it does not just run the engine and trust it.
+description: "Decides what raw materials and packaging to buy and how much: runs the planning engine and purchase session, then applies buyer judgment and targeted questions. Triggers: \"מה לקנות השבוע\", \"תכנן רכש\", \"כמה להזמין מ-<ספק>\", \"plan procurement\", reorders, buffers, supplier POs."
 ---
 
 # Procurement Planning — GT Factory OS

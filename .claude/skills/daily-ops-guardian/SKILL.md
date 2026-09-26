@@ -1,21 +1,6 @@
 ---
 name: daily-ops-guardian
-description: >-
-  GT Factory OS daily production/procurement guardian. Fires every morning 06:30 IL via scheduled
-  trigger, or when Tom says "בדיקת בוקר", "בדיקה יומית", "daily check", "/daily-ops-guardian", or asks
-  whether stock/plan/procurement are OK after a new large order. One read-mostly loop: integrity gate →
-  FG sell-coverage vs committed+forecast → RM/PKG coverage vs firmed plan → committed-first plan
-  recheck → draft re-plans + purchase-session drafts (never firm/place) → the API's stock-exceptions
-  sweep, reported read-only → forecast findings log →
-  HTML email report (Hebrew, branded, action buttons), sent for real via a Make.com webhook →
-  Gmail send (no draft tap needed), + short chat/push backup. Weekly (Wednesday, the meeting day) findings
-  feed plan-production-14d retro; monthly
-  a two-month forecast proposal (growth, seasonality, product trends). Reuses live engines only.
-  Extra modes (2026-07-22): "queue-guard" (Thursday 15:50 — unplaced APPROVED_TO_ORDER POs before
-  Dorin leaves; silent when clean) and "sunday-prep" (Saturday 20:00 — weekend-order summary +
-  Sunday production draft + RM gaps + wave-1 pick preview, waiting at 06:00). Daily loop now opens
-  with Stage 0.5: yesterday plan-vs-actual + a first-position red flag when no production report
-  was entered.
+description: "GT's morning production and procurement check: stock and plan coverage, draft re-plans and purchase drafts (never firms or places), Hebrew email report. Extra modes: queue-guard (Thu 15:50), sunday-prep (Sat 20:00). Triggers: \"בדיקת בוקר\", \"בדיקה יומית\", \"daily check\", /daily-ops-guardian."
 ---
 
 # daily-ops-guardian — daily production + procurement guardian

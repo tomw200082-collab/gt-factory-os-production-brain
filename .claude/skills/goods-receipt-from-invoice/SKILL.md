@@ -1,6 +1,6 @@
 ---
 name: goods-receipt-from-invoice
-description: Use when Tom sends a supplier tax invoice (photo or PDF) or describes goods that arrived (labels, bottles, raw materials, packaging, anything). Extracts every detail, presents for Tom's approval, then posts a goods receipt, updates prices with change alerts, and captures the exact procurement spec (dimensions, materials, grind, supplier catalog wording) into the procurement-spec store. Never posts before Tom approves the extraction.
+description: "Turns a supplier invoice (photo or PDF) or a note that goods arrived into a goods receipt: extracts every line, Tom approves, then posts it, updates prices with change alerts and saves the procurement spec. Never posts before approval."
 ---
 
 # Goods Receipt from Invoice

@@ -1,12 +1,6 @@
 ---
 name: shopify-sync
-description: >
-  GT ↔ Shopify inventory sync — live architecture, write contract, traps that cost
-  real migrations, canonical queries, monitoring map. Load BEFORE any work touching:
-  Shopify inventory/available/on_hand, shopify_available_reconcile, integration_sku_map,
-  shopify_* feature flags or Edge Functions, sync exceptions, oversell/negative stock,
-  "מלאי בשופיפיי", reconcile. If the task mentions Shopify and stock in the same
-  sentence, this loads first.
+description: "GT ↔ Shopify inventory sync: how the live reconciler works, its write contract, known traps, canonical queries. Load first for any work on Shopify stock, available/on_hand, integration_sku_map, shopify_* flags or functions, oversell, \"מלאי בשופיפיי\"."
 ---
 
 # Shopify sync — domain truth
