@@ -1,11 +1,6 @@
 ---
 name: ogilvy
-description: >
-  Apply David Ogilvy's advertising principles when writing or reviewing copy,
-  headlines, product descriptions, landing pages, ads, emails, or any persuasive
-  text. Use when the goal is copy that sells, not copy that wins awards. Covers
-  positioning, headlines, promises, brand voice, long-form copy, and visual logic.
-  Source: How to Create Advertising That Sells (1972) + Ogilvy on Advertising.
+description: "Writes or reviews persuasive copy by Ogilvy's principles: headlines, product descriptions, landing pages, ads, emails. Copy that sells, not copy that wins awards: positioning, promises, brand voice, long-form copy, visual logic. Sources: How to Create Advertising That Sells; Ogilvy on Advertising."
 license: MIT
 metadata:
   source: "David Ogilvy - How to Create Advertising That Sells (1972) + Ogilvy on Advertising (1983)"

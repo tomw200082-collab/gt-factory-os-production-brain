@@ -1,11 +1,6 @@
 ---
 name: drinks-pricelist
-description: >-
-  Rebuild the GT Everyday drinks cost sheet (the "what you keep from every cup"
-  PDF) from the approved FOOD COST figures, and validate the SUMMER 2026 Canva
-  catalog against those same figures. Use when a drink's cost, price, margin or
-  profit-per-cup changes, when the catalog and the pricelist need to be proven
-  identical, or when the pricelist PDF has to be regenerated.
+description: "Rebuilds the GT drinks cost sheet (the \"what you keep from every cup\" PDF) from the approved FOOD COST figures and checks the SUMMER 2026 Canva catalog against them. Use when a drink's cost, price, margin or profit-per-cup changes, or the PDF must be regenerated or proven identical to the catalog."
 ---
 
 # Drinks pricelist

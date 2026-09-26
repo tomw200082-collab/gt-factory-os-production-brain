@@ -1,10 +1,6 @@
 ---
 name: masterprompt
-description: >
-  Use when Tom asks for a masterprompt / מאסטרפרומפט / "a prompt I'll paste into a new
-  session", when handing substantial work to a session or agent that shares none of
-  this conversation's context, or when work must be executed by someone who was not
-  present when it was scoped. Also on the /masterprompt trigger.
+description: "Writes a self-contained handoff prompt. Use when Tom asks for a masterprompt / מאסטרפרומפט / \"a prompt I'll paste into a new session\", when handing substantial work to a session or agent that shares none of this context or wasn't there when it was scoped, or on /masterprompt."
 ---
 
 # Masterprompt

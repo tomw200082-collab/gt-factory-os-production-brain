@@ -15,7 +15,7 @@ On 2026-09-26 the set was pruned to what this workspace uses (`docs/plans/2026-0
 ## Edits made here
 
 - `ogilvy`: its frontmatter `name` was changed from `ogilvy-copywriting` to match its directory.
-- 2026-09-26: the descriptions of `ponytail`, `ponytail-review` and `page-cro` were shortened to 300 characters or less, so the whole skill listing fits the per-session budget. `page-cro` also lost its pointers to sibling skills that were never vendored (`signup-flow-cro`, `onboarding-cro`, `form-cro`, `popup-cro`).
+- 2026-09-26: the descriptions of `caveman`, `ponytail`, `ponytail-review`, `ogilvy`, `copywriting`, `copy-editing` and `page-cro` were shortened to 300 characters or less, so the whole skill listing fits the per-session budget. The `page-cro` and `copywriting` descriptions also lost their pointers to sibling skills that were never vendored (`signup-flow-cro`, `onboarding-cro`, `form-cro`, `popup-cro`, `email-sequence`).
 - For `grill-with-docs`, `grilling` and `domain-modeling`, `SKILL.md` and the reference files are byte-identical to upstream. Upstream's `agents/openai.yaml` configures OpenAI's Codex and was not taken.
 
 ## Notes before use
@@ -27,7 +27,7 @@ On 2026-09-26 the set was pruned to what this workspace uses (`docs/plans/2026-0
   - `copywriting` and `copy-editing` are process skills whose examples are English.
   - Most of `stop-slop` is English string matching, so running it over Hebrew copy is not a clean pass.
 - **`copywriting` and `copy-editing` look for `.claude/product-marketing-context.md`.** That file does not exist. Writing it means writing GT positioning, which is doctrine and needs Tom's approval, so both skills interview the user instead.
-- **Some pointers resolve to nothing.** `copywriting` and `landing-page` point to sibling skills that were never taken (`email-sequence`, `popup-cro`, `seo-audit`).
+- **Some pointers resolve to nothing.** The bodies of `copywriting` and `landing-page` point to sibling skills that were never taken (`email-sequence`, `popup-cro`, `seo-audit`).
 - **`grill-with-docs` runs only as `/grill-with-docs`** (`disable-model-invocation: true`). Its one-line `SKILL.md` loads `grilling`, which runs the interview, and `domain-modeling`, which writes the files.
   - If a session leaves no `CONTEXT.md`, ask which skills it loaded; a partial load is upstream's most-reported failure.
   - It writes a glossary (`CONTEXT.md`, at the brain root since 2026-09-26) and, rarely, ADRs. Neither is authority: locked decisions stay in `docs/decisions/LOCKED_DECISIONS.md`.
