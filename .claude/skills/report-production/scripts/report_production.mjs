@@ -15,7 +15,7 @@
 //
 // Spec:
 //   {
-//     "date": "2026-08-24",                  // production date, YYYY-MM-DD
+//     "date": "2026-08-24",                  // production date, YYYY-MM-DD, not after today in Israel
 //     "event_at": "2026-08-24T09:00:00Z",    // optional; default noon Israel, never future
 //     "dry_run": true,                       // preview only, no writes at all
 //     "lines": [
@@ -130,6 +130,11 @@ function loadSpec() {
   const spec = JSON.parse(raw);
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(spec.date ?? '')) throw new Error('spec.date must be YYYY-MM-DD');
+  // A future date would file its plan and run on that day while event_at,
+  // which the API holds to the past, is clamped to now — a report split
+  // across two days. Production is reported once it is made.
+  const today = israelDate();
+  if (spec.date > today) throw new Error(`spec.date ${spec.date} is after today in Israel (${today})`);
   if (!Array.isArray(spec.lines) || spec.lines.length === 0) throw new Error('spec.lines must be a non-empty array');
 
   // Coerce here, once. A spec written by hand often quotes its numbers, and a
@@ -145,6 +150,15 @@ function loadSpec() {
     if (!(line.scrap_qty >= 0)) throw new Error(`line ${line.item_id}: scrap_qty must be >= 0`);
     line.batch = Number(line.batch ?? 1);
     if (!Number.isInteger(line.batch) || line.batch < 1) throw new Error(`line ${line.item_id}: batch must be a whole number >= 1`);
+    // The gate reads anything truthy that is not a list as `true`, so one
+    // component id written without brackets would confirm every flagged
+    // component on the line — the concentrate it never named included.
+    const cn = line.confirm_negative;
+    if (!(cn == null || typeof cn === 'boolean' || (Array.isArray(cn) && cn.every((id) => typeof id === 'string')))) {
+      throw new Error(
+        `line ${line.item_id}: confirm_negative must be a list of component ids (["PKG-LABEL-X"]), true or false — got ${JSON.stringify(cn)}`,
+      );
+    }
     if (line.base_bom_head_id) {
       line.fill_l_per_unit = Number(line.fill_l_per_unit);
       if (!(line.fill_l_per_unit > 0)) {
@@ -158,12 +172,31 @@ function loadSpec() {
   return spec;
 }
 
-// Reporting is retroactive more often than not, so default to midday on the
-// production date. The report handler rejects a future event_at, which would
-// otherwise bite on same-day reports filed in the morning.
+// Israel is +02:00 in winter and +03:00 in summer, so both of these ask the tz
+// database: a fixed +03:00 put a winter report's default at 11:00 local.
+const ISRAEL = 'Asia/Jerusalem';
+
+function israelDate(at = new Date()) {
+  const parts = new Intl.DateTimeFormat('en', { timeZone: ISRAEL, year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(at);
+  const part = (type) => parts.find((p) => p.type === type).value;
+  return `${part('year')}-${part('month')}-${part('day')}`;
+}
+
+// The clocks change at 02:00, so the offset at 12:00 UTC is the one at noon.
+function israelNoon(date) {
+  const offset = new Intl.DateTimeFormat('en', { timeZone: ISRAEL, timeZoneName: 'longOffset' })
+    .formatToParts(new Date(`${date}T12:00:00Z`))
+    .find((p) => p.type === 'timeZoneName').value; // "GMT+02:00"
+  return new Date(`${date}T12:00:00${offset.slice(3)}`);
+}
+
+// Reporting is retroactive more often than not, so default to noon Israel time
+// on the production date. The report handler rejects a future event_at, which
+// would otherwise bite on same-day reports filed in the morning.
 function resolveEventAt(spec) {
   if (spec.event_at) return spec.event_at;
-  const midday = new Date(`${spec.date}T12:00:00+03:00`);
+  const midday = israelNoon(spec.date);
   const safeNow = new Date(Date.now() - 60_000);
   return (midday > safeNow ? safeNow : midday).toISOString();
 }
@@ -219,22 +252,28 @@ async function ensurePlans(spec) {
       // and there is nothing to report. Quantities already in the manifest are
       // left alone, for the same reason planned_qty is (see the single-item
       // branch): the plan is the intent, and overwriting it erases the variance.
-      let changed = false;
+      const added = new Set();
       for (const line of lines) {
         const existing = merged.get(line.item_id);
         if (!existing) {
-          changed = true;
+          added.add(line.item_id);
           merged.set(line.item_id, { qty: line.qty, fill: line.fill_l_per_unit });
         } else if (existing.qty !== line.qty) {
           notes.push(`${line.item_id}: split says ${existing.qty}, produced ${line.qty} — split left as it was so the variance stays visible.`);
         }
       }
+      const changed = added.size > 0;
       if (changed && !spec.dry_run) {
         await call('PATCH', `/api/v1/mutations/production-plan/${plan.plan_id}`, {
           pack_manifest: [...merged].map(([item_id, { qty }]) => ({ item_id, qty })),
         });
       }
-      actions.push({ kind: changed ? 'plan_split_extended' : 'plan_reused', plan_id: plan.plan_id, base_bom_head_id: baseId });
+      // A dry run sends no PATCH, so it must not claim the split was extended.
+      // And until the PATCH lands the added SKU has no run, so it stays out of
+      // planOf below: it is listed NOT CHECKED rather than blocking on a run
+      // that cannot exist yet.
+      const kind = !changed ? 'plan_reused' : spec.dry_run ? 'plan_split_would_be_extended' : 'plan_split_extended';
+      actions.push({ kind, plan_id: plan.plan_id, base_bom_head_id: baseId });
 
       // batch_size_l is fixed at creation and cannot be patched alongside the
       // split. It never drives consumption — a PACK run consumes against its
@@ -242,9 +281,12 @@ async function ensurePlans(spec) {
       const litres = round8([...merged.values()].reduce((sum, v) => sum + v.qty * v.fill, 0));
       const planned = Number(plan.planned_qty);
       if (litres > 0 && Math.abs(litres - planned) > 0.5) {
-        notes.push(`plan ${plan.plan_id}: split now totals ${litres} L against a ${planned} L batch (consumption is unaffected).`);
+        const totals = changed && spec.dry_run ? 'would total' : 'now totals';
+        notes.push(`plan ${plan.plan_id}: split ${totals} ${litres} L against a ${planned} L batch (consumption is unaffected).`);
       }
-      for (const line of lines) planOf.set(line.item_id, plan.plan_id);
+      for (const line of lines) {
+        if (!(spec.dry_run && added.has(line.item_id))) planOf.set(line.item_id, plan.plan_id);
+      }
       continue;
     }
 
@@ -633,8 +675,8 @@ async function main() {
   }
 
   if (spec.dry_run) {
-    // Lines with no plan row: a dry run refuses to create one, so their runs do
-    // not exist and nothing could be exploded to check.
+    // Lines no plan row lists yet: a dry run refuses to create a plan or extend
+    // a split, so their runs do not exist and nothing could be exploded to check.
     const notPreviewed = spec.lines.map((l) => l.item_id).filter((id) => !planOf.has(id));
     const complete = notPreviewed.length === 0;
     console.log(`DRY RUN — ${spec.date}, event_at ${eventAt}. No writes.`);
@@ -644,7 +686,7 @@ async function main() {
       // check. Saying "clean" here would be the most dangerous output the
       // script can produce, because a clean dry run is what licenses the post.
       console.log(
-        `\n  ⚠ NOT CHECKED: ${notPreviewed.join(', ')} — no plan row exists for ${spec.date} yet, ` +
+        `\n  ⚠ NOT CHECKED: ${notPreviewed.join(', ')} — no plan row lists them for ${spec.date} yet, ` +
           'so no consumption could be previewed. Their gate runs for real on the live pass.',
       );
     }
