@@ -146,7 +146,7 @@ out of scope unless Tom asks.
   - He asked for these improvements **before** `186686636273` (`כניסה לעסקים`) is published. So it is
     not published on its own; its content is on `main` (#23, #25) and ships with this work.
 - **Tom's answers to the brainstorm round (2026-09-27, in writing), recorded by the executing session:**
-  - Close delay: `אחרי המילוי של המשתמש כן- 2 שניות זה טוב.` So `LD_CLOSE_MS = 2000`.
+  - Close delay: `אחרי המילוי של המשתמש כן- 2 שניות זה טוב.` So `LD_CLOSE_MS = 2000` (superseded below).
   - Copy approval mode: `אני רואה בדוח- אל תשנה בצורה משמעותית. רק דברים שאתה בטוח שצריך לשפר, כמו שגיאות, ניסוחים לא מקצועיים בעברית מדוברת, וכאלה.`
     So the batch is approved by the gate's COPY dimension plus the governor, and Tom sees it in the report. The
     changes are limited to errors and unprofessional phrasing: no significant rewrite now.
@@ -157,6 +157,27 @@ out of scope unless Tom asks.
   - The design: no change requested. Tom invoked `frontend-design-master` during the round. The dialog then
     gained the clicked drink's photo on wide screens and its colour on the phone sheet's rim, and the shots
     were sent to him.
+- **Tom's lead flow (2026-09-27, in writing, after the first gate round), recorded by the executing session:**
+  - `תשנה את זה- אל תכתוב ״טעימה״.` The word is gone from the dialog heading, the contact line, the closing
+    banner and the interest options.
+  - Businesses only: `הבן אדם ... חייב להבין שאנחנו עובדים עם עסקים ולא עם לקוחות פרטיים`. The form first asks
+    whether the visitor has a business. A private buyer reads that GT is sold to the public at Elita Ofek's
+    shop and gets a link to its GT page (`https://elitaofek.co.il/product-category/gt/`); nothing is sent.
+  - After the details, `מה הכי מעניין אותך`: matcha, ube, chai masala, tea concentrates, and, added in his
+    reply, `בניית תפריט משקאות בעסק שלי`. Each opens the lead number's WhatsApp (`054-758-8132`, Sales-Machine
+    D-014) with `היי, אני מעוניין ב…` already written.
+  - `חוץ מזה אני מאשר את כל הסדר.` The session changed two words and recorded them in the gate record's §5.5:
+    `אתכם` for `אותך` (the page's plural) and `לא, לשימוש פרטי` for `לא, אני לקוח פרטי` (not gendered).
+  - The two-second close is superseded. The dialog now waits for the pick and closes when the visitor comes
+    back from WhatsApp, because the gate found that two seconds cut the thanks off for a screen reader
+    (A11Y-01, P0).
+  - `אני מאשר שליחה אוטומטית. כרגע מה שישלח אלו הפי-די-אפים של התפריטים בקנבה`. When a visitor's message
+    reaches the lead number, the menu PDF of the line they picked goes back automatically (the Canva designs
+    `Matcha Menu`, `Ube Menu`, `Chai Massala Menu`, `Tea Concentrates Menu`, and `Recommended initial menu`
+    for the drinks-menu option). **This is a separate build**, in the sales and integration lanes, and it
+    starts after this ship. It is customer-facing and sits behind `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED`:
+    this is Tom's written approval, and the dry run and the soak are still owed. Until it is live, a person
+    sends the PDF.
 - **Earlier and still in force:**
   - The entry reads `כניסה לעסקים` on desktop and in the menu, and `לעסקים` on the phone pill
     (gt-site #25, Tom 2026-09-27).
