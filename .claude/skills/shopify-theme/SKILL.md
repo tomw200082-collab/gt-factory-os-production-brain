@@ -1,6 +1,6 @@
 ---
 name: shopify-theme
-description: "Building and publishing GT's Shopify themes: duplicate, upload files (themeFilesUpsert), preview links, Liquid limits, RTL/Hebrew traps. For any theme, Liquid section or storefront page work: \"אתר תדמית\", \"להעלות לשופיפיי\", \"לערוך את ה-theme\", \"תצוגה מקדימה\"."
+description: "Building and shipping GT's Shopify themes: the one ship path (whole GT set, push, drift check), preview links, Liquid limits, RTL/Hebrew traps. For any theme, Liquid section or storefront page work: \"אתר תדמית\", \"להעלות לשופיפיי\", \"לערוך את ה-theme\", \"תצוגה מקדימה\"."
 ---
 
 # Shopify themes — GT
@@ -12,15 +12,33 @@ time. Store `greenteaeveryday.myshopify.com`, primary domain `gteveryday.com`.
 
 **A theme is the whole storefront, not a page.** A theme containing only a
 brand page breaks every product, collection, cart and account URL the moment it
-is published. To put a new page on the store without that risk:
+is published. So GT's pages live as a small set of `gt-*` files inside a full
+copy of the store theme, and everything else keeps rendering from underneath.
 
-1. `themeDuplicate(id: <MAIN>, name: …)` → a full unpublished copy. Wait for
-   `processing: false` before writing to it.
-2. `themeFilesCopy` the existing `templates/index.json` to
-   `templates/index.<name>.json` — it stays reachable at `?view=<name>` for
-   side-by-side comparison instead of being lost.
-3. Upsert the new `layout/`, `sections/`, `templates/index.json` and assets.
-4. Everything else keeps rendering from the duplicated theme underneath.
+## Shipping — one path (gt-site `PUBLISH.md`, since 2026-09-27)
+
+**Stage the whole GT set, push all of it, check the theme against it.**
+`gt-site/tools/theme_ship.py` does the three in one command, with the Shopify
+CLI and a Theme Access password (`SHOPIFY_CLI_THEME_TOKEN`):
+
+```sh
+python3 tools/theme_ship.py check <theme_id>                  # read-only diff
+python3 tools/theme_ship.py push  <preview_id>                # ends "drift: 0"
+python3 tools/theme_ship.py push  <live_id> --allow-live      # on Tom's word only
+```
+
+- **Never upload only the files a change touched.** That is how #22, #23 and
+  #25 were merged but never live, and the landing pages ran two PRs behind,
+  until 2026-09-27. The set (`gt_set()` plus `theme/assets.manifest.json`) is
+  defined once, in the tool.
+- **Never ship code by publishing a theme.** Publishing swaps every file,
+  including anything an admin set in MAIN after the copy was taken (the
+  favicon, 2026-09-25, lived only in MAIN). The live theme is pushed in place.
+- **A preview is a copy of MAIN, taken when it is needed**, never a copy of
+  another unpublished theme. Keep one and re-push the whole set to it each round.
+- **Theme-owned stays theme-owned.** `config/settings_data.json` is never in
+  the set, and each template's `sections.main.settings` is copied from the
+  target when the set is staged.
 
 **Assets and Liquid are separate worlds.** Files under `assets/` are served
 statically — Liquid never runs over them. A `.js` asset cannot use
@@ -35,14 +53,22 @@ have to come off.
 
 ## Traps
 
-**`themeFilesUpsert` accepts `body.type: URL`.** Shopify fetches the file
-server-side. Use it for everything — a public raw.githubusercontent.com URL for
-text files, the original URL for remote images — and no base64 ever passes
-through the agent. `type: BASE64` and `type: TEXT` also exist; prefer URL.
+**`theme push` deletes remote files that are not in the local folder** unless
+it gets `--nodelete`. The tool always passes it and stages into a folder that
+holds only the GT set. It still prints "Cleaning your remote theme [100%]";
+that line deletes nothing when `--nodelete` is set (976 files before and after,
+2026-09-27).
 
-**`upsertedThemeFiles` comes back empty even on success.** It is not an error
-signal. Verify by querying the theme's `files(filenames: […])` and checking
-`size` and `contentType`.
+**A fresh duplicate is still copying when `theme duplicate` returns.** A push
+that lands then is overwritten by the copy job: on 2026-09-27 five sections
+reverted, and only the check caught it. The tool waits until `processing` is
+false.
+
+**Checksums.** The Admin API's `checksumMd5` is the md5 of the file for Liquid,
+CSS, JS and images, the same as a CLI pull gives. JSON templates are not:
+Shopify stores them minified and serves them with a `/* … */` header, so
+compare them as parsed JSON. `upsertedThemeFiles` from `themeFilesUpsert` comes
+back empty even on success; never read it as a result.
 
 **`?preview_theme_id=` sets a cookie, then redirects.** A client without a
 cookie jar follows the redirect and gets the *live* theme back, which reads
@@ -58,7 +84,8 @@ without `Accept: image/webp`.
 
 **The Shopify MCP blocks the dangerous ones.** `themePublish` and theme
 deletion are refused, and `themeFilesUpsert`/`themeFilesCopy` are refused
-against the live MAIN theme. Useful, but do not rely on it as the only guard.
+against the live MAIN theme. The CLI is the path that writes to live, and it
+needs `--allow-live` to do so.
 
 **Size limits** (`shopify.dev/docs/storefronts/themes/architecture/limits`):
 Liquid file (section/snippet/layout) **256 KB** · JSON template 512 KB ·
@@ -114,7 +141,6 @@ query { node(id: "gid://shopify/OnlineStoreTheme/<id>") {
 
 ## OPEN
 
-- No CI in `gt-site`; `tools/validate.js` is run by hand.
 - Splitting a one-section page into editable sections with `{% schema %}` has
   not been done yet — until it is, nothing on the page is editable from the
   theme editor.
@@ -126,3 +152,6 @@ query { node(id: "gid://shopify/OnlineStoreTheme/<id>") {
 
 - 2026-08-31 · First GT theme built this way (`gt-site` → theme 162206646513,
   unpublished). Everything in Traps and RTL above was found during that build.
+- 2026-09-27 · Three merged PRs were missing from live because each upload sent
+  only its own files. Replaced by the one ship path above (gt-site
+  `tools/theme_ship.py`, `PUBLISH.md`).
