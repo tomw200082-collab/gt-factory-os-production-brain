@@ -27,7 +27,7 @@ Measured 2026-09-26:
 | D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. The switch starts on 2026-10-05 (D12). | Distributor track |
 | D8 | Dropped by Tom on 2026-09-26. The monthly Excel Routine stays exactly as it is and is out of this plan. The Make webhook and the draft PRs made for it were removed: backend #308 and brain #225 are closed unmerged. The dry-run findings are recorded in #308's description. | — |
 
-### From the grilling (Tom, 2026-09-27, rounds 1–5)
+### From the grilling (Tom, 2026-09-27, rounds 1–6)
 
 | # | Decision | Lands in |
 |---|---|---|
@@ -52,6 +52,12 @@ Measured 2026-09-26:
 | D27 | **The correctness rule for Purchase recommendations.** Tom delegated this decision to Claude and approved it in principle. Mistakes mean shortages and money on the floor.<br>1. Every line shows its calculation: the need, minus stock, minus open purchase orders, equals what to buy. It is then rounded to the supplier's pack and minimum, with an order-by date from the lead time, and the supplier named.<br>2. No complete data, no recommendation. A missing active recipe, lead time or minimum order, or an unclear unit, arrives as a question.<br>3. A line far beyond what GT usually buys is flagged for review.<br>4. After every Production report, material use is checked against the recipe. A large gap warns that the recipe is wrong, before it harms purchasing.<br>5. A recommendation computed on stale inputs says so. Stale means production not reported or a Delivery report missing. Nothing is recommended silently on old data.<br>6. Every change to the calculation first passes a fixed set of worked examples with known answers. | Every layer |
 | D28 | **Invoicing after the switch (Tom).** Icedream issues every customer invoice. GT invoices only the Direct accounts, and sends Icedream a Consolidated invoice per period. During the transition some orders may run through GT and some through Icedream. The Direct accounts are invoiced as today, when the order is placed, until we learn otherwise. | Distributor track |
 | D29 | **The mindset (Tom).** Working with Icedream runs lean startup style: build, measure, learn, improve. Nothing is fixed, and the integration is designed both ways, their service into GT and GT into their service. Every distributor-track decision is a working hypothesis that names what we measure and when we review it. Claude must not treat decisions as sealed either. | Distributor track |
+| D30 | The 05.10 preparation and the purchasing rebuild run in parallel. (Tom) | Distributor track, Planning |
+| D31 | **The zero-doubt rule (Tom).** A fix that changes live numbers goes in only when Claude is sure it causes no other problem. With even half a percent of doubt, it stays out.<br>First use: planning counted delivered and cancelled LionWheel tasks as open orders, 53,680 units where 1,695 were open. The fix changed one condition in the two demand views and applied it the same day (backend #316, migration 0359). It went through the normal gates: CI, `rebuild_verifier() = 0` before and after, and a test that fails 6 of 9 before the fix and passes 9 of 9 after it. | Every layer |
+| D32 | **The Sales forecast (Tom):** monthly per product, six months ahead, refreshed at the start of every month, and approved by Tom. Each refresh must be created as a revision of the current version: publishing retires the old version only then, and otherwise the months they share count twice. | Planning |
+| D33 | **Production reporting (Tom):** within two working days of production. Many production runs since 2026-09-07 were never entered. | Planning |
+| D34 | **The system's stock is wrong (Tom):** almost all of it, not even close. It gets a Stock reset. Until then no Purchase recommendation is trusted: after D31's fix, the one for ADD-ODK-STR-1L is still 391, partly to cover a stock of −80. How and when the reset happens is round 7. The tool already exists: the portal's Bulk Count page counts the whole factory area by area, blind, and sends large differences for approval. | Every layer |
+| D35 | **Purchase orders (Tom):** today most purchasing runs outside the system, and the team does not yet work with the system as it should. No rule yet. | Planning |
 
 D1–D3 change authority docs. `CLAUDE.md` is Tom's to write, so each edit lands as exact text for him to approve.
 
@@ -102,6 +108,10 @@ Later, Tom will add new teams, for example a marketing team for paid and organic
   - whether every customer moves at once or region by region;
   - how the Distributor fee is netted (D18);
   - which app issues the automatic Green Invoice invoice, and whether it stops for Icedream customers.
+- Planning, still open (Tom, 2026-09-27, round 6):
+  - who completes the supplier data (minimum order, order multiple, pack size, lead time);
+  - when the full count happens (now the Stock reset, D34);
+  - which day the scheduled truck goes to Icedream.
 
 ## Status
 

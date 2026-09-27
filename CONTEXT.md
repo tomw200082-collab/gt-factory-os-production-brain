@@ -36,6 +36,10 @@ _Avoid_: consignment, Icedream's stock
 GT's finished goods at the factory.
 _Avoid_: our stock (Held stock is ours too), GT-MAIN
 
+**Stock reset**:
+A full physical count of every item, finished goods, raw materials and packaging, entered so the system matches the shelf. Each count replaces the item's starting point; no history is deleted.
+_Avoid_: zeroing the stock, deleting the ledger
+
 **Direct account**:
 A customer GT keeps serving itself instead of through the Distributor: Eli Avrahami, Unimarket and Elita.
 _Avoid_: key account, big three
@@ -62,8 +66,12 @@ _Avoid_: summary invoice, monthly invoice
 
 ### Planning
 
+**Open order**:
+An order taken and not yet delivered or cancelled. Today its LionWheel task tells: open while unassigned, assigned, active or in transfer. After the switch, an order sent to the Distributor stays open until the Delivery report closes it.
+_Avoid_: order (alone), pending order
+
 **Sales forecast**:
-GT's expected sales per product ahead of time. It drives purchasing whenever there is no Production plan.
+GT's expected sales per product per month, six months ahead, refreshed at the start of each month and approved by Tom. It drives purchasing whenever there is no Production plan.
 _Avoid_: forecast (alone, it is ambiguous next to the revenue forecast in the daily sales brief), demand plan
 
 **Production plan**:
@@ -71,7 +79,7 @@ A plan to make specific products on a specific day. When one exists, purchasing 
 _Avoid_: schedule, production forecast
 
 **Production report**:
-The record of what was actually made, entered after the fact.
+The record of what was actually made, entered after the fact and within two working days.
 _Avoid_: production plan, actuals
 
 **Safety buffer**:
