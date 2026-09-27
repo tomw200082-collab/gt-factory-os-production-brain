@@ -74,6 +74,10 @@ _Avoid_: schedule, production forecast
 The record of what was actually made, entered after the fact.
 _Avoid_: production plan, actuals
 
+**Safety buffer**:
+The extra raw material purchasing adds on top of the need, so a rushed or emergency production run never stalls for materials.
+_Avoid_: safety stock (finished goods), padding
+
 **Purchase recommendation**:
 What the system proposes to buy, from whom, how much and by when. It is driven by the Production plan when one exists and by the Sales forecast otherwise, and it must be right to the unit.
 _Avoid_: purchase draft, purchase suggestion
