@@ -27,7 +27,7 @@ Measured 2026-09-26:
 | D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. The switch starts on 2026-10-05 (D12). | Distributor track |
 | D8 | Dropped by Tom on 2026-09-26. The monthly Excel Routine stays exactly as it is and is out of this plan. The Make webhook and the draft PRs made for it were removed: backend #308 and brain #225 are closed unmerged. The dry-run findings are recorded in #308's description. | — |
 
-### From the grilling (Tom, 2026-09-27, rounds 1–2)
+### From the grilling (Tom, 2026-09-27, rounds 1–3)
 
 | # | Decision | Lands in |
 |---|---|---|
@@ -39,6 +39,12 @@ Measured 2026-09-26:
 | D14 | The Direct accounts keep GT's driver and GT's Green Invoice invoices, as today. LionWheel stays open for now and may close later. | Distributor track |
 | D15 | Aviv is not relevant, and GT does not work with him. The Distributor is Icedream only. | — |
 | D16 | Tom's method for the distributor decisions: Claude frames each one (what it is, why it matters, the options, what is missing and from whom), and Tom and the team decide. The Icedream daily report is designed from GT's needs first; its format follows from them. | Distributor track |
+| D17 | Orders reach Icedream as one Order email per order. It is sent automatically the moment the order enters GT's Shopify, and Icedream's bookkeepers key it in by hand. Simple first, improved later if needed. (Tom) | Distributor track |
+| D18 | Icedream's Distributor fee is a percentage of GT's revenue on the orders it handles. How the Consolidated invoice nets the fee is open and simple to settle later. (Tom) | Distributor track |
+| D19 | The stock split. Tom delegated this decision to Claude.<br>**The model:**<br>- The ledger stays one pool at the single site.<br>- Icedream's deliveries post the existing `FG_OUT_PICK` movement from its Delivery report.<br>- Returns, damaged goods and count differences go through the existing approval flow (`INVENTORY_MOVEMENT`, `COUNT_ADJUST`).<br>- A truck to Icedream is a Truck transfer document, not a ledger movement.<br>- Held stock = what Icedream received, minus what it delivered, minus Icedream-side corrections. Factory stock = ledger on-hand minus Held stock. Both are known at every moment, as of the last event.<br>- Orders sent to Icedream count as committed and as planning demand until the Delivery report closes them.<br>**Not needed:** a new movement type, or any change to the locked no-locations rule.<br>**Why:** about 100 places in the code assume the single site, so a second site cannot be made safe by 05.10. | Distributor track |
+| D20 | The Delivery report's content. Tom delegated it to Claude, to be grounded in professional practice and sources. In progress. | Distributor track |
+| D21 | The Morning message. Tom delegated this decision to Claude.<br>- **When:** 07:30, Sunday to Thursday, pinned to Israel time so the 25.10 clock change does not move it.<br>- **How:** an email plus a phone push.<br>- **What:** at most five Decisions, the most urgent first. Each says what happened, what Claude proposes and what is needed from Tom. On a day with none, it is one line, plus what was checked and when.<br>- **Urgent items:** anything that cannot wait for the next morning is pushed the moment it happens.<br>- **Replaces:** the 06:30 check, the 07:30 day opening and the 08:00 sales-report email. The 17:00 sales brief to Tom and Dean stays. | Layer 5 |
+| D22 | LionWheel after the switch. Tom delegated this decision to Claude. From the day Icedream takes the orders, LionWheel's automatic delivery creation is switched off, so Icedream orders open no tasks. A Direct-account order gets its task through LionWheel's button until that is automated, and the Morning message flags any Direct-account order without a task. | Distributor track |
 
 D1–D3 change authority docs. `CLAUDE.md` is Tom's to write, so each edit lands as exact text for him to approve.
 
@@ -87,7 +93,9 @@ Later, Tom will add new teams, for example a marketing team for paid and organic
   - whether orders placed before 05.10 go through GT or through Icedream;
   - when the first truck goes, and what it carries;
   - whether every customer moves at once or region by region;
-  - the Icedream daily report: its content, then its format (D16).
+  - the Delivery report's content (D20, in progress);
+  - how the Distributor fee is netted (D18);
+  - which app issues the automatic Green Invoice invoice, and whether it stops for Icedream customers.
 
 ## Status
 

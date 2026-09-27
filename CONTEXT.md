@@ -40,6 +40,32 @@ _Avoid_: our stock (Held stock is ours too), GT-MAIN
 A customer GT keeps serving itself instead of through the Distributor: Eli Avrahami, Unimarket and Elita.
 _Avoid_: key account, big three
 
+**Order email**:
+The email GT's system sends the Distributor the moment an order enters Shopify, carrying everything needed to key the order in by hand.
+_Avoid_: order file, handoff
+
+**Delivery report**:
+The Distributor's morning report on the previous day: what it delivered, what it did not deliver and why, what it took back, and what it received from GT.
+_Avoid_: daily report, POD
+
+**Truck transfer**:
+A truck of GT's finished goods from the factory to the Distributor's warehouse. It moves goods from Factory stock to Held stock; ownership does not change.
+_Avoid_: shipment, sale
+
+**Distributor fee**:
+Icedream's charge for its service: a percentage of GT's revenue on the orders it handles.
+_Avoid_: commission, margin
+
 **Consolidated invoice**:
 The invoice GT issues the Distributor for its orders: totals only, with no product lines. The product lines live in GT's Shopify.
 _Avoid_: summary invoice, monthly invoice
+
+### Tom's attention
+
+**Decision**:
+An item that needs Tom's yes, no or number today, put to him with a proposed answer.
+_Avoid_: exception (already used for stock and Shopify exceptions), alert, task
+
+**Morning message**:
+The one message Tom gets each workday at 07:30, carrying only that day's Decisions.
+_Avoid_: morning brief, daily report
