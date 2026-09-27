@@ -60,6 +60,24 @@ _Avoid_: commission, margin
 The invoice GT issues the Distributor for its orders: totals only, with no product lines. The product lines live in GT's Shopify.
 _Avoid_: summary invoice, monthly invoice
 
+### Planning
+
+**Sales forecast**:
+GT's expected sales per product ahead of time. It drives purchasing whenever there is no Production plan.
+_Avoid_: forecast (alone, it is ambiguous next to the revenue forecast in the daily sales brief), demand plan
+
+**Production plan**:
+A plan to make specific products on a specific day. When one exists, purchasing follows it for that day instead of the Sales forecast. Usually there is none.
+_Avoid_: schedule, production forecast
+
+**Production report**:
+The record of what was actually made, entered after the fact.
+_Avoid_: production plan, actuals
+
+**Purchase recommendation**:
+What the system proposes to buy, from whom, how much and by when. It is driven by the Production plan when one exists and by the Sales forecast otherwise, and it must be right to the unit.
+_Avoid_: purchase draft, purchase suggestion
+
 ### Tom's attention
 
 **Decision**:

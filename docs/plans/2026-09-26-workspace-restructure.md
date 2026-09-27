@@ -27,7 +27,7 @@ Measured 2026-09-26:
 | D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. The switch starts on 2026-10-05 (D12). | Distributor track |
 | D8 | Dropped by Tom on 2026-09-26. The monthly Excel Routine stays exactly as it is and is out of this plan. The Make webhook and the draft PRs made for it were removed: backend #308 and brain #225 are closed unmerged. The dry-run findings are recorded in #308's description. | — |
 
-### From the grilling (Tom, 2026-09-27, rounds 1–3)
+### From the grilling (Tom, 2026-09-27, rounds 1–4)
 
 | # | Decision | Lands in |
 |---|---|---|
@@ -45,6 +45,9 @@ Measured 2026-09-26:
 | D20 | The Delivery report's content. Tom delegated it to Claude, to be grounded in professional practice and sources. In progress. | Distributor track |
 | D21 | The Morning message. Tom delegated this decision to Claude.<br>- **When:** 07:30, Sunday to Thursday, pinned to Israel time so the 25.10 clock change does not move it.<br>- **How:** an email plus a phone push.<br>- **What:** at most five Decisions, the most urgent first. Each says what happened, what Claude proposes and what is needed from Tom. On a day with none, it is one line, plus what was checked and when.<br>- **Urgent items:** anything that cannot wait for the next morning is pushed the moment it happens.<br>- **Replaces:** the 06:30 check, the 07:30 day opening and the 08:00 sales-report email. The 17:00 sales brief to Tom and Dean stays. | Layer 5 |
 | D22 | LionWheel after the switch. Tom delegated this decision to Claude. From the day Icedream takes the orders, LionWheel's automatic delivery creation is switched off, so Icedream orders open no tasks. A Direct-account order gets its task through LionWheel's button until that is automated, and the Morning message flags any Direct-account order without a task. | Distributor track |
+| D23 | Green Invoice's automatic invoice. Tom switches it off when the orders move to Icedream, and wants GT's own replacement. It is feasible: GT's system already works with Green Invoice (it creates clients and has a documents client). The replacement covers the Direct accounts' invoices and the Consolidated invoice. Until it is built, the office issues them by hand. The design is open. (Tom) | Distributor track |
+| D24 | Truck transfers to Icedream will probably run once or twice a week on a schedule, and otherwise only for an emergency shortage of a specific product. Claude frames the replenishment design. Research is in progress. (Tom) | Distributor track |
+| D25 | **The operating model from now on (Tom):**<br>- Production is reported after the fact and is normally not planned ahead.<br>- Purchasing is planned from the Sales forecast. When a Production plan exists for a specific day, purchasing follows that plan for that day. The plan comes first and the forecast second, but usually there is no plan.<br>- Three skills carry the whole operation, and each must be very high quality and precise: production reporting, purchase planning (plan first, forecast otherwise), and creating the Sales forecast.<br>- **Purchase recommendations must contain no mistakes.**<br>This replaces D10's second item: the weekly production and purchase plans become purchase recommendations driven by the forecast. | Every layer |
 
 D1–D3 change authority docs. `CLAUDE.md` is Tom's to write, so each edit lands as exact text for him to approve.
 
