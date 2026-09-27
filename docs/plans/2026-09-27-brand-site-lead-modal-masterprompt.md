@@ -145,6 +145,18 @@ out of scope unless Tom asks.
   - The method in §0.
   - He asked for these improvements **before** `186686636273` (`כניסה לעסקים`) is published. So it is
     not published on its own; its content is on `main` (#23, #25) and ships with this work.
+- **Tom's answers to the brainstorm round (2026-09-27, in writing), recorded by the executing session:**
+  - Close delay: `אחרי המילוי של המשתמש כן- 2 שניות זה טוב.` So `LD_CLOSE_MS = 2000`.
+  - Copy approval mode: `אני רואה בדוח- אל תשנה בצורה משמעותית. רק דברים שאתה בטוח שצריך לשפר, כמו שגיאות, ניסוחים לא מקצועיים בעברית מדוברת, וכאלה.`
+    So the batch is approved by the gate's COPY dimension plus the governor, and Tom sees it in the report. The
+    changes are limited to errors and unprofessional phrasing: no significant rewrite now.
+  - The three superseded themes: `תחליט בשבילי.` The session decided to delete them, after a file-by-file
+    comparison with MAIN showed they hold nothing that MAIN or `main` lacks: older GT files, the old favicon,
+    and `show_portal_entry` absent. The CLI delete was refused by the session's permission layer, so they
+    remain. Nothing depends on it (18 of 20 slots).
+  - The design: no change requested. Tom invoked `frontend-design-master` during the round. The dialog then
+    gained the clicked drink's photo on wide screens and its colour on the phone sheet's rim, and the shots
+    were sent to him.
 - **Earlier and still in force:**
   - The entry reads `כניסה לעסקים` on desktop and in the menu, and `לעסקים` on the phone pill
     (gt-site #25, Tom 2026-09-27).
