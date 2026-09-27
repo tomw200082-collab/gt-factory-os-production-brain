@@ -303,6 +303,8 @@ curl -sL https://gteveryday.com/ | grep -o '//gteveryday.com/cdn/shop/t/[0-9]*/a
 curl -sL "https://gteveryday.com/?view=chai" | grep -o 'data-endpoint="[^"]*"' | head -1   # 2026-09-27: empty
 # 3. CLI path available?
 test -n "$SHOPIFY_CLI_THEME_TOKEN" && echo cli-token-present || echo cli-token-absent
+# 4. token works? read-only; must list the live theme id with role live (Tom set the token 2026-09-27)
+npx -y @shopify/cli@4.8.2 theme list --store greenteaeveryday.myshopify.com --json | head -c 2000
 ```
 
 - **Shopify MCP.** Run
@@ -376,7 +378,9 @@ test -n "$SHOPIFY_CLI_THEME_TOKEN" && echo cli-token-present || echo cli-token-a
    `git status --porcelain` empty. On 2026-09-27 the only output was a `<div>` balance warning,
    438 / 439.
 3. Run the site harness once against live and keep its facts as the "before".
-4. Record the §2.5 differences.
+4. Prove the CLI token works with the read-only `theme list` in §2.5 (step 4). If it is absent or
+   refused, W7's fallback applies; say so to Tom once, in the brainstorm message.
+5. Record the §2.5 differences.
 
 ### W1 — One ship path (the freshness fix; runs while Tom answers W2)
 1. **Define the GT set once, in code:**
