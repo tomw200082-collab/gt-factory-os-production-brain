@@ -172,9 +172,14 @@ out of scope unless Tom asks.
     back from WhatsApp, because the gate found that two seconds cut the thanks off for a screen reader
     (A11Y-01, P0).
   - `אני מאשר שליחה אוטומטית. כרגע מה שישלח אלו הפי-די-אפים של התפריטים בקנבה`. When a visitor's message
-    reaches the lead number, the menu PDF of the line they picked goes back automatically (the Canva designs
-    `Matcha Menu`, `Ube Menu`, `Chai Massala Menu`, `Tea Concentrates Menu`, and `Recommended initial menu`
-    for the drinks-menu option). **This is a separate build**, in the sales and integration lanes, and it
+    reaches the lead number, the menu PDF of the line they picked goes back automatically: one Canva menu
+    per type, `Matcha Menu`, `Ube Menu`, `Chai Massala Menu` or `Tea Concentrates Menu`, matching the
+    message. Tom corrected the session the same day, which had also named `Recommended initial menu` for
+    the drinks-menu option: `התפריטים בקנבה הם פר טייפ... התפריט שישלח הוא בהתאם להודעה שהלקוח יבחר בה`.
+    The reason, in his words: `הסיבה לזה שאנחנו עושים פר טייפ היא רק בשביל למקד את הלקוח. בסוף אנחנו רוצים
+    למכור לו הכל. אבל אם נראה לו הכל מלכתחילה... יתבלבל ולא יקנה כלום`. The rest of the range comes later,
+    in the conversation. So the drinks-menu option gets no PDF: a person answers it. **This is a separate
+    build**, in the sales and integration lanes, and it
     starts after this ship. It is customer-facing and sits behind `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED`:
     this is Tom's written approval, and the dry run and the soak are still owed. Until it is live, a person
     sends the PDF.
