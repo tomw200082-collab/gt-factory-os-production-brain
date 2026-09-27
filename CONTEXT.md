@@ -25,4 +25,13 @@ _Avoid_: frozen (reserved for feature flags held until Tom approves a flip)
 ### Operations
 
 **Distributor**:
-The outside company that takes over every step after an order is entered.
+Icedream: the outside company that holds GT's finished goods in its warehouse, picks and delivers each order, invoices the customer and collects the money. GT still takes the orders.
+_Avoid_: using "distributor" for Aviv or for LionWheel
+
+**Direct account**:
+A customer GT keeps serving itself instead of through the Distributor: Eli Avrahami, Unimarket and Elita.
+_Avoid_: key account, big three
+
+**Consolidated invoice**:
+The invoice GT issues the Distributor for its orders: totals only, with no product lines. The product lines live in GT's Shopify.
+_Avoid_: summary invoice, monthly invoice

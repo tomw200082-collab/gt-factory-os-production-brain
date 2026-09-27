@@ -24,8 +24,17 @@ Measured 2026-09-26:
 | D4 | GT skills live in git, in the brain. The claude.ai account keeps generic skills. | Layer 1 |
 | D5 | Removal is a real deletion in git. The tag on each repo is the rollback; no `archive/` folders. This replaces the archive-only rule in `.claude/agents/ops-docs-curator.md`, which Layer 1 updates. | Every layer |
 | D6 | Tom uses none of the 22 custom account skills outside Claude Code. Anything unique in them merges into the brain, and all 22 leave the account. The 11 Anthropic skills (docx, pdf, pptx, xlsx, skill-creator and the rest) stay. | Layer 1 |
-| D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. When the switch happens is not known yet. | Distributor track |
+| D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. The switch starts on 2026-10-05 (D12). | Distributor track |
 | D8 | Dropped by Tom on 2026-09-26. The monthly Excel Routine stays exactly as it is and is out of this plan. The Make webhook and the draft PRs made for it were removed: backend #308 and brain #225 are closed unmerged. The dry-run findings are recorded in #308's description. | — |
+
+### From the grilling (Tom, 2026-09-27, round 1)
+
+| # | Decision | Lands in |
+|---|---|---|
+| D9 | The workspace has one goal: Tom's attention, bounded by reliability. The system notices, prepares and proposes. Tom decides only what really needs him, and never on a wrong number. Growth is the result, not the workspace's job. | Every layer |
+| D10 | "Knows by itself" means three things, in this order. First, a morning message that carries only what needs Tom's decision that day, with stock and system-health problems inside it. Second, the weekly production and purchase plans, ready for approval. Third, the sales radar. | Layer 5 |
+| D11 | Tom holds the people question for now. The order of work is: map the base, then map what each person does physically in the factory and the office, then build the skills around that. | After Layer 5 |
+| D12 | The Distributor is Icedream, and the switch starts on 2026-10-05. It covers every customer except the three Direct accounts: Eli Avrahami, Unimarket and Elita. GT brings finished goods to Icedream's warehouse and keeps taking the orders. Icedream picks, delivers, invoices the customer and collects. GT sends Icedream Consolidated invoices without product lines; the product detail lives in GT's Shopify. Open: whether GT's Shopify can feed Icedream's Hashavshevet directly. | Distributor track |
 
 D1–D3 change authority docs. `CLAUDE.md` is Tom's to write, so each edit lands as exact text for him to approve.
 
@@ -70,7 +79,7 @@ Later, Tom will add new teams, for example a marketing team for paid and organic
 
 ## Open
 
-- When the switch to the distributor happens (D7). Until it is known, LionWheel breakages get fixed only when they threaten stock truth or a customer.
+- The distributor switch starts on 2026-10-05 (D12). The grilling settles the rest of the model before then.
 
 ## Status
 
@@ -82,4 +91,4 @@ Later, Tom will add new teams, for example a marketing team for paid and organic
 | 3 | not started | | |
 | 4 | not started | | |
 | 5 | not started | | |
-| D | waiting for the distributor model | | |
+| D | model known in outline (D12); switch starts 2026-10-05; grilling in progress | | |
