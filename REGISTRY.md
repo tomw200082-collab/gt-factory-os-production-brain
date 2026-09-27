@@ -33,11 +33,11 @@ The legacy `executor-w1/w2/w4` and `governor` were retired on 2026-09-26 (`docs/
 | `gt-assets-designer` | messi evening run / Tom ad-hoc | autonomous within paths | `docs/pricing/**`, `docs/warehouses/marketing-assets.md`, scratchpad |
 | `gt-catalog-truth` | messi evening run (Sundays) / on correction | autonomous within paths | `docs/warehouses/catalog-truth.md` |
 
-## Commands (15)
+## Commands (16)
 
 **Governance / release:** `/gate-close` · `/production-go-no-go` · `/release-check` · `/source-truth-audit` · `/incident-triage` · `/docs-hygiene-check`
 **Portal / integration:** `/portal-pr-review` · `/integration-dry-run`
-**UX (7):** `/ux-flow-audit` · `/ux-release-gate` · `/button-logic-review` · `/empty-error-state-audit` · `/design-system-check` · `/screen-scorecard` · `/operator-task-simulation`
+**UX (8):** `/ux-flow-audit` · `/ux-release-gate` · `/button-logic-review` · `/empty-error-state-audit` · `/design-system-check` · `/screen-scorecard` · `/operator-task-simulation` · `/site-gate` (brand site — same five agents, brief `gt-site/docs/SITE_GATE_BRIEF.md`, plus CRO and BRAND)
 
 **Stacking:** `/gate-close` → evidence consumed by `/production-go-no-go` · `/release-check` (pre-gate) → `/production-go-no-go` (policy decision) · `/portal-pr-review` (per-PR) → `/ux-release-gate` (per-release) · `/screen-scorecard` aggregates `/ux-flow-audit` + `/button-logic-review` + `/design-system-check` + `/empty-error-state-audit`.
 **Verdict-token collision:** `HOLD` means dependency-blocked in `/production-go-no-go` but P0-finding-present in `/ux-release-gate` — same token, different cause. Read context, ⊥ assume.
