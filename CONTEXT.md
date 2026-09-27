@@ -26,7 +26,15 @@ _Avoid_: frozen (reserved for feature flags held until Tom approves a flip)
 
 **Distributor**:
 Icedream: the outside company that holds GT's finished goods in its warehouse, picks and delivers each order, invoices the customer and collects the money. GT still takes the orders.
-_Avoid_: using "distributor" for Aviv or for LionWheel
+_Avoid_: Ice Dream, אייס דרינק, calling LionWheel a distributor
+
+**Held stock**:
+GT's finished goods sitting in the Distributor's warehouse. They stay GT's until they are delivered to the customer.
+_Avoid_: consignment, Icedream's stock
+
+**Factory stock**:
+GT's finished goods at the factory.
+_Avoid_: our stock (Held stock is ours too), GT-MAIN
 
 **Direct account**:
 A customer GT keeps serving itself instead of through the Distributor: Eli Avrahami, Unimarket and Elita.

@@ -27,7 +27,7 @@ Measured 2026-09-26:
 | D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. The switch starts on 2026-10-05 (D12). | Distributor track |
 | D8 | Dropped by Tom on 2026-09-26. The monthly Excel Routine stays exactly as it is and is out of this plan. The Make webhook and the draft PRs made for it were removed: backend #308 and brain #225 are closed unmerged. The dry-run findings are recorded in #308's description. | — |
 
-### From the grilling (Tom, 2026-09-27, round 1)
+### From the grilling (Tom, 2026-09-27, rounds 1–2)
 
 | # | Decision | Lands in |
 |---|---|---|
@@ -35,6 +35,10 @@ Measured 2026-09-26:
 | D10 | "Knows by itself" means three things, in this order. First, a morning message that carries only what needs Tom's decision that day, with stock and system-health problems inside it. Second, the weekly production and purchase plans, ready for approval. Third, the sales radar. | Layer 5 |
 | D11 | Tom holds the people question for now. The order of work is: map the base, then map what each person does physically in the factory and the office, then build the skills around that. | After Layer 5 |
 | D12 | The Distributor is Icedream, and the switch starts on 2026-10-05. It covers every customer except the three Direct accounts: Eli Avrahami, Unimarket and Elita. GT brings finished goods to Icedream's warehouse and keeps taking the orders. Icedream picks, delivers, invoices the customer and collects. GT sends Icedream Consolidated invoices without product lines; the product detail lives in GT's Shopify. Open: whether GT's Shopify can feed Icedream's Hashavshevet directly. | Distributor track |
+| D13 | Held stock: Icedream holds GT's finished goods for GT, and they stay GT's until delivered to the customer. GT must see finished-goods stock split into Factory stock and Held stock. How to model the split is open: the locked rule allows no stock locations in v1, so Tom decides whether and how that rule changes. | Distributor track |
+| D14 | The Direct accounts keep GT's driver and GT's Green Invoice invoices, as today. LionWheel stays open for now and may close later. | Distributor track |
+| D15 | Aviv is not relevant, and GT does not work with him. The Distributor is Icedream only. | — |
+| D16 | Tom's method for the distributor decisions: Claude frames each one (what it is, why it matters, the options, what is missing and from whom), and Tom and the team decide. The Icedream daily report is designed from GT's needs first; its format follows from them. | Distributor track |
 
 D1–D3 change authority docs. `CLAUDE.md` is Tom's to write, so each edit lands as exact text for him to approve.
 
@@ -79,7 +83,11 @@ Later, Tom will add new teams, for example a marketing team for paid and organic
 
 ## Open
 
-- The distributor switch starts on 2026-10-05 (D12). The grilling settles the rest of the model before then.
+- The distributor switch starts on 2026-10-05 (D12). Still open (Tom, 2026-09-27: not known yet):
+  - whether orders placed before 05.10 go through GT or through Icedream;
+  - when the first truck goes, and what it carries;
+  - whether every customer moves at once or region by region;
+  - the Icedream daily report: its content, then its format (D16).
 
 ## Status
 
