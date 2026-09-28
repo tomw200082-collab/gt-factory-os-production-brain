@@ -7,7 +7,8 @@ the live theme check, the soak start time, the report). -->
 
 > **Usage:** paste this entire file as the first message of a fresh Claude Code session. Attach
 > `gt-factory-os`, `gt-factory-os-production-brain`, `gt-factory-os-portal`, `Sales-Machine` and
-> `gt-site`. Before pasting, allow the Canva connector for the whole session (§6-A).
+> `gt-site`. Before pasting, allow the Canva connector for the whole session (§6-A). The sources it
+> cites are on `main` once brain #239 and gt-factory-os #319 and #320 are merged; §2.5 checks that.
 >
 > **What it does:** takes the WhatsApp lead journey from "decided and documented" to:
 > - built and deployed;
@@ -99,14 +100,19 @@ the live theme check, the soak start time, the report). -->
 - **How to build:**
   - Write the test first for each component (`test-driven-development`), and prove it before
     claiming it (`verification-before-completion`).
-  - **Tests never touch production.** In this container `DATABASE_URL` is the production project,
-    no shadow database exists and `pg_prove` is not installed.
+  - **Tests never touch production.** In this container **both** `DATABASE_URL` and
+    `DATABASE_URL_POOLED` point at the production project. 25 of the 135 files in
+    `gt-factory-os/api/test` never load the production guard, and some write `stock_ledger`.
+    Before **every** test command:
+    1. Point both variables at a throwaway database, loaded with the migration chain, on this
+       container's local Postgres 16 server.
+    2. Check that neither variable contains `rvadsozabmxkkrktwgnv`. If one does, do not run.
+
+    The rest of the rule:
     - Never set `TEST_ALLOW_PRODUCTION_DB`.
     - Never run the repo's `pg_prove -d "$DATABASE_URL"` line here.
-    - Run database tests on a throwaway `postgres:16` loaded with the migration chain, as
-      `gt-factory-os` `.github/workflows/phase10-node-tests.yml` does: install one in the container,
-      or add a CI job on that pattern.
-    - If neither works, report the tests as not run. Never report them as passed.
+    - pgTAP is not installed. Install it locally, or report the pgTAP tests as not run. Never report
+      them as passed (spec §4).
   - One subagent may work on Canva while you work elsewhere. **Never two Canva actors at once.**
 - **Language.** This document is in English; Hebrew literals stay in their script, in backticks.
   **Output language: Hebrew to Tom** — short, direct, no recap, and every message ends with at most
@@ -133,7 +139,7 @@ soak.
 | D9 | Echoes are keyed by number | the order bot defers a phone only because of a lead-line echo (test) |
 | D10 | Menus are built, checked, hosted and approved | any copy fails the menus masterprompt's D1–D9; `app_setting` `lead_menus` lacks a Shopify CDN URL that returns 200 with a PDF for a menu; or Tom did not approve the menus at C2 |
 | D11 | The site is live, with the grown FAQ | `python3 tools/theme_ship.py check 166730072305` reports drift; the FAQ lacks the questions Tom approved; a W8 gate was skipped; or the site masterprompt's D6, D8 and D10 are unmet |
-| D12 | Ready, soaking, stamped and reported | the gate is not false; no recorded soak start; the test leads of W9 not closed; this document, the site and the menus masterprompts not stamped; or no Hebrew report reached Tom |
+| D12 | Ready, soaking, stamped and reported | the gate is not false; no recorded soak start; the test lead of W9 not closed; this document, the site and the menus masterprompts not stamped; or no Hebrew report reached Tom |
 
 Anything not on this list is out of scope unless Tom asks.
 
@@ -190,6 +196,14 @@ Tom decided all of this on 2026-09-28, in writing. The record is Sales-Machine `
   Claude Code's permission layer that day.
 - **Deploys.** Railway deploys the API on every merge to `main` (brain
   `docs/plans/2026-07-24-production-picking-rollout.md`, Phase 3).
+- **This container (2026-09-28):**
+  - `DATABASE_URL` and `DATABASE_URL_POOLED` both point at production;
+  - a Postgres 16 server is installed locally;
+  - pgTAP and `pg_prove` are not.
+- **Statuses.** Every status after a message's first is dropped today: they are de-duplicated on
+  the message id alone (spec §3.5a).
+- **Phone formats differ.** `wa_event_log.wa_phone` is `972…`, while `sales_core.lead.phone_e164`
+  is `+972…` (spec §3.8).
 
 ### 2.2 The numbers (2026-09-28, about 15:00 UTC)
 - `wa_event_log`, last 30 days:
@@ -241,6 +255,8 @@ select holiday_date, holiday_name from private_core.holidays_il
 curl -sS https://gt-factory-os-api-production.up.railway.app/webhooks/wa-order-bot/health
 for r in gt-factory-os gt-factory-os-production-brain gt-factory-os-portal Sales-Machine gt-site; do git -C $r log --oneline -1 origin/main; done
 ls gt-factory-os/db/migrations | tail -3
+git -C gt-factory-os show origin/main:docs/superpowers/specs/2026-09-28-lead-journey-design.md | grep -c "3.5a Send log"   # 0 = HALT: the spec on main is stale
+for v in DATABASE_URL DATABASE_URL_POOLED; do printf '%s ' $v; printf %s "${!v}" | grep -q rvadsozabmxkkrktwgnv && echo production || echo other; done
 (cd gt-site && python3 tools/theme_ship.py check 166730072305)
 ```
 
@@ -278,8 +294,9 @@ ls gt-factory-os/db/migrations | tail -3
 
 ### W0 — Boot and baseline
 - Run §2.5 and record the output.
-- Establish the test baseline on `gt-factory-os` `main`, on a throwaway database (§0), and record
-  every pre-existing failure so it is not later mistaken for yours:
+- Establish the test baseline on `gt-factory-os` `main`. First point both database variables at
+  the throwaway database (§0). Record every pre-existing failure, so it is not later mistaken for
+  yours:
   - `npm run typecheck`;
   - the `test:order-intake` and `test:portal` suites;
   - `cd api && npm test`;
@@ -300,8 +317,11 @@ Send Tom **one** Hebrew message that asks for everything at once:
 4. Optionally, name a real customer who agreed to be the example in wake-up message 3.
 
 Then record his answers:
-- **Approvals.** Close U-051 in Sales-Machine, quoting him, and note the playbook commit his
-  approval covers (D2 pins it). Add UX gate §5 rows for new portal strings and §5.5 rows for the FAQ.
+- **Approvals.** Write any rewrite he gives into the playbook first. Then close U-051 in
+  Sales-Machine, quoting him, and note the playbook commit his approval covers (D2 pins it). Add UX
+  gate §5 rows for new portal strings and §5.5 rows for the FAQ.
+- **His test text arrives before W3 deploys**, so it produces no reply and no reply row. His later
+  `היי, אני מעוניין במאצ׳ה` is therefore still a first message (spec §3.3).
 - **Test phone.** Identify it as the sender of `בדיקת מסע GT` whose number ends in his four digits.
   Write it into `sales_core.app_setting` `lead_journey_test_phones` only after W3's migration has
   created the key. It never goes into a repo, a document, a commit or a log line.
@@ -322,7 +342,12 @@ Then keep working to C2.
   lacks it, copying it is Tom's (§6-C).
 
 ### W3 — Backend (spec §3.2, 3.3, 3.5, 3.5a, 3.6, 3.9, 3.10)
-- **Build the send log and the status fields first** (spec §3.5a). Every later proof depends on them.
+- **Build the send log and the status fields first** (spec §3.5a). Every later proof depends on them:
+  - the send row is written before the send, with `phone_number_id`, `kind` and `dry_run` at the
+    top level;
+  - statuses are de-duplicated on message id plus status;
+  - tests: `sent` → `delivered` → `failed` on one message, and D8's query returning 1 on a planted
+    leak.
 - **Migration.** List `db/migrations/` immediately before writing the file and again after. It
   carries:
   - the opt-out column and the new event types;
@@ -355,7 +380,7 @@ Then keep working to C2.
 - Submission is **draft only**, tags `lead` and `pk-<idem>`. Write the test that fails if
   `draftOrderComplete` is reachable from the lead path, the stale-replay path included.
 - Then the confirmation (free-form inside the window, else the utility template), the draft-order
-  event and the owner alert.
+  event and the owner alert. For allowlisted phones, a switch forces the template path (spec §3.7).
 - **Copy:** add every new file to `api/scripts/portal_copy_check.mjs`'s lists, then run it and its
   `--self-test`.
 - **Ship** as in W3.
@@ -369,9 +394,11 @@ Then keep working to C2.
   - each stop rule, on both lines;
   - the 48 h spacing, the slots, Friday–Saturday, and a date in `holidays_il`;
   - the error codes `131049` and `131050`, read from statuses.
+- Join the CRM and the event log through one phone normalizer (spec §3.8). Build the stop-rule test
+  data with both real normalizers, or every stop rule passes its test and misses in production.
 - Sign each message with the first name of the person who logged the outcome.
-- Allow a forced run for allowlisted phones only. It may ignore the slots and force the template
-  path.
+- **Forced run:** for allowlisted phones only. It may skip the slots, holidays, due times and the
+  48 h spacing, and force the template path. It never skips opt-out, `lost` or eligibility.
 - **Ship** as in W3.
 
 **Acceptance:** D7 (unit half).
@@ -404,7 +431,8 @@ Grow `section#faq` through the site's own generation path (spec §3.12).
 2. `./tools/build.sh`, `verify_figures.py`, `sync_figures.py --check` and `build_theme.py` pass.
 3. Push to preview `186698334449`; `theme_ship.py check 186698334449` reports drift 0.
 4. The site harness passes on preview, on a phone and a desktop viewport.
-5. `/site-gate` returns PASS on preview.
+5. `/site-gate` returns `SHIP` on preview, or `CONDITIONAL_SHIP` with Tom's written approval of its
+   conditions.
 
 **Then the live push**, under the standing authorization:
 - back up the live theme first;
@@ -417,29 +445,33 @@ Grow `section#faq` through the site's own generation path (spec §3.12).
 **Acceptance:** D11.
 
 ### W9 — Checkpoint C2: end to end on Tom's phone
-**First, without Tom:** replay all five ready texts and a no-menu text as webhook payloads that pass the route's inbound check (`waba-id`, spec §2).
-- Sender: the identity `בדיקת מערכת — להתעלם`, from GT's own site number `054-398-2444`. It is
-  outside the allowlist, so every send is a dry run.
-- The dry-run bodies prove D3 for every menu with nothing sent.
-- Close the CRM leads this creates as `lost`, reason `אחר`, note `בדיקת מערכת`, and list their ids in
-  the report.
+**First, without Tom:** render the bodies for all five ready texts and a no-menu text through the
+dry-run path, and compare each with the playbook. This proves D3 for every menu with nothing sent,
+no webhook and no CRM lead. Menu recognition itself is covered by W3's unit tests.
 
-**Then one Hebrew message to Tom, asking for:**
-1. his approval of the five menus (links);
-2. on his phone, the text `היי, אני מעוניין במאצ׳ה`;
-3. a tap on `אני רוצה להזמין`;
-4. a small order on the link; it is a draft, so it invoices nothing;
-5. a reply to the confirmation.
+**Then one Hebrew message to Tom, asking him, in this order:**
+1. approve the five menus (links);
+2. on his phone, send `היי, אני מעוניין במאצ׳ה` (the first message arrives);
+3. tap `אני רוצה להזמין` (the link arrives). **Do not order yet.**
 
-**Then, on his test lead:**
-- log an `answered_progressing` outcome;
-- force-run the scheduler for the test phone through the **template path**, one send per template;
-  include the utility confirmation through its template;
-- record a `delivered` status for each;
-- have him send `הסר`, and show that nothing follows.
+**Then, before any order exists:**
+- log an `answered_progressing` outcome on his test lead;
+- force-run the scheduler for the test phone through the template path, once per marketing template;
+- record a `delivered` status for each.
 
-Evidence for every step: a `wa_event_log` id, a `lead_event` id or the draft id. Afterwards, delete
-the test draft in Shopify; it was never completed.
+The order must come after this, because an existing order stops the sequence.
+
+**Then ask him to:**
+4. submit a small order on the link. It is a draft, so it invoices nothing. The free-form
+   confirmation arrives; force the utility template once and record its `delivered` status;
+5. reply to the confirmation;
+6. send `הסר`. Show that nothing automated follows.
+
+Evidence for every step: a `wa_event_log` id, a `lead_event` id or the draft id.
+
+Afterwards:
+- delete the test draft in Shopify; it was never completed;
+- close his test lead as `lost`, reason `אחר`, note `בדיקת מערכת`.
 
 **Acceptance:** D1, D3–D8 (live halves), and D10's approval.
 
@@ -458,13 +490,17 @@ The go arrives in this same session as his message. Nothing is scheduled; you wa
 1. **Check that the soak passed. Every item below must hold, or you do not flip:**
    - at least 24 h since the recorded start;
    - D8's query returns 0;
-   - every lead-line event since the start has its dry-run row;
+   - every lead-line event that the journey answers (a first message, a button, a submitted order)
+     has its dry-run row, while free text has none (D-027);
    - no `failed` status without an explanation.
-2. **Flip** `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` to true through the Railway-variable workflow.
+2. **Emit RUNTIME_READY for the lead journey.** Append to brain `.claude/state/runtime_ready.json`,
+   never overwriting it. Brain `docs/decisions/modules/sales-declaration.md` §11 requires this
+   before the flag flips.
+3. **Flip** `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` to true through the Railway-variable workflow.
    If you cannot, give Tom the one variable to set.
-3. **Prove the live path.** Send one real first message to the test phone as a non-allowlisted
-   path would, and see it `delivered`.
-4. **Report** in one Hebrew line.
+4. **Prove the live path on a phone that never opted out.** The test phone did, in W9. Use a
+   second phone of Tom's if he has one at hand. Otherwise use the next real lead: verify its first
+   message reached `delivered` when Tom next writes. Report in one Hebrew line.
 
 Leads from the soak got only dry runs, so they never received the notice. They stay ineligible for
 the sequence, and people follow up with them.
@@ -526,8 +562,10 @@ About 20 minutes.
 2. **"A test order produced an invoice."** The portal completes drafts in `settle`
    (`api/src/portal/orders.ts:225-247`), reached from the normal path and from the stale-replay path
    (`orders.ts:141-153`). → The lead path reaches neither, and a test proves it.
-3. **"The tests passed, and production changed."** `DATABASE_URL` here is production. → A throwaway
-   `postgres:16` only. Never `TEST_ALLOW_PRODUCTION_DB`, never `pg_prove -d "$DATABASE_URL"`.
+3. **"The tests passed, and production changed."** Here both `DATABASE_URL` and
+   `DATABASE_URL_POOLED` are production, and 25 test files skip the guard; some write
+   `stock_ledger`. → Both variables point at the local throwaway database before every run, checked
+   for `rvadsozabmxkkrktwgnv`. Never `TEST_ALLOW_PRODUCTION_DB`, never `pg_prove -d "$DATABASE_URL"`.
 4. **"The migration broke the API."** Railway deploys on merge, and the code met the old schema. →
    Apply the migration before merging (W3).
 5. **"Facebook leads stopped arriving."** `LEAD_INGEST_TOKEN` was rotated; Make still sends the old
@@ -569,6 +607,12 @@ About 20 minutes.
 23. **"A secret or a phone number is in the transcript."** It was read or printed (`env`, a log
     line). → Never print an environment value. Test presence with `test -n`, and keep phones in the
     database only.
+24. **"`delivered` never arrived."** It did; the pipeline dropped it as a duplicate of `sent`
+    (`worker.ts:369-375`). → De-duplicate statuses on id plus status (W3).
+25. **"The stop rule passed its test and missed a real reply."** The test used one phone format, and
+    production has two (`972…` and `+972…`). → One normalizer; test data from both (W5).
+26. **"The forced test run messaged an opted-out phone."** The force skipped too much. → It skips
+    only slots, holidays, due times and spacing (W5).
 
 ## 8. Halt conditions (additions to the inherited set)
 
@@ -577,7 +621,8 @@ About 20 minutes.
 - **A lead's draft was completed, or a Shopify order tagged `lead` exists.** STOP.
 - **An approved message text must change to fit Meta or a limit.** STOP and ask Tom; do not edit it.
 - **A §1.1 decision would be broken.** STOP.
-- **A test would run against production.** STOP.
+- **A test is about to run while `DATABASE_URL` or `DATABASE_URL_POOLED` contains
+  `rvadsozabmxkkrktwgnv`.** STOP.
 - **The lead line is still silent after §6-B.** STOP W9 only; finish everything else.
 
 ## 9. Final report (to Tom, in Hebrew; PR bodies in English)
