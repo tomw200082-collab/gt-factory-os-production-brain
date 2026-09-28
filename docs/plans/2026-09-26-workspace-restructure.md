@@ -27,7 +27,7 @@ Measured 2026-09-26:
 | D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. The switch starts on 2026-10-05 (D12). | Distributor track |
 | D8 | Dropped by Tom on 2026-09-26. The monthly Excel Routine stays exactly as it is and is out of this plan. The Make webhook and the draft PRs made for it were removed: backend #308 and brain #225 are closed unmerged. The dry-run findings are recorded in #308's description. | — |
 
-### From the grilling (Tom, 2026-09-27 to 09-28, rounds 1–8)
+### From the grilling (Tom, 2026-09-27 to 09-28, rounds 1–9)
 
 | # | Decision | Lands in |
 |---|---|---|
@@ -69,6 +69,11 @@ Measured 2026-09-26:
 | D44 | **Supplier invoices to bookkeeping (Tom).** They are already forwarded before the goods receipt, so the skill does not send them. | — |
 | D45 | **A line the skill does not recognize (Tom).** Nothing is held and nothing goes to Alex. What is on the document goes into stock, as long as Maxim sent it and checked it.<br>Claude's refinement, because a wrong match splits one material across two items and breaks planning:<br>- a line with one clear match maps to it;<br>- a truly new item is created from its closest sibling and shown to Tom;<br>- only when two items could both be it does Maxim choose, with one tap. | Every layer |
 | D46 | **What gets built for Maxim (Tom).** The Truck transfer to Icedream is built new. Goods receipt and the Production report are sharpened to the edge: an experienced storekeeper's judgement, without a person's slips. Round 9 goes into their details. | Every layer |
+| D47 | **Goods receipt reads what arrives (Tom, round 9).** The document type does not matter; what the skill takes from it does: price, quantity and the component itself, whether packaging, raw material or anything else stocked. The source is only what Maxim photographs when the supplier brings the goods. The `GT Invoices` WhatsApp group stays out: it also carries items that are only ordered, not received. | Every layer |
+| D48 | **No batch sheet (Tom).** Maxim writes only what was produced, and the system takes the materials off by recipe. Tom: not the best tracking, but what operations can carry now. | Every layer |
+| D49 | **No daily prompt (Tom).** Maxim enters production himself. Tom's idea of adding the lead number to an existing WhatsApp group, to follow what is written there, cannot work: under Coexistence group chats are not synchronised and not supported on the Cloud API ([Meta](https://developers.facebook.com/docs/whatsapp/embedded-signup/custom-flows/onboarding-business-app-users/)). | Every layer |
+| D50 | **Negatives: one logic, before and after the Stock reset (Tom).** A Production report posts without stopping. Every component it leaves negative goes to Maxim as a message to recount it, so the gaps close one by one. Replaces "only Tom confirms a negative" in report-production. | Every layer |
+| D51 | **The pairs rule (Tom, after Icedream's answer).** A new two-bottle pack exists, so in the ordering portal every bottle (`TEA_1L`, `TEA_05`, `ODK_1L`) is ordered in multiples of 2, on top of the 800 ₪ minimum. Matcha, powders and accessories do not change. It replaces the parked "multiple of 6" carton rule. Tom handed the build to the session that owns the portal (2026-09-28); the scope (all three families) is Claude's default, which Tom did not correct. | Distributor track |
 
 D1–D3 change authority docs. `CLAUDE.md` is Tom's to write, so each edit lands as exact text for him to approve.
 
@@ -123,7 +128,7 @@ Later, Tom will add new teams, for example a marketing team for paid and organic
   - who completes the supplier data (minimum order, order multiple, pack size, lead time);
   - when the full count happens (now the Stock reset, D34);
   - which day the scheduled truck goes to Icedream.
-- Stock reset, still open (Tom, 2026-09-28, round 7: no answer yet): its date (Claude proposes the day before the first truck to Icedream) and who counts.
+- Stock reset, still open (Tom, 2026-09-28, round 9: no commitment yet): its date and who counts. Until then D50's recount messages close gaps one at a time.
 - **The forecast Routine lives in the grill session.** "Sales forecast fortnightly" (`trig_013DX5c7hn4F8BtTe8XcyjsC`) fires into this session, because Routines cannot carry connectors in this organization and a fresh session would run without Shopify and Supabase. If this session is ever archived, the Routine stops. So once the Morning message (D21) is built, it also checks the published forecast's age: a version older than 16 days becomes a Decision.
 - **Not built anywhere, and 05.10 depends on them** (code, skills and Make checked 2026-09-28):
   - the Order email (D17): without it, Icedream does not get the orders;

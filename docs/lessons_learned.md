@@ -195,3 +195,19 @@ order by pp.plan_date, pp.created_at;
 **Corrective:**
 - Never put `filter: drop-shadow` on a cut-out product image in the portal, the brand site or the staff app. Use the background floor above. When Tom reports a visual bug from an iPhone, suspect WebKit-only behaviour first, and say plainly that the harness cannot reproduce it.
 - After a squash merge, continue the same branch with `git checkout -B <branch> origin/main && git merge -s ours origin/<branch>`. Check `git diff origin/main HEAD` before and after: it must contain only the new change.
+
+### 2026-09-28: A WhatsApp number that was "connected" everywhere and delivered nowhere
+
+**What happened:** the lead line (`054-758-8132`) carried 0 webhook events for 26 days after it was provisioned. Four separate causes stacked:
+1. **The number was linked to the Meta Business Suite inbox.** A number joins one business platform at a time, so Dualhook's Coexistence signup refused it: error `#3441034`, then "This number can't be shared with this app". WhatsApp Manager showed it as connected, in its own account with 0 partners. The fix was in the phone: WhatsApp Business → Settings → Account → Business Platform → disconnect the Business Suite inbox, then Dualhook's New Connection. The number kept its WABA and phone number id.
+2. **The webhook dropped other accounts silently.** Dualhook's app exposes no app secret, so the backend authenticates by WABA id and skipped every foreign entry without a trace. Backend #322 made `WA_WABA_ID` a comma-separated list and lists dropped accounts on `GET /webhooks/wa-order-bot/health` (`foreign_waba_dropped`). That list showed the new account's id minutes after the connection.
+3. **A Routine could not carry connectors.** In this organization `create_trigger` rejects `connectors`, and a fresh-session Routine then runs with no MCP tools. The forecast Routine was bound to the session that holds Shopify and Supabase instead.
+4. **This container held empty placeholders** for the WhatsApp keys. The live values were only on Railway, readable with the container's `RAILWAY_TOKEN` (never printed).
+
+**Why it was surprising:** every surface said "connected": WhatsApp Manager, the app, the lead-intake doc. Only the message count said otherwise, and the doc had named that zero as its own acceptance test.
+
+**Corrective:**
+- A new WhatsApp number is done only when a real message shows up in `order_intake.wa_event_log` with its `phone_number_id`. Nothing else counts as connected.
+- Before a Coexistence signup, check WhatsApp Business → Settings → Account → Business Platform. Anything connected there must be disconnected first.
+- After connecting, read `foreign_waba_dropped` on `/health`, and add a new account's id to `WA_WABA_ID` on Railway.
+- Bind a Routine that needs connectors to a session that holds them, or create it in the claude.ai Routines UI. Never report it as working until a test fire ran.
