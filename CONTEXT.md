@@ -71,7 +71,7 @@ An order taken and not yet delivered or cancelled. Today its LionWheel task tell
 _Avoid_: order (alone), pending order
 
 **Sales forecast**:
-GT's expected sales per product per month, six months ahead, refreshed at the start of each month and approved by Tom. It drives purchasing whenever there is no Production plan.
+GT's expected sales per product per month, six months ahead, updated every two weeks. It drives purchasing whenever there is no Production plan.
 _Avoid_: forecast (alone, it is ambiguous next to the revenue forecast in the daily sales brief), demand plan
 
 **Production plan**:
@@ -95,6 +95,10 @@ _Avoid_: purchase draft, purchase suggestion
 **Decision**:
 An item that needs Tom's yes, no or number today, put to him with a proposed answer.
 _Avoid_: exception (already used for stock and Shopify exceptions), alert, task
+
+**Open end**:
+Anything a session leaves for a person to finish later: an unposted receipt, an unanswered question, an unchecked result. An operational skill ends its session with none.
+_Avoid_: follow-up, pending, TODO
 
 **Morning message**:
 The one message Tom gets each workday at 07:30, carrying only that day's Decisions.

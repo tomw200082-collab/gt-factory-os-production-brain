@@ -27,7 +27,7 @@ Measured 2026-09-26:
 | D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. The switch starts on 2026-10-05 (D12). | Distributor track |
 | D8 | Dropped by Tom on 2026-09-26. The monthly Excel Routine stays exactly as it is and is out of this plan. The Make webhook and the draft PRs made for it were removed: backend #308 and brain #225 are closed unmerged. The dry-run findings are recorded in #308's description. | — |
 
-### From the grilling (Tom, 2026-09-27, rounds 1–6)
+### From the grilling (Tom, 2026-09-27 to 09-28, rounds 1–7)
 
 | # | Decision | Lands in |
 |---|---|---|
@@ -58,6 +58,10 @@ Measured 2026-09-26:
 | D33 | **Production reporting (Tom):** within two working days of production. Many production runs since 2026-09-07 were never entered. | Planning |
 | D34 | **The system's stock is wrong (Tom):** almost all of it, not even close. It gets a Stock reset. Until then no Purchase recommendation is trusted: after D31's fix, the one for ADD-ODK-STR-1L is still 391, partly to cover a stock of −80. How and when the reset happens is round 7. The tool already exists: the portal's Bulk Count page counts the whole factory area by area, blind, and sends large differences for approval. | Every layer |
 | D35 | **Purchase orders (Tom):** today most purchasing runs outside the system, and the team does not yet work with the system as it should. No rule yet. | Planning |
+| D36 | **Who records (Tom).**<br>- Maxim owns every stock-recording event: Production reports, goods receipts, Truck transfers, and returns, damage and tastings.<br>- Alex places supplier orders for now. His entries in the system are unreliable, so Maxim enters what arrives by hand, and the goods receipt is the record purchasing trusts. | Every layer |
+| D37 | **Why recording fails, and the direction (Tom).** Claude's diagnosis holds: recording is separate from the physical work, and nobody sees when it is missing.<br>What gets built sits as close to the production floor as possible, not as a technical layer on top that nobody uses. The existing skills are good but get sharpened to GT's concrete needs, so that Maxim can do everything simply and the system supports him. | Every layer |
+| D38 | **End to end, no Open ends (Tom).** An operational skill finishes its whole job in the session that starts it. For example, a photographed tax invoice or delivery note becomes a posted, checked goods receipt. Nothing is left for Tom to follow up and nothing can be missed, so the skill can be trusted.<br>Tom's pain today: he sends a document, the session stops short, the rest waits for him, and it gets lost among everything else. | Every layer |
+| D39 | **The Sales forecast, revised (Tom).** Six months ahead, updated every two weeks from the data GT has. Claude first researches how the best practitioners build such a forecast, then builds it precisely: the data exists, the method is the work. Replaces D32's monthly refresh; D32's revision rule stays. | Planning |
 
 D1–D3 change authority docs. `CLAUDE.md` is Tom's to write, so each edit lands as exact text for him to approve.
 
@@ -112,6 +116,7 @@ Later, Tom will add new teams, for example a marketing team for paid and organic
   - who completes the supplier data (minimum order, order multiple, pack size, lead time);
   - when the full count happens (now the Stock reset, D34);
   - which day the scheduled truck goes to Icedream.
+- Stock reset, still open (Tom, 2026-09-28, round 7: no answer yet): its date (Claude proposes the day before the first truck to Icedream) and who counts.
 
 ## Status
 
