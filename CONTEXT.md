@@ -71,7 +71,7 @@ An order taken and not yet delivered or cancelled. Today its LionWheel task tell
 _Avoid_: order (alone), pending order
 
 **Sales forecast**:
-GT's expected sales per product per month, six months ahead, updated every two weeks. It drives purchasing whenever there is no Production plan.
+GT's expected sales per product per month, six months ahead, updated every two weeks. A run publishes itself unless a line moves past its limit; such a line reaches Tom as a Decision. It drives purchasing whenever there is no Production plan.
 _Avoid_: forecast (alone, it is ambiguous next to the revenue forecast in the daily sales brief), demand plan
 
 **Production plan**:

@@ -105,6 +105,12 @@ These are the known events the history cannot show, and are the overrides that a
 - customers won or lost;
 - changes at the few buyers behind matcha 18g.
 
+Tom's answers, 2026-09-28 (D41):
+- The 0.3 L teas are made to order, so they stay out (`KNOWN_OUT`).
+- The NS variants are not launching.
+- The American line may come around December. It stays at zero until he confirms a date.
+- Matcha 18g: nothing known, so no override.
+
 Each override is recorded with its reason. The next backtest shows whether it helped, which is Forecast Value Added.
 
 ## 8. The process around the numbers (research brief, 2026-09-28)
@@ -122,6 +128,7 @@ Each override is recorded with its reason. The next backtest shows whether it he
 **Review by exception.** Look at what changed since the last version, not at every number ([Oliver Wight](https://www.oliverwight-americas.com/wp-content/uploads/2022/11/eBrochure_IBP.pdf); [Forecast Pro](https://www.forecastpro.com/2014/03/managing-forecasts-by-exception/)).
 - **Starting thresholds, summed over the purchasing window:** a change above 15% for A items, 25% for B and 40% for C, and at least one batch. Also flag a bias tracking signal beyond ±4.
 - **Tuning:** aim for 5–10 exceptions a month. Widen a threshold when two-thirds of its flags end unchanged for two cycles.
+- **As built (D40):** the thresholds run over the months both versions cover. A floor of 50 units stands in for "one batch" until batch sizes are in the system. When nothing is flagged, the run publishes by itself; a flagged line reaches Tom as a Decision. The tracking signal is not built yet.
 
 **Cadence.**
 - Recompute every two weeks and freeze every published version.

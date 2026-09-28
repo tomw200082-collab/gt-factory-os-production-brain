@@ -27,7 +27,7 @@ Measured 2026-09-26:
 | D7 | The sunset boundary holds: everything after order entry, LionWheel included, is left alone until the distributor takes it over. The switch starts on 2026-10-05 (D12). | Distributor track |
 | D8 | Dropped by Tom on 2026-09-26. The monthly Excel Routine stays exactly as it is and is out of this plan. The Make webhook and the draft PRs made for it were removed: backend #308 and brain #225 are closed unmerged. The dry-run findings are recorded in #308's description. | — |
 
-### From the grilling (Tom, 2026-09-27 to 09-28, rounds 1–7)
+### From the grilling (Tom, 2026-09-27 to 09-28, rounds 1–8)
 
 | # | Decision | Lands in |
 |---|---|---|
@@ -62,6 +62,13 @@ Measured 2026-09-26:
 | D37 | **Why recording fails, and the direction (Tom).** Claude's diagnosis holds: recording is separate from the physical work, and nobody sees when it is missing.<br>What gets built sits as close to the production floor as possible, not as a technical layer on top that nobody uses. The existing skills are good but get sharpened to GT's concrete needs, so that Maxim can do everything simply and the system supports him. | Every layer |
 | D38 | **End to end, no Open ends (Tom).** An operational skill finishes its whole job in the session that starts it. For example, a photographed tax invoice or delivery note becomes a posted, checked goods receipt. Nothing is left for Tom to follow up and nothing can be missed, so the skill can be trusted.<br>Tom's pain today: he sends a document, the session stops short, the rest waits for him, and it gets lost among everything else. | Every layer |
 | D39 | **The Sales forecast, revised (Tom).** Six months ahead, updated every two weeks from the data GT has. Claude first researches how the best practitioners build such a forecast, then builds it precisely: the data exists, the method is the work. Replaces D32's monthly refresh; D32's revision rule stays. | Planning |
+| D40 | **Tom approves only what moved (Tom, 2026-09-28).** The first six-month Sales forecast, October 2026 to March 2027, is published on Tom's yes as version 63650953. D40 replaces D32's approval of every version.<br>- From the next run, every two weeks, a run publishes itself unless a line moves past its limit against the published version: more than 50 units and more than 15%, 25% or 40%, by the item's weight (A, B, C).<br>- A flagged line reaches Tom as a Decision. The whole draft then waits for him, and the published version stays in force.<br>- A Routine runs every Sunday at 06:50 Israel time and works only when the newest version is 13 days old or more, so the first real run is on 11.10. | Planning |
+| D41 | **What the forecast leaves out (Tom).**<br>- The 0.3 L teas are made to order, so they stay out.<br>- The NS variants are not launching.<br>- The American line may come around December. It stays at zero until Tom confirms a date.<br>- Matcha: nothing is known, so there is no manual change. | Planning |
+| D42 | **Maxim confirms, the skill posts (Tom, round 8).** Maxim confirms the quantities he counted, and the skill posts at once: stock, prices and the check. Tom sees only what needs him, as a Decision:<br>- a price that moved more than 5%;<br>- a new item;<br>- an invoice whose sums do not close.<br>This replaces goods-receipt-from-invoice's "never post before Tom approves". | Every layer |
+| D43 | **Maxim's channel is WhatsApp, on the leads number (Tom).** Tom asked for a group of him, Maxim and the leads number, running the skills from what Maxim sends there. Meta does not allow it on this number: groups run only through the Groups API, which needs an Official Business Account and is not available for numbers also used in the WhatsApp Business app, as the leads number is ([Meta](https://developers.facebook.com/documentation/business-messaging/whatsapp/groups)).<br>So Claude chose a one-to-one chat between Maxim and the leads number:<br>- the chat also shows in the WhatsApp Business app on that number;<br>- confirm buttons work there, and they do not work in groups;<br>- the backend routes Maxim's and Tom's messages to the recording skills instead of lead capture. | Every layer |
+| D44 | **Supplier invoices to bookkeeping (Tom).** They are already forwarded before the goods receipt, so the skill does not send them. | — |
+| D45 | **A line the skill does not recognize (Tom).** Nothing is held and nothing goes to Alex. What is on the document goes into stock, as long as Maxim sent it and checked it.<br>Claude's refinement, because a wrong match splits one material across two items and breaks planning:<br>- a line with one clear match maps to it;<br>- a truly new item is created from its closest sibling and shown to Tom;<br>- only when two items could both be it does Maxim choose, with one tap. | Every layer |
+| D46 | **What gets built for Maxim (Tom).** The Truck transfer to Icedream is built new. Goods receipt and the Production report are sharpened to the edge: an experienced storekeeper's judgement, without a person's slips. Round 9 goes into their details. | Every layer |
 
 D1–D3 change authority docs. `CLAUDE.md` is Tom's to write, so each edit lands as exact text for him to approve.
 
@@ -117,6 +124,10 @@ Later, Tom will add new teams, for example a marketing team for paid and organic
   - when the full count happens (now the Stock reset, D34);
   - which day the scheduled truck goes to Icedream.
 - Stock reset, still open (Tom, 2026-09-28, round 7: no answer yet): its date (Claude proposes the day before the first truck to Icedream) and who counts.
+- **The forecast Routine has no connectors.** "Sales forecast fortnightly" (`trig_01DTEVtHAYu92V5n6UWnVz8T`) is created, but the Routine tool cannot attach connectors in this organization. Until Tom adds Shopify and Supabase to it in the Routines UI, each run stops at its first query and says so. It must be fixed before the first real run on 11.10.
+- **Not built anywhere, and 05.10 depends on them** (code, skills and Make checked 2026-09-28):
+  - the Order email (D17): without it, Icedream does not get the orders;
+  - the Delivery report intake (D19, D20): LionWheel stops opening tasks for Icedream orders (D22), so without it no delivery leaves GT's stock, and the storefront shows goods that are already gone.
 
 ## Status
 
