@@ -24,6 +24,7 @@ that is where it gets fixed.
 | `style.css` | The sheet's design. See "Design" below before changing it. |
 | `shot.py` | `pricelist.html` → `pricelist.pdf` via the bundled headless Chromium |
 | `validate.py` | on-page catalog values vs the figures file, plus an independent VAT re-derivation |
+| `check_menu.py` | one menu design (a saved structured `read-design`) vs the figures file and vs its own list page, labels and WhatsApp links |
 
 ## Build
 

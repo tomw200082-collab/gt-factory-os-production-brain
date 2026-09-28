@@ -183,6 +183,22 @@ out of scope unless Tom asks.
     starts after this ship. It is customer-facing and sits behind `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED`:
     this is Tom's written approval, and the dry run and the soak are still owed. Until it is live, a person
     sends the PDF.
+- **Tom, 2026-09-28, in writing, recorded by the executing session:**
+  - The fifth line reads `בניית תפריט משקאות עשיר ורווחי לעסק` (gt-site #29, copy row U-26), and it
+    gets a PDF after all: the recommended opening menu, with a short note that this is the menu GT
+    recommends to start working together:
+    `כאשר אדם בוחר- ״בניית תפריט משקאות עשיר ורווחי לעסק״- הוא קודם כל מקבל את תפריט המומלץ להתחלה שלנו`.
+    This supersedes "a person answers it" above.
+  - Each menu sent to a lead holds at most eight drinks, and its list page names exactly those drinks.
+    The "there is much more, the call will cover it" line goes in the message, not the menu.
+    `תשאיר את הפוד קוסט.`: FOOD COST stays on the drink pages.
+  - The landing pages are set aside: `את הדפי נחיתה נשאיר כרגע בצד כי הם לא מספיק טובים לטעמי.` The ship
+    carries only their form fix; their design is not reworked now.
+  - Every Canva call asked him for approval, so he moved the menu work to its own masterprompt,
+    `docs/plans/2026-09-28-lead-reply-menus-masterprompt.md`, and asked that the site ship first:
+    `קודם כל עכשיו אתה פשוט מבצע את כל מה שאמרנו מבחינת האוטומציה והאתר מקצה לקצה עד רמת ההודעה מהלקוח בצ'אט`.
+    The session read this as the go for the live push. Claude Code's permission layer refused the push
+    as a production deploy (2026-09-28), so it waits on Tom's explicit approval in the session.
 - **Earlier and still in force:**
   - The entry reads `כניסה לעסקים` on desktop and in the menu, and `לעסקים` on the phone pill
     (gt-site #25, Tom 2026-09-27).
