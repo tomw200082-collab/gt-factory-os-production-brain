@@ -1,17 +1,24 @@
-# MASTERPROMPT — Five lead-reply menus in Canva that agree with GT's approved figures and with themselves, plus five first messages for Tom to approve
+# MASTERPROMPT — Five lead-reply menus in Canva that agree with GT's approved figures, with themselves and with the first messages that send them
 
 **STATUS: LIVE — not yet executed**
 <!-- The executing session's last act is to change this line to SHIPPED / SUPERSEDED by <path> /
-ABANDONED — why, with evidence pointers (checker output per copy, the report, the messages file). -->
+ABANDONED — why, with evidence pointers (checker output per copy, the report, the W3 checks). -->
 
 > **Usage:** paste this entire file as the first message of a fresh Claude Code session. Attach
 > `gt-factory-os-production-brain` and connect Canva. Do this only after Tom allowed the Canva tools
 > (§6-A).
 >
 > **What it does:** takes five Canva menu copies from "trimmed, partly edited" to "every page
-> verified", and writes five message drafts.
+> verified", and checks the five first messages against them.
 >
 > **Where it stops:** it halts for Tom only where §6 says so.
+>
+> **Update 2026-09-28, later the same day:** Tom approved the whole lead journey (Sales-Machine
+> D-027 to D-032). This document now runs as workstream W7 of
+> `docs/plans/2026-09-28-lead-journey-masterprompt.md`, which adds exporting and hosting the PDFs.
+> The five first messages were written into Sales-Machine
+> `doctrine/playbooks/whatsapp-lead-journey.md` §2 the same day, so W3 below no longer writes
+> drafts: it checks those texts against the finished menus.
 >
 > **Provenance:** written 2026-09-28 by the session that made the copies. Sources:
 > - live Canva `read-design` calls on the source and copy designs, made the same day;
@@ -39,7 +46,6 @@ ABANDONED — why, with evidence pointers (checker output per copy, the report, 
   - **You decide alone:**
     - which element to edit to reach the end state in §4;
     - the font size and line spacing of a list page;
-    - the wording of the message drafts, which are proposals.
   - **Not yours:**
     - any drink figure, recipe or product page;
     - which drinks each menu keeps (§1.1);
@@ -69,7 +75,7 @@ ABANDONED — why, with evidence pointers (checker output per copy, the report, 
 **One testable sentence:**
 - Each of the five lead-reply copies holds at most eight drinks.
 - Every figure and name in it agrees with the figures file and with its own list page.
-- Tom has five message drafts to approve.
+- The five first messages in the Sales-Machine playbook §2 are true of the finished copies.
 
 | # | Condition | The observation that would prove it false |
 |---|---|---|
@@ -81,7 +87,7 @@ ABANDONED — why, with evidence pointers (checker output per copy, the report, 
 | D6 | Every recipe header's name equals its page title | `check_menu.py` prints `header ... != title` |
 | D7 | Every page of every copy was viewed as a thumbnail and has a verdict in the report | a page number missing from the report's per-page table (80 pages in all on 2026-09-28: 17 + 14 + 11 + 12 + 26, the copies' counts in §2.2) |
 | D8 | The five sources are untouched | a source's `page_count` or `updated_at` differs from §2.1 |
-| D9 | Five message drafts exist in `docs/plans/2026-09-28-lead-reply-messages.md`, each within W3's bans | a draft with a dash used as punctuation, a niqqud mark, a digit, a price, an emoji, or more than 60 words |
+| D9 | Every claim the playbook §2 texts make about a menu holds for the finished copy (the menu's name; for the opening menu, `הוא משלב תה, צ׳אי ומאצ׳ה`) | a finished copy whose drinks contradict its §2 text, left unreported |
 | D10 | This file's status line reads SHIPPED, with evidence pointers | it still reads LIVE |
 
 `check_menu.py` is `.claude/skills/drinks-pricelist/check_menu.py`. It exits 0 only when a design
@@ -313,46 +319,26 @@ picture.
 
 **Acceptance:** D7.
 
-### W3 — Five first messages, as drafts
+### W3 — Check the first messages against the finished menus
 
-Write `docs/plans/2026-09-28-lead-reply-messages.md` with five drafts. Status: `PROPOSED — Tom to
-approve`.
+The five first messages are written: Sales-Machine `doctrine/playbooks/whatsapp-lead-journey.md` §2,
+PROPOSED until Tom approves them (Sales-Machine `U-051`). Do not write new drafts and do not edit
+the playbook.
 
-**The five drafts:**
-- one for each type (`מאצ׳ה`, `אובה`, `צ׳אי מסאלה`, `תמציות תה`);
-- one for `בניית תפריט משקאות עשיר ורווחי לעסק`.
+For each finished copy, check that its §2 text is true of it:
+- the menu's name in the text matches the copy;
+- for the opening menu, the drinks really combine tea, chai and matcha (`הוא משלב תה, צ׳אי ומאצ׳ה`).
 
-**Each draft is the reply** that goes with its PDF after the visitor sends
-`היי, אני מעוניין ב<line>` to the lead line. Tom's words, which the drafts must meet:
-- `הסבר קצר ולעניין ומאוד מקצועי שבו הלקוח יבין שיש איתנו עוד הרבה אופציות ובשיחה נסביר לו את זה`;
-- `כך שתהיה לו סקרנות והוא יחכה לשיחה הזאת ויבוא כליד חם`;
-- for the fifth, `הסבר קצר על כך שזה התפריט שאנחנו ממליצים לתחילת עבודה איתנו בצורה מנומסת רצינית ומקצועית`.
-
-**The drafts use the site's voice and promise:**
-- plural address (`אתכם`);
-- the call within one business day, as the site's thanks promises:
-  `קיבלנו את הפרטים ונחזור אליכם תוך יום עסקים אחד`.
-
-**Bans, checkable per draft:**
-- no dash used as punctuation (`—`, `–`, or ` - `);
-- no niqqud;
-- no digit;
-- no price and no food cost (Sales-Machine D-018 bars the machine from stating either, and the
-  message is the machine's);
-- no emoji;
-- at most 60 words.
-
-**How to write them:** load the `stop-slop` skill, and draft plainly: the menu is attached, it shows
-one part of what GT does, and the call will go through the rest. Send nothing and configure nothing.
+Record each check in the report. A mismatch is reported to Tom with the exact sentence and the
+exact drinks; it is not fixed silently.
 
 **Acceptance:** D9.
 
 ### W4 — Close
 
 **Open a PR on the brain repo, holding:**
-- the messages file;
 - the report, as `docs/plans/2026-09-28-lead-reply-menus-report.md` (the §9 content, in English);
-- this document stamped SHIPPED, with pointers to the per-copy checker output and the messages file.
+- this document stamped SHIPPED, with pointers to the per-copy checker output and the W3 checks.
 
 Then call `unsubscribe_pr_activity`.
 
@@ -381,8 +367,8 @@ Then call `unsubscribe_pr_activity`.
 - **Why only he can:** only he can grant permissions in his own session.
 
 **B. After the report:**
-- look at the five menus from the links in the report;
-- approve the five message drafts, or rewrite them.
+- look at the five menus from the links in the report.
+- The first-message texts are approved through the lead-journey masterprompt's checkpoint, not here.
 - **Time:** about 15 minutes.
 - **Why only he can:** the drafts are customer-facing copy, and approving that is his (Sales-Machine
   `CLAUDE.md`, truth rule 5).
@@ -433,7 +419,7 @@ Then call `unsubscribe_pr_activity`.
 2. D1 to D10, each ✅ or ❌, with its evidence pointer. No partial credit.
 3. The per-page table (80 rows, one per page of §2.2).
 4. The found-not-fixed list, quoted, including the two items of §2.4.
-5. The five message drafts, verbatim.
+5. The W3 checks, one line per copy.
 6. What is still Tom's (§6-B), and the next build (§2.4).
 
 If anything is not ready, say so first and plainly.

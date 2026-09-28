@@ -513,6 +513,26 @@ history" qualifier in §Q2 stops being a heuristic and becomes the normal case. 
 `whatsapp_unattributed` source distinction still matters — a message with a CTWA
 `referral.source_id` is attributable and a bare one is not.
 
+### A4 — 2026-09-28: what the lead line does with a lead
+
+**Tom, 2026-09-28, in writing.** Recorded as Sales-Machine `doctrine/decisions.md` **D-027 to D-032**;
+the journey and every message text are in Sales-Machine `doctrine/playbooks/whatsapp-lead-journey.md`,
+and the technical design is `gt-factory-os` `docs/superpowers/specs/2026-09-28-lead-journey-design.md`.
+
+- **No bot.** Only automated messages, each fired by one event, on the systems in this document:
+  the webhook, the worker and `sales_core`. A3's "a basic AI agent, later" is not built; classifying
+  Instagram Direct and Messenger with AI is parked (Sales-Machine U-054).
+- **The capture branch above starts to reply**, which is exactly what D-005 gates: every send stays
+  behind `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED` (read by no code on 2026-09-28; the build makes it
+  real, with a dry run), Tom's written approval and a ≥24 h soak.
+- **A lead's order is a Shopify draft that the system never completes** (D-029), because every
+  completed order is invoiced automatically.
+- **The follow-up sequence of §5's cost note is replaced** by the wake-up sequence of D-031: up to
+  four marketing templates per lead, each ahead of a human follow-up.
+- **The acceptance test of A3 is still unmet on 2026-09-28:** 0 events for `217553368116155`
+  (Sales-Machine U-050). It is the build's first step.
+- **Executed by** `docs/plans/2026-09-28-lead-journey-masterprompt.md`.
+
 ## 8. UNRESOLVED opened by this document
 
 | ID | Question | Route |
