@@ -176,8 +176,9 @@ out of scope unless Tom asks.
     per type, `Matcha Menu`, `Ube Menu`, `Chai Massala Menu` or `Tea Concentrates Menu`, matching the
     message. Tom corrected the session the same day, which had also named `Recommended initial menu` for
     the drinks-menu option: `התפריטים בקנבה הם פר טייפ... התפריט שישלח הוא בהתאם להודעה שהלקוח יבחר בה`.
-    The reason, in his words: `הסיבה לזה שאנחנו עושים פר טייפ היא רק בשביל למקד את הלקוח. בסוף אנחנו רוצים
-    למכור לו הכל. אבל אם נראה לו הכל מלכתחילה... יתבלבל ולא יקנה כלום`. The rest of the range comes later,
+    The reason, in his words:
+    `הסיבה לזה שאנחנו עושים פר טייפ היא רק בשביל למקד את הלקוח. בסוף אנחנו רוצים למכור לו הכל. אבל אם נראה לו הכל מלכתחילה... יתבלבל ולא יקנה כלום`.
+    The rest of the range comes later,
     in the conversation. So the drinks-menu option gets no PDF: a person answers it. **This is a separate
     build**, in the sales and integration lanes, and it
     starts after this ship. It is customer-facing and sits behind `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED`:
@@ -199,6 +200,12 @@ out of scope unless Tom asks.
     `קודם כל עכשיו אתה פשוט מבצע את כל מה שאמרנו מבחינת האוטומציה והאתר מקצה לקצה עד רמת ההודעה מהלקוח בצ'אט`.
     The session read this as the go for the live push. Claude Code's permission layer refused the push
     as a production deploy (2026-09-28), so it waits on Tom's explicit approval in the session.
+  - Later the same day Tom approved the whole WhatsApp lead journey (Sales-Machine D-027 to D-032) and
+    asked that the site go live together with it, in one run:
+    `ואז נעשה הכל ותעלה הכל לאתר החי בצורה מושלמת מהפעם הראשונה כבר`.
+    The live push, the D6 lead, `PUBLISH.md`, the report and this file's stamp are now carried out
+    by `docs/plans/2026-09-28-lead-journey-masterprompt.md` (its site workstream). Do not run this
+    file's W7 on its own.
 - **Earlier and still in force:**
   - The entry reads `כניסה לעסקים` on desktop and in the menu, and `לעסקים` on the phone pill
     (gt-site #25, Tom 2026-09-27).
