@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "2026-09-29 ice-aware 350 ml serving model; GT full customer prices",
-    "design_id": "DAHPi9gpfts",
+    "design_id": "DAHTYkRvEnM",
     "date": "2026-09-29",
     "vat_rate": 0.18,
     "cost_basis": "ex-VAT ingredients only — excludes garnish, ice, water, soda, packaging and labour",
@@ -11,8 +11,8 @@
       "margin_pct": "round((price/1.18 - cost) / (price/1.18) * 100)"
     },
     "labels": {
-      "food_cost": "FOOD COST · ללא מע״מ",
-      "price": "מחיר מומלץ · כולל מע״מ"
+      "food_cost": "עלות רכיבים · ללא מע״מ",
+      "price": "מחיר מומלץ לצרכן · כולל מע״מ"
     },
     "pages_total": 48,
     "supersedes": {
