@@ -1,29 +1,18 @@
-# GT menu price candidate — 29 Sep 2026
+# GT beverage menu pricing — 29 Sep 2026
 
-**STATUS: PROPOSED / RECIPE TEST REQUIRED.** These are target prices for 48 drinks, not approved costs or live client-facing figures. Do not merge into the canonical workbook, recipe database, or Canva menus before measuring each pour and tasting the changed recipes.
+**Status:** Applied to the dated workbook, GT drink figures and Canva menu/catalog designs. The ingredient costs are planning estimates until a measured service pour and supplier invoice review. Do not represent the estimate as an actual café purchase cost.
 
-## Fixed GT product prices and quantities
+## Serving and input basis
 
-- Matcha ₪1,180/kg; 1.8 g where specified.
-- ODK purée ₪60/L; 40 ml where specified.
-- GT concentrate ₪65/L; 40 or 50 ml where specified.
-- Ube ₪340/kg; 2 g where specified.
-- These rates are from the documented 2026-08-06 GT customer pricelist. Confirm they still apply before rollout.
+- 350 ml cup: fill with ice first. “⅔” in barista instructions describes the visible fill level after ice; it is not 233 ml liquid.
+- Standard milk base 145 ml (120 ml in matcha masala); coconut water 110 ml; tonic 120 ml; orange juice 145 ml. The drink recipes retain their GT product doses.
+- GT full customer product prices: concentrate ₪65/L, fruit purée ₪60/L, matcha ₪1,180/kg, ube ₪340/kg. Concentrate doses 40/50 ml, purée 40 ml, matcha 1.8 g and ube 2 g remain unchanged where specified.
+- Milk ₪5.43/L and 38% cream ₪25.90/L are ex VAT planning references derived from regulated retail prices of ₪6.41/L and ₪7.64/250 ml divided by 1.18; they are **not verified wholesale invoices**. The prior twofold foam yield and 70 ml serving are retained. Coconut water and other accessory rates remain model assumptions, not invented invoice facts.
+- Ingredient-only cost excludes garnish, ice, water, soda, packaging, labour, waste and overhead. Pricing and margin must be retested after measuring cups/ice displacement, recipe yield and actual supplier costs.
 
-## Candidate non-GT inputs and pours
+Margin = 1 − ingredient cost ÷ (consumer price ÷ 1.18); the consumer price includes VAT.
 
-- Milk ₪5.43/L ex VAT: ₪6.41/L VAT-inclusive controlled retail reference divided by 1.18. Use 145 ml in milk-base drinks; 120 ml in matcha masala. The prior cost model used 233.33 ml.
-- 38% cream ₪25.90/L ex VAT: ₪7.64/250 ml retail reference divided by 1.18. Keep the prior foam formulation and 70 ml served dose, including its assumed twofold whipping yield.
-- Coconut water 110 ml (prior 150 ml) in the coconut recipes. Keep its prior assumed ₪10/L.
-- Tonic 120 ml (prior 150 ml) in both tonic drinks; orange juice 145 ml (prior 150 ml). Keep prior input rates.
-- Ice, garnish, packaging, labor, water and soda remain outside the existing ingredient-only model. This limits what the displayed margin means.
-- Milk, cream and pour changes are planning assumptions, not a statement of the cafe’s actual invoice or recipe. Check glass volume, taste, presentation and supplier invoices.
-
-## Price candidates
-
-Margin = 1 − ingredient cost / (consumer price / 1.18). Values below use unrounded costs.
-
-| Drink | Old ₪ | Candidate cost ₪ | Candidate RRP ₪ | Margin |
+| Drink | Previous RRP ₪ | Ingredient cost ₪ ex VAT | New RRP ₪ incl VAT | Margin |
 |---|---:|---:|---:|---:|
 | חליטת היביסקוס וליים | 20 | 3.25 | 20 | 80.8% |
 | חליטת קמומיל ותפוח | 20 | 3.25 | 20 | 80.8% |
@@ -32,9 +21,9 @@ Margin = 1 − ingredient cost / (consumer price / 1.18). Values below use unrou
 | חליטת תה ירוק וליים | 20 | 3.25 | 20 | 80.8% |
 | חליטת תה ירוק ולמון גראס | 20 | 3.25 | 20 | 80.8% |
 | חליטת יסמין וליצ'י | 20 | 3.25 | 20 | 80.8% |
-| לימונדת היביסקוס וליים | 22 | 3.95 | 22 | 78.8% |
-| לימונדה מדברית | 22 | 3.95 | 22 | 78.8% |
-| לימונדת צ'אי מסאלה | 22 | 3.95 | 22 | 78.8% |
+| לימונדת היביסקוס וליים | 22 | 3.69 | 20 | 78.2% |
+| לימונדה מדברית | 22 | 3.69 | 20 | 78.2% |
+| לימונדת צ'אי מסאלה | 22 | 3.69 | 20 | 78.2% |
 | חליטת אפרסק מדברית | 31 | 5.00 | 27 | 78.1% |
 | חליטת תות לואיזה | 31 | 5.00 | 27 | 78.1% |
 | חליטת מנגו סנצ'ה | 31 | 5.00 | 27 | 78.1% |
@@ -46,7 +35,7 @@ Margin = 1 − ingredient cost / (consumer price / 1.18). Values below use unrou
 | אייס מאצ'ה מנגו | 39 | 5.75 | 31 | 78.1% |
 | אייס מאצ'ה תות | 39 | 5.75 | 31 | 78.1% |
 | אייס מאצ'ה אפרסק | 39 | 5.75 | 31 | 78.1% |
-| אייס מאצ'ה מסאלה | 37 | 5.82 | 32 | 78.6% |
+| אייס מאצ'ה מסאלה | 37 | 5.82 | 32 | 78.5% |
 | מאצ'ה אגבה על הקרח | 26 | 3.01 | 26 | 86.3% |
 | אייס מאצ'ה וניל | 28 | 3.65 | 28 | 84.6% |
 | אייס מאצ'ה פיסטוק | 28 | 4.55 | 28 | 80.8% |
@@ -60,7 +49,7 @@ Margin = 1 − ingredient cost / (consumer price / 1.18). Values below use unrou
 | מאצ'ה קוקוס אפרסק | 44 | 5.77 | 31 | 78.0% |
 | אייס צ'אי מסאלה קלאסי | 28 | 4.48 | 28 | 81.1% |
 | צ'אי מסאלה על הקרח | 24 | 3.69 | 24 | 81.9% |
-| דירטי צ'אי | 32 | 5.48 | 30 | 78.5% |
+| דירטי צ'אי | 32 | 5.48 | 30 | 78.4% |
 | צ'אי מסאלה תפוז וטוניק | 26 | 4.45 | 26 | 79.8% |
 | צ'אי מסאלה פינק טוניק | 24 | 4.45 | 24 | 78.1% |
 | צ'אי מסאלה ומיץ תפוזים | 28 | 5.18 | 28 | 78.2% |
@@ -74,9 +63,6 @@ Margin = 1 − ingredient cost / (consumer price / 1.18). Values below use unrou
 | אייס אובה מסאלה | 31 | 5.16 | 29 | 79.0% |
 | אייס אובה מאצ'ה | 28 | 4.03 | 28 | 83.0% |
 
-Validation: 48 drinks; 21 RRPs lower, 27 unchanged, none raised; minimum calculated margin 78.03%. Highest candidate RRP ₪32.
+**Check:** 48 drinks; 24 RRPs reduced, 24 unchanged, none raised. Minimum calculated ingredient margin 78.04%; highest RRP ₪32. Strawberry iced matcha is ₪31 with estimated cost ₪5.75, margin about 78.1%.
 
-The previous model prices for matcha (₪1,080/kg) and purée (₪55/L) are lower than the documented GT customer pricelist (₪1,180/kg and ₪60/L). This candidate uses the documented full rates.
-
-Source: docs/pricing/2026-08-27_cost_model.py; .claude/skills/drinks-pricelist/drinks_final_figures.json; docs/pricing/2026-08-06_customer_pricelist_pdf.md. Milk/cream retail references: https://www.rami-levy.co.il/he/supervision .
-
+Canonical workbook: `docs/pricing/GT_FOOD_COST_2026-09-29.xlsx`. Model: `docs/pricing/2026-09-29_cost_model.py`. Figures: `.claude/skills/drinks-pricelist/drinks_final_figures.json`. Canva main database: `DAHTYkRvEnM`; five final menus in folder `FAHWjugERyQ`. Reference: [regulated milk/cream retail pricing](https://www.rami-levy.co.il/he/supervision).
