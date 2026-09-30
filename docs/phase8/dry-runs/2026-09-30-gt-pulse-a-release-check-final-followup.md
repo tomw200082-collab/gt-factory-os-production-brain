@@ -1,5 +1,15 @@
 # GT Pulse Unit A — final branch release check
 
+## 2026-09-30 16:05 UTC — superseding pre-production handoff
+
+Tom deferred production and asked for a fresh Claude Code product-discovery/build session. The new [pre-production masterprompt](docs/plans/2026-09-30-gt-pulse-preproduction-claude-code-masterprompt.md) orders Caveman/Ponytail, Grill with Docs plus domain modeling, Brainstorm, plan approval, Anthropic frontend-design and UI/UX Pro Max, connected five-lens UX release gate with P0/P1 repair and rerun, /simplify, whole-branch code review, then exact-final-head verification-before-completion. The nine built tasks remain the baseline; any new design needs his approval.
+
+Backend [draft PR #329](https://github.com/tomw200082-collab/gt-factory-os/pull/329) at `ff69e3cecc0ffcd522c69eeb09255adcf98e51f4` passed [PR typecheck](https://github.com/tomw200082-collab/gt-factory-os/actions/runs/36740413352). Portal [draft PR #239](https://github.com/tomw200082-collab/gt-factory-os-portal/pull/239) at `1ba2c98bcf8aad63b5d81b3fb1113dbe91439093` (runtime tree from `a2e1786`, later copy-assent documentation) passed [portal-pr-guard](https://github.com/tomw200082-collab/gt-factory-os-portal/actions/runs/36740472210). Tom authorized temporary watching of these two PRs. Tranche 185 now records his exact assent to the sixteen later Hebrew strings. New copy still needs its own authority.
+
+The second cost-approved temporary Supabase branch in the **existing** project failed with `MIGRATIONS_FAILED`. Its earliest concrete replay error at 15:51:31 UTC was `relation "private_core.supplier_items" does not exist` in `0090_readiness_view_pack_conversion_fix`; migration history and sales schema were empty. The branch was deleted and absence verified. See the [connected staging attempt](https://github.com/tomw200082-collab/gt-factory-os-production-brain/blob/audit/gt-pulse-a-ux/docs/phase8/dry-runs/2026-09-30-gt-pulse-a-connected-staging-attempt.md). No paid branch remains, and no production merge, migration, deploy, flag, backfill or outreach occurred.
+
+**Current HOLD:** connected staff Auth→browser→API→DB and WebKit keyboard proof, full connected UX gate, final-head review/verification and later production decision. PR CI passing does not close those gates. Earlier dated paragraphs below preserve their historical observations; superseded claims that copy assent, draft PRs or the PR guard are pending do not describe the current state.
+
 **2026-09-30 UTC. Verdict: HOLD.** Read-only equivalent release review; no merge, migration, deploy, flag or data write was performed. The [prior release check](2026-09-30-gt-pulse-a-release-check.md) is a dated earlier observation, not evidence for the final heads.
 
 | Lane | Review branch | Exact remote SHA | Proof |
