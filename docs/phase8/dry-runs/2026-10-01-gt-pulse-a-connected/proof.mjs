@@ -90,6 +90,18 @@ try {
   await rep.page.getByTestId('lead-drawer').waitFor();
   await rep.page.screenshot({ path: `${OUT}/01-rep-deeplink-390.png` });
   await answer(rep.page, `שיחה סינתטית ראשונה ${RUN}`);
+  { // Typed date below the floor (real Chromium keeps it; jsdom cannot test this)
+    const dateInput = rep.page.getByLabel('מתי לבצע?');
+    const nowIL = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+    const g = (t) => nowIL.find((x) => x.type === t).value;
+    const today = `${g('year')}-${g('month')}-${g('day')}`;
+    const keep = await dateInput.inputValue();
+    await dateInput.fill('2020-01-01');
+    const lifted = await dateInput.inputValue();
+    const floor = await dateInput.getAttribute('min');
+    check('a typed past date is lifted to the first schedulable date', lifted === floor && floor >= today, `typed 2020-01-01 -> ${lifted} (min ${floor}, Israel hour ${g('hour')})`);
+    await dateInput.fill(keep);
+  }
   const [resp] = await Promise.all([
     rep.page.waitForResponse((r) => r.url().includes(`/api/sales/leads/${REP_LEAD}/activity`) && r.request().method() === 'POST'),
     rep.page.getByTestId('activity-save').click(),

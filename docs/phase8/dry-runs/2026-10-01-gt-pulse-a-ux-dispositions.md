@@ -30,3 +30,14 @@ Mocked sales e2e on the repaired head (local Chromium 1194): 55 passed, 4 failed
 tests fail identically on the base `1ba2c98` with this Chromium build (all four click a `tel:`
 link; headless Chromium 1194 stalls input after an external-protocol navigation) and pass in PR CI
 on Chromium 1217. WebKit is not installed here: WebKit keyboard proof stays **HOLD**.
+
+## Re-run and final verdict (heads backend `9d423c1`, portal `a7ccffd`)
+
+- The re-run on `c81c4a8` agreed with every disposition above and found 0 P0. It left 2 P1 open: B-FLOW-04 and INTER-NEW-01.
+- INTER-NEW-01 is fixed in `a7ccffd` (`israelFirstSchedulableDate`). It is proven in real Chromium on the connected stack: a typed `2020-01-01` is raised to the floor (proof-*.log 22/22).
+- B-FLOW-04: native `required` and `minLength`, plus a `:user-invalid` border, give a visible cause. A textual reason needs Tom's copy approval.
+- Governor verdict (pre-production): **fixture render gate SHIP; connected five-lens audit CONDITIONAL_SHIP.**
+  - The B-FLOW-04 copy must be approved before a production SHIP.
+  - Five things must be re-proven on real devices: WebKit/iOS keyboard save, a screen reader, the iOS date locale, Resend delivery, and `tel:`.
+  - No frozen flag may change.
+  - The verdict covers only these SHAs.

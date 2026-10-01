@@ -1,47 +1,47 @@
-0029_pg_cron_schedules.sql: psql:db/migrations/0029_pg_cron_schedules.sql:72: ERROR:  schema "cron" already exists
-0030_pg_cron_pg_net_rewire.sql: psql:db/migrations/0030_pg_cron_pg_net_rewire.sql:153: ERROR:  function private_core.cron_stub_lionwheel_poll() does not exist
-0032_pg_cron_net_http_post_signature_fix.sql: psql:db/migrations/0032_pg_cron_net_http_post_signature_fix.sql:46: ERROR:  function cron.unschedule(bigint) does not exist
-0059_fixture_auth_users_non_admin.sql: psql:db/migrations/0059_fixture_auth_users_non_admin.sql:162: ERROR:  0059 prerequisite failed: tom admin row (0db008a9-05e3-4521-8b30-42e5d
-0073_alert_digest_cron_schedule.sql: psql:db/migrations/0073_alert_digest_cron_schedule.sql:63: ERROR:  0073 aborts: vault secret factory_os_service_role_jwt not found. Apply 00
-0078_integration_sku_map_shopify_seed.sql: psql:db/migrations/0078_integration_sku_map_shopify_seed.sql:157: ERROR:  insert or update on table "integration_sku_map" violates foreign k
-0080_integration_sku_map_shopify_new_drafts.sql: psql:db/migrations/0080_integration_sku_map_shopify_new_drafts.sql:40: ERROR:  insert or update on table "integration_sku_map" violates fore
-0081_fk_hygiene_indexes.sql: psql:db/migrations/0081_fk_hygiene_indexes.sql:127: ERROR:  CREATE INDEX CONCURRENTLY cannot run inside a transaction block
-0087_muza_boms_and_new_components.sql: psql:db/migrations/0087_muza_boms_and_new_components.sql:79: ERROR:  insert or update on table "supplier_items" violates foreign key constra
-0088_muza_additional_boms_draft.sql: psql:db/migrations/0088_muza_additional_boms_draft.sql:116: ERROR:  insert or update on table "supplier_items" violates foreign key constrai
-0130_pack_bom_base_line_repair_mar_san.sql: psql:db/migrations/0130_pack_bom_base_line_repair_mar_san.sql:190: ERROR:  Item FG-MAR-CLA-300ML not found or missing PACK/BASE head linkage
-0132_pre_launch_cleanup.sql: psql:db/migrations/0132_pre_launch_cleanup.sql:419: ERROR:  0132 verify FAIL: app_users expected 9, got 0
-0180_master_data_consistency_pass1.sql: psql:db/migrations/0180_master_data_consistency_pass1.sql:254: ERROR:  insert or update on table "component_aliases" violates foreign key co
-0190_pg_cron_cogs_nightly.sql: psql:db/migrations/0190_pg_cron_cogs_nightly.sql:85: ERROR:  function cron.alter_job(job_id => bigint, active => boolean) does not exist
-0193_fg_projection_v2_correct_demand_and_clamp.sql: psql:db/migrations/0193_fg_projection_v2_correct_demand_and_clamp.sql:84: ERROR:  cannot drop view api_read.v_daily_inventory_flow because o
-0197_cleanup_test_data.sql: psql:db/migrations/0197_cleanup_test_data.sql:44: ERROR:  relation "private_core.planning_item_config" does not exist
-0198_fg_projection_v3_fast_days_of_cover.sql: psql:db/migrations/0198_fg_projection_v3_fast_days_of_cover.sql:398: ERROR:  cannot change return type of existing function
-0199_fg_projection_v4_monthly_forecast_support.sql: psql:db/migrations/0199_fg_projection_v4_monthly_forecast_support.sql:469: ERROR:  cannot change return type of existing function
-0200_projection_monthly_disaggregation_canonical.sql: psql:db/migrations/0200_projection_monthly_disaggregation_canonical.sql:400: ERROR:  cannot change return type of existing function
-0202_integration_sku_map_lionwheel_matcha_seed.sql: psql:db/migrations/0202_integration_sku_map_lionwheel_matcha_seed.sql:44: ERROR:  insert or update on table "integration_sku_map" violates f
-0209_semi_component_recipes.sql: psql:db/migrations/0209_semi_component_recipes.sql:64: ERROR:  insert or update on table "semi_component_recipes" violates foreign key const
-0222_matcha_250g_bag_100g_tin_tsabar.sql: psql:db/migrations/0222_matcha_250g_bag_100g_tin_tsabar.sql:60: ERROR:  insert or update on table "components" violates foreign key constrai
-0223_raw_violet_syrup_holyland.sql: psql:db/migrations/0223_raw_violet_syrup_holyland.sql:62: ERROR:  insert or update on table "components" violates foreign key constraint "co
-0224_seed_item_matcha_bowl_nonomimi.sql: psql:db/migrations/0224_seed_item_matcha_bowl_nonomimi.sql:128: ERROR:  column "sku" of relation "items" does not exist
-0226_integration_sku_map_matcha_bowl_shopify.sql: psql:db/migrations/0226_integration_sku_map_matcha_bowl_shopify.sql:39: ERROR:  insert or update on table "integration_sku_map" violates for
-0238_fg_with_production_recursive_walk.sql: psql:db/migrations/0238_fg_with_production_recursive_walk.sql:223: ERROR:  column p.shortfall_qty does not exist
-0239_forecast_month_working_day_disaggregation.sql: psql:db/migrations/0239_forecast_month_working_day_disaggregation.sql:452: ERROR:  cannot change return type of existing function
-0240_missing_picks_daily_email.sql: psql:db/migrations/0240_missing_picks_daily_email.sql:98: ERROR:  0240 aborts: vault secret factory_os_service_role_jwt not found. Apply 003
-0248_cogs_nightly_http_trigger_wiring.sql: psql:db/migrations/0248_cogs_nightly_http_trigger_wiring.sql:51: ERROR:  phase10-cogs-nightly cron entry not found (expected from 0190)
-0254_muza_200ml_packaging_split_and_seed.sql: psql:db/migrations/0254_muza_200ml_packaging_split_and_seed.sql:93: ERROR:  insert or update on table "balance_anchors_current" violates for
-0255_calm_500ml_base_link_line.sql: psql:db/migrations/0255_calm_500ml_base_link_line.sql:155: ERROR:  column "final_item_id" of relation "bom_lines" does not exist
-0256_odk_strawberry_dual_role_pilot.sql: psql:db/migrations/0256_odk_strawberry_dual_role_pilot.sql:66: ERROR:  0256 HALT: component RAW-STRAWBERRY-ODK-SYRUP not found on this DB (P
-0260_muza_base_head_split.sql: psql:db/migrations/0260_muza_base_head_split.sql:252: ERROR:  0260: ADD-MUZ-JASM-1L has no ACTIVE PACK head
-0269_ube_1kg_dual_role_link.sql: psql:db/migrations/0269_ube_1kg_dual_role_link.sql:71: ERROR:  0269 HALT: component RAW-UBE-BULK not found on this DB (PROD divergence) — 
-0272_dried_rose_orange_repack_masters.sql: psql:db/migrations/0272_dried_rose_orange_repack_masters.sql:116: ERROR:  insert or update on table "bom_lines" violates foreign key constra
-0275_lemon_juice_to_puree_water.sql: psql:db/migrations/0275_lemon_juice_to_puree_water.sql:223: ERROR:  0275 ABORT: head BOM-BASE-ARK-PAS-REG not found.
-0276_revert_lemon_puree_water_to_juice.sql: psql:db/migrations/0276_revert_lemon_puree_water_to_juice.sql:187: ERROR:  0276 ABORT: head BOM-BASE-ARK-PAS-REG not found.
-0289_produce_to_stock_production_recommendations.sql: psql:db/migrations/0289_produce_to_stock_production_recommendations.sql:93: ERROR:  relation "private_core.planning_item_config" does not ex
-0303_fix_matcha_bowl_sku_and_close_stale_variant_exceptions.sql: psql:db/migrations/0303_fix_matcha_bowl_sku_and_close_stale_variant_exceptions.sql:49: ERROR:  column "sku" does not exist
-0309_secure_shopify_reconcile_cron_auth.sql: psql:db/migrations/0309_secure_shopify_reconcile_cron_auth.sql:43: ERROR:  function cron.alter_job(job_id => integer, command => unknown) do
-0310_second_writer_tripwire.sql: psql:db/migrations/0310_second_writer_tripwire.sql:140: ERROR:  function cron.alter_job(job_id => integer, command => unknown) does not exis
-0311_map_pineapple_and_matcha_kit_to_shopify.sql: psql:db/migrations/0311_map_pineapple_and_matcha_kit_to_shopify.sql:67: ERROR:  insert or update on table "integration_sku_map" violates for
-0312_retire_dead_shopify_cron_jobs.sql: psql:db/migrations/0312_retire_dead_shopify_cron_jobs.sql:63: ERROR:  function cron.alter_job(job_id => integer, active => boolean) does not
-0331_sales_demo_user_role.sql: psql:db/migrations/0331_sales_demo_user_role.sql:71: ERROR:  0331: no auth user demo@gteveryday.com. Create it first in Supabase Studio (Aut
-0338_repack_small_cans_matcha_hojicha_ube.sql: psql:db/migrations/0338_repack_small_cans_matcha_hojicha_ube.sql:196: ERROR:  insert or update on table "bom_lines" violates foreign key con
-0339_daily_sales_report_cron.sql: psql:db/migrations/0339_daily_sales_report_cron.sql:107: ERROR:  0339 aborts: vault secret github_actions_dispatch_token not found. Provisio
-0359_planning_demand_open_orders_only.sql: psql:db/migrations/0359_planning_demand_open_orders_only.sql:131: ERROR:  function private_core.fn_forecast_daily_demand(date, date) does no
+0029_pg_cron_schedules.sql: psql:/home/user/wt/backend/db/migrations/0029_pg_cron_schedules.sql:72: ERROR:  schema "cron" already exists
+0030_pg_cron_pg_net_rewire.sql: psql:/home/user/wt/backend/db/migrations/0030_pg_cron_pg_net_rewire.sql:153: ERROR:  function private_core.cron_stub_lionwheel_poll() does n
+0032_pg_cron_net_http_post_signature_fix.sql: psql:/home/user/wt/backend/db/migrations/0032_pg_cron_net_http_post_signature_fix.sql:46: ERROR:  function cron.unschedule(bigint) does not 
+0059_fixture_auth_users_non_admin.sql: psql:/home/user/wt/backend/db/migrations/0059_fixture_auth_users_non_admin.sql:162: ERROR:  0059 prerequisite failed: tom admin row (0db008a
+0073_alert_digest_cron_schedule.sql: psql:/home/user/wt/backend/db/migrations/0073_alert_digest_cron_schedule.sql:63: ERROR:  0073 aborts: vault secret factory_os_service_role_j
+0078_integration_sku_map_shopify_seed.sql: psql:/home/user/wt/backend/db/migrations/0078_integration_sku_map_shopify_seed.sql:157: ERROR:  insert or update on table "integration_sku_m
+0080_integration_sku_map_shopify_new_drafts.sql: psql:/home/user/wt/backend/db/migrations/0080_integration_sku_map_shopify_new_drafts.sql:40: ERROR:  insert or update on table "integration_
+0081_fk_hygiene_indexes.sql: psql:/home/user/wt/backend/db/migrations/0081_fk_hygiene_indexes.sql:127: ERROR:  CREATE INDEX CONCURRENTLY cannot run inside a transaction 
+0087_muza_boms_and_new_components.sql: psql:/home/user/wt/backend/db/migrations/0087_muza_boms_and_new_components.sql:79: ERROR:  insert or update on table "supplier_items" violat
+0088_muza_additional_boms_draft.sql: psql:/home/user/wt/backend/db/migrations/0088_muza_additional_boms_draft.sql:116: ERROR:  insert or update on table "supplier_items" violate
+0130_pack_bom_base_line_repair_mar_san.sql: psql:/home/user/wt/backend/db/migrations/0130_pack_bom_base_line_repair_mar_san.sql:190: ERROR:  Item FG-MAR-CLA-300ML not found or missing 
+0132_pre_launch_cleanup.sql: psql:/home/user/wt/backend/db/migrations/0132_pre_launch_cleanup.sql:419: ERROR:  0132 verify FAIL: app_users expected 9, got 0
+0180_master_data_consistency_pass1.sql: psql:/home/user/wt/backend/db/migrations/0180_master_data_consistency_pass1.sql:254: ERROR:  insert or update on table "component_aliases" v
+0190_pg_cron_cogs_nightly.sql: psql:/home/user/wt/backend/db/migrations/0190_pg_cron_cogs_nightly.sql:85: ERROR:  function cron.alter_job(job_id => bigint, active => boole
+0193_fg_projection_v2_correct_demand_and_clamp.sql: psql:/home/user/wt/backend/db/migrations/0193_fg_projection_v2_correct_demand_and_clamp.sql:84: ERROR:  cannot drop view api_read.v_daily_in
+0197_cleanup_test_data.sql: psql:/home/user/wt/backend/db/migrations/0197_cleanup_test_data.sql:44: ERROR:  relation "private_core.planning_item_config" does not exist
+0198_fg_projection_v3_fast_days_of_cover.sql: psql:/home/user/wt/backend/db/migrations/0198_fg_projection_v3_fast_days_of_cover.sql:398: ERROR:  cannot change return type of existing fun
+0199_fg_projection_v4_monthly_forecast_support.sql: psql:/home/user/wt/backend/db/migrations/0199_fg_projection_v4_monthly_forecast_support.sql:469: ERROR:  cannot change return type of existi
+0200_projection_monthly_disaggregation_canonical.sql: psql:/home/user/wt/backend/db/migrations/0200_projection_monthly_disaggregation_canonical.sql:400: ERROR:  cannot change return type of exis
+0202_integration_sku_map_lionwheel_matcha_seed.sql: psql:/home/user/wt/backend/db/migrations/0202_integration_sku_map_lionwheel_matcha_seed.sql:44: ERROR:  insert or update on table "integrati
+0209_semi_component_recipes.sql: psql:/home/user/wt/backend/db/migrations/0209_semi_component_recipes.sql:64: ERROR:  insert or update on table "semi_component_recipes" viol
+0222_matcha_250g_bag_100g_tin_tsabar.sql: psql:/home/user/wt/backend/db/migrations/0222_matcha_250g_bag_100g_tin_tsabar.sql:60: ERROR:  insert or update on table "components" violate
+0223_raw_violet_syrup_holyland.sql: psql:/home/user/wt/backend/db/migrations/0223_raw_violet_syrup_holyland.sql:62: ERROR:  insert or update on table "components" violates fore
+0224_seed_item_matcha_bowl_nonomimi.sql: psql:/home/user/wt/backend/db/migrations/0224_seed_item_matcha_bowl_nonomimi.sql:128: ERROR:  column "sku" of relation "items" does not exis
+0226_integration_sku_map_matcha_bowl_shopify.sql: psql:/home/user/wt/backend/db/migrations/0226_integration_sku_map_matcha_bowl_shopify.sql:39: ERROR:  insert or update on table "integration
+0238_fg_with_production_recursive_walk.sql: psql:/home/user/wt/backend/db/migrations/0238_fg_with_production_recursive_walk.sql:223: ERROR:  column p.shortfall_qty does not exist
+0239_forecast_month_working_day_disaggregation.sql: psql:/home/user/wt/backend/db/migrations/0239_forecast_month_working_day_disaggregation.sql:452: ERROR:  cannot change return type of existi
+0240_missing_picks_daily_email.sql: psql:/home/user/wt/backend/db/migrations/0240_missing_picks_daily_email.sql:98: ERROR:  0240 aborts: vault secret factory_os_service_role_jw
+0248_cogs_nightly_http_trigger_wiring.sql: psql:/home/user/wt/backend/db/migrations/0248_cogs_nightly_http_trigger_wiring.sql:51: ERROR:  phase10-cogs-nightly cron entry not found (ex
+0254_muza_200ml_packaging_split_and_seed.sql: psql:/home/user/wt/backend/db/migrations/0254_muza_200ml_packaging_split_and_seed.sql:93: ERROR:  insert or update on table "balance_anchors
+0255_calm_500ml_base_link_line.sql: psql:/home/user/wt/backend/db/migrations/0255_calm_500ml_base_link_line.sql:155: ERROR:  column "final_item_id" of relation "bom_lines" does
+0256_odk_strawberry_dual_role_pilot.sql: psql:/home/user/wt/backend/db/migrations/0256_odk_strawberry_dual_role_pilot.sql:66: ERROR:  0256 HALT: component RAW-STRAWBERRY-ODK-SYRUP n
+0260_muza_base_head_split.sql: psql:/home/user/wt/backend/db/migrations/0260_muza_base_head_split.sql:252: ERROR:  0260: ADD-MUZ-JASM-1L has no ACTIVE PACK head
+0269_ube_1kg_dual_role_link.sql: psql:/home/user/wt/backend/db/migrations/0269_ube_1kg_dual_role_link.sql:71: ERROR:  0269 HALT: component RAW-UBE-BULK not found on this DB 
+0272_dried_rose_orange_repack_masters.sql: psql:/home/user/wt/backend/db/migrations/0272_dried_rose_orange_repack_masters.sql:116: ERROR:  insert or update on table "bom_lines" violat
+0275_lemon_juice_to_puree_water.sql: psql:/home/user/wt/backend/db/migrations/0275_lemon_juice_to_puree_water.sql:223: ERROR:  0275 ABORT: head BOM-BASE-ARK-PAS-REG not found.
+0276_revert_lemon_puree_water_to_juice.sql: psql:/home/user/wt/backend/db/migrations/0276_revert_lemon_puree_water_to_juice.sql:187: ERROR:  0276 ABORT: head BOM-BASE-ARK-PAS-REG not f
+0289_produce_to_stock_production_recommendations.sql: psql:/home/user/wt/backend/db/migrations/0289_produce_to_stock_production_recommendations.sql:93: ERROR:  relation "private_core.planning_it
+0303_fix_matcha_bowl_sku_and_close_stale_variant_exceptions.sql: psql:/home/user/wt/backend/db/migrations/0303_fix_matcha_bowl_sku_and_close_stale_variant_exceptions.sql:49: ERROR:  column "sku" does not e
+0309_secure_shopify_reconcile_cron_auth.sql: psql:/home/user/wt/backend/db/migrations/0309_secure_shopify_reconcile_cron_auth.sql:43: ERROR:  function cron.alter_job(job_id => integer, 
+0310_second_writer_tripwire.sql: psql:/home/user/wt/backend/db/migrations/0310_second_writer_tripwire.sql:140: ERROR:  function cron.alter_job(job_id => integer, command => 
+0311_map_pineapple_and_matcha_kit_to_shopify.sql: psql:/home/user/wt/backend/db/migrations/0311_map_pineapple_and_matcha_kit_to_shopify.sql:67: ERROR:  insert or update on table "integration
+0312_retire_dead_shopify_cron_jobs.sql: psql:/home/user/wt/backend/db/migrations/0312_retire_dead_shopify_cron_jobs.sql:63: ERROR:  function cron.alter_job(job_id => integer, activ
+0331_sales_demo_user_role.sql: psql:/home/user/wt/backend/db/migrations/0331_sales_demo_user_role.sql:71: ERROR:  0331: no auth user demo@gteveryday.com. Create it first i
+0338_repack_small_cans_matcha_hojicha_ube.sql: psql:/home/user/wt/backend/db/migrations/0338_repack_small_cans_matcha_hojicha_ube.sql:196: ERROR:  insert or update on table "bom_lines" vi
+0339_daily_sales_report_cron.sql: psql:/home/user/wt/backend/db/migrations/0339_daily_sales_report_cron.sql:107: ERROR:  0339 aborts: vault secret github_actions_dispatch_tok
+0359_planning_demand_open_orders_only.sql: psql:/home/user/wt/backend/db/migrations/0359_planning_demand_open_orders_only.sql:131: ERROR:  function private_core.fn_forecast_daily_dema
