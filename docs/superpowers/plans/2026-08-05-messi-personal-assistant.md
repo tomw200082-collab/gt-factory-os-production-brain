@@ -716,18 +716,41 @@ git push
 
 ### Task 9: PR ready + merge + supersede ‎#85 (Phase 5a)
 
-- [ ] **Step 1:** Update PR ‎#102 body checklist (spec ✓, plan ✓, phases ✓), mark ready-for-review.
-- [ ] **Step 2:** Verify mergeable + checks state via the GitHub MCP (`pull_request_read` method `get`). This repo has no CI checks — the merge gate is the Task 8 evidence being present in the PR.
-- [ ] **Step 3:** Merge ‎#102 (merge commit, house default). Brain policy: autonomous merge allowed — checks green (vacuously) & change verified (**Task 8 N/16**, evidence table at Task 8 Step 6 — including B₀/L₀).
-- [ ] **Step 4:** Comment + close ‎#85: "Superseded by ‎#102 — CoS v2 merged there together with messi." (with the Claude Code attribution footer).
+> **COMPLETE 2026-08-05.** ‎#102 marked ready, merged as `068b48c` (merge commit). Gate held:
+> `get_status` returned `total_count: 0` — this repo has no CI checks, so the merge gate was the
+> Task 8 evidence, present in the PR body and in `docs/ceo/messi/2026-08-05.md`. ‎#85 commented
+> and closed.
+
+- [x] **Step 1:** Update PR ‎#102 body checklist (spec ✓, plan ✓, phases ✓), mark ready-for-review.
+- [x] **Step 2:** Verify mergeable + checks state via the GitHub MCP (`pull_request_read` method `get`). This repo has no CI checks — the merge gate is the Task 8 evidence being present in the PR.
+- [x] **Step 3:** Merge ‎#102 (merge commit, house default). Brain policy: autonomous merge allowed — checks green (vacuously) & change verified (**Task 8 N/16**, evidence table at Task 8 Step 6 — including B₀/L₀).
+- [x] **Step 4:** Comment + close ‎#85: "Superseded by ‎#102 — CoS v2 merged there together with messi." (with the Claude Code attribution footer).
 
 ---
 
+
 ### Task 10: Triggers + go-live announcement (Phase 5b)
+
+> **COMPLETE 2026-08-05, with one open risk.** Three Routines created, all enabled, fresh session
+> per fire, prompts verbatim from `chief-of-staff-daily` §טריגרים:
+> `cos-day-open` `trig_013QXKYzDKvqgYdvUXkjBWdk` `30 4 * * 0-4` → next 2026-08-06 04:30Z = **07:30 IL** ·
+> `messi-checkpoint` `trig_01Fy4BMAJDrHYs3CVivGoUN6` `0 10 * * 0-4` → **13:00 IL** ·
+> `cos-day-close` `trig_01Xq6eEr7HUfK6zKiyXR5XUd` `0 14 * * 0-4` → **17:00 IL**.
+> Night trigger deliberately not created — day-close arms it per G6.
+>
+> **OPEN RISK — connectors did not attach.** `create_trigger` rejected the `connectors`
+> parameter (*"not available for this organization"*), and each creation returned:
+> *"this trigger stores no MCP connectors, so the sessions it fires will run without connector
+> (`mcp__<server>__*`) tools."* If that is literal, the fired sessions have **no Notion**, and
+> both rituals plus the checkpoint degrade to their fail-loud path (`נושן לא זמין` +
+> `inbox-fallback`) instead of doing their job. This **cannot be verified from here** — it needs
+> the first real fire, or Tom re-creating the three Routines from the claude.ai Routines UI where
+> connector grants can be attached. **First fire is Thursday 07:30 IL; check it.** ⊥ assume the
+> system is live until a fire is observed reading Notion.
 
 **Consumes:** merged main (Task 9); mode names from Task 4; ritual prompts from CoS v2 §4.6.
 
-- [ ] **Step 1: Create the three triggers** via `create_trigger` (fresh session per fire, this environment):
+- [x] **Step 1: Create the three triggers** via `create_trigger` (fresh session per fire, this environment):
 
 | name | IL | cron summer (IDT, UTC+3) | cron winter (IST, UTC+2) | prompt |
 |---|---|---|---|---|
@@ -740,9 +763,9 @@ git push
 Connectors per firing: `["Notion","Google Calendar","Gmail","Supabase","Make"]` for the two rituals; `["Notion"]` only for messi-checkpoint (push goes via PushNotification, no connector needed).
 messi-checkpoint also needs git push rights in its environment — its log commit (`messi/SKILL.md` §ביצוע 7) is what carries the `CHECKPOINT` line to the 17:00 gate.
 
-- [ ] **Step 2: Verify** — `list_triggers` shows all three enabled with correct next_run_at (sanity: next day-open lands 07:30 IL). Night trigger is NOT created here — day-close arms it per G6.
+- [x] **Step 2: Verify** — `list_triggers` shows all three enabled with correct next_run_at (sanity: next day-open lands 07:30 IL). Night trigger is NOT created here — day-close arms it per G6.
 
-- [ ] **Step 3: Announce to Tom (one message):** מה חי (מסי + שלושת הטריגרים + שעות) · הריטואל הראשון מתי · מה נשאר פתוח (אם יש) · תזכורת: זריקה ראשונה אמיתית = פשוט לכתוב "מסי, ...".
+- [x] **Step 3: Announce to Tom (one message):** מה חי (מסי + שלושת הטריגרים + שעות) · הריטואל הראשון מתי · מה נשאר פתוח (אם יש) · תזכורת: זריקה ראשונה אמיתית = פשוט לכתוב "מסי, ...".
 
 ---
 
