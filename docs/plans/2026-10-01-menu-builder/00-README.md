@@ -1,6 +1,6 @@
 # GT Menu Builder / Guided Sales Configurator — discovery folder (Session 1)
 
-**Status: DISCOVERY + PRECISION PRODUCT DESIGN. No Menu Builder production implementation has begun.**
+**Status: PRODUCT DESIGN APPROVED — WAITING FOR SALES FOUNDATION (Tom, 2026-10-01). No Menu Builder production implementation has begun.** Next: Session 2 (independent review, see `07-product-review-handoff.md`).
 **Sales Foundation Gate: HOLD** (GT Pulse Unit A on draft PRs gt-factory-os #329 and gt-factory-os-portal #239; release deferred by Tom 2026-09-30; the next Sales session may expand the design). Implementation stays hard-blocked until that gate passes **and** Tom unlocks it, whatever the state of the product spec.
 
 > Design-phase artifacts. **Not authority docs.** Tom's decisions live in his words and, where they touch sales doctrine, in `Sales-Machine/doctrine/decisions.md`. Governing instruction: the Menu Builder masterprompt Tom pasted on 2026-10-01 (three sessions: discovery → independent review → implementation).
@@ -17,10 +17,11 @@
 | `03-economics-recommendation.md` | MB-D04: which numbers the Builder shows — **approved** |
 | `04-discovery-model-recommendation.md` | MB-D06: groups, curated start, consequence chip, my-menu bar — **approved** |
 | `05-integration-and-architecture-decisions.md` | MB-D02/D07/D09/D10/D11/D12 and the Sales System Integration Contract proposal; the 24 h task — **approved** |
-| `06-decision-ready-product-spec.md` | **The Decision-Ready Product Spec** (36 sections, copy batch, acceptance criteria, unresolved assumptions) — awaiting Tom's design approval |
+| `06-decision-ready-product-spec.md` | **The Decision-Ready Product Spec** (36 sections, copy batch, acceptance criteria, unresolved assumptions) — **approved by Tom 2026-10-01** |
+| `07-product-review-handoff.md` | **Product Review Handoff** for Session 2: everything a fresh session needs to audit the product without this conversation |
 | `evidence/` | Verbatim read-only reconstructions dated 2026-10-01: gt-site lead funnel · customer ordering portal · sales/lead backend · staff sales corridor · drinks/products data map |
 
-Later on this branch: the Product Review Handoff for Session 2.
+
 
 ## Rules this folder follows
 

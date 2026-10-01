@@ -74,6 +74,8 @@ Verbatim detail: `evidence/2026-10-01-drinks-products-data-map.md`. Classificati
 
 **Stale copies (do not read):** Sales-Machine `knowledge/drinks/{catalog,recipes}.yaml` (2026-08-27 figures, review overdue), gt-site `data/drinks_final_figures.json` and `COLS` (08-27; English site 08-05), the drive pack; 38/48 drinks differ from the current file; the card reconciler only accepts a 2026-08-27 figures file.
 
+**Matcha kit, read live 2026-10-01:** `GT-MAT-KIT` ("MATCHA ADDITIONAL KIT", REPACK, item_type KIT, Shopify SKU `GT-MAT-KIT`) → `BOM-REPACK-MAT-KIT` V1 active: 2 × `PKG-BOTTLE-MAT-KIT-500ML`, 2 × `PKG-CAP-MAT-KIT`, 1 × `ACC-FROTHER-MAT` (manual frother), 1 × `ACC-CUP-MAT-600ML`, 1 × `ACC-CUP-MEASURE-MAT`, 1 × `PKG-CARTON-MAT-KIT`. No matcha powder: the kit is equipment.
+
 **Gaps the Builder must not fill by invention:** consumption volume per café; opening-order quantities / starter packages (D-013, TOM-A.1); hot/winter drinks; recipes for HOJICHA, AMERICAN, sachets, kit, sugar-free variants; flavour add-in quantities; measured cups/ice; non-GT ingredient invoices; per-customer food cost; English names; a drink→SKU table; allergens/nutrition; one approved yield per product; a Tom rule on which economics a self-serve surface may show.
 
 **Conflicts to settle before the Builder shows a number:** cups per bottle (20 / 20–25 / 33 / 30 / 13), drinks per NAMASTEA bottle (11 vs 13), matcha masala dose (40 vs 50 ml), p36 recipe copied from p38, name drift (p12; ASCII `'` vs `׳`), opening-menu prices in `commercial-terms.md` §2 stale, D-018 vs D-025 vs `show_prices:false` vs the approved answer that states ₪3.25.

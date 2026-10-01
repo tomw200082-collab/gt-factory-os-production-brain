@@ -1,6 +1,6 @@
 # GT Menu Builder — Decision-Ready Product Spec
 
-> **Status: DRAFT FOR TOM'S DESIGN APPROVAL (Session 1, 2026-10-01).** Built on the decisions Tom approved on 2026-10-01 (`decision-ledger.md` MB-D03, D04, D06, D08, D09 and the Session 1 decisions D02, D07, D10, D11, D12) and the deferral of placement (MB-D01). Nothing here is implemented. After Tom's approval the state is **PRODUCT DESIGN APPROVED — WAITING FOR SALES FOUNDATION**; Session 2 reviews it independently; Session 3 implements only after `SALES FOUNDATION GATE: PASS` and Tom's unlock.
+> **Status: PRODUCT DESIGN APPROVED — Tom, 2026-10-01, in writing ("חוץ מזה אני מאשר הכל!!!"), with his answers to U-MB-1 and U-MB-10 folded in (§15, §7.3, §36). State: WAITING FOR SALES FOUNDATION.** Built on the decisions Tom approved on 2026-10-01 (`decision-ledger.md` MB-D03, D04, D06, D08, D09 and the Session 1 decisions D02, D07, D10, D11, D12) and the deferral of placement (MB-D01). Nothing here is implemented. After Tom's approval the state is **PRODUCT DESIGN APPROVED — WAITING FOR SALES FOUNDATION**; Session 2 reviews it independently; Session 3 implements only after `SALES FOUNDATION GATE: PASS` and Tom's unlock.
 > Precision target: an excellent engineering team builds this without inventing product while coding. Where a value is a parameter the spec says so and gives the default. Hebrew strings are in backticks and go to Tom as one copy batch (§33). File references point at the evidence folder and the live repos at the heads listed in `ground-truth.md`.
 
 ---
@@ -74,7 +74,7 @@ The whole card is one `<button aria-pressed>` except the `פרטים` link (its 
 
 Top: photo (same asset, 60% width, centred, soft floor shadow), name (26 px 800), sub-family eyebrow. Then, in order:
 
-1. **What it is**: one sentence in customers' words (from the drink's description field, ≤90 characters, Tom-approved copy).
+1. **The name**, exactly as the Canva drinks menu prints it (Tom 2026-10-01: name only, no new description copy).
 2. **What you need**: product lines with the consequence state: `FRESH · 1 ליטר` + chip (`כבר בתפריט` / `נוסף לערכה`), and for two-product drinks both lines. Equipment note when the product requires it: `דורש מקציף וחלב` (from `requires_equipment`).
 3. **Economics block** (MB-D04): big `₪20` with `מחיר מומלץ לצרכן · כולל מע״מ` (12 px muted), then one line 14 px: `עלות רכיבים לכוס ≈ ₪3.25 · נשאר לך ≈ ₪13.70 לכוס · 81%`, then the footnote once (12 px muted): `עלות רכיבי המשקה בלבד, לפי מחירון · ללא קרח, סודה וקישוט · הערכה`. For a customer with own prices the footnote reads `… לפי מחירון …` unchanged (the estimate is list-based by design).
 4. **Tags**: `ללא קפאין`, `ללא סוכר אפשרי`.
@@ -185,7 +185,7 @@ The sticky bar is the menu's live summary; the sheet is its editor; the KIT head
 
 Zero questions. Kit = for each product P required by any selected drink: `qty(P) = unit(P)` where unit = 2 for concentrates and purées (pairs), 1 for powders. Then the round-up (§19). Editable afterwards; the customer's edits are kept as `kit_overrides` and survive recompute unless a product leaves the menu.
 
-Default packs (parameters): concentrate `1l` (`05` by toggle), purée `1l`, ube `500`, matcha `500` **until the ₪170 kit's contents are recorded** (U-MB-1); then the default may become `kit:1` for menus with ≤2 matcha drinks (parameter).
+Default packs (parameters): concentrate `1l` (`05` by toggle), purée `1l`, ube `500`, matcha `500`. **The ₪170 matcha kit holds no matcha**: its BOM in Factory OS (`BOM-REPACK-MAT-KIT`, active V1) is two 500 ml bottles with caps, a manual frother, a 600 ml matcha cup, a measuring cup and a branded carton (read live 2026-10-01; Tom described the same set). It is equipment, so it never replaces the powder line. **Proposed, pending Tom's word:** for a menu that needs a frother (any matcha, ube or cold-foam drink; `requires_equipment`), the kit screen shows one optional line under the products, off by default: `אין לכם מקציף? ערכת מאצ׳ה · ₪170 · מקציף, בקבוק, כוס מדידה, כוס ערבוב` with an `הוספה` button; it joins the kit as a normal line and counts toward the minimum. Struck if Tom says so.
 
 ## 16. Economic presentation (MB-D04)
 
@@ -319,6 +319,7 @@ Rows become `U-nn` entries in a new `§5.8` of the customer-portal UX gate at im
 | MB-35 | Portal tile (customers) | `בניית תפריט` · `בוחרים משקאות, ואנחנו מרכיבים את ההזמנה` |
 | MB-36 | Catalog back link | `חזרה לתפריט שבניתם` |
 | MB-37 | Staff: task and reason (DR-06) | `הלקוח בנה תפריט ולא הזמין` · `{n} משקאות: {names} · ערכה ₪{t} לפני מע״מ` · drawer block title `התפריט שבנה` · timeline `פתח את בניית התפריט` · `השלים תפריט` · `אישר ערכת פתיחה` · `ביקש לעבור על התפריט יחד` · rail `תפריט נבנה` |
+| MB-38 | Equipment add-on line (proposed, pending Tom) | `אין לכם מקציף? ערכת מאצ׳ה · ₪170 · מקציף, בקבוק, כוס מדידה, כוס ערבוב` · `הוספה` |
 
 Rules applied: no dash as punctuation inside sentences (the `·` separator and `־` maqaf as the portal uses them), no nikud, every money figure labelled with its VAT basis, plural address (`אתם`) as the portal, `stop-slop` pass before submission.
 
@@ -355,14 +356,14 @@ Rules applied: no dash as punctuation inside sentences (the `·` separator and `
 
 | # | Assumption | Owner | Blocks |
 |---|---|---|---|
-| U-MB-1 | The ₪170 matcha kit's contents are unrecorded; default matcha pack = 500 g bag until Tom states them | Tom | default pack for matcha menus |
+| U-MB-1 | **CLOSED 2026-10-01.** The kit's contents are in Factory OS (`GT-MAT-KIT` → `BOM-REPACK-MAT-KIT`: 2 × 500 ml bottles + caps, manual frother, 600 ml cup, measuring cup, carton; no powder) and Tom described the same set. Default matcha pack = 500 g bag. The optional equipment line (§15) is a proposal awaiting Tom's word | — | — |
 | U-MB-2 | The drink → product → dose table (48 rows) does not exist in structured form; it is authored from the 2026-09-29 cost model and must be Tom-verified (DL-18) | Session 3 + Tom | everything |
-| U-MB-3 | Single-product menus round up to many bottles of one product (Tom's rule as given); the spec shows it transparently; Tom may want a cap or a free-expansion hint first | Tom (at spec review) | round-up edge |
+| U-MB-3 | **CLOSED 2026-10-01.** Tom approved the spec with the round-up rule as given (no cap); single-product menus round up transparently, the note names every added line | — | — |
 | U-MB-4 | Placement (MB-D01) and therefore which journey text carries the link; the texts are Tom's | Tom | launch wiring |
 | U-MB-5 | IC-1 mechanism (`purpose` column vs separate table) and IC-2 event vocabulary are the Sales workstream's call after Unit A | Sales session | resume after order, CRM events |
 | U-MB-6 | Unit A's final task trigger shape may change the `reply` / `call` routing | Sales session | tasks |
 | U-MB-7 | One approved cups-per-bottle figure per product (U-021) is not required by the Builder (it derives coverage from doses) but the site's and PDF's claims should agree with the Builder's numbers | Tom / docs lane | consistency |
 | U-MB-8 | Whether the five lead-menu PDFs carry the 2026-09-29 figures | menus workstream | consistency with the Builder's figures |
 | U-MB-9 | The recipe defects on approved pages (p36 copied recipe, p12 name, matcha-masala 40 vs 50 ml) are resolved by the catalog owner; the Builder keys on page ids and the cost model's doses | Tom / catalog | drink data correctness |
-| U-MB-10 | Drink descriptions in customers' words (≤90 chars) do not exist; they are new copy for Tom's approval, or the card ships without a description line | Tom | detail sheet line 1 |
+| U-MB-10 | **CLOSED 2026-10-01.** Tom: the name from the existing Canva drinks menu only, no new description copy (§7.3) | — | — |
 | U-MB-11 | Images: 48 drink photos exist on the Shopify CDN at 925×1052 (gt-site `photos.json`); their licence for self-hosting in the portal is GT's own (Canva exports) | — | images |
