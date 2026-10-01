@@ -140,3 +140,7 @@ Conditions and their status:
 1. `supabase/functions/sales-leads-poll/_lib/email.ts` is in scope: it is Unit A plan task 1 (the staff email opens the lead).
 2. The PR's `ux-gate` job is label-gated and was skipped. The five-lens gate ran in-session (section 2 and the dispositions file) with the governor verdict. The later production session may also label-trigger it on the final head.
 3. PRs stay draft until Tom's go.
+
+## 9. Update 2026-10-01 07:40 UTC
+
+Tom approved the B-FLOW-04 string. Portal final head is now **`4b94597f5c953f048dec4574375102beb16d13e7`**: the hint is shown under a disabled Save and linked by `aria-describedby`. Vitest 1537/1537; typecheck, lint and build exit 0. The governor's connected-audit condition on copy is met. The remaining HOLD is WebKit/iOS keyboard proof on a real device. The backend head is unchanged (`9d423c1`).
