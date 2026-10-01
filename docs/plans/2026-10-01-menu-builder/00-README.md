@@ -10,7 +10,7 @@
 | File | What it is |
 |---|---|
 | `ground-truth.md` | The reconstructed reality: the lead → first-order journey as it runs, the approved and built GT Pulse state, the customer ordering portal, the staff sales corridor, the data map, the decisions that already bind the Builder, conflicts, re-run recipes |
-| `dependency-ledger.md` | **Builder ↔ Sales Dependency Ledger** (mandatory): 18 dependencies, each with source, status, provisional assumption and recheck item |
+| `dependency-ledger.md` | **Builder ↔ Sales Dependency Ledger** (mandatory): 19 dependencies (DL-01…DL-19) and four proposed contracts (IC-1…IC-4), each with source, status, provisional assumption and recheck item |
 | `decision-ledger.md` | Decision Ledger (MB-D01…) and the conflicts/drift found (C-01…C-12) |
 | `01-placement-recommendation.md` | MB-D01: placement — Session 1 analysis; **deferred by Tom** |
 | `02-finish-and-quantity-recommendation.md` | MB-D08 + MB-D03: the two-layer finish and the zero-question starter kit with the ₪800 round-up — **approved** |
@@ -20,8 +20,6 @@
 | `06-decision-ready-product-spec.md` | **The Decision-Ready Product Spec** (36 sections, copy batch, acceptance criteria, unresolved assumptions) — **approved by Tom 2026-10-01** |
 | `07-product-review-handoff.md` | **Product Review Handoff** for Session 2: everything a fresh session needs to audit the product without this conversation |
 | `evidence/` | Verbatim read-only reconstructions dated 2026-10-01: gt-site lead funnel · customer ordering portal · sales/lead backend · staff sales corridor · drinks/products data map |
-
-
 
 ## Rules this folder follows
 
