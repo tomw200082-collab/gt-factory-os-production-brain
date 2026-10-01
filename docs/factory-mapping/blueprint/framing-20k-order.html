@@ -1,0 +1,328 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מיסגור המפעל — 20,800 בקבוקים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c0e;--surf:#141619;--surf2:#1c1f23;--line:#2b2f35;
+--txt:#f2f0ec;--mut:#7d8590;--dim:#4a5058;
+--acc:#ff3b1f;--amb:#f5a623;--grn:#3ddc84;--blu:#6aa9e9;--pur:#b79ce8;
+--mono:'Space Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);direction:rtl;font-family:'Heebo',sans-serif;
+line-height:1.55;padding:0 0 70px;
+background-image:radial-gradient(circle at 15% 0%,#1a1d22 0%,transparent 50%),radial-gradient(circle at 95% 90%,#16181c 0%,transparent 45%)}
+.w{max-width:1000px;margin:0 auto;padding:0 15px}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes gl{0%,100%{box-shadow:0 0 0 0 rgba(255,59,31,.5)}50%{box-shadow:0 0 0 8px rgba(255,59,31,0)}}
+.an{animation:up .5s both}
+
+header{border-bottom:1px solid var(--line);padding:28px 0 20px;margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--acc);margin-bottom:9px}
+header h1{font-size:clamp(23px,5.5vw,33px);font-weight:900;letter-spacing:-.8px;line-height:1.12}
+header p{color:var(--mut);font-size:13.5px;margin-top:7px}
+
+h2{font-size:12px;font-weight:900;letter-spacing:3.5px;color:var(--acc);font-family:var(--mono);
+margin:40px 0 13px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+
+/* HEADLINE FINDING */
+.finding{background:linear-gradient(150deg,#241214,#141619 60%);border:1px solid #4a2320;
+border-radius:6px;padding:22px 22px 20px;margin:22px 0}
+.finding .tagline{font-family:var(--mono);font-size:10.5px;letter-spacing:2.4px;color:var(--acc);margin-bottom:11px}
+.finding h3{font-size:clamp(20px,4.6vw,28px);font-weight:900;line-height:1.2;letter-spacing:-.5px;margin-bottom:12px}
+.finding p{font-size:14px;color:#cfd3d8;max-width:70ch}
+.finding p+p{margin-top:8px}
+.finding b{color:var(--txt)}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(122px,1fr));gap:7px;margin-top:17px}
+.who div{background:#0e1013;border:1px solid var(--line);border-radius:4px;padding:9px 11px}
+.who b{display:block;font-size:13.5px;font-weight:700}
+.who span{display:block;font-family:var(--mono);font-size:10.5px;color:var(--mut);margin-top:2px}
+.who.solo div:first-child{border-color:var(--acc);background:#1d1113}
+.who.solo div:first-child b{color:var(--acc)}
+
+/* FLOOR PLAN */
+.planwrap{background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:14px;overflow-x:auto}
+svg.plan{display:block;min-width:660px;width:100%;height:auto}
+.pl-room{fill:#1c1f23;stroke:#3a4048;stroke-width:4}
+.pl-cook{fill:#12211a;stroke:#2c5c42}
+.pl-prod{fill:#1a1d26;stroke:#3d4a63}
+.pl-fg{fill:#231a12;stroke:#6a4a28}
+.pl-svc{fill:#16181c;stroke:#2b2f35;stroke-width:3}
+.pl-wall{fill:none;stroke:#5a626c;stroke-width:8}
+.pl-eq{fill:#252a30;stroke:#6aa9e9;stroke-width:3}
+.pl-line{fill:#1e2a1e;stroke:#3ddc84;stroke-width:3}
+.pl-t{fill:#e8eaed;font-family:'Heebo',sans-serif;font-size:30px;font-weight:700;text-anchor:middle}
+.pl-s{fill:#7d8590;font-family:'Space Mono',monospace;font-size:22px;text-anchor:middle}
+.pl-xs{fill:#7d8590;font-family:'Heebo',sans-serif;font-size:22px;text-anchor:middle}
+.pl-door{stroke:#f5a623;stroke-width:9;stroke-linecap:round}
+.badge circle{fill:var(--acc);stroke:#0b0c0e;stroke-width:3}
+.badge text{fill:#0b0c0e;font-family:var(--mono);font-size:26px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.flow{stroke:#f5a623;stroke-width:4;fill:none;stroke-dasharray:14 10;opacity:.75}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:7px;margin-top:13px}
+.legend div{display:flex;gap:8px;align-items:center;font-size:12.5px;background:var(--surf2);
+border:1px solid var(--line);border-radius:4px;padding:7px 10px}
+.legend i{width:19px;height:19px;border-radius:50%;background:var(--acc);color:#0b0c0e;
+font-style:normal;font-family:var(--mono);font-size:11px;font-weight:700;display:grid;place-items:center;flex:0 0 auto}
+.legend em{font-style:normal;color:var(--mut);font-family:var(--mono);font-size:10.5px;margin-right:auto}
+
+/* SPACE MATH */
+.sm{display:grid;gap:9px}
+.sm .row{background:var(--surf);border:1px solid var(--line);border-radius:5px;padding:11px 14px}
+.sm .top{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;margin-bottom:8px;flex-wrap:wrap}
+.sm .top b{font-weight:700}
+.sm .top span{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.bar{height:16px;background:#0e1013;border-radius:3px;overflow:hidden;position:relative;border:1px solid var(--line)}
+.bar i{display:block;height:100%;font-style:normal}
+.bar .cap{position:absolute;top:-1px;bottom:-1px;border-right:2px dashed var(--grn);width:0}
+.bar .need{background:linear-gradient(90deg,#ff3b1f,#c92a12)}
+.bar .ok{background:linear-gradient(90deg,#3ddc84,#2bb36a)}
+.sm .note{font-size:11.5px;color:var(--mut);margin-top:7px;font-family:var(--mono)}
+
+/* QUESTIONS */
+.tier{margin-bottom:20px}
+.tierh{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.tierh b{font-family:var(--mono);font-size:11px;letter-spacing:2px;padding:3px 9px;border-radius:3px}
+.t1 b{background:var(--acc);color:#0b0c0e}
+.t2 b{background:var(--amb);color:#0b0c0e}
+.t3 b{background:var(--blu);color:#0b0c0e}
+.t4 b{background:var(--pur);color:#0b0c0e}
+.tierh span{font-size:13px;color:var(--mut)}
+.q{display:grid;grid-template-columns:30px 1fr;gap:11px;background:var(--surf);
+border:1px solid var(--line);border-radius:4px;padding:10px 13px;margin-bottom:6px;
+transition:background .16s,transform .16s}
+.q:hover{background:var(--surf2);transform:translateX(-3px)}
+.t1 .q{border-right:3px solid var(--acc)}
+.t2 .q{border-right:3px solid var(--amb)}
+.t3 .q{border-right:3px solid var(--blu)}
+.t4 .q{border-right:3px solid var(--pur)}
+.q .k{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--dim)}
+.q .b{font-size:13.5px;font-weight:700}
+.q .b em{display:block;font-style:normal;font-weight:400;font-size:12px;color:var(--mut);margin-top:3px;line-height:1.45}
+
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:430px}
+th{background:var(--surf2);text-align:right;padding:8px 10px;border:1px solid var(--line);
+font-size:10.5px;letter-spacing:1.4px;color:var(--mut);font-family:var(--mono);white-space:nowrap}
+td{padding:8px 10px;border:1px solid var(--line);background:var(--surf)}
+td.n{text-align:center;font-family:var(--mono);white-space:nowrap}
+.ac-t{color:var(--acc);font-weight:700}.gr-t{color:var(--grn);font-weight:700}.am-t{color:var(--amb);font-weight:700}
+footer{margin-top:44px;padding-top:14px;border-top:1px solid var(--line);
+font-family:var(--mono);font-size:10.5px;color:var(--dim);line-height:1.8}
+</style>
+<div class="w">
+
+<header class="an">
+<div class="eyebrow">מיסגור · האלה"ב 15 חולון · שרטוט 1:50</div>
+<h1>מה השרטוט והמיפוי הארגוני<br>אומרים על השבוע הזה</h1>
+<p>נקרא מגיליון ההיתר + <span style="font-family:var(--mono)">docs/factory-mapping</span> · תשובות טום 22.07.2026</p>
+</header>
+
+<h2>הממצא שקובע הכל</h2>
+<div class="finding an">
+<div class="tagline">נקודת כשל יחידה</div>
+<h3>תקרת באצ' אחד ליום היא <span style="color:var(--acc)">אדם</span>, לא מכונה</h3>
+<p>לפי מיפוי התפקידים בריפו, <b>דניס עושה לבד</b>: בישול תה · ערבוב · עמידה במתכון · בדיקות BRX+PH · <b>מילוי · פקיקה · הדבקת תוויות · אריזה בקרטונים</b> · שטיפת מכלים · ניקיון הקו · תחזוקת מכונות · דיווח ייצור.</p>
+<p>שעותיו <b>6:00–17:00</b>. משמרת אחת. המסמך מסמן זאת מפורשות: <b>"מי מחליף אותו כשהוא לא נמצא? תום — זמנית בלבד. זה סיכון נקודת-כשל יחידה."</b></p>
+<p>לכן הנתון ההיסטורי במערכת — <b>אף יום עם שני באצ'י בסיס מאז 01/06</b> — מתיישב בדיוק. זו לא מגבלת ציוד. זה אדם אחד.</p>
+<div class="who solo">
+<div><b>דניס</b><span>06:00–17:00 · כל הייצור</span></div>
+<div><b>מקסים</b><span>07:30–17:30 · תוצרת מוגמרת</span></div>
+<div><b>דורין</b><span>09:00–16:00 · משרד</span></div>
+<div><b>מיידן</b><span>פרילנסר · הפצה</span></div>
+</div>
+</div>
+
+<div class="finding an" style="animation-delay:.08s;background:linear-gradient(150deg,#1a1710,#141619 60%);border-color:#4a3a20">
+<div class="tagline" style="color:var(--amb)">תקדים בריפו</div>
+<h3>זה כבר קרה, ותועד</h3>
+<p>מהמיפוי: <b>"אחת הלקוחות הגדולות עשתה הזמנה והוא החליט שהיא צריכה לקבל אותה באותו יום, אז התחלנו לייצר באצ'ים קטנים — מה שתקע את כל הייצור הנוסף."</b></p>
+<p>אותו דפוס בדיוק, בסדר גודל גדול פי עשרים. ההבדל היחיד שאפשר לעשות הפעם: להחליט מראש מה נופל, במקום לגלות תוך כדי.</p>
+</div>
+
+<h2>איפה כל דבר קורה</h2>
+<div class="planwrap an" style="animation-delay:.14s">
+<svg class="plan" viewBox="-30 -30 2230 900" xmlns="http://www.w3.org/2000/svg">
+<!-- outer -->
+<rect x="0" y="0" width="2170" height="810" class="pl-wall"/>
+
+<!-- main hall rooms -->
+<rect x="6" y="6" width="514" height="494" class="pl-room pl-cook"/>
+<rect x="520" y="6" width="895" height="494" class="pl-room pl-prod"/>
+<rect x="1415" y="6" width="550" height="394" class="pl-room pl-fg"/>
+<rect x="1415" y="400" width="749" height="100" class="pl-svc"/>
+<rect x="1965" y="6" width="199" height="394" class="pl-svc"/>
+
+<!-- service column -->
+<rect x="6" y="500" width="200" height="304" class="pl-svc" style="stroke:#6aa9e9"/>
+<rect x="206" y="500" width="314" height="304" class="pl-svc" style="stroke:#3ddc84"/>
+<rect x="520" y="500" width="580" height="304" class="pl-svc"/>
+<rect x="1100" y="500" width="1064" height="304" class="pl-svc"/>
+
+<!-- cooking equipment -->
+<circle cx="380" cy="330" r="55" class="pl-eq"/><text x="380" y="340" class="pl-s">Ø110</text>
+<circle cx="230" cy="150" r="50" class="pl-eq"/><text x="230" y="160" class="pl-s">Ø100</text>
+<circle cx="100" cy="150" r="40" class="pl-eq"/><text x="100" y="160" class="pl-s">Ø80</text>
+
+<!-- filling line -->
+<rect x="600" y="380" width="420" height="105" class="pl-line"/>
+<text x="810" y="425" class="pl-t" style="font-size:26px">קו מילוי · פקק · תיוג</text>
+<text x="810" y="462" class="pl-s">?  קצב לא ידוע</text>
+<!-- work surface -->
+<rect x="1060" y="380" width="180" height="105" class="pl-eq"/>
+<text x="1150" y="440" class="pl-xs">משטח עבודה</text>
+<!-- packing -->
+<rect x="1270" y="380" width="140" height="105" class="pl-eq" style="stroke:#f5a623"/>
+<text x="1340" y="425" class="pl-xs">ע.אריזת</text><text x="1340" y="455" class="pl-xs">קרטונים</text>
+
+<!-- room labels -->
+<text x="263" y="60" class="pl-t">חדר בישול</text>
+<text x="263" y="95" class="pl-s">500×520 · 26 מ"ר · H=270</text>
+<text x="900" y="60" class="pl-t">חדר ייצור</text>
+<text x="900" y="95" class="pl-s">500×895 · 45 מ"ר · H=535</text>
+<text x="1690" y="150" class="pl-t">מחסן סחורה</text>
+<text x="1690" y="188" class="pl-t">מוגמרת</text>
+<text x="1690" y="228" class="pl-s">400×550 · 22 מ"ר · H=555</text>
+<text x="2064" y="180" class="pl-xs" transform="rotate(90 2064 180)">מעבר 220</text>
+<text x="106" y="660" class="pl-xs">מקפיא</text><text x="106" y="690" class="pl-s">−18°C</text>
+<text x="363" y="645" class="pl-xs">מחסן</text><text x="363" y="675" class="pl-xs">חומרי גלם</text>
+<text x="810" y="665" class="pl-xs">שירותים · מקלחת · מלתחות</text>
+<text x="1632" y="665" class="pl-xs">מדפי אחסון · עומק 150</text>
+<text x="1790" y="460" class="pl-xs">מעבר</text>
+
+<!-- doors -->
+<line x1="620" y1="500" x2="770" y2="500" class="pl-door"/>
+<text x="695" y="545" class="pl-s">בקבוקים 150</text>
+<line x1="1285" y1="500" x2="1415" y2="500" class="pl-door"/>
+<text x="1350" y="545" class="pl-s">קרטונים 130</text>
+<line x1="2170" y1="240" x2="2170" y2="370" class="pl-door"/>
+<line x1="2170" y1="60" x2="2170" y2="190" class="pl-door"/>
+
+<!-- flow -->
+<path d="M2120 305 L1700 305 L1700 440 L1450 440" class="flow"/>
+<path d="M1250 440 L1050 440" class="flow"/>
+<path d="M600 435 L470 435 L470 330" class="flow"/>
+<path d="M430 260 L560 260 L560 400 L620 400" class="flow" style="stroke:#3ddc84"/>
+<path d="M1030 400 L1260 400" class="flow" style="stroke:#3ddc84"/>
+<path d="M1410 420 L1500 420 L1500 260" class="flow" style="stroke:#3ddc84"/>
+<path d="M1600 130 L2090 130" class="flow" style="stroke:#3ddc84"/>
+
+<!-- badges -->
+<g class="badge"><circle cx="2110" cy="305" r="26"/><text x="2110" y="305">1</text></g>
+<g class="badge"><circle cx="363" cy="560" r="26"/><text x="363" y="560">2</text></g>
+<g class="badge"><circle cx="380" cy="250" r="26"/><text x="380" y="250">3</text></g>
+<g class="badge"><circle cx="640" cy="345" r="26"/><text x="640" y="345">4</text></g>
+<g class="badge"><circle cx="1340" cy="345" r="26"/><text x="1340" y="345">5</text></g>
+<g class="badge"><circle cx="1500" cy="90" r="26"/><text x="1500" y="90">6</text></g>
+<g class="badge"><circle cx="2110" cy="125" r="26"/><text x="2110" y="125">7</text></g>
+
+<!-- compass -->
+<text x="60" y="855" class="pl-s">← צפון</text>
+<text x="2050" y="855" class="pl-s">רחוב →</text>
+</svg>
+
+<div class="legend">
+<div><i>1</i>כניסת ספקים<em>130/380</em></div>
+<div><i>2</i>מחסן חומרי גלם<em>200×300</em></div>
+<div><i>3</i>בישול · 3 מיכלים<em>Ø110 Ø100 Ø80</em></div>
+<div><i>4</i>מילוי · פקק · <b style="color:var(--acc)">תיוג</b><em>קו יחיד</em></div>
+<div><i>5</i>אריזה בארגזים<em>250×60</em></div>
+<div><i>6</i><b style="color:var(--acc)">אחסון מוכן</b><em>22 מ"ר</em></div>
+<div><i>7</i>יציאת סחורה<em>130/380</em></div>
+</div>
+</div>
+
+<h2>שתי השאלות ששאלת — התשובה מהשרטוט</h2>
+
+<div class="finding an" style="animation-delay:.2s;background:linear-gradient(150deg,#241214,#141619 60%);border-color:#4a2320;padding:19px">
+<div class="tagline">הדבקת תוויות</div>
+<h3 style="font-size:19px">אין עמדת תיוג נפרדת בשרטוט</h3>
+<p>התיוג יושב על אותו קו יחיד של המילוי והפקק — <b>אותה מכונה, אותו אדם, אותה שעה</b>. אין מסלול עוקף.<br>
+⇐ אם התוויות מאחרות, אי אפשר "למלא עכשיו ולהדביק אחר כך" בלי לפרק את הקו ולהריץ מעבר שני. <b>התוויות ⊥ שער לוגיסטי — הן שער ייצור.</b></p>
+</div>
+
+<h2>המקום — מה נכנס ומה לא</h2>
+<div class="sm an" style="animation-delay:.26s">
+<div class="row">
+<div class="top"><b>מחסן סחורה מוגמרת · 22 מ"ר</b><span>386 ארגזים · ערימה של 6</span></div>
+<div class="bar"><i class="need" style="width:70%"></i><span class="cap" style="right:100%"></span></div>
+<div class="note">≈15 מ"ר לערימות + מעבר ⇐ ההזמנה לבדה תופסת את כולו. <b style="color:var(--acc)">אפס מקום למלאי השוטף</b></div>
+</div>
+<div class="row">
+<div class="top"><b>21,900 בקבוקים ריקים</b><span>15–18 משטחים · 18–22 מ"ר</span></div>
+<div class="bar"><i class="need" style="width:100%"></i></div>
+<div class="note"><b style="color:var(--acc)">אין לזה מקום ייעודי בשרטוט בכלל.</b> זה שטח בגודל מחסן שלם, נוסף</div>
+</div>
+<div class="row">
+<div class="top"><b>6,240 ליטר בסיס</b><span>3 מיכלים ≈ 1,500–2,000 ליטר</span></div>
+<div class="bar"><i class="ok" style="width:30%"></i></div>
+<div class="note">4–5 באצ'ים בו-זמנית, לא 16. <b style="color:var(--acc)">הפרדת בישול ממילוי לשישה ימים ⊥ נתמכת ע"י המבנה</b> בלי מיכלי IBC נוספים</div>
+</div>
+<div class="row">
+<div class="top"><b>3 טון סוכר</b><span>≈4 משטחים</span></div>
+<div class="bar"><i class="need" style="width:88%"></i></div>
+<div class="note">מחסן חומרי גלם 200×300 = 6 מ"ר. נכנס בקושי, ורק אם הוא ריק</div>
+</div>
+</div>
+<p style="font-size:11.5px;color:var(--mut);margin-top:10px;font-family:var(--mono)">
+כל המספרים כאן = חישוב גיאומטרי מהשרטוט, ⊥ מדידה בשטח. טעונים אימות לפני שנשענים עליהם.</p>
+
+<h2>24 השאלות · לפי מה שהן משנות</h2>
+
+<div class="tier t1 an" style="animation-delay:.32s">
+<div class="tierh"><b>שכבה 1</b><span>משנות את צורת התוכנית. בלי אלה אין לוח.</span></div>
+<div class="q"><span class="k">01</span><span class="b">כמה אנשים אפשר להביא לייצור, ומתי בדיוק?<em>היום דניס לבד. 16 באצ'ים + 20,800 בקבוקים ⊥ עבודה של אדם אחד. זו השאלה היחידה שבאמת קובעת</em></span></div>
+<div class="q"><span class="k">02</span><span class="b">מי עוד יודע להפעיל את קו המילוי?<em>אם רק דניס — משמרת שנייה ⊥ קיימת גם אם יש אנשים</em></span></div>
+<div class="q"><span class="k">03</span><span class="b">נפח מועיל אמיתי של 3 המיכלים, בליטרים<em>השרטוט נותן קוטר בלבד. קובע כמה באצ'ים אפשר להחזיק במקביל</em></span></div>
+<div class="q"><span class="k">04</span><span class="b">קצב קו המילוי לשעה ב-300ML<em>הצוואר. 20,800 בקבוקים ÷ הקצב = מספר הימים</em></span></div>
+<div class="q"><span class="k">05</span><span class="b">התיוג — במכונה בקו, או ידני?<em>אם ידני: כמה בקבוקים לשעה לעובד. 22,000 תוויות ידניות זה חישוב אחר לגמרי</em></span></div>
+<div class="q"><span class="k">06</span><span class="b">איפה עומדים 18 משטחי בקבוקים ריקים?<em>אין לזה מקום בשרטוט. אם אין תשובה — הבקבוקים מגיעים בפעימות ולא בבת אחת</em></span></div>
+</div>
+
+<div class="tier t2 an" style="animation-delay:.36s">
+<div class="tierh"><b>שכבה 2</b><span>משנות את השעות</span></div>
+<div class="q"><span class="k">07</span><span class="b">דניס 6:00–17:00 — עד איזו שעה אפשר להאריך?<em>וכמה ימים ברצף לפני שזה נשבר</em></span></div>
+<div class="q"><span class="k">08</span><span class="b">שישי — עד מתי עובדים?</span></div>
+<div class="q"><span class="k">09</span><span class="b">שבת — עובדים בכלל? יש מי שיכול?<em>גם: השלכה על הכשרות</em></span></div>
+<div class="q"><span class="k">10</span><span class="b">זמן שטיפת קו בין טעם לטעם<em>4 טעמים · אם זו שעה לכל מעבר, זה 4 שעות מהשבוע</em></span></div>
+<div class="q"><span class="k">11</span><span class="b">מחזור באצ' — חימום · עירוי · קירור · ריקון<em>הנחתי 3.5 שעות. כמה באמת?</em></span></div>
+<div class="q"><span class="k">12</span><span class="b">ניקיון סוף יום — כמה זמן, ומי?</span></div>
+</div>
+
+<div class="tier t3 an" style="animation-delay:.4s">
+<div class="tierh"><b>שכבה 3</b><span>משנות את הפריסה במפעל</span></div>
+<div class="q"><span class="k">13</span><span class="b">כמה ארגזי פלסטיק אפשר לערום לגובה?<em>H=555 מאפשר הרבה. היד לא. זה קובע אם 386 ארגזים נכנסים</em></span></div>
+<div class="q"><span class="k">14</span><span class="b">יש מלגזה או מתקן ערימה?</span></div>
+<div class="q"><span class="k">15</span><span class="b">הגלריה — כמה שטח, ומה מותר לאחסן שם?<em>יש תבנית גלריה בגיליון. זה השטח הפנוי היחיד שראיתי</em></span></div>
+<div class="q"><span class="k">16</span><span class="b">הכנסת בקבוקים 150 ס"מ — משטח שלם נכנס?</span></div>
+<div class="q"><span class="k">17</span><span class="b">איפה 3 טון הסוכר?<em>מחסן חו"ג הוא 6 מ"ר</em></span></div>
+<div class="q"><span class="k">18</span><span class="b">מחסן מקסים — מי נוגע בו בשבוע הזה?<em>המיפוי קובע הפרדה מוחלטת: דניס ⊥ נוגע במחסן התוצרת. בשבוע כזה זה נשבר או לא?</em></span></div>
+</div>
+
+<div class="tier t4 an" style="animation-delay:.44s">
+<div class="tierh"><b>שכבה 4</b><span>סיכון, איכות, מסחר</span></div>
+<div class="q"><span class="k">19</span><span class="b">זמן שחרור באצ' — BRX+PH<em>העמדה קיימת בשרטוט. 16 בדיקות בשבוע</em></span></div>
+<div class="q"><span class="k">20</span><span class="b">תוקף המוצר, ומה הלקוח דורש כמינימום</span></div>
+<div class="q"><span class="k">21</span><span class="b">כשרות — פורמט/מק"ט חדש צריך אישור משגיח?<em>המיפוי: כשרות = גורם חיצוני + אלכס</em></span></div>
+<div class="q"><span class="k">22</span><span class="b">הזמנת רכש חתומה מהלקוח? קנס איחור?<em>תוויות ייעודיות = אפס ערך שיורי אם הוא נסוג</em></span></div>
+<div class="q"><span class="k">23</span><span class="b">באצ' נפסל באמצע — מה הרזרבה?<em>5% מעל = 800 בקבוקים = פחות מבאצ' אחד</em></span></div>
+<div class="q"><span class="k">24</span><span class="b">דניס חולה ביום שלישי — מה קורה?<em>המיפוי מסמן את זה כנקודת כשל יחידה. בשבוע הזה זה ⊥ תרחיש תיאורטי</em></span></div>
+</div>
+
+<h2>מה כבר עונה מהריפו</h2>
+<div class="tw an" style="animation-delay:.48s"><table>
+<tr><th>שאלה</th><th>תשובה קיימת</th></tr>
+<tr><td>מי מייצר</td><td class="ac-t">דניס — לבד. הכל</td></tr>
+<tr><td>שעות ייצור</td><td class="n">06:00–17:00</td></tr>
+<tr><td>מי קולט סחורה מספק</td><td>דניס — פריקה, בדיקה מול תעודה, הקלדה</td></tr>
+<tr><td>מי עוצר באצ' פגום</td><td class="gr-t">דניס לבד, בלי לשאול</td></tr>
+<tr><td>חריגה מהתוכנית השבועית</td><td class="am-t">מחייבת טום/אלכס</td></tr>
+<tr><td>מי מקבל את התוצרת</td><td>מקסים · קליטה בסוף כל יום</td></tr>
+<tr><td>הפצה ביום ראשון</td><td>מיידן · מסלול מרכז</td></tr>
+<tr><td>סבב הזמנות ספקים</td><td>דורין · חמישי 14:00</td></tr>
+</table></div>
+
+<footer>
+מקורות — docs/factory-mapping/2026-07-22-mapping-v3-tom-responses.md · docs/factory-mapping/blueprint/HALAEV_15_HOLON.pdf<br>
+תרשים הרצפה סכמטי, במידות השרטוט (ס"מ). חישובי שטח גיאומטריים, ⊥ מדידה.<br>
+לא בוצעה כתיבה למערכת · 07.08.2026
+</footer>
+</div>
