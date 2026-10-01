@@ -54,6 +54,18 @@ longer blocks the journey. No customer-specific price list is modeled in v1.
 U-010 lead SLA hours · U-011 Erik's role and routing share · U-013 how the interactive catalog gates on
 live stock (4 of 8 sugared 0.5L concentrates read zero on 2026-08-04).
 
+## Amendment B — customer price book (proposed 2026-09-24 · approach APPROVED by Tom in session 2026-09-24; this text awaits Tom's merge)
+
+**B.1 — Supersedes A.4 for customer-specific prices.** A customer-specific price list is now modeled: `sales_core.customer_price` (append-only) resolved through `sales_core.v_customer_price`, with `sales_core.list_price` as the general list and `sales_core.customer_book` as the per-branch record. Public Shopify pricing remains what sales agents quote to prospects.
+
+**B.2 — Why.** GT is moving almost all business customers to the distributor Ice Dream, which invoices them at GT's prices. On 2026-09-24, 75% of tea customers paid below list and the legacy `custom.price_list` field matched the price actually paid for only 202 of 455. A distributor cannot invoice from that.
+
+**B.3 — Rules** (Sales-Machine D-025 … D-027): tea 1L / 0.5L fixed per customer per size; new customer or first-time product = list price; the book is the truth from go-live.
+
+**B.4 — Boundaries unchanged.** No foreign key leaves `sales_core`; nothing reads or writes the ledger, balances, items or BOMs. Customer-facing sends stay behind `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED`; the switch announcement is sent by a person.
+
+Spec: `docs/superpowers/specs/2026-09-24-icedream-handoff-design.md` · plan: `docs/superpowers/plans/2026-09-24-icedream-handoff.md`.
+
 ---
 
 ## Build record
