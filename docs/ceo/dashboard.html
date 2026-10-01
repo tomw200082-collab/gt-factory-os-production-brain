@@ -136,6 +136,7 @@
   .chip.g{background:var(--ok-wash);color:var(--ok)}
   .chip.a{background:var(--warn-wash);color:var(--warn)}
   .chip.q{background:var(--sunk);color:var(--muted)}
+  .chip.r{background:var(--crit-wash);color:var(--crit)}
   .proj .nm{font-weight:700}
   .proj .ds{color:var(--muted);font-variant-numeric:tabular-nums}
 
@@ -170,15 +171,15 @@
   @media (prefers-reduced-motion: reduce){ .toast{transition:none} }
 </style>
 
-<div class="wrap" dir="rtl" id="board" data-week="2026-08-02" data-week-label="ראשון 2.8 → חמישי 6.8">
+<div class="wrap" dir="rtl" id="board" data-week="2026-08-30" data-week-label="ראשון 30.8 → חמישי 3.9">
 
   <header>
     <div class="kicker">GT EVERYDAY · ראש המטה</div>
     <h1>הלוח של תום</h1>
     <p class="lede">
-      <span>שבוע <b class="data">2.8 → 6.8</b></span>
-      <span data-live="verdict">אבנים טרם ננעלו</span>
-      <span data-live="stamp">עודכן מוצ״ש 1.8</span>
+      <span>שבוע <b class="data">30.8 → 3.9</b></span>
+      <span data-live="verdict">אבנים טרם ננעלו · ננעלות בישיבה</span>
+      <span data-live="stamp">עודכן מוצ״ש 29.8 · כל מספר נמשך חי בריצה הזאת</span>
     </p>
   </header>
 
@@ -197,15 +198,16 @@
     <div class="rock"><div class="rock-num">1</div><div class="rock-input" contenteditable="true" id="rock1" data-ph="האבן הראשונה — הדבר שחייב לקרות השבוע"></div><button class="st" data-for="rock1" data-v="0">פתוח</button></div>
     <div class="rock"><div class="rock-num">2</div><div class="rock-input" contenteditable="true" id="rock2" data-ph="האבן השנייה"></div><button class="st" data-for="rock2" data-v="0">פתוח</button></div>
     <div class="rock"><div class="rock-num">3</div><div class="rock-input" contenteditable="true" id="rock3" data-ph="האבן השלישית"></div><button class="st" data-for="rock3" data-v="0">פתוח</button></div>
-    <p class="note" data-live="retro">רטרו שבוע קודם: אין — זו הפתיחה הראשונה.</p>
+    <p class="note" data-live="retro"><b>רטרו:</b> בכרטיס 2.8 שלוש האבנים נשארו ריקות — הריטואל ⊥ רץ 4 שבועות. אין מה לציין ✅/❌. <b>ההחטאה היא הריטואל עצמו, ⊥ האבנים.</b> מועמדות מוצעות בצ׳אט — ⊥ ננעלות ע״י קלוד.</p>
   </section>
 
   <section class="panel" aria-label="היום">
     <h2>⏱ <b>היום</b> · אבן היום · בלוקים · חריגים</h2>
     <div data-live="today">
-      <div class="row m"><span><span class="mark"></span>אבן היום</span><span class="val">ימולא ב-07:30</span></div>
-      <div class="row m"><span><span class="mark"></span>בלוקים ביומן</span><span class="val">נכתבים רק באישורך ב-17:00</span></div>
-      <div class="row m"><span><span class="mark"></span>ממתין ל…</span><span class="val">ימולא</span></div>
+      <div class="row r"><span><span class="mark"></span>רוטינות</span><span class="val">כולן כבויות · env נמחק + השהיה ידנית 10.8</span></div>
+      <div class="row a"><span><span class="mark"></span>PRs פתוחים</span><span class="val">65 בארבעת הריפואים · ~11 ירוקים לגל מיזוג</span></div>
+      <div class="row r"><span><span class="mark"></span>רוטציית טוקן Shopify</span><span class="val">GAP-029 · פתוח מ-18.8 · ⊥ בוצע</span></div>
+      <div class="row a"><span><span class="mark"></span>סשנים חסומים</span><span class="val">8 · משתחררים במשפט אחד ממך</span></div>
     </div>
     <p class="note">רק מה שצריך החלטה. הפירוט למטה.</p>
   </section>
@@ -213,21 +215,23 @@
   <section class="panel" aria-label="מפעל">
     <h2><b>מפעל</b> · דופק תפעולי</h2>
     <div data-live="factory">
-      <div class="row g"><span><span class="mark"></span>אמת מלאי</span><span class="val">rebuild = 0 · 83/83 לילות</span></div>
-      <div class="row g"><span><span class="mark"></span>סנכרון Shopify</span><span class="val">53/53 · כל 5 דק׳</span></div>
-      <div class="row a"><span><span class="mark"></span>חריגים פתוחים</span><span class="val">1 · oversell FG-MAT-30G</span></div>
-      <div class="row m"><span><span class="mark"></span>ייצור וכיסוי RM/PKG</span><span class="val">ימולא בריצת מוצ״ש</span></div>
+      <div class="row g"><span><span class="mark"></span>אמת מלאי</span><span class="val">rebuild_verifier רץ 8× ב-7 ימים · אחרון 29.8 · אפס projection_drift</span></div>
+      <div class="row g"><span><span class="mark"></span>דיווח ייצור</span><span class="val">חזר — תנועת ייצור אחרונה 27.8 (היה תקוע מ-10.8)</span></div>
+      <div class="row r"><span><span class="mark"></span>Green Invoice</span><span class="val">7 חריגי gi_auth_failure · אחרון 28.8 · האימות נופל</span></div>
+      <div class="row a"><span><span class="mark"></span>חריגים פתוחים</span><span class="val">3,333 · 10 קריטיים/שגיאה · השאר רעש LionWheel</span></div>
+      <div class="row r"><span><span class="mark"></span>תכנון</span><span class="val">ריצת netting בת 37 ימים (23.7) · plan-production-14d ⊥ רץ</span></div>
     </div>
   </section>
 
   <section class="panel" aria-label="מכירות וכסף">
     <h2><b>מכירות וכסף</b> · השבוע שהסתיים</h2>
     <div data-live="sales">
-      <div class="row m"><span><span class="mark"></span>מכירות ₪ · הזמנות · לקוחות בולטים</span><span class="val">ימולא בריצת מוצ״ש</span></div>
-      <div class="row m"><span><span class="mark"></span>Backlog ללא תאריך</span><span class="val">ימולא</span></div>
+      <div class="row g"><span><span class="mark"></span>21.8 → 27.8</span><span class="val">86 הזמנות · ₪104,611 ברוטו · ₪118,688 סה״כ</span></div>
+      <div class="row a"><span><span class="mark"></span>הרכב הלקוחות</span><span class="val">67 חוזרים · <b>3 חדשים</b> · AOV ₪1,215</span></div>
+      <div class="row r"><span><span class="mark"></span>לידים</span><span class="val">198 במערכת · <b>193 מעולם ⊥ טופלו</b> · 3 won · 10 נכנסו השבוע</span></div>
     </div>
     <div data-live="money">
-      <div class="row m"><span><span class="mark"></span>חשבוניות ספקים · Green Invoice</span><span class="val">יחובר</span></div>
+      <div class="row r"><span><span class="mark"></span>חשבוניות ספקים · Green Invoice</span><span class="val">⊥ זמין — האימות נופל (7 חריגים קריטיים) + רוטציה באיחור 18+ ימים</span></div>
     </div>
     <p class="note">Green Invoice נבדק חי לפני הקריאה הראשונה — בלי ניחושים.</p>
   </section>
@@ -235,41 +239,54 @@
   <section class="panel" aria-label="יומן">
     <h2><b>יומן</b> · השבוע הקרוב</h2>
     <div data-live="calendar">
-      <div class="row m"><span><span class="mark"></span>פגישות ואירועים</span><span class="val">ימולא בריצת מוצ״ש</span></div>
-      <div class="row m"><span><span class="mark"></span>רביעי</span><span class="val">ישיבת תכנון ייצור 14 יום</span></div>
+      <div class="row g"><span><span class="mark"></span>רביעי 2.9 · 13:00</span><span class="val">פגישת ייצור ורכש שבועית · עם אלכס</span></div>
+      <div class="row r"><span><span class="mark"></span>שאר השבוע</span><span class="val"><b>ריק לגמרי</b> — אפס בלוקי עומק, אפס פגישות (א׳ · ב׳ · ג׳ · ה׳)</span></div>
+      <div class="row a"><span><span class="mark"></span>V7</span><span class="val">אבן בלי בלוק ביומן היא משאלה — ננעל בישיבה</span></div>
     </div>
   </section>
 
   <section class="panel" aria-label="פרוייקטים">
-    <h2><b>פרוייקטים</b> · המאסטר: נושן · נקרא חי 1.8</h2>
+    <h2><b>הצירים</b> · נושן הוחרג ע״י טום 27.8 — כל שורה כאן נמדדה חי 29.8</h2>
     <div data-live="projects">
-      <div class="row a"><span><span class="mark"></span>ריכוז עומס</span><span class="val">תום על 81 מ-83 · 98%</span></div>
-      <div class="row g"><span><span class="mark"></span>באיחור · תקועים</span><span class="val">0 · 0</span></div>
-      <div class="proj"><span class="chip a">בתהליך</span><span class="nm">מנהלה — שבוע אלכס</span><span class="ds">6 פתוחות · עד 12.8</span></div>
-      <div class="proj"><span class="chip a">בתהליך</span><span class="nm">IN — סדר בשטח</span><span class="ds">28 פתוחות · עד 30.8</span></div>
-      <div class="proj"><span class="chip q">לא התחיל</span><span class="nm">IN — רכש מסודר</span><span class="ds">11 פתוחות · עד 31.8</span></div>
-      <div class="proj"><span class="chip q">לא התחיל</span><span class="nm">IN — אפס זיכויים</span><span class="ds">9 פתוחות · עד 13.9</span></div>
-      <div class="proj"><span class="chip a">בתהליך</span><span class="nm">OUT — שיווק ומסע לקוח</span><span class="ds">15 פתוחות · עד 23.9</span></div>
-      <div class="proj"><span class="chip q">לא התחיל</span><span class="nm">OUT — אתר והזמנות</span><span class="ds">6 פתוחות · עד 11.10</span></div>
-      <div class="proj"><span class="chip q">לא התחיל</span><span class="nm">OUT — החזרת לקוחות</span><span class="ds">7 פתוחות · עד 11.10</span></div>
-      <div class="proj"><span class="chip g">חי</span><span class="nm">פלטפורמה</span><span class="ds">Factory OS ~85–90% · פורטל 92/100</span></div>
+      <div class="row r"><span><span class="mark"></span>נושן</span><span class="val">אפס משימות סומנו בוצע מאז <b>9.8</b> · 30 פתוחות · הוחרג ע״י טום 27.8</span></div>
+
+      <div class="proj"><span class="chip a">חי</span><span class="nm">OUT · מיתוג אונליין</span><span class="ds">מפת דרכים דיגיטלית — 10 שלבים · 73 משימות · נבנתה 26–27.8 · <b>0 שלבים הושלמו</b></span></div>
+      <div class="proj"><span class="chip a">חלקי</span><span class="nm">וואטסאפ עסקי</span><span class="ds">wa1–wa2b בוצעו · wa3 (פרופיל) + wa8 (wa.me+QR) <b>חסומים על החלטה שלך</b> — תפקיד המספר השני 054-758-8132</span></div>
+      <div class="proj"><span class="chip q">⊥ הוכרע</span><span class="nm">אינסטגרם · פייסבוק</span><span class="ds">173 + 30 כניסות/30 יום · איזה חשבון רשמי (i1) עדיין פתוח · אפס נקודת פתיחה מתועדת</span></div>
+      <div class="proj"><span class="chip r">אפס</span><span class="nm">קמפיינים · אימייל</span><span class="ds">Klaviyo חי 29.8: <b>2,969 נרשמים · 0 קמפיינים · 0 flows · אי פעם</b></span></div>
+      <div class="proj"><span class="chip a">רץ</span><span class="nm">קמפיינים · מטא</span><span class="ds">קמפיין אחד «MACHA Leads» · 2 מודעות (Matcha Tut / Matcha Mango) · ~₪100/יום · <b>ads_read חסר — ⊥ ניתן למדוד</b></span></div>
+      <div class="proj"><span class="chip r">שבור</span><span class="nm">משפך הלידים</span><span class="ds">198 לידים · <b>193 מעולם ⊥ טופלו</b> · 3 won · הצינור חי, הקצה הרחוק חסר</span></div>
+      <div class="proj"><span class="chip r">אפס</span><span class="nm">חנות שופיפיי</span><span class="ds">3,423 כניסות/90 יום → 20 עגלות → 11 צ׳קאאוט → <b>0 הזמנות</b> · 74/122 מוצרים ללא מלאי · 6 החלטות שלך חוסמות</span></div>
+      <div class="proj"><span class="chip g">האמת</span><span class="nm">ערוץ המכירה בפועל</span><span class="ds">draft orders — 10,000+ הושלמו מול <b>1</b> צ׳קאאוט אונליין ב-365 יום. האתר ⊥ ערוץ המכירה</span></div>
+
+      <div class="row a"><span><span class="mark"></span>OUT · חומרים שיווקיים</span><span class="val">בתהליך · נגמר 23.9</span></div>
+      <div class="row r"><span><span class="mark"></span>OUT · אתר והזמנות</span><span class="val">״לא התחיל״ — החלון נפתח 17.8, עברו 12 יום</span></div>
+      <div class="row r"><span><span class="mark"></span>IN · רכש מסודר</span><span class="val">״לא התחיל״ — נגמר <b>מחר 31.8</b></span></div>
+      <div class="row r"><span><span class="mark"></span>מנהלה · שבוע אלכס</span><span class="val">נגמר 12.8 — <b>17 יום באיחור</b>, עדיין בתהליך</span></div>
     </div>
   </section>
 
   <section class="panel" aria-label="ממתין לך">
     <h2><b>ממתין לך</b> · סמן מה שטופל — נכנס לסיכום</h2>
+    <div class="task"><input type="checkbox" id="t-routines"><label for="t-routines">אילו רוטינות חוזרות לחיים ועל איזו סביבה<span class="src">45 רוטינות · 8 פעילות · הגרדיאן חשוך מ-26.8</span></label></div>
+    <div class="task"><input type="checkbox" id="t-shoptoken"><label for="t-shoptoken">רוטציית טוקן Shopify + מחיקת ה-ref ‏stash/4-<span class="src">GAP-029 · P0 · פתוח מ-18.8</span></label></div>
+    <div class="task"><input type="checkbox" id="t-american"><label for="t-american">מחירי AMERICAN הפוכים בחנות — 1L ב-₪33, 0.5L ב-₪65<span class="src">תיקון ידני · 2 דקות · כסף על הרצפה</span></label></div>
+    <div class="task"><input type="checkbox" id="t-wanumber"><label for="t-wanumber">תפקיד מספר הוואטסאפ השני 054-758-8132<span class="src">חוסם wa3 + wa8 · פתוח מ-27.8</span></label></div>
+    <div class="task"><input type="checkbox" id="t-emailtool"><label for="t-emailtool">כלי אימייל אחד — Klaviyo או Shopify Email<span class="src">חוסם כל בניית קמפיין · 2,969 נרשמים ממתינים</span></label></div>
+    <div class="task"><input type="checkbox" id="t-store6"><label for="t-store6">6 החלטות ניקוי חנות שופיפיי<span class="src">ייעוד החנות · חומרי גלם · מותג פרטי · ארכיון · אימייל · 163 טיוטות</span></label></div>
+    <div class="task"><input type="checkbox" id="t-outreach"><label for="t-outreach">אישור/דחייה — פנייה בוואטסאפ ל-230 עסקים<span class="src">דגל outreach קפוא false · הרשימה מוכנה</span></label></div>
+    <div class="task"><input type="checkbox" id="t-adstoken"><label for="t-adstoken">טוקן Marketing API עם ads_read (או צילומי Ads Manager)<span class="src">חוסם שלב 3 של סשן הליבה Meta/WhatsApp</span></label></div>
+    <div class="task"><input type="checkbox" id="t-vat"><label for="t-vat">מע״מ — החנות מסומנת taxesIncluded, השיעור 17% ולא 18%<span class="src">שאלה לרו״ח · פתוח מ-5.8 · הוזמנה אמיתית בחיוב חסר</span></label></div>
+    <div class="task"><input type="checkbox" id="t-gap026"><label for="t-gap026">GAP-026 — קבלה של 15,005,002 יח׳ אריזה<span class="src">P0 · כל קריאת כיסוי אריזות חסרת משמעות עד רברסל</span></label></div>
     <div class="task"><input type="checkbox" id="t-maxim"><label for="t-maxim">מקסים — משתמש פורטל (מייל)<span class="src">tranche 137 · דניס provisioned</span></label></div>
     <div class="task"><input type="checkbox" id="t-alex"><label for="t-alex">שיחת אלכס — החבילה מוכנה<span class="src">factory-mapping · שערים שבועות 5–6</span></label></div>
     <div class="task"><input type="checkbox" id="t-telegram"><label for="t-telegram">Telegram bot token + chat_id להתראות</label></div>
-    <div class="task"><input type="checkbox" id="t-uuid"><label for="t-uuid">app_users uuid לייבוא ספירות</label></div>
     <div class="task"><input type="checkbox" id="t-jobtoken"><label for="t-jobtoken">JOB_RUNNER_TOKEN + קונטיינר audit<span class="src">P2 דיווח — audit_runs ריק</span></label></div>
-    <div class="task"><input type="checkbox" id="t-railway"><label for="t-railway">אימות literal של דגל LionWheel ב-Railway</label></div>
-  </section>
-
   <section class="panel" aria-label="מהלילה">
     <h2>🌙 <b>מהלילה</b> · מה קלוד הריץ · לא ממוזג בלי אישורך</h2>
     <div data-live="night">
-      <div class="row m"><span><span class="mark"></span>תור אחרון</span><span class="val">טרם רץ — נורה רק אחרי אישור ב-17:00</span></div>
+      <div class="row r"><span><span class="mark"></span>תור לילה</span><span class="val">⊥ רץ — כל הרוטינות כבויות מאז 26.8</span></div>
+      <div class="row a"><span><span class="mark"></span>ליבת השבוע (קביעתך 27.8)</span><span class="val">סשן אבחון Meta/WhatsApp · הבריף מוכן להדבקה · read-only, אפס קוד</span></div>
     </div>
   </section>
 
