@@ -51,3 +51,11 @@ Re-read live by Session 2 (`evidence/2026-10-01-session2-independent-checks.md` 
 | DL-02 | Customer identity no longer needed in V1 (R-03) | n/a in V1 | Returns with V1.1 |
 | DL-19 | Context = the lead's latest `auto_message{kind:'first_menu'}.payload.menu` (live); `?c=` override only (R-29) | PROD (payload exists) | The journey keeps writing `menu` in that payload |
 | **DL-20** | **Doctrine records.** Sales-Machine `doctrine/decisions.md` must record (a) Tom's MB-D04 approval as an amendment of D-018 for the Builder (it states the kit price and per-cup food cost), and (b) MB-D03 superseding the August "no quantities" anchor for the Builder. Doctrine is Tom's to approve (Sales-Machine rule 5). | GAP — Tom + Sales-Machine docs | Before Session 3 writes code |
+
+## Session 2 refresh 2 — 2026-10-01 ~08:10 UTC
+
+| # | Change | Current status | Recheck |
+|---|---|---|---|
+| DL-05 / DL-06 / DL-13 | **GT Pulse Unit A is in production**: PR #329 merged (`30759a2`), 0362 applied (`rebuild_verifier()=0`), portal `eb36b83`, 184 backlog tasks applied with Tom's approval, `activity_required` off. This supersedes the "WIP" status above and the production-schema anomaly in refresh 1. | PROD | `activity_required` turn-on; D1 (tranche 186, portal PR #240) merge |
+| DL-07 / IC-3 | D1 visual pass in progress: four-node mini rail on Today cards (fixed, approved). The Builder adds a reason-line chip, not a fifth node (`10-gt-pulse-integration-proposal.md` §3) | WIP (D1) | After D1 merges |
+| Preview | The Builder exists as a non-routed preview (gt-factory-os PR #330, draft) and a private page | built, not deployed | Tom: placement and the go for the server side |

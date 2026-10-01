@@ -21,6 +21,7 @@
 | `07-product-review-handoff.md` | **Product Review Handoff** for Session 2: everything a fresh session needs to audit the product without this conversation |
 | `08-independent-review.md` | **PRODUCT DESIGN REVIEW VERDICT** (Session 2): PASS on 09; Sales Foundation Gate HOLD; findings R-01…R-29 classified KEEP · CHANGE · REMOVE · BLOCKER; Session 3 entry checklist |
 | `09-final-reviewed-product-spec.md` | **FINAL REVIEWED PRODUCT SPEC**: 06 with every accepted Session 2 change applied (tagged `[R-nn]`); supersedes 06 for implementation |
+| `10-gt-pulse-integration-proposal.md` | How a rep sees the customer's menu and live kit in GT Pulse (proposal against Unit A live and D1 in progress). Preview build: https://claude.ai/artifact/2BrWABm82tPHyMwiSuFPQj · code gt-factory-os PR #330 (not routed, not deployed) |
 | `masterprompt-2026-10-01.md` | Tom's governing masterprompt, verbatim, for Sessions 2 and 3 |
 | `evidence/` | Verbatim read-only reconstructions dated 2026-10-01: gt-site lead funnel · customer ordering portal · sales/lead backend · staff sales corridor · drinks/products data map · **Session 2 independent checks** (figures 48/48, live prices, draft drink table, the five starting kits, live DB facts) |
 
