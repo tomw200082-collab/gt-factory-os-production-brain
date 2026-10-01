@@ -1,0 +1,8 @@
+-- Publish the draft after Tom's approval. One transaction.
+begin;
+select set_config('audit.actor_user_id','0db008a9-05e3-4521-8b30-42e5d444818d',true), set_config('audit.actor_snapshot','Tom',true);
+insert into private_core.form_submissions (form_type, idempotency_key, submitted_by, submitted_at, event_at, status, posted_at, posted_by, site_id, raw_payload) values ('forecast_save','fc-2026-10-2027-03-63650953-save','0db008a9-05e3-4521-8b30-42e5d444818d',now(),now(),'posted',now(),'0db008a9-05e3-4521-8b30-42e5d444818d','GT-MAIN','{"version_id": "63650953-8978-4ef5-b527-9c7e9dda45ac", "freeze_override_reason": "fortnightly re-forecast (D39); the current month is copied unchanged", "actor_role": "admin"}'::jsonb);
+update private_core.forecast_versions set status='published', published_by_user_id='0db008a9-05e3-4521-8b30-42e5d444818d', published_by_snapshot='Tom', published_at=now() where version_id='63650953-8978-4ef5-b527-9c7e9dda45ac' and status='draft';
+update private_core.forecast_versions set status='superseded', superseded_at=now() where version_id='9a1c6f2e-5b3d-4e8a-9f70-2026090601aa' and status='published';
+insert into private_core.form_submissions (form_type, idempotency_key, submitted_by, submitted_at, event_at, status, posted_at, posted_by, site_id, raw_payload) values ('forecast_publish','fc-2026-10-2027-03-63650953-publish','0db008a9-05e3-4521-8b30-42e5d444818d',now(),now(),'posted',now(),'0db008a9-05e3-4521-8b30-42e5d444818d','GT-MAIN','{"version_id": "63650953-8978-4ef5-b527-9c7e9dda45ac", "superseded_version_id": "9a1c6f2e-5b3d-4e8a-9f70-2026090601aa"}'::jsonb);
+commit;
