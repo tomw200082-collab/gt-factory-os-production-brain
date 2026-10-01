@@ -1,6 +1,6 @@
 # MB-D01 — Where the Menu Builder sits in the lead journey
 
-> Owner-minded recommendation, Session 1, 2026-10-01. Status: **OPEN — put to Tom.** Evidence: `ground-truth.md` §1–§3, §6; `dependency-ledger.md` DL-03, DL-08, DL-09, DL-15.
+> Owner-minded recommendation, Session 1, 2026-10-01. Status: **DEFERRED by Tom, 2026-10-01** — placement is decided after the Builder itself is designed; three candidates stay open (own parallel journey per campaign · replaces the PDFs · between PDF and order). Tom's words and the resulting design requirements DR-01…DR-03 are in `decision-ledger.md`. This file stays as the Session 1 analysis of the third candidate. Evidence: `ground-truth.md` §1–§3, §6; `dependency-ledger.md` DL-03, DL-08, DL-09, DL-15.
 
 ## What I found
 
