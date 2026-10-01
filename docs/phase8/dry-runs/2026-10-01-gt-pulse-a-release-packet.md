@@ -126,3 +126,17 @@ Do these only after Tom's explicit production instruction.
 ## 7. One decision for Tom
 
 Production go/no-go for this packet, together with the outreach-flag question in §3.
+
+## 8. Release verifier (2026-10-01, final heads)
+
+Verdict **CONDITIONALLY_SAFE**, no blockers.
+- Heads match origin and are 0 behind `main`. Trees are clean.
+- Every portal file is in the tranche 185 manifest.
+- No frozen flag, stock or factory-core change.
+- 0362 is `main`'s 0361 + 1.
+- Every Hebrew string is in the register.
+
+Conditions and their status:
+1. `supabase/functions/sales-leads-poll/_lib/email.ts` is in scope: it is Unit A plan task 1 (the staff email opens the lead).
+2. The PR's `ux-gate` job is label-gated and was skipped. The five-lens gate ran in-session (section 2 and the dispositions file) with the governor verdict. The later production session may also label-trigger it on the final head.
+3. PRs stay draft until Tom's go.
