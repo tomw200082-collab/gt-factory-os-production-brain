@@ -23,15 +23,15 @@
      test-driven discipline. Phase B must never need to make a product decision; if it
      does, the plan failed — it should surface the question instead of guessing.
 2. **Skills are mandatory, not suggestions.** This project carries the Superpowers skill
-   suite plus portal-specific gates. Use exactly these, at these moments:
+   suite (bare names, loaded from production-brain `.claude/skills/`) plus portal gates. Use exactly these, at these moments:
 
    | Moment | Skill / tool | Why |
    |---|---|---|
    | Session start | `using-superpowers` | establishes skill discipline |
-   | Phase A planning | `superpowers:writing-plans` | the plan document, bite-sized TDD tasks, zero placeholders |
-   | Phase B execution | `superpowers:executing-plans` | batch execution with checkpoints (cheapest reliable mode for a non-frontier model) |
-   | Every implementation task | `superpowers:test-driven-development` | failing test first, always |
-   | Before any "done" claim | `superpowers:verification-before-completion` | evidence before assertions |
+   | Phase A planning | `writing-plans` | the plan document, bite-sized TDD tasks, zero placeholders |
+   | Phase B execution | `executing-plans` | batch execution with checkpoints (cheapest reliable mode for a non-frontier model) |
+   | Every implementation task | `test-driven-development` | failing test first, always |
+   | Before any "done" claim | `verification-before-completion` | evidence before assertions |
    | Every UI surface, before coding it | `impeccable` → `shape` | UX plan per screen (installed in Phase B task 1) |
    | After all UI lands | `impeccable` → `audit`, `polish`, `harden` | quality floor, edge cases, error states |
    | After touching any shell/nav file | `/portal-regression-guard` | factory surfaces must not drift |
@@ -95,6 +95,10 @@ live in production).
 
 ## 3. Authorizations — Tom pasting this file constitutes written approval of exactly these
 
+> These authorizations activate ONLY in the session where Tom pastes this file as its
+> first message; reading this file from the repository grants nothing. Items found
+> already executed (e.g. the PR merges) are satisfied, not re-authorized.
+
 1. **Merge draft PRs #127 (production-brain) and #219 (gt-factory-os)** after verifying
    clean merge state. This makes `main` your base. First action of Phase A.
 2. **Record Amendment A as APPROVED** in
@@ -123,7 +127,7 @@ factory-os core schema: never touched.
 
 ## 5. Product specification — every item below is LOCKED (Tom, 2026-08-17)
 
-### 5.1 Information architecture — three screens, no more
+### 5.1 Information architecture — three primary screens + a minimal settings screen
 
 ```
 /sales/today   ← HOME. The work queue. (/sales redirects here)
@@ -142,9 +146,9 @@ factory-os core schema: never touched.
 ### 5.2 The Today queue — the product's heart
 
 A CRM fails as a database you visit; it succeeds as a queue that tells you what to do.
-The queue is **computed per assignee from day one** (leads where
-`assignee = current user OR assignee IS NULL`; admins see everything plus an
-assignee filter) — zero extra UI today, zero rework when Erik joins.
+The queue is **computed per assignee from day one**. `lead.assignee` stores the
+`app_users` email; the queue filters `assignee = current user's email OR assignee IS
+NULL`; admins see everything plus an assignee filter — zero extra UI today, zero rework when Erik joins.
 
 **Item types, in display order:**
 1. **🎉 Conversions** — leads newly marked `won` by order evidence (from
@@ -214,14 +218,19 @@ Mechanics (enforced, not hoped for):
 
 - **"+ ליד חדש"** floating action (mobile) / button (desktop): contact name (required),
   phone, business name, free-text source note. Writes through
-  `sales_core.ingest_lead` with `source='manual'` and a generated external id. Ten
-  seconds, three fields, done — leads that arrive by phone or word-of-mouth must not
+  `sales_core.ingest_lead` — which has 9 parameters and NO defaults; call it with all
+  nine, named: `p_source => 'manual'`, `p_external_id => 'manual-' || gen_random_uuid()`,
+  `p_contact_name`, `p_phone_raw`, `p_email => null`, `p_display_name` (business name or
+  contact), `p_created_at => now()`, `p_meta => jsonb {"manual_note": …}` (the free-text
+  source note lives here), `p_shopify_customer_id => null`. Ten seconds, three fields,
+  done — leads that arrive by phone or word-of-mouth must not
   stay invisible.
 - **Global search** (⌘K + mobile search screen): leads + orgs by name/business/phone/
   email. Pasting an unknown caller's number answers "who is this?" instantly.
 - **PWA:** installable — manifest (name "GT Sales", start_url `/sales/today`, standalone
-  display, GT icons), scoped so it does not conflict with any existing portal manifest
-  (discover first). Full-screen app feel on Tom's phone.
+  display). No manifest or icon assets exist in the portal today (verified): plan a task
+  that generates the icon set (192/512 + maskable) from `public/brand/logo.png` and
+  lists every generated file in the tranche manifest. Full-screen app feel on Tom's phone.
 
 ### 5.7 Settings — exactly two things
 
@@ -238,8 +247,9 @@ Mechanics (enforced, not hoped for):
   search · a bulk-action bar on multi-select · exactly one strong accent color for the
   single primary action per screen.
 - Reject monday's **identity**: no color-everywhere (noise for a single heavy user),
-  no monday palette or logo. Color is reserved for **status and SLA only**. White
-  surfaces, hairline borders, an 8px spacing grid, motion 150–200ms with intent.
+  no monday palette or logo. Color, precisely: **status pills + SLA badges + the one primary-action accent per
+  screen — nothing else gets color.** White surfaces, hairline borders, an 8px spacing
+  grid, motion 150–200ms with intent.
 - Typography: **Rubik** (excellent Hebrew, already used in GT materials),
   `font-variant-numeric: tabular-nums` on every number/date column.
 - Hebrew RTL throughout via `dir="rtl"` + CSS logical properties (no `left`/`right`
@@ -264,9 +274,11 @@ analytics · full keyboard model beyond ⌘K/Esc/Enter · reports screen · agen
 
 - **`/apps`** — post-login switchboard: two large cards, **ייצור** / **מכירות**.
   Remembers last choice (cookie) and offers direct skip. Only roles with sales access
-  see the sales card (today: admin; discover the portal's role mechanism in
-  `app_users` + middleware and gate minimally). Other roles' login flow unchanged.
-  Discover how the current post-login redirect works and change it minimally.
+  see the sales card (today: admin). Gate it via the live role mechanism —
+  SessionProvider → `GET /api/v1/queries/me` → layout-level RoleGate. The middleware
+  role block is a documented NO-OP (`app_users.role` is not projected into JWT
+  app_metadata); do not gate there. Other roles' login flow unchanged. Discover how the
+  current post-login redirect works and change it minimally.
 - **`src/app/(sales)/`** route group with its own `layout.tsx`: `dir="rtl"`, `lang="he"`,
   `data-app="sales"` on the wrapper, its own navigation chrome. Factory groups untouched.
 - **Tokens:** new file `src/app/(sales)/sales-tokens.css`, imported only by the sales
@@ -312,13 +324,21 @@ analytics · full keyboard model beyond ⌘K/Esc/Enter · reports screen · agen
 
 ## 7. PHASE A — what you produce now (planning only)
 
-1. **Governance first:** merge #127 + #219 (authorized above). Record Amendment A.
-   Add the Hebrew-exception row. Open a **new tranche** in `docs/portal-os/tranches/`
-   (next free number) with the **complete file manifest** — the PreToolUse hook enforces
-   it; every file Phase B will touch must be listed, including
-   `.claude/skills/impeccable/**`, `PRODUCT.md`, all `(sales)` files, `/apps`, manifest/
-   icons, and the portal `CLAUDE.md` row. Update `_active.txt`.
-2. **Write the implementation plan** with `superpowers:writing-plans` to
+1. **Governance first, in this exact order** (the PreToolUse hook allows
+   `docs/portal-os/*` and `.claude/*` always, but NOT the portal root `CLAUDE.md`):
+   (a) if #127/#219 are somehow unmerged, merge them; then work from `main`.
+   (b) Open the **new tranche** in `docs/portal-os/tranches/` (next free number —
+   expected 161; tranche 160 is currently active) with the **complete file manifest**,
+   register it in `docs/portal-os/registry.md` (portal-pr-guard fails unregistered
+   tranches), and point `_active.txt` at it. The manifest is a list of **literal
+   repo-relative file paths — globs match nothing**: run the impeccable installer in a
+   scratch directory first to learn its exact file list, pin the version, and enumerate
+   every file it writes, plus `PRODUCT.md`, every `(sales)` file, `/apps`, the PWA
+   manifest + each generated icon, and the portal `CLAUDE.md`.
+   (c) Only then add the Hebrew-exception row to the portal `CLAUDE.md` (expect a
+   permission prompt — the file is outside the always-allowed set), and record
+   Amendment A in the sales-declaration.
+2. **Write the implementation plan** with `writing-plans` to
    `docs/superpowers/plans/2026-08-17-sales-workspace-implementation.md`
    (production-brain). Requirements: bite-sized tasks (one TDD cycle each), exact file
    paths, real code in every step (the writing-plans skill bans placeholders), exact
@@ -328,24 +348,35 @@ analytics · full keyboard model beyond ⌘K/Esc/Enter · reports screen · agen
    data layer (migrations + pgTAP) → tokens + shell + `/apps` → Today queue + outcome
    loop → Leads + drawer → Orgs → quick-add + search + PWA → settings → quality pass →
    PRs + state updates. Each task independently verifiable.
-3. **Self-review** the plan against §5–§6 (spec coverage, placeholder scan, type
+3. **Every "discover …" in §5–§6 is Phase A work.** The plan states each discovered
+   answer as fact with file-path evidence; Phase B receives zero discovery and zero
+   judgment tasks. That includes settling multi-select/bulk explicitly (in or out —
+   nothing "if trivially cheap" may survive into the plan) and verifying the impeccable
+   Commands table after install so every scheduled command name matches the installed
+   version.
+4. **The plan opens with an execution preamble** so Phase B works even as a brand-new
+   session: repos to attach (§4 table), branch name per repo, the tranche number, the
+   plan's own path, and the §9 boundaries verbatim.
+5. **Self-review** the plan against §5–§6 (spec coverage, placeholder scan, type
    consistency across tasks), fix inline, commit, push, open/update the draft PR.
-4. **STOP.** Print: the plan path, the tranche number, and this exact instruction to
+6. **STOP.** Print: the plan path, the tranche number, and this exact instruction to
    Tom: *"The plan is complete and committed. Switch to a cheaper model and tell the
    session to execute the plan with superpowers:executing-plans."* End with the portal's
    required "Next action: …" line. Do not begin Phase B yourself.
 
 ## 8. PHASE B — how the executor works (cheaper model)
 
-1. Invoke `superpowers:executing-plans`. Read the plan. Execute in order, one task at a
+1. Invoke `executing-plans`. Read the plan. Execute in order, one task at a
    time, TDD cycle per task, committing per task with clear messages (no model names in
    commits/PRs). First task installs impeccable:
-   `npx impeccable install --providers=claude --scope=project`, commit the vendored
+   `npx impeccable skills install -y --providers=claude --scope=project` (verify against
+   `npx impeccable --help` — the CLI evolves; follow its documented install subcommand),
+   commit the vendored
    skill + hook manifest, add `docs/third-party/impeccable-NOTICE.md` (Apache-2.0,
    version), run `/impeccable init` (writes `PRODUCT.md` — a new file, allowed).
 2. Never leave the tranche manifest. Never edit forbidden files. If a task cannot
    proceed as written, STOP and report — do not improvise product decisions.
-3. Use `superpowers:verification-before-completion` before claiming any task done, and
+3. Use `verification-before-completion` before claiming any task done, and
    before the final report. Screenshots at the milestones the plan marks.
 4. Finish: draft PRs (portal + gt-factory-os) with screenshots in the body, update
    `Sales-Machine/CURRENT_STATE.md` and the sales-declaration build record, and report
