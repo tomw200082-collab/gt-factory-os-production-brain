@@ -56,7 +56,27 @@ Verbatim detail: `evidence/2026-10-01-staff-sales-corridor.md`. What binds the B
 
 ## 5. Data ground truth (drinks, products, yields, food cost, prices)
 
-_Pending: exploration agent report — appended on arrival. Known already:_ the figures authority is `.claude/skills/drinks-pricelist/drinks_final_figures.json` (updated 2026-09-29, ice-aware 48-drink model, 78% floor, 24 RRPs reduced); `docs/pricing/2026-09-29_cost_model.py` + `GT_FOOD_COST_2026-09-29.xlsx`; Canva main database `DAHTYkRvEnM`; five lead menus in Canva folder `FAHWjugERyQ`. gt-site carries the 48 drinks as `COLS`/`FLMAP`/`PUREES` with doses only inside Hebrew strings. Sales-Machine `knowledge/drinks/{catalog,recipes}.yaml` are dated 2026-08-31 and quote pre-2026-09-29 figures.
+Verbatim detail: `evidence/2026-10-01-drinks-products-data-map.md`. Classification the Builder must build on:
+
+| Data element | Canonical source | Status | Builder consequence |
+|---|---|---|---|
+| Drink list, stable ID, name (he), food cost per cup, RRP, margin, profit | brain `.claude/skills/drinks-pricelist/drinks_final_figures.json` (`_meta.date` 2026-09-29; 48 drinks, 10 families, all cold; page keys `8…64`) | **CANONICAL**, but the file calls its costs *estimates* (ingredients only, standardized ice-filled 350 ml serving, unmeasured pours, retail-derived milk/cream prices) | Read at runtime from one server-side copy; never from a card or the site; label economics as estimates |
+| Per-drink doses (GT and non-GT ingredients) | `docs/pricing/2026-09-29_cost_model.py` + `GT_FOOD_COST_2026-09-29.xlsx` (`פירוט עלות`) | **CANONICAL** (concentrate 50 ml in 21 drinks, 40 ml in 8; matcha 1.8 g; ube 2 g; purée 40 ml) | The BOM→cart aggregation input |
+| Drink → GT SKU | **none structured**; derivable from gt-site `tools/landing-pages/drinks.json` `steps` and brain `canva_workfiles/recipes.json` `eng` | UNKNOWN / DERIVED | A Tom-verified drink→SKU table is a **NEEDS DATA** item; 32 drinks need one GT product, 16 need two |
+| What GT sells, list prices | brain `docs/warehouses/catalog-truth.md` (40 sellable SKUs + 4 not sold) · runtime Shopify `variant.price` via `api/src/portal/pricing.ts` · dated TSV `2026-08-05_shopify_products_exvat.tsv` | **CANONICAL** | Product truth = the portal catalog (`catalog.ts` 40 keys), priced by the portal pricer |
+| Yield per pack | Sales-Machine `knowledge/products/catalog.yaml` `servings_per_unit` (tea 1 L = 20 × 50 ml, 0.5 L = 10; matcha 500 g = 277 × 1.8 g; ube 0.5 kg = 250, 1 kg = 500; ODK = 25 × 40 ml; sachets / hojicha / kit null) | DERIVED (`doc_confirmed`) | Derive as pack ÷ dose at runtime; publish one approved number per product (U-021 open) |
+| Preparation steps | Canva `DAHTYkRvEnM`; transcriptions in gt-site `drinks.json` and Sales-Machine `recipes.yaml serve` | CANONICAL external / DERIVED | Post-purchase delivery, not selection (masterprompt §13) |
+| Drink images | gt-site `tools/landing-pages/photos.json` → Shopify Files `gtd-<id>.webp` 925×1052 | DERIVED (only source) | Self-host under `/portal/img` (CSP `img-src 'self'`) |
+| Category / family | five taxonomies (Sales-Machine 3; 10 catalog families; site 9 groups + 4 landing pages; 5 lead menus; `campaign_map` 4) | DERIVED | The Builder picks one customer-facing taxonomy (MB-D06) |
+| Availability, pairs, ₪800, excluded SKUs | `customer_portal.item_availability_current`; `catalog.ts`; `build-cart.ts` | CANONICAL (code) | Reuse, never re-implement |
+| VAT presentation, shelf life | `commercial-terms.md` §1; `claims#shelf_life` | CANONICAL (`user_confirmed`) | Copy rules |
+| GT internal COGS/margin (`v_fg_unit_economics`) | gt-factory-os | not for customers | Never surface |
+
+**Stale copies (do not read):** Sales-Machine `knowledge/drinks/{catalog,recipes}.yaml` (2026-08-27 figures, review overdue), gt-site `data/drinks_final_figures.json` and `COLS` (08-27; English site 08-05), the drive pack; 38/48 drinks differ from the current file; the card reconciler only accepts a 2026-08-27 figures file.
+
+**Gaps the Builder must not fill by invention:** consumption volume per café; opening-order quantities / starter packages (D-013, TOM-A.1); hot/winter drinks; recipes for HOJICHA, AMERICAN, sachets, kit, sugar-free variants; flavour add-in quantities; measured cups/ice; non-GT ingredient invoices; per-customer food cost; English names; a drink→SKU table; allergens/nutrition; one approved yield per product; a Tom rule on which economics a self-serve surface may show.
+
+**Conflicts to settle before the Builder shows a number:** cups per bottle (20 / 20–25 / 33 / 30 / 13), drinks per NAMASTEA bottle (11 vs 13), matcha masala dose (40 vs 50 ml), p36 recipe copied from p38, name drift (p12; ASCII `'` vs `׳`), opening-menu prices in `commercial-terms.md` §2 stale, D-018 vs D-025 vs `show_prices:false` vs the approved answer that states ₪3.25.
 
 ## 6. Decisions that already shape the Builder (Tom, in writing)
 
