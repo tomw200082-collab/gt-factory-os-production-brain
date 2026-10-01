@@ -140,6 +140,9 @@ try {
   const ids = (list.rows ?? []).map((r) => r.id);
   const owners = await db.query(`select count(*)::int n from sales_core.lead where id = any($1::uuid[]) and assignee is distinct from 'rep@staging.invalid'`, [ids]);
   check("rep lead list holds only the rep's leads", ids.includes(REP_LEAD) && !ids.includes(MGR_LEAD) && !ids.includes(UNOWNED) && owners.rows[0].n === 0, `rows=${ids.length} foreign=${owners.rows[0].n}`);
+  const feed = await (await rep.page.request.get(`${BASE}/api/sales/activity`)).json();
+  const feedForeign = await db.query(`select count(*)::int n from sales_core.lead where id = any($1::uuid[]) and assignee is distinct from 'rep@staging.invalid'`, [(feed.rows ?? []).map((r) => r.lead_id)]);
+  check("rep activity feed holds only the rep's leads (review I2)", (feed.rows ?? []).length > 0 && feedForeign.rows[0].n === 0, `rows=${(feed.rows ?? []).length} foreign=${feedForeign.rows[0].n}`);
   await rep.page.goto(`${BASE}/sales/leads?lead=${MGR_LEAD}`);
   await rep.page.getByTestId('lead-not-found').waitFor();
   check('rep deep link to a foreign lead shows the approved unavailable state', true);

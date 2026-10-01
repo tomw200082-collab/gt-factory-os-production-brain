@@ -1,29 +1,30 @@
-PASS rep@staging.invalid: signed-out deep link goes to login with destination kept /login?redirectTo=%2Fsales%2Fleads%3Flead%3D00e48ff5-765d-4af0-b106-dd2679520c16
+PASS rep@staging.invalid: signed-out deep link goes to login with destination kept /login?redirectTo=%2Fsales%2Fleads%3Flead%3D6df105d0-3edf-45a1-8b38-39541402c1b4
 CONSOLE Failed to load resource: the server responded with a status of 401 (Unauthorized)
 CONSOLE Failed to load resource: the server responded with a status of 404 (Not Found)
 CONSOLE Failed to load resource: the server responded with a status of 401 (Unauthorized)
-PASS rep@staging.invalid: magic link lands on the deep link /sales/leads?lead=00e48ff5-765d-4af0-b106-dd2679520c16
-PASS rep activity saved over HTTP status=200 request_id=c09d74ec-6df5-4de6-9126-cf06480836ea
+PASS rep@staging.invalid: magic link lands on the deep link /sales/leads?lead=6df105d0-3edf-45a1-8b38-39541402c1b4
+PASS rep activity saved over HTTP status=200 request_id=81d8442b-9263-47f4-9dba-9369904b7f81
 PASS request correlates to committed lead_event rows events=2
 PASS request correlates to a committed open task owned by the rep [{"owner_email":"rep@staging.invalid","kind":"call","status":"open"}]
 CONSOLE Failed to load resource: net::ERR_TIMED_OUT
-PASS draft survives a timeout and a reload שיחה סינתטית שנייה mup4eqlz
-PASS retry reuses the request id 7240bea8-af46-4214-958f-876feabc7903 / 7240bea8-af46-4214-958f-876feabc7903
+PASS draft survives a timeout and a reload שיחה סינתטית שנייה mup5s5z4
+PASS retry reuses the request id 4489c0ab-ca0a-457c-8c81-c50d1f00eeb2 / 4489c0ab-ca0a-457c-8c81-c50d1f00eeb2
 PASS retry after a committed-but-lost response writes one fact status=200 rows=1 note_rows=0
 PASS rep is denied the manager's lead timeline status=403
-PASS rep lead list holds only the rep's leads rows=3 foreign=0
+PASS rep lead list holds only the rep's leads rows=2 foreign=0
+PASS rep activity feed holds only the rep's leads (review I2) rows=25 foreign=0
 CONSOLE Failed to load resource: the server responded with a status of 403 (Forbidden)
 PASS rep deep link to a foreign lead shows the approved unavailable state 
 PASS rep has no factory link (D11) 
 PASS order-line reply routes one open reply task to the owner [{"owner_email":"rep@staging.invalid"}]
 PASS Today task card saves an activity with its source task status=200
-PASS manager@staging.invalid: signed-out deep link goes to login with destination kept /login?redirectTo=%2Fsales%2Fleads%3Flead%3D00e48ff5-765d-4af0-b106-dd2679520c16
+PASS manager@staging.invalid: signed-out deep link goes to login with destination kept /login?redirectTo=%2Fsales%2Fleads%3Flead%3D6df105d0-3edf-45a1-8b38-39541402c1b4
 CONSOLE Failed to load resource: the server responded with a status of 401 (Unauthorized)
 CONSOLE Failed to load resource: the server responded with a status of 401 (Unauthorized)
-PASS manager@staging.invalid: magic link lands on the deep link /sales/leads?lead=00e48ff5-765d-4af0-b106-dd2679520c16
+PASS manager@staging.invalid: magic link lands on the deep link /sales/leads?lead=6df105d0-3edf-45a1-8b38-39541402c1b4
 PASS manager reads the rep's lead 
 PASS manager queue holds the unowned lead task 
 PASS Attention saves an activity that commits one fact status=200 rows=1
 PASS manager keeps the factory link 
 
-SUMMARY 20/20
+SUMMARY 21/21
