@@ -1,0 +1,1304 @@
+{
+  "manifest_id": "2026-08-30_muza_retirement",
+  "generated_at_utc": "2026-08-30T10:44:42+00:00",
+  "measured_on": "2026-08-30",
+  "authority_grade": "system_verified",
+  "instruction": {
+    "source": "Tom, 2026-08-30, verbatim",
+    "text_he": "הוצאנו את כל המוזות כולל כולן מהחברה שלנו. אנחנו לא מוכרים אותן יותר. שנמשיך לעקוב אחר המלאי חומרי גלם ואריזות אבל את המוצרים נעיף מהמערכת (נארכב) סופית.",
+    "grade": "user_confirmed"
+  },
+  "measurement_sources": {
+    "postgres": "Supabase project rvadsozabmxkkrktwgnv, schema private_core, via MCP execute_sql",
+    "shopify": "Shopify Admin API via MCP graphql_query, title sweep per masterprompt 2.5 query 3"
+  },
+  "items_terminal_state": {
+    "value": "INACTIVE",
+    "reason": "private_core.items has CHECK constraint items_status_check = ACTIVE|INACTIVE|PENDING. There is no ARCHIVED state on items. INACTIVE is therefore the terminal archived state for an item, and all 15 MUZA rows already carry it. No UPDATE on private_core.items is written by this retirement; migration 0340 asserts the state instead.",
+    "constraint_observed": "CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'INACTIVE'::text, 'PENDING'::text])))",
+    "contrast": "private_core.bom_head DOES carry ARCHIVED (bom_head_status_check = ACTIVE|INACTIVE|PENDING|ARCHIVED), so BOM heads move to ARCHIVED."
+  },
+  "bom_head_terminal_state": {
+    "value": "ARCHIVED"
+  },
+  "mapping_retired_state": {
+    "value": "inactive",
+    "reason": "mapping_status is enum sku_mapping_status = active|pending_item_creation|missing_internal_item|excluded_non_stock|excluded_legacy_bundle|inactive. 'inactive' is the retired value; the excluded_* values describe a different condition (non-stock / legacy bundle), not a retired product line.",
+    "approval_status": "left unchanged at 'approved' — it records that a human once approved the mapping, which stays true."
+  },
+  "counts": {
+    "items": 15,
+    "items_active": 0,
+    "bom_heads": 20,
+    "bom_heads_active": 20,
+    "map_rows": 46,
+    "map_live": 34,
+    "map_live_by_channel": {
+      "shopify": 15,
+      "lionwheel": 17,
+      "green_invoice": 2
+    },
+    "keep_components": 35,
+    "shopify_already_archived": 16,
+    "ledger_rows": 182,
+    "ledger_last_event": "2026-08-05T14:13:01.585Z",
+    "fg_on_hand": 19,
+    "planning_item_config_rows": 0,
+    "production_plan_rows": {
+      "completed": 10,
+      "cancelled": 11,
+      "open": 0
+    },
+    "coverage_before_unmapped": 3,
+    "active_sellable_total_before": 62,
+    "shopify_archived_now": 19,
+    "shopify_kept_active_in_stock": 7
+  },
+  "ARCHIVE_ITEMS": [
+    {
+      "item_id": "ADD-MUZ-BZSM-1L",
+      "sku": "GTMX-MUZ-BZSM-1L",
+      "item_name": "MUZA BASIL SMASH MIXER 1L",
+      "supply_method": "BOUGHT_FINISHED",
+      "status": "INACTIVE",
+      "on_hand": 1.0
+    },
+    {
+      "item_id": "ADD-MUZ-HER-1L",
+      "sku": "GTMX-MUZ-HER-1L",
+      "item_name": "MUZA HERBAL MULE BLISS MIXER 1L",
+      "supply_method": "BOUGHT_FINISHED",
+      "status": "INACTIVE",
+      "on_hand": 0.0
+    },
+    {
+      "item_id": "ADD-MUZ-JASM-1L",
+      "sku": "GTMX-MUZ-JASM-1L",
+      "item_name": "MUZA JASMIN MIXER 1L",
+      "supply_method": "MANUFACTURED",
+      "status": "INACTIVE",
+      "on_hand": 0.0
+    },
+    {
+      "item_id": "ADD-MUZ-MRCL-1L",
+      "sku": "GTMX-MUZ-MRCL-1L",
+      "item_name": "MUZA CLASSIC MARGARITA MIXER 1L",
+      "supply_method": "BOUGHT_FINISHED",
+      "status": "INACTIVE",
+      "on_hand": 8.0
+    },
+    {
+      "item_id": "ADD-MUZ-PNMM-1L",
+      "sku": "GTMX-MUZ-PNMM-1L",
+      "item_name": "MUZA PINK MAMA MIXER 1L",
+      "supply_method": "MANUFACTURED",
+      "status": "INACTIVE",
+      "on_hand": 0.0
+    },
+    {
+      "item_id": "ADD-MUZ-PRPL-1L",
+      "sku": "GTMX-MUZ-PRPL-1L",
+      "item_name": "MUZA PURPLE KISS MIXER 1L",
+      "supply_method": "MANUFACTURED",
+      "status": "INACTIVE",
+      "on_hand": 1.0
+    },
+    {
+      "item_id": "ADD-MUZ-TRIL-1L",
+      "sku": "GTMX-MUZ-TRIL-1L",
+      "item_name": "MUZA TROPICAL ISRAELI MIXER 1L",
+      "supply_method": "MANUFACTURED",
+      "status": "INACTIVE",
+      "on_hand": 4.0
+    },
+    {
+      "item_id": "FG-MUZ-HER-200ML",
+      "sku": "GTCC-MUZ-HER-0.2L",
+      "item_name": "MUZA HERBAL MULE BLISS COCKTAIL 0.2L",
+      "supply_method": "MANUFACTURED",
+      "status": "INACTIVE",
+      "on_hand": 1.0
+    },
+    {
+      "item_id": "FG-MUZ-JAS-200ML",
+      "sku": "GTCC-MUZ-JAS-0.2L",
+      "item_name": "MUZA JASMINE COCKTAIL 0.2L",
+      "supply_method": "MANUFACTURED",
+      "status": "INACTIVE",
+      "on_hand": 0.0
+    },
+    {
+      "item_id": "FG-MUZ-NEG-200ML",
+      "sku": "GTCC-MUZ-NEG-0.2L",
+      "item_name": "MUZA NEGRONI COCKTAIL 0.2L",
+      "supply_method": "MANUFACTURED",
+      "status": "INACTIVE",
+      "on_hand": 0.0
+    },
+    {
+      "item_id": "FG-MUZ-PSC-200ML",
+      "sku": "GTCC-MUZ-PSC-0.2L",
+      "item_name": "MUZA PASSION SPRITZ COCKTAIL 0.2L",
+      "supply_method": "MANUFACTURED",
+      "status": "INACTIVE",
+      "on_hand": 0.0
+    },
+    {
+      "item_id": "FG-MUZ-QUE-200ML",
+      "sku": "GTCC-MUZ-QUE-0.2L",
+      "item_name": "MUZA QUEEN VIOLET COCKTAIL 0.2L",
+      "supply_method": "MANUFACTURED",
+      "status": "INACTIVE",
+      "on_hand": 4.0
+    },
+    {
+      "item_id": "GTCC-MUZ-APPZ-1L",
+      "sku": null,
+      "item_name": "APPLE ZEST COCKTAIL 1L",
+      "supply_method": "BOUGHT_FINISHED",
+      "status": "INACTIVE",
+      "on_hand": 0.0
+    },
+    {
+      "item_id": "GTCC-MUZ-PSSP-1L",
+      "sku": null,
+      "item_name": "MUZA PASSION SHPRITZ COCKTAIL 1L",
+      "supply_method": "BOUGHT_FINISHED",
+      "status": "INACTIVE",
+      "on_hand": 0.0
+    },
+    {
+      "item_id": "GTCC-MUZ-SMAR-1L",
+      "sku": null,
+      "item_name": "MUZA SPICY MARGARITA COCKTAIL1L",
+      "supply_method": "BOUGHT_FINISHED",
+      "status": "INACTIVE",
+      "on_hand": 0.0
+    }
+  ],
+  "ARCHIVE_BOM_HEADS": [
+    {
+      "bom_head_id": "BOM-BASE-MUZ-HER-200ML",
+      "parent_ref_id": "BASE-MUZ-HER-200ML",
+      "parent_name": "MUZA HERBAL MULE BLISS COCKTAIL 0.2L BASE",
+      "bom_kind": "BASE",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-BASE-MUZ-JAS-200ML",
+      "parent_ref_id": "BASE-MUZ-JAS-200ML",
+      "parent_name": "MUZA JASMINE COCKTAIL 0.2L BASE",
+      "bom_kind": "BASE",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-BASE-MUZ-JASM-1L",
+      "parent_ref_id": "BASE-MUZ-JASM-1L",
+      "parent_name": "MUZA JASMIN MIXER 1L BASE",
+      "bom_kind": "BASE",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-BASE-MUZ-NEG-200ML",
+      "parent_ref_id": "BASE-MUZ-NEG-200ML",
+      "parent_name": "MUZA NEGRONI COCKTAIL 0.2L BASE",
+      "bom_kind": "BASE",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-BASE-MUZ-PNMM-1L",
+      "parent_ref_id": "BASE-MUZ-PNMM-1L",
+      "parent_name": "MUZA PINK MAMA MIXER 1L BASE",
+      "bom_kind": "BASE",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-BASE-MUZ-PRPL-1L",
+      "parent_ref_id": "BASE-MUZ-PRPL-1L",
+      "parent_name": "MUZA PURPLE KISS MIXER 1L BASE",
+      "bom_kind": "BASE",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-BASE-MUZ-QUE-200ML",
+      "parent_ref_id": "BASE-MUZ-QUE-200ML",
+      "parent_name": "MUZA QUEEN VIOLET COCKTAIL 0.2L BASE",
+      "bom_kind": "BASE",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-BASE-MUZ-TRIL-1L",
+      "parent_ref_id": "BASE-MUZ-TRIL-1L",
+      "parent_name": "MUZA TROPICAL ISRAELI MIXER 1L BASE",
+      "bom_kind": "BASE",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-BZSM-1L",
+      "parent_ref_id": "ADD-MUZ-BZSM-1L",
+      "parent_name": "MUZA BASIL SMASH MIXER 1L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-HER-1L",
+      "parent_ref_id": "ADD-MUZ-HER-1L",
+      "parent_name": "MUZA HERBAL MULE BLISS MIXER 1L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-HER-200ML",
+      "parent_ref_id": "FG-MUZ-HER-200ML",
+      "parent_name": "MUZA HERBAL MULE BLISS COCKTAIL 0.2L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-JAS-200ML",
+      "parent_ref_id": "FG-MUZ-JAS-200ML",
+      "parent_name": "MUZA JASMINE COCKTAIL 0.2L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-JASM-1L",
+      "parent_ref_id": "ADD-MUZ-JASM-1L",
+      "parent_name": "MUZA JASMIN MIXER 1L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-MRCL-1L",
+      "parent_ref_id": "ADD-MUZ-MRCL-1L",
+      "parent_name": "MUZA CLASSIC MARGARITA MIXER 1L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-NEG-200ML",
+      "parent_ref_id": "FG-MUZ-NEG-200ML",
+      "parent_name": "MUZA NEGRONI COCKTAIL 0.2L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-PNMM-1L",
+      "parent_ref_id": "ADD-MUZ-PNMM-1L",
+      "parent_name": "MUZA PINK MAMA MIXER 1L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-PRPL-1L",
+      "parent_ref_id": "ADD-MUZ-PRPL-1L",
+      "parent_name": "MUZA PURPLE KISS MIXER 1L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-PSC-200ML",
+      "parent_ref_id": "FG-MUZ-PSC-200ML",
+      "parent_name": "MUZA PASSION SPRITZ COCKTAIL 0.2L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-QUE-200ML",
+      "parent_ref_id": "FG-MUZ-QUE-200ML",
+      "parent_name": "MUZA QUEEN VIOLET COCKTAIL 0.2L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    },
+    {
+      "bom_head_id": "BOM-MUZ-TRIL-1L",
+      "parent_ref_id": "ADD-MUZ-TRIL-1L",
+      "parent_name": "MUZA TROPICAL ISRAELI MIXER 1L",
+      "bom_kind": "PACK",
+      "status": "ACTIVE",
+      "target_status": "ARCHIVED"
+    }
+  ],
+  "RETIRE_MAPPINGS": [
+    {
+      "source_channel": "green_invoice",
+      "item_id": "ADD-MUZ-BZSM-1L",
+      "external_sku": "0726529648188",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "green_invoice",
+      "item_id": "FG-MUZ-PSC-200ML",
+      "external_sku": "0693493237765",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "ADD-MUZ-BZSM-1L",
+      "external_sku": "GTMX-MUZ-BZSM-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "ADD-MUZ-HER-1L",
+      "external_sku": "GTMX-MUZ-HER-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "ADD-MUZ-JASM-1L",
+      "external_sku": "GTCC-MUZ-JASM-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "ADD-MUZ-JASM-1L",
+      "external_sku": "GTMX-MUZ-JASM-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "ADD-MUZ-MRCL-1L",
+      "external_sku": "GTMX-MUZ-MRCL-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "ADD-MUZ-PNMM-1L",
+      "external_sku": "GTCC-MUZ-PNMM-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "ADD-MUZ-PNMM-1L",
+      "external_sku": "GTMX-MUZ-PNMM-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "ADD-MUZ-PRPL-1L",
+      "external_sku": "GTMX-MUZ-PRPL-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "ADD-MUZ-TRIL-1L",
+      "external_sku": "GTMX-MUZ-TRIL-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "FG-MUZ-HER-200ML",
+      "external_sku": "GTCC-MUZ-HER-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "FG-MUZ-JAS-200ML",
+      "external_sku": "GTCC-MUZ-JAS-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "FG-MUZ-NEG-200ML",
+      "external_sku": "GTCC-MUZ-NEG-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "FG-MUZ-PSC-200ML",
+      "external_sku": "GTCC-MUZ-PSC-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "FG-MUZ-QUE-200ML",
+      "external_sku": "GTCC-MUZ-QUE-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "GTCC-MUZ-APPZ-1L",
+      "external_sku": "GTCC-MUZ-APPZ-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "GTCC-MUZ-PSSP-1L",
+      "external_sku": "GTCC-MUZ-PSSP-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "lionwheel",
+      "item_id": "GTCC-MUZ-SMAR-1L",
+      "external_sku": "GTCC-MUZ-SMAR-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-BZSM-1L",
+      "external_sku": "ADD-MUZ-BZSM-1L",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-BZSM-1L",
+      "external_sku": "GTMX-MUZ-BZSM-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-HER-1L",
+      "external_sku": "ADD-MUZ-HER-1L",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-HER-1L",
+      "external_sku": "GTMX-MUZ-HER-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-JASM-1L",
+      "external_sku": "ADD-MUZ-JASM-1L",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-JASM-1L",
+      "external_sku": "GTMX-MUZ-JASM-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-MRCL-1L",
+      "external_sku": "ADD-MUZ-MRCL-1L",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-MRCL-1L",
+      "external_sku": "GTMX-MUZ-MRCL-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-PNMM-1L",
+      "external_sku": "ADD-MUZ-PNMM-1L",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-PNMM-1L",
+      "external_sku": "GTMX-MUZ-PNMM-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-PRPL-1L",
+      "external_sku": "ADD-MUZ-PRPL-1L",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-PRPL-1L",
+      "external_sku": "GTMX-MUZ-PRPL-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-TRIL-1L",
+      "external_sku": "ADD-MUZ-TRIL-1L",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "ADD-MUZ-TRIL-1L",
+      "external_sku": "GTMX-MUZ-TRIL-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-HER-200ML",
+      "external_sku": "FG-MUZ-HER-200ML",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-HER-200ML",
+      "external_sku": "GTCC-MUZ-HER-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-JAS-200ML",
+      "external_sku": "FG-MUZ-JAS-200ML",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-JAS-200ML",
+      "external_sku": "GTCC-MUZ-JAS-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-NEG-200ML",
+      "external_sku": "FG-MUZ-NEG-200ML",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-NEG-200ML",
+      "external_sku": "GTCC-MUZ-NEG-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-PSC-200ML",
+      "external_sku": "FG-MUZ-PSC-200ML",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-PSC-200ML",
+      "external_sku": "GTCC-MUZ-PSC-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-QUE-200ML",
+      "external_sku": "FG-MUZ-QUE-200ML",
+      "mapping_status": "inactive",
+      "action": "already inactive, no-op"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "FG-MUZ-QUE-200ML",
+      "external_sku": "GTCC-MUZ-QUE-0.2L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "GTCC-MUZ-APPZ-1L",
+      "external_sku": "GTCC-MUZ-APPZ-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "GTCC-MUZ-PSSP-1L",
+      "external_sku": "GTCC-MUZ-PSSP-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    },
+    {
+      "source_channel": "shopify",
+      "item_id": "GTCC-MUZ-SMAR-1L",
+      "external_sku": "GTCC-MUZ-SMAR-1L",
+      "mapping_status": "active",
+      "action": "retire -> inactive"
+    }
+  ],
+  "ARCHIVE_SHOPIFY": [
+    {
+      "product_id": "gid://shopify/Product/7939285319921",
+      "title": "קוקטייל גאסמין גאז  (וויסקי ) 1 ל | \"JASMINE JAZZ\"",
+      "sku": "GTCC-JAS-JAZ-1L",
+      "inventory_quantity": -424,
+      "status": "ARCHIVED",
+      "note": "legacy Hebrew predecessor, no MUZ in SKU",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/7939285909745",
+      "title": "קוקטייל טרופיקל אין גאפן (גין) 1 ל | \"TROPICAL IN JAPAN\"",
+      "sku": "GTCC-TRO-JAP-1L",
+      "inventory_quantity": -1482,
+      "status": "ARCHIVED",
+      "note": "legacy Hebrew predecessor, no MUZ in SKU",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9215487705329",
+      "title": "Muza Negroni Cocktail 200ml",
+      "sku": "GTCC-MUZ-NEG-0.2L",
+      "inventory_quantity": 0,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9215487738097",
+      "title": "Muza Jasmine Cocktail 200ml",
+      "sku": "GTCC-MUZ-JAS-0.2L",
+      "inventory_quantity": 0,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9232758604017",
+      "title": "Muza Spicy Margarita Cocktail 1000ml",
+      "sku": "GTCC-MUZ-SMAR-1L",
+      "inventory_quantity": -16,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9232817062129",
+      "title": "Muza Anise Bliss Cocktail 1000ml",
+      "sku": "GTCC-MUZ-ANBL-1L",
+      "inventory_quantity": -71,
+      "status": "ARCHIVED",
+      "note": "no items row",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9232818012401",
+      "title": "Muza Russian Sputnik Cocktail 1000ml",
+      "sku": "GTCC-MUZ-RSSP-1L",
+      "inventory_quantity": 0,
+      "status": "ARCHIVED",
+      "note": "never sold in 24m window; easy to miss",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9232887480561",
+      "title": "Muza Pink Mama Cocktail 1000ml",
+      "sku": "GTCC-MUZ-PNMM-1L",
+      "inventory_quantity": -653,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9238848471281",
+      "title": "Muza Tropical Israeli Cocktail 1000ml",
+      "sku": "GTCC-MUZ-TRIL-1L",
+      "inventory_quantity": -476,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9239004807409",
+      "title": "Muza Cherry Bloom Cocktail 1000ml",
+      "sku": "GTCC-MUZ-CHRBL-1L",
+      "inventory_quantity": -4,
+      "status": "ARCHIVED",
+      "note": "no items row",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9241226281201",
+      "title": "Muza Jasmin Mixer 1000ml",
+      "sku": "GTMX-MUZ-JASM-1L",
+      "inventory_quantity": 0,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9241229164785",
+      "title": "Muza Pink Mama Mixer 1000ml",
+      "sku": "GTMX-MUZ-PNMM-1L",
+      "inventory_quantity": 0,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9241229885681",
+      "title": "Muza Herbal Mule Bliss Mixer 1000ml",
+      "sku": "GTMX-MUZ-HER-1L",
+      "inventory_quantity": 0,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9247588057329",
+      "title": "Muza Apple Zest Cocktail 1000ml",
+      "sku": "GTCC-MUZ-APPZ-1L",
+      "inventory_quantity": -10,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9247588450545",
+      "title": "Muza Passion Spritz Cocktail 1000ml",
+      "sku": "GTCC-MUZ-PSSP-1L",
+      "inventory_quantity": -19,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9254951125233",
+      "title": "Muza Basil Smash Cocktail 1000ml",
+      "sku": "GTCC-MUZ-BZSM-1L",
+      "inventory_quantity": -26,
+      "status": "ARCHIVED",
+      "note": "no items row",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9267099795697",
+      "title": "Muza Jasmin Cocktail 1000ml",
+      "sku": "GTCC-MUZ-JASM-1L",
+      "inventory_quantity": -96,
+      "status": "ARCHIVED",
+      "note": "no items row",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9268277575921",
+      "title": "Muza Tropical in Japan Cocktail 1000ml",
+      "sku": "GTCC-MUZ-TROJ-1L",
+      "inventory_quantity": -261,
+      "status": "ARCHIVED",
+      "note": "no items row",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    },
+    {
+      "product_id": "gid://shopify/Product/9301218754801",
+      "title": "Muza Passion Spritz Cocktail 200ml",
+      "sku": "GTCC-MUZ-PSC-0.2L",
+      "inventory_quantity": 0,
+      "status": "ARCHIVED",
+      "note": "",
+      "archived_at": "2026-08-30, productUpdate via bulk-update-product-status, 19/19 succeeded"
+    }
+  ],
+  "SHOPIFY_ALREADY_ARCHIVED": [
+    {
+      "product_id": "gid://shopify/Product/7939290693873",
+      "title": "קוקטייל גאסמין גאז (וויסקי ) 0.15 ל (20 יח) | \"JASMINE JAZZ\"",
+      "sku": "GTCC-JAS-JAZ-0.15Lx20",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/7939290759409",
+      "title": "קוקטייל טרופיקל אין גאפן (גין) 0.15 ל (20 יח) | \"TROPICAL IN JAPAN\"",
+      "sku": "GTCC-TRO-JAP-0.15Lx20",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/7993717719281",
+      "title": "קוקטייל גאסמין גאז (וויסקי ) 0.15 ל | \"JASMINE JAZZ\"",
+      "sku": "GTCC-JAS-JAZ-0.15L",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/7993717883121",
+      "title": "קוקטייל טרופיקל אין גאפן (גין) 0.15 ל | \"TROPICAL IN JAPAN\"",
+      "sku": "GTCC-TRO-JAP-0.15L",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/7996744990961",
+      "title": "מארז קוקטיילים וויסקי, ערק 0.15 ל",
+      "sku": "GTGS-WHI-ARA-0.15L",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/8081587208433",
+      "title": "מארז קוקטיילים 150 מ״ל. רד מקסיקן, קמפארי, טרופיקל , ירושלמי",
+      "sku": "GFTBX-COC-150-8301",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/8105895919857",
+      "title": "מארז קוקטיילים וויסקי, גין 0.15 ל",
+      "sku": "GTGS-WHI-GIN-0.15L",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/8144788095217",
+      "title": "מארז זוגי - טרופיקל + ראשן",
+      "sku": "GTGS-VOD-CAM-0.15L",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/8447152292081",
+      "title": "מתנה קוקטייל טרופיקל אין גאפן (גין) 1 ל",
+      "sku": "",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/8447152324849",
+      "title": "מתנה קוקטייל גאסמין גאז  (וויסקי ) 1 ל",
+      "sku": "",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/8447152390385",
+      "title": "מתנה קוקטייל טרופיקל אין גאפן (גין) 0.15 ל",
+      "sku": "",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/8447152783601",
+      "title": "מתנה קוקטייל גאסמין גאז  (וויסקי ) 0.15 ל",
+      "sku": "",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/8447154585841",
+      "title": "קופסת כנפיים 4 קוקטיילים 150 מ״ל - טרופיקל אין גאפן",
+      "sku": "",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/9232820273393",
+      "title": "Muza Blueberry Breeze Cocktail 1000ml",
+      "sku": "GTCC-MUZ-BLBR-1L",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/9246439735537",
+      "title": "Production Muza 200ml",
+      "sku": "GTPR-MUZ-200",
+      "status": "ARCHIVED"
+    },
+    {
+      "product_id": "gid://shopify/Product/9246440849649",
+      "title": "Production Muza 1000ml",
+      "sku": "GTPR-MUZ-1000",
+      "status": "ARCHIVED"
+    }
+  ],
+  "KEEP_COMPONENTS": [
+    {
+      "component_id": "PKG-BOTTLE-200ML",
+      "component_name": "Bottle 200ml (Muza Cocktails)",
+      "status": "ACTIVE",
+      "on_hand": 1053.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-BOTTLE-MUZ-1L",
+      "component_name": "Clear Glass Bottle 1000ml (Muza)",
+      "status": "ACTIVE",
+      "on_hand": 37.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-CAP-200ML",
+      "component_name": "Cap for 200ml cocktail bottles",
+      "status": "ACTIVE",
+      "on_hand": 1054.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-CAP-MUZ-1L",
+      "component_name": "Black Cap 31.5x44mm",
+      "status": "ACTIVE",
+      "on_hand": 183.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-CARTON-200ML",
+      "component_name": "Cardboard Box for 200ml cocktails (Muza)",
+      "status": "ACTIVE",
+      "on_hand": 400.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-CARTON-MUZ-1L",
+      "component_name": "Cardboard Box for 1000ml (Muza)",
+      "status": "ACTIVE",
+      "on_hand": 35.66666498,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-BZSM-1L",
+      "component_name": "Sticker: Muza Basil Smash Mixer (1L)",
+      "status": "ACTIVE",
+      "on_hand": 500.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-HER-1L",
+      "component_name": "Sticker: Muza Herbal Mule Bliss Mixer (1L)",
+      "status": "ACTIVE",
+      "on_hand": 500.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-HER-200ML",
+      "component_name": "Sticker: Muza Herbal Mule Bliss Cocktail (200ml)",
+      "status": "ACTIVE",
+      "on_hand": 1000.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-JAS-200ML",
+      "component_name": "Sticker: Muza Jasmine Cocktail (200ml)",
+      "status": "ACTIVE",
+      "on_hand": 1000.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-JASM-1L",
+      "component_name": "Sticker: Muza Jasmin Mixer (1L)",
+      "status": "ACTIVE",
+      "on_hand": 70.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-MRCL-1L",
+      "component_name": "Sticker: Muza Classic Margarita Mixer (1L)",
+      "status": "ACTIVE",
+      "on_hand": 800.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-NEG-200ML",
+      "component_name": "Sticker: Muza Negroni Cocktail (200ml)",
+      "status": "ACTIVE",
+      "on_hand": 1000.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-PNMM-1L",
+      "component_name": "Sticker: Muza Pink Mama Mixer (1L)",
+      "status": "ACTIVE",
+      "on_hand": 204.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-PRPL-1L",
+      "component_name": "Sticker: Muza Purple Kiss Mixer (1L)",
+      "status": "ACTIVE",
+      "on_hand": 215.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-PSC-200ML",
+      "component_name": "Sticker: Muza Passion Spritz Cocktail (200ml)",
+      "status": "ACTIVE",
+      "on_hand": 1000.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-QUE-200ML",
+      "component_name": "Sticker: Muza Queen Violet Cocktail (200ml)",
+      "status": "ACTIVE",
+      "on_hand": 1000.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "PKG-LABEL-MUZ-TRIL-1L",
+      "component_name": "Sticker: Muza Tropical Israeli Mixer (1L)",
+      "status": "ACTIVE",
+      "on_hand": 114.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-ALCOHOL-96",
+      "component_name": "96% Ethyl Alcohol",
+      "status": "ACTIVE",
+      "on_hand": 2.5,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-APEROL",
+      "component_name": "Aperol",
+      "status": "ACTIVE",
+      "on_hand": 0.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-BASIL-FRESH",
+      "component_name": "Fresh Basil",
+      "status": "ACTIVE",
+      "on_hand": 0.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-BASIL-SYRUP",
+      "component_name": "Basil Syrup",
+      "status": "ACTIVE",
+      "on_hand": 14.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-BLUEBERRY-SYRUP",
+      "component_name": "Blueberry Syrup",
+      "status": "ACTIVE",
+      "on_hand": 45.9361705,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-BLUEBERRY-SYRUP-VEDRENNE",
+      "component_name": "Blueberry Syrup Vedrenne",
+      "status": "ACTIVE",
+      "on_hand": 52.87234175,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-CAMPARI",
+      "component_name": "Campari",
+      "status": "ACTIVE",
+      "on_hand": 12.99,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-CUCUMBER-SYRUP",
+      "component_name": "Cucumber Syrup",
+      "status": "ACTIVE",
+      "on_hand": 15.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-GIN",
+      "component_name": "Dry Gin",
+      "status": "ACTIVE",
+      "on_hand": 20.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-GREEN-APPLE-SYRUP",
+      "component_name": "Green Apple Syrup",
+      "status": "ACTIVE",
+      "on_hand": 39.15957565,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-MELON-EXTRACT",
+      "component_name": "Melon Extract",
+      "status": "ACTIVE",
+      "on_hand": 0.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-MELON-SYRUP-ODK",
+      "component_name": "Melon Syrup",
+      "status": "ACTIVE",
+      "on_hand": 12.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-MERLOT-GRAPES",
+      "component_name": "Merlot Grapes",
+      "status": "ACTIVE",
+      "on_hand": 3.082,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-PASSION-SEEDLESS",
+      "component_name": "Passion Fruit Seedless (Pri HaBustan)",
+      "status": "ACTIVE",
+      "on_hand": 80.85327845,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-TRIPLE-SEC",
+      "component_name": "Triple Sec 17%",
+      "status": "ACTIVE",
+      "on_hand": 2.69,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-VERMOUTH-RED",
+      "component_name": "Red Vermouth",
+      "status": "ACTIVE",
+      "on_hand": 12.0,
+      "action": "DO NOT TOUCH"
+    },
+    {
+      "component_id": "RAW-VIOLET-LIQUEUR",
+      "component_name": "Violet Liqueur (Creme de Violette)",
+      "status": "ACTIVE",
+      "on_hand": 7.3,
+      "action": "DO NOT TOUCH"
+    }
+  ],
+  "DO_NOT_TOUCH": {
+    "components": "All 35 KEEP_COMPONENTS stay ACTIVE. No statement in migration 0340 references private_core.components. Tom's second sentence.",
+    "stock_ledger": "182 MUZA rows, append-only, untouched. No reversal, no correction, no write-off.",
+    "balances": "fg_on_hand 19 units left exactly as measured. Disposition is Tom's decision (masterprompt 6 B).",
+    "shopify_inventory": "Negative quantities are pre-existing and owned by shopify_available_reconcile. Not set, not corrected.",
+    "customers": "מוזה קוקטיילים בע\"מ and MUZA COCKTAILS are Shopify CUSTOMER records under U-010. Never archived here.",
+    "other_lines": "GT White/Pink/Nonomimi Sangria (GTCC-WHI-SAN-1L, GTCC-PIN-SAN-1L, GTCC-NON-SAN-1L, GTCC-NON-SAN-3.85L) are ACTIVE Shopify cocktails that are NOT MUZA-branded. Out of scope."
+  },
+  "findings": {
+    "AP-DRI-PSBLAP-1": "Masterprompt 2.4/3.5 flagged this SKU (Hebrew title naming MUZA Purple Kiss, accessories SKU range) for archival. Verified 2026-08-30: no Shopify product carries this SKU (sku:AP-DRI-PSBLAP-1 returns zero nodes) and no private_core.items row matches. It exists only in sales history. Nothing to archive. Naming oddity reported, nothing renamed.",
+    "legacy_hebrew_skus": "Of the eleven no-MUZ legacy SKUs in masterprompt 3.5, only GTCC-JAS-JAZ-1L and GTCC-TRO-JAP-1L are still ACTIVE in Shopify. The 0.15L, x20 and gift-box variants are ALREADY ARCHIVED.",
+    "shopify_only_products": "Six ACTIVE Shopify MUZA products have no private_core.items row at all: GTCC-MUZ-ANBL-1L, GTCC-MUZ-RSSP-1L, GTCC-MUZ-JASJ-1L, GTCC-MUZ-CHRBL-1L, GTCC-MUZ-BZSM-1L, GTCC-MUZ-JASM-1L, GTCC-MUZ-TROJ-1L. They are storefront-only and are archived in W3 only.",
+    "coverage_caveat": "Archiving MUZA items does NOT change the coverage query, because all 15 MUZA items were already INACTIVE and therefore already outside the query population. coverage_before_unmapped = 3 of 62 ACTIVE sellable. Any later movement in that number is composition, not progress.",
+    "reconciler_was_never_syncing_muza": "shopify_available_reconcile/index.ts:49 builds its worklist with WHERE i.supply_method IN (...) AND i.status='ACTIVE', and only then joins integration_sku_map (:63). Every MUZA item was already INACTIVE, so the reconciler has NOT been writing `available` for any MUZA SKU. The numbers on those Shopify products are frozen leftovers from when the items were ACTIVE. This makes the feared five-minute error loop moot in practice — the mapping was retired first anyway, which is the correct order regardless.",
+    "mapping_status_readers": "Only three readers, all Shopify-side: shopify_available_reconcile, the dormant shopify_fg_push (tombstoned 0307), and factory_os_jobs:3655. The LionWheel resolver (api/src/integrations/lionwheel/sku_resolver.ts) filters on source_channel and approval_status ONLY and never reads mapping_status, so retiring the 17 lionwheel rows does not stop a straggler MUZA order from resolving and posting FG_OUT. Sell-through of the remaining units keeps the ledger correct.",
+    "stranded_stock": "GTMX-MUZ-TRIL-1L (4 units) and GTMX-MUZ-PRPL-1L (1 unit) are ACTIVE on the storefront but their Shopify `available` reads 0, so they cannot actually be bought. Nothing will correct that on its own: the reconciler skips them (item INACTIVE) and their mapping is now retired. 5 of the 19 units are stranded. Fixing it needs a decision — see UNRESOLVED U-MUZA-1.",
+    "GTCC-MUZ-JASJ-1L": "Left ACTIVE. Shopify reports 14 units; the system has no items row, no mapping and no balance for this SKU, so there is no authoritative stock number to check it against. Archiving it would have contradicted the plain reading of 'leave what has stock' on the only figure that exists. Kept pending Tom's word — see UNRESOLVED U-MUZA-2. One call reverts it."
+  },
+  "tom_decision_2026_08_30": {
+    "lists": "מאושר בכל הערוצים אבל מוצרים שעדיין יש במלאי אל תארכב בשופיפיי- במערכת אתה יכול לארכב את כולם",
+    "shopify": "תשאיר מה שיש מלאי וכל השאר תארכב",
+    "reading": "System side: retire everything (all 15 items, all 20 BOM heads, all 34 live mappings on all three channels). Storefront side: archive only the products that no longer carry stock, so the remainder can sell through.",
+    "grade": "user_confirmed"
+  },
+  "KEEP_SHOPIFY_IN_STOCK": [
+    {
+      "product_id": "gid://shopify/Product/9215487803633",
+      "title": "Muza Queen Violet Cocktail 200ml",
+      "sku": "GTCC-MUZ-QUE-0.2L",
+      "inventory_quantity": 4,
+      "status": "ACTIVE — kept on Tom's instruction",
+      "note": "",
+      "system_on_hand": 4,
+      "shopify_available": 4,
+      "sellable": true
+    },
+    {
+      "product_id": "gid://shopify/Product/9215487901937",
+      "title": "Muza Herbal Mule Bliss Cocktail 200ml",
+      "sku": "GTCC-MUZ-HER-0.2L",
+      "inventory_quantity": 1,
+      "status": "ACTIVE — kept on Tom's instruction",
+      "note": "",
+      "system_on_hand": 1,
+      "shopify_available": 1,
+      "sellable": true
+    },
+    {
+      "product_id": "gid://shopify/Product/9232819585265",
+      "title": "Muza Basil Smash Mixer 1000ml",
+      "sku": "GTMX-MUZ-BZSM-1L",
+      "inventory_quantity": 1,
+      "status": "ACTIVE — kept on Tom's instruction",
+      "note": "",
+      "system_on_hand": 1,
+      "shopify_available": 1,
+      "sellable": true
+    },
+    {
+      "product_id": "gid://shopify/Product/9232820830449",
+      "title": "Muza Jasmin Jazz Cocktail 1000ml",
+      "sku": "GTCC-MUZ-JASJ-1L",
+      "inventory_quantity": 14,
+      "status": "ACTIVE — kept on Tom's instruction",
+      "note": "no items row",
+      "system_on_hand": null,
+      "shopify_available": 14,
+      "sellable": true
+    },
+    {
+      "product_id": "gid://shopify/Product/9241225363697",
+      "title": "Muza Classic Margarita Mixer 1000ml",
+      "sku": "GTMX-MUZ-MRCL-1L",
+      "inventory_quantity": 8,
+      "status": "ACTIVE — kept on Tom's instruction",
+      "note": "",
+      "system_on_hand": 8,
+      "shopify_available": 8,
+      "sellable": true
+    },
+    {
+      "product_id": "gid://shopify/Product/9241230508273",
+      "title": "Muza Tropical Israeli Mixer 1000ml",
+      "sku": "GTMX-MUZ-TRIL-1L",
+      "inventory_quantity": 0,
+      "status": "ACTIVE — kept on Tom's instruction",
+      "note": "",
+      "system_on_hand": 4,
+      "shopify_available": 0,
+      "sellable": false
+    },
+    {
+      "product_id": "gid://shopify/Product/9241231425777",
+      "title": "Muza Purple Kiss Mixer 1000ml",
+      "sku": "GTMX-MUZ-PRPL-1L",
+      "inventory_quantity": 0,
+      "status": "ACTIVE — kept on Tom's instruction",
+      "note": "",
+      "system_on_hand": 1,
+      "shopify_available": 0,
+      "sellable": false
+    }
+  ],
+  "outcome": {
+    "applied_at": "2026-08-30",
+    "migration": "0340_muza_line_retirement.sql, applied to prod (supabase migration name: muza_line_retirement)",
+    "items_active_after": 0,
+    "items_inactive_after": 15,
+    "mappings_live_after": 0,
+    "mappings_inactive_after": 46,
+    "bom_heads_active_after": 0,
+    "bom_heads_archived_after": 20,
+    "components_touched": 0,
+    "components_active_after": 35,
+    "ledger_rows_after": 182,
+    "fg_on_hand_after": 19,
+    "coverage_after_unmapped": 3,
+    "active_sellable_after": 62,
+    "shopify_archived": 19,
+    "shopify_kept_active": 7
+  }
+}
