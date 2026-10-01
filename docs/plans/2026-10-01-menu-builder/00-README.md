@@ -19,6 +19,7 @@
 | `05-integration-and-architecture-decisions.md` | MB-D02/D07/D09/D10/D11/D12 and the Sales System Integration Contract proposal; the 24 h task — **approved** |
 | `06-decision-ready-product-spec.md` | **The Decision-Ready Product Spec** (36 sections, copy batch, acceptance criteria, unresolved assumptions) — **approved by Tom 2026-10-01** |
 | `07-product-review-handoff.md` | **Product Review Handoff** for Session 2: everything a fresh session needs to audit the product without this conversation |
+| `masterprompt-2026-10-01.md` | Tom's governing masterprompt, verbatim, for Sessions 2 and 3 |
 | `evidence/` | Verbatim read-only reconstructions dated 2026-10-01: gt-site lead funnel · customer ordering portal · sales/lead backend · staff sales corridor · drinks/products data map |
 
 ## Rules this folder follows
