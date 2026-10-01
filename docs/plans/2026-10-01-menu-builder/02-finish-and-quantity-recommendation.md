@@ -1,6 +1,8 @@
 # MB-D08 + MB-D03 — The final output: what the lead holds when the Builder is done, and how quantities get there
 
-> Owner-minded recommendation, Session 1, 2026-10-01. Status: **OPEN — put to Tom.** Asked right after Tom deferred placement (MB-D01) and said the final output is decided "ממש בקרוב, בסשן הזה".
+> Owner-minded recommendation, Session 1, 2026-10-01. Status: **DECIDED by Tom, 2026-10-01** — layers 1, 2 and the action approved ("את אחת, שתיים ושלוש אני מאשר ומחזק מאוד"); the 24-hour branded-menu reward is **not added** ("את ארבע אל תוסיף"); one amendment to layer 2 (below). Recorded in `decision-ledger.md` as MB-D08 and MB-D03 (FINAL — PROVISIONAL on DL-06/DL-09).
+>
+> **Tom's amendment to layer 2 (the ₪800 rule):** "כאשר ההזמנה לא מגיעה למינימום המערכת אוטומטית מעגלת למעלה כדי שההזמנה תגיע למינימום את המוצר לפי העדיפות שלו — קודם תה 1 ליטר, אחר כך תה חצי ליטר ואז השאר." The suggestion ladder in the original text (free expansion first, then a product, then quantity) is replaced by this automatic round-up, see §Amendment. Asked right after Tom deferred placement (MB-D01) and said the final output is decided "ממש בקרוב, בסשן הזה".
 > Evidence: `ground-truth.md` §1, §3, §5–§6; `evidence/2026-10-01-drinks-products-data-map.md` §A.4, §C; `evidence/2026-10-01-customer-portal-reconstruction.md` §4–§6.
 
 ## What I found
@@ -35,6 +37,16 @@
 **The reward.** If Tom keeps D-011: the finish states it plainly, `הזמנה תוך 24 שעות — התפריט הזה מעוצב עם הלוגו שלכם, מוכן להדפסה, במתנה`. The clock starts at **menu completion**, not at link send (D-011 counted from the link, which can be days before the lead builds anything). Fulfilment in V1 is manual in Canva at today's volume (a handful a month); the Builder only records the promise and the deadline on the lead.
 
 **What the finish does not show in V1:** food cost per cup, profit per cup, monthly revenue projections. Whether and how economics appear is the next question (MB-D04).
+
+## Amendment — the ₪800 round-up rule (Tom, 2026-10-01)
+
+When the starter kit totals less than ₪800 ex-VAT, the system raises quantities **automatically** until the total reaches the minimum, by product priority:
+
+1. tea concentrate 1 L;
+2. tea concentrate 500 ml;
+3. everything else (purées, powders).
+
+Rules for the spec: only products already in the kit are raised (the menu never gains a product the lead did not choose); increments follow the sell unit (pairs for tea and purée, one bag for powders); within a priority tier, the product used by the most chosen drinks is raised first, then round-robin; the round-up is shown, never silent: one line under the total, `עיגלנו למינימום ההזמנה ₪800: הוספנו 2 × FRESH 1 ליטר`, and every raised line keeps its coverage text; the customer can still edit after the round-up, and the send button re-checks the minimum (server-side, as the portal does today). Open for the spec, not for Tom: a menu with no tea at all (ube- or matcha-only) reaches tier 3 immediately, so the round-up may add a second powder bag; the spec states the exact behaviour for that edge.
 
 ## Why this is best for GT
 
