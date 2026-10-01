@@ -1,0 +1,31 @@
+PASS rep@staging.invalid: signed-out deep link goes to login with destination kept /login?redirectTo=%2Fsales%2Fleads%3Flead%3D1b29f5bc-9650-4e1f-9ebc-abd0fdd72c2d
+CONSOLE Failed to load resource: the server responded with a status of 401 (Unauthorized)
+CONSOLE Failed to load resource: the server responded with a status of 404 (Not Found)
+CONSOLE Failed to load resource: the server responded with a status of 401 (Unauthorized)
+PASS rep@staging.invalid: magic link lands on the deep link /sales/leads?lead=1b29f5bc-9650-4e1f-9ebc-abd0fdd72c2d
+PASS a typed past date is lifted to the first schedulable date typed 2020-01-01 -> 2026-10-02 (min 2026-10-02, Israel hour 09)
+PASS rep activity saved over HTTP status=200 request_id=5ee572da-e7a9-4828-8c7b-2f545624f7d3
+PASS request correlates to committed lead_event rows events=2
+PASS request correlates to a committed open task owned by the rep [{"owner_email":"rep@staging.invalid","kind":"call","status":"open"}]
+CONSOLE Failed to load resource: net::ERR_TIMED_OUT
+PASS draft survives a timeout and a reload שיחה סינתטית שנייה mup6eyrd
+PASS retry reuses the request id 794c1a5b-58f3-4707-a24d-777917f966d6 / 794c1a5b-58f3-4707-a24d-777917f966d6
+PASS retry after a committed-but-lost response writes one fact status=200 rows=1 note_rows=0
+PASS rep is denied the manager's lead timeline status=403
+PASS rep lead list holds only the rep's leads rows=1 foreign=0
+PASS rep activity feed holds only the rep's leads (review I2) rows=10 foreign=0
+CONSOLE Failed to load resource: the server responded with a status of 403 (Forbidden)
+PASS rep deep link to a foreign lead shows the approved unavailable state 
+PASS rep has no factory link (D11) 
+PASS order-line reply routes one open reply task to the owner [{"owner_email":"rep@staging.invalid"}]
+PASS Today task card saves an activity with its source task status=200
+PASS manager@staging.invalid: signed-out deep link goes to login with destination kept /login?redirectTo=%2Fsales%2Fleads%3Flead%3D1b29f5bc-9650-4e1f-9ebc-abd0fdd72c2d
+CONSOLE Failed to load resource: the server responded with a status of 401 (Unauthorized)
+CONSOLE Failed to load resource: the server responded with a status of 401 (Unauthorized)
+PASS manager@staging.invalid: magic link lands on the deep link /sales/leads?lead=1b29f5bc-9650-4e1f-9ebc-abd0fdd72c2d
+PASS manager reads the rep's lead 
+PASS manager queue holds the unowned lead task 
+PASS Attention saves an activity that commits one fact status=200 rows=1
+PASS manager keeps the factory link 
+
+SUMMARY 22/22
