@@ -12,10 +12,15 @@
 | `ground-truth.md` | The reconstructed reality: the lead → first-order journey as it runs, the approved and built GT Pulse state, the customer ordering portal, the staff sales corridor, the data map, the decisions that already bind the Builder, conflicts, re-run recipes |
 | `dependency-ledger.md` | **Builder ↔ Sales Dependency Ledger** (mandatory): 18 dependencies, each with source, status, provisional assumption and recheck item |
 | `decision-ledger.md` | Decision Ledger (MB-D01…) and the conflicts/drift found (C-01…C-12) |
-| `01-placement-recommendation.md` | MB-D01: where the Builder sits in the journey — owner-minded recommendation put to Tom |
+| `01-placement-recommendation.md` | MB-D01: placement — Session 1 analysis; **deferred by Tom** |
+| `02-finish-and-quantity-recommendation.md` | MB-D08 + MB-D03: the two-layer finish and the zero-question starter kit with the ₪800 round-up — **approved** |
+| `03-economics-recommendation.md` | MB-D04: which numbers the Builder shows — **approved** |
+| `04-discovery-model-recommendation.md` | MB-D06: groups, curated start, consequence chip, my-menu bar — **approved** |
+| `05-integration-and-architecture-decisions.md` | MB-D02/D07/D09/D10/D11/D12 and the Sales System Integration Contract proposal; the 24 h task — **approved** |
+| `06-decision-ready-product-spec.md` | **The Decision-Ready Product Spec** (36 sections, copy batch, acceptance criteria, unresolved assumptions) — awaiting Tom's design approval |
 | `evidence/` | Verbatim read-only reconstructions dated 2026-10-01: gt-site lead funnel · customer ordering portal · sales/lead backend · staff sales corridor · drinks/products data map |
 
-Later files on this branch: the Decision-Ready Product Spec (incl. the Sales System Integration Contract), the Product Review Handoff for Session 2.
+Later on this branch: the Product Review Handoff for Session 2.
 
 ## Rules this folder follows
 
