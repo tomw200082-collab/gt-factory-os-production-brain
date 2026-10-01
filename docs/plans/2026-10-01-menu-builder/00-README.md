@@ -1,6 +1,6 @@
 # GT Menu Builder / Guided Sales Configurator — discovery folder (Session 1)
 
-**Status: PRODUCT DESIGN APPROVED — WAITING FOR SALES FOUNDATION (Tom, 2026-10-01). No Menu Builder production implementation has begun.** Next: Session 2 (independent review, see `07-product-review-handoff.md`).
+**Status: PRODUCT DESIGN: PASS (Session 2 independent review, 2026-10-01) — WAITING FOR SALES FOUNDATION. No Menu Builder production implementation has begun.** The spec for implementation is `09-final-reviewed-product-spec.md`; the verdict and findings are in `08-independent-review.md`. Next: hard wait for the Sales Foundation Gate, then Session 3 starting with the FINAL SALES RECONCILIATION PASS.
 **Sales Foundation Gate: HOLD** (GT Pulse Unit A on draft PRs gt-factory-os #329 and gt-factory-os-portal #239; release deferred by Tom 2026-09-30; the next Sales session may expand the design). Implementation stays hard-blocked until that gate passes **and** Tom unlocks it, whatever the state of the product spec.
 
 > Design-phase artifacts. **Not authority docs.** Tom's decisions live in his words and, where they touch sales doctrine, in `Sales-Machine/doctrine/decisions.md`. Governing instruction: the Menu Builder masterprompt Tom pasted on 2026-10-01 (three sessions: discovery → independent review → implementation).
@@ -19,8 +19,10 @@
 | `05-integration-and-architecture-decisions.md` | MB-D02/D07/D09/D10/D11/D12 and the Sales System Integration Contract proposal; the 24 h task — **approved** |
 | `06-decision-ready-product-spec.md` | **The Decision-Ready Product Spec** (36 sections, copy batch, acceptance criteria, unresolved assumptions) — **approved by Tom 2026-10-01** |
 | `07-product-review-handoff.md` | **Product Review Handoff** for Session 2: everything a fresh session needs to audit the product without this conversation |
+| `08-independent-review.md` | **PRODUCT DESIGN REVIEW VERDICT** (Session 2): PASS on 09; Sales Foundation Gate HOLD; findings R-01…R-29 classified KEEP · CHANGE · REMOVE · BLOCKER; Session 3 entry checklist |
+| `09-final-reviewed-product-spec.md` | **FINAL REVIEWED PRODUCT SPEC**: 06 with every accepted Session 2 change applied (tagged `[R-nn]`); supersedes 06 for implementation |
 | `masterprompt-2026-10-01.md` | Tom's governing masterprompt, verbatim, for Sessions 2 and 3 |
-| `evidence/` | Verbatim read-only reconstructions dated 2026-10-01: gt-site lead funnel · customer ordering portal · sales/lead backend · staff sales corridor · drinks/products data map |
+| `evidence/` | Verbatim read-only reconstructions dated 2026-10-01: gt-site lead funnel · customer ordering portal · sales/lead backend · staff sales corridor · drinks/products data map · **Session 2 independent checks** (figures 48/48, live prices, draft drink table, the five starting kits, live DB facts) |
 
 ## Rules this folder follows
 

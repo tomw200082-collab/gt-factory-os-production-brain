@@ -35,3 +35,19 @@
 1. A row with status `WIP` or `SPEC` may be designed against, never built against, until the Sales Foundation Gate passes.
 2. A row with status `GAP` is a Builder-owned build item only if it does not duplicate a planned Sales-system piece; otherwise it is a request to the Sales workstream, recorded here and in the Decision Ledger.
 3. Any assumption column entry that the final Sales code contradicts triggers a spec update first (masterprompt §37), never a workaround in code.
+
+## Session 2 refresh — 2026-10-01 (independent review; rows above are kept as Session 1 wrote them)
+
+Re-read live by Session 2 (`evidence/2026-10-01-session2-independent-checks.md` §6). Where a row below disagrees with a row above, the row below is current.
+
+| # | Change | Current status (2026-10-01, Session 2) | Recheck before implementation |
+|---|---|---|---|
+| DL-05 / DL-06 | Unit A heads moved: backend PR #329 `9d423c1`, portal PR #239 `4b94597`, both still **draft**. Closure design D1–D17 (Sales-Machine `status/gt-pulse-a-2026-09-30`, Tom-approved and delegated) adds rep read scope (D3), one open `reply` per lead (D6/D17), owner-following tasks (D8). **The amended 0362 schema is present in production**: `task`, `task_event`, `lead_wait`, triggers `lead_event_task` / `lead_task_owner`, index `task_one_open_reply_per_lead`, `activity_required={"enabled":false}`, 0 tasks, no 0362 row in the migration history. | WIP (draft PRs, unmerged); schema live in production | Sales status `LIVE — HOLD` (WebKit proof open). The Sales record says no production migration happened, which contradicts the live schema. Which state is canonical must be settled before gate item G can pass. |
+| DL-14 | Outreach flag: the Sales workstream reports `SALES_CUSTOMER_OUTREACH_WRITE_ENABLED=true` on Railway and 4 real `first_menu` sends. The row above says FROZEN. | Reported live, not FROZEN | The Builder still sends nothing; re-read the flag on release day |
+| DL-03 / IC-1 | **IC-1 withdrawn** (review R-02). The Builder opens on any live `lead_link` at `/portal/builder/<token>`; state is keyed by `lead_id`; links close at the first order as today. | No Sales-lane schema change needed | — |
+| DL-04 / IC-2 | **Reshaped** (R-18, R-19): one additive `event_type` `menu_builder` with `payload.step ∈ {opened, menu_completed, help_requested}`; rules `help_requested → reply` and `menu_completed → call` due +24 h, plus a new rule: `draft_order` cancels the open `builder:nudge:*` task. `builder_kit_accepted` dropped (`draft_order` carries `builder_session_id`). | GAP — Sales-lane proposal after Unit A | Trigger shape after the merged Unit A |
+| DL-07 / IC-3 | Read model under the rep read scope (D3); no staff label echoes the existing `kit_sent` event | GAP — portal tranche after 185 | Tranche manifest, register |
+| DL-09 / IC-4 | `lead_submission.builder_session_id` (nullable) and the key in the `draft_order` payload; `order_submission` dropped with customers (R-03) | GAP — Builder lane, additive | — |
+| DL-02 | Customer identity no longer needed in V1 (R-03) | n/a in V1 | Returns with V1.1 |
+| DL-19 | Context = the lead's latest `auto_message{kind:'first_menu'}.payload.menu` (live); `?c=` override only (R-29) | PROD (payload exists) | The journey keeps writing `menu` in that payload |
+| **DL-20** | **Doctrine records.** Sales-Machine `doctrine/decisions.md` must record (a) Tom's MB-D04 approval as an amendment of D-018 for the Builder (it states the kit price and per-cup food cost), and (b) MB-D03 superseding the August "no quantities" anchor for the Builder. Doctrine is Tom's to approve (Sales-Machine rule 5). | GAP — Tom + Sales-Machine docs | Before Session 3 writes code |

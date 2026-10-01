@@ -47,3 +47,23 @@
 | C-10 | **Yield claims disagree:** cups per bottle 20 (answer bank, draft) / 20–25 (site) / 33, 30, 13 (U-021); drinks per NAMASTEA bottle 11 vs 13; matcha ₪2.13 vs ₪2.12 vs "278" cups; a matcha page advertises a 50 g pack that is not sold. The data supports 20 cups at 50 ml, 25 at 40 ml, half for 500 ml. | ibid. §2 C4, C5, C8 | Pack-coverage math needs one approved yield per product. |
 | C-11 | **Recipe defects on the approved pages:** matcha masala dose 40 ml (model) vs 50 ml (Canva page); p36 vanilla shows the agave recipe; p12 and the opening-menu drinks are named differently across sources; ASCII `'` vs Hebrew `׳` in names. | ibid. §2 C6, C7, C9 | Names are not join keys; the Builder keys on the figures-file page id. |
 | C-12 | **Figures tooling is pinned to the old file:** the Sales-Machine card reconciler and the pricelist skill's `validate.py`/`build.py` still expect the 2026-08-27 shape; the live site says "עד 87%" / "מ־₪2.85" while the current file gives 86% / ₪2.88; `commercial-terms.md` §2 lists stale opening-menu prices. | ibid. §2 C10, C12–C14 | Not the Builder's to fix; recorded for the Sales / docs lanes. |
+
+## Session 2 — independent review, 2026-10-01
+
+Verdict: **PRODUCT DESIGN: PASS** on `09-final-reviewed-product-spec.md`; **SALES FOUNDATION GATE: HOLD**. Full findings R-01…R-29 with evidence: `08-independent-review.md`. Rows above are kept as Session 1 recorded them; these rows amend them.
+
+| # | Amends | Session 2 decision | Status | Tom's word needed? |
+|---|---|---|---|---|
+| MB-R01 | MB-D01 | Recommend **P3**: the Builder behind the existing order link, same token, no text or schema change | **OPEN — put to Tom** | Yes (placement is his) |
+| MB-R02 | MB-D07, IC-1 | No link purpose; the Builder runs on any live lead link; one session per lead; ends at the first order; lead fields never stored | FINAL (Session 2) — PROVISIONAL on DL-06 | No; Tom may stop it |
+| MB-R03 | MB-D06 (customer tile), MB-D11 | V1 = leads only; existing customers move to V1.1 with Unit B/C | FINAL (Session 2), **touches Tom's approval** | Veto possible |
+| MB-R04 | spec §8 | The bar shows the base-kit total and the portal's ₪800 meter while building | FINAL (Session 2), **touches Tom's approval** | Veto possible |
+| MB-R05 | spec §7.2 | Card = `<article>` with two sibling buttons (no nesting) | FINAL (Session 2) | No |
+| MB-R06 | MB-D03 amendment | Tom's round-up priority kept; exact algorithm and worked results; shelf-life line in the note | FINAL (Session 2) | No |
+| MB-R07 | spec §15 (MB-38) | Matcha-kit add-on struck from V1 | FINAL (Session 2), was pending Tom | Veto possible |
+| MB-R08 | MB-D04 | Economics kept; copy `נשאר לכם` + the PDF's definition footnote; D-018 amendment recorded in doctrine before implementation (DL-20) | FINAL — **NEEDS DOCTRINE RECORD** | Yes (doctrine record) |
+| MB-R09 | spec §17 | Figures integrity check in CI; at runtime only the Builder's routes close on a mismatch; never block boot | FINAL (Session 2) | No |
+| MB-R10 | MB-D09, IC-2 | One `menu_builder` event type with three steps; `draft_order` carries the session id; 24 h `call` task due +24 h, cancelled by `draft_order` | FINAL on shape — PROVISIONAL on Unit A | No |
+| MB-R11 | DL-19 | Context read from the lead's `first_menu` event payload | FINAL (Session 2) | No |
+| MB-R12 | spec §24 | Help door reuses the approved `moreInfo` reply verbatim | FINAL (Session 2) | No |
+| MB-R13 | `v_sales_attention.stalled` | No exclusion; Builder events are customer activity | FINAL (Session 2) | No |
