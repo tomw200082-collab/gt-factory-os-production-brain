@@ -195,3 +195,22 @@ order by pp.plan_date, pp.created_at;
 **Corrective:**
 - Never put `filter: drop-shadow` on a cut-out product image in the portal, the brand site or the staff app. Use the background floor above. When Tom reports a visual bug from an iPhone, suspect WebKit-only behaviour first, and say plainly that the harness cannot reproduce it.
 - After a squash merge, continue the same branch with `git checkout -B <branch> origin/main && git merge -s ours origin/<branch>`. Check `git diff origin/main HEAD` before and after: it must contain only the new change.
+
+### 2026-10-03: Cheap wave workers doubled every pending signal, and a global CSS rule nearly ate the attention pulses
+
+**What happened:** in the portal-wide UX refinement (tranche 206), four small-model workers added a pending spinner to every save button.
+- **Doubled signals.** They doubled the signal wherever the button already had one: a `Loader2`, "Saving…" text, or the sales `.s-btn[aria-busy]::after` ring.
+- **Rows spinning together.** They spun every row at once wherever many buttons shared one `isPending`.
+- **The gate.** The rendered UX gate caught the leftover double spinner as a P1.
+- **The pulse rule.** Separately, the new global `.animate-pulse` skeleton rule would have turned attention pulses (the waste alert, the inbox stuck item, running jobs) into a skeleton shimmer.
+
+**Why it was surprising:** the instruction "add a pending state to every mutation button" is mechanical on its face. The judgment it needs, whether this button already says it is waiting and whose busy flag this is, is exactly what a cheap worker skips.
+
+**Corrective:**
+- Give migration workers the four rules up front:
+  1. one pending signal per button: never add a spinner where a spinner or "…" text already exists;
+  2. never spin many buttons on a shared flag; scope by `mutation.variables` or leave them disabled;
+  3. a button that only opens a confirm dialog is not the trigger;
+  4. no hooks in loops.
+- Before shipping any global class rule (e.g. on `.animate-pulse`), grep its uses and sort them into skeleton and semantic before the rule lands.
+- The container's browser cannot verify the egress proxy's CA, so a Playwright production smoke fails with `ERR_CERT_AUTHORITY_INVALID`. Never bypass the certificate check. Prove production with curl status checks, Vercel runtime errors and a rendered gate run on a production build of the same SHA.
